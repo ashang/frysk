@@ -190,7 +190,7 @@ public class BreakpointManager
         }
         breakpoint.setState(task, SourceBreakpoint.ENABLED);
         setChanged();
-        notifyObservers(sourceBreakpoint);
+        notifyObservers(breakpoint);
         return SourceBreakpoint.ENABLED;
     }
 
@@ -202,7 +202,7 @@ public class BreakpointManager
     public void disableBreakpoint(SourceBreakpoint breakpoint, Task task) {
         breakpoint.disableBreakpoint(task, this.steppingEngine);
         setChanged();
-        notifyObservers(sourceBreakpoint);
+        notifyObservers(breakpoint);
     }
 
     public Iterator getBreakpointTableIterator() {

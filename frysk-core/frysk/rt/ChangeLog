@@ -1,7 +1,7 @@
 2008-02-04  Tim Moore  <timoore@redhat.com>
 
-	* BreakpointManager.java (enableBreakpoint, disableBreakpoint): Pass
-	breakpoint to observer.
+	* BreakpointManager.java (enableBreakpoint, disableBreakpoint): Pass breakpoint in
+	question to observers. 
 
 2008-01-24  swagiaal  <swagiaal@toner.yyz.redhat.com>
 

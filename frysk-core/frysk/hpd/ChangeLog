@@ -1,3 +1,6 @@
+2008-02-04  Tim Moore  <timoore@redhat.com>
+	* BreakpointCommand.java (interpret): Print out hex address when breakpoint is hit.
+
 2008-02-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* GoCommand.java: Fix bz #5714.

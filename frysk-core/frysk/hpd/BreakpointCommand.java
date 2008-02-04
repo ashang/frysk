@@ -113,7 +113,7 @@ class BreakpointCommand extends ParameterizedCommand {
 	    actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
 	    actionpoint.addObserver(new CLIBreakpointObserver() {
 		public void updateHit(final SourceBreakpoint bpt, Task task,
-			long address) {
+			final long address) {
                     // Output the message in an Event in order to
                     // allow all actions, fired by events currently in
                     // the loop, to run.
@@ -125,7 +125,9 @@ class BreakpointCommand extends ParameterizedCommand {
                                 outWriter.print(" #");
                                 outWriter.print(lbpt.getFileName());
                                 outWriter.print("#");
-                                outWriter.println(lbpt.getLineNumber());
+                                outWriter.print(lbpt.getLineNumber());
+                                outWriter.print(" 0x");
+                                outWriter.println(Long.toHexString(address));
                             }
                         });
 		}
@@ -148,7 +150,7 @@ class BreakpointCommand extends ParameterizedCommand {
 		    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
 		    actionpoint.addObserver(new CLIBreakpointObserver() {
 			public void updateHit(final SourceBreakpoint bpt,
-                                              Task task, long address) {
+                                              Task task, final long address) {
                             // See comment in case above.
                             Manager.eventLoop.add(new Event() {
                                     public void execute() {
@@ -157,7 +159,9 @@ class BreakpointCommand extends ParameterizedCommand {
                                         outWriter.print("Breakpoint ");
                                         outWriter.print(fbpt.getId());
                                         outWriter.print(" ");
-                                        outWriter.println(fbpt.getName());
+                                        outWriter.print(fbpt.getName());
+                                        outWriter.print(" 0x");
+                                        outWriter.println(Long.toHexString(address));
                                     }
                                 });
 			}
