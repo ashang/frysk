@@ -40,7 +40,10 @@
 package frysk.hpd;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -62,13 +65,16 @@ public class LoadCommand extends ParameterizedCommand {
 
     LoadCommand() {
 	super("load", 
-	      "load path-to-executable [ -sysroot Path ]", 
+	      "load [ path-to-executable ] [ -sysroot Path ]", 
 	      "The load command lets the user examine information about"
 	      + " an executable file without actually running it.  An"
 	      + " executable must be loaded with this command before it"
 	      + " can be run with either the 'start' or 'run' command."
-	      + " No arguments are entered here, they are passed to the"
-	      + " process via the 'start'/'run' commands.");
+	      + " If no args are entered a list of the loaded procs(if any)"
+	      + " is displayed.\nNo arguments to be passed to the proc are"
+	      + " entered here.  Those arguments are passed to the proc(s)"
+	      + " via the 'start' or 'run' commands.");
+	
         add(new CommandOption("sysroot", "pathname to use as a sysroot",
         "Pathname") {
             void parse(String args, Object options) {
@@ -90,7 +96,9 @@ public class LoadCommand extends ParameterizedCommand {
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
 	} else if (cmd.size() < 1) {
-	    throw new InvalidCommandException("missing arguments");
+	    // List the loaded procs if no parameters entered
+	    listLoadedProcs(cli);
+	    return;
 	}
 
 	File executableFile = new File(cmd.parameter(0));
@@ -124,6 +132,27 @@ public class LoadCommand extends ParameterizedCommand {
 
 	cli.addMessage("Loaded executable file: " + cmd.parameter(0),
 		Message.TYPE_NORMAL);
+    }
+    
+    /**
+     * listLoadedProcs lists the currently loaded procs
+     * 
+     * @param cli is the current commandline interface object
+     */
+    private void listLoadedProcs(CLI cli) {
+	HashMap listLoaded = cli.getLoadedProcs();
+	if (listLoaded.isEmpty()) {
+	    cli.addMessage("No loaded procs currently", Message.TYPE_NORMAL);
+	    return;
+	}
+	Set procSet = listLoaded.entrySet();
+	Iterator foo = procSet.iterator();
+	while (foo.hasNext()) {
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    Integer taskId = (Integer) me.getValue();
+	    cli.addMessage("Task Id " + taskId + " = " + proc.getExe(), Message.TYPE_NORMAL);
+	}
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {

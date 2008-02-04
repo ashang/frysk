@@ -94,4 +94,24 @@ public class TestLoadCommand extends TestLib {
 	e.expect("Quitting...");
 	e.close();
     }
+    
+    public void testLoadNoneLoaded() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load", "No loaded procs currently.*");
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
+    
+    public void testLoadDisplay() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load", "Task Id ([0-9]+).*Task Id ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }

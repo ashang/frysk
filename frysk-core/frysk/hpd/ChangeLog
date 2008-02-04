@@ -1,3 +1,8 @@
+2008-02-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* LoadCommand.java: Show loaded procs when no parameters are entered.
+	* TestLoadCommand.java: Added 2 new tests for above.
+
 2008-02-04  Tim Moore  <timoore@redhat.com>
 	* BreakpointCommand.java (interpret): Print out hex address when breakpoint is hit.
 
