@@ -487,16 +487,18 @@ by putting it on the frysk vendor branch in git and then merging it
 to trunk.</p>
 
 <ul>
-<li> Get the libunwind vendor branch
-     <code>$ git-checkout vendor/LIBUNWIND</code>
-<li> Remove old stuff that needs to be replaced.
-     <code>$ rm -rf frysk-import/libunwind</code>
+<li> Get the libunwind vendor branch. <br>
+     <code>$  git-branch vendor/LIBUNWIND origin/vendor/LIBUNWIND && git-checkout vendor/LIBUNWIND</code>
+<li> Remove old stuff that needs to be replaced. <br>
+     <code>$ rm -rf frysk-imports/libunwind </code>
 <li> Get upstream stuff and put it in
-     (make sure you don't accidentially copy over the upstream .git dir)
-     <code>$ cp -r ~/upstream/libunwind frysk-import/
+     (make sure you don't accidentially copy over the upstream .git dir) <br>
+     <code>$ cp -r ~/upstream/libunwind frysk-imports/ && rm -rf frysk-imports/libunwind/.git </code>
+<li> Make sure all new files are added <br>
+     <code>$ git add frysk-imports/libunwind </code>
 <li> Commit (use a commit messsage like "Import of libunwind version
-     libunwind-20071122") and push
-     <code>$ git-commit -a && git-push</code>
+     libunwind-20071122") and push <br>
+     <code>$ git-commit -a && git-push origin vendor/LIBUNWIND:vendor/LIBUNWIND </code>
 </ul>
 
 <p>The vendor branch is now updated, now we merge the result to the trunk.</p>
