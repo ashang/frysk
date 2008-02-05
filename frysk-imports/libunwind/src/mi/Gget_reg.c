@@ -30,10 +30,10 @@ unw_get_reg (unw_cursor_t *cursor, int regnum, unw_word_t *valp)
 {
   struct cursor *c = (struct cursor *) cursor;
 
-  // No need to go look up the IP value since it is cached in the cursor.
+  // We can get the IP value directly without needing a lookup.
   if (regnum == UNW_REG_IP)
     {
-      *valp = c->dwarf.ip;
+      *valp = tdep_get_ip (c);
       return 0;
     }
 
