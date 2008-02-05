@@ -504,20 +504,27 @@ to trunk.</p>
 <p>The vendor branch is now updated, now we merge the result to the trunk.</p>
 
 <ul>
-<li> Switch to trunk
-  <code>$ git-checkout master</code>
-<li> Merge new vendor branch to the trunk
+<li> Switch to trunk <br>
+     <code>$ git-checkout master</code>
+<li> Merge new vendor branch to the trunk <br>
      <code>$ git-merge vendor/LIBUNWIND</code>
 <li> Resolve the conflicts using <code>git-rm</code> for files not needed,
      editing files with conflict markers and <code>git-add</code> each one
-     after resolving the issues.
-<li> Do a full clean build and double check the test results.
+     after resolving the issues (if you fix a file more than once, you
+     have to <code>git-add</code> it after each change. Keep an eye on
+     <code>git-status</code> to spot any modified, but not added changes).
+<li> Do a full clean build and double check the test results. <br>
      [.. lots of time passes...]
 <li> Double check your patches (all should now be staged in the git index)
-     with <code>git-diff --cached</a>
+     with <br>
+     <code>git-diff --cached</a>
 <li> Commit and push the result (git will have generated a merge message
-     for you already that you can use in the commit).
-     <code>$ got commit &&; git push</code>
+     for you already that you can use in the commit). <br>
+     <code>$ git-commit && git-push</code> <br>
+     If the push fails because other commits have been done DON'T
+     try to rebase, this will horribly fail!. Use git-merge <br>
+     <code>$ git-fetch origin && git-merge origin</code> <br>
+     Double check the merge went OK and only then <code>git-push</code>.
 </ul>
 
 <p>If too much time has passed since the start the push will fail because
