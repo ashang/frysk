@@ -236,8 +236,8 @@ frysk/pkglibdir/funit-addresses-stripped: frysk/pkglibdir/funit-addresses
 	mkdir -p frysk/pkglibdir/test-sysroot/usr/lib/debug/usr/bin
 	(cd frysk/pkglibdir/test-sysroot/usr/src/debug; \
 	 gcc -g funit-addresses.c -o ../../bin/funit-addresses; \
-	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses; \
-	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/test-sysroot) -d / ../../lib/debug/usr/bin/funit-addresses.debug)
+	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/test-sysroot) -d /  ../../bin/funit-addresses; \
+	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses)
 
 install-exec-local: install-sysroot-local
 uninstall-local: uninstall-sysroot-local
