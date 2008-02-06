@@ -42,6 +42,7 @@ package frysk.dwfl;
 import frysk.proc.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -108,10 +109,18 @@ public class DwflCache
 	File parent = new File(execFile.getParent());
 	StringBuffer relativePath = new StringBuffer("");
 	StringBuffer exePath = new StringBuffer("");
-	while (! parent.getPath().equals(sysroot.getPath())) { 
-	    exePath.insert(0, "/" + parent.getName());
-	    relativePath.append("../");
-	    parent = new File(parent.getParent());
+	String sysrootPath;
+	try {
+	    sysrootPath = sysroot.getCanonicalPath();
+	    while (! parent.getCanonicalPath().equals(sysrootPath)) { 
+		exePath.insert(0, "/" + parent.getName());
+		relativePath.append("../");
+		parent = new File(parent.getParent());
+		if (parent.getPath().equals("/"))
+		    break;
+	    }
+	} catch (IOException e) {
+	    return new File("/usr/lib/debug");
 	}
 	File debugFile = new File(relativePath + "/usr/lib/debug/" + exePath);
 	return debugFile;

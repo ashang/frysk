@@ -1,3 +1,7 @@
+2008-02-05  Stan Cox  <scox@redhat.com>
+
+	* cni/Dwfl.cxx (Dwfl::dwflBegin): Check debuginfo CRC.
+
 2008-01-14  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/DwAttributeNotFoundException.cxx: Delete.

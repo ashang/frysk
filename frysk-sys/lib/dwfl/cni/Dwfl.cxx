@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -114,9 +114,8 @@ lib::dwfl::Dwfl::dwflBegin (jstring jsysroot, jint pid)
   char sysroot[len + 1]; 
   JvGetStringUTFRegion(jsysroot, 0, len, sysroot);
   sysroot[len] = '\0';
-  /* Default `DEFAULT_DEBUGINFO_PATH' is similar but checks its CRCs.  */
   static char* flags;
-  if (asprintf (&flags, "-:.debug:%s", sysroot) < 0)
+  if (asprintf (&flags, ".debug:%s", sysroot) < 0)
     return NULL;
 
   static Dwfl_Callbacks callbacks = {
@@ -140,9 +139,8 @@ lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
   char sysroot[len+1]; 
   JvGetStringUTFRegion(jsysroot, 0, len, sysroot);
   sysroot[len] = '\0';
-  /* Default `DEFAULT_DEBUGINFO_PATH' is similar but checks its CRCs.  */
   static char* flags;
-  if (asprintf (&flags, "-:.debug:%s", sysroot) < 0)
+  if (asprintf (&flags, ".debug:%s", sysroot) < 0)
     return NULL;
 
   static Dwfl_Callbacks callbacks = {

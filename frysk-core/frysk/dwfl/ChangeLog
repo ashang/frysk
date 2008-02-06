@@ -1,3 +1,7 @@
+2008-02-05  Stan Cox  <scox@redhat.com>
+
+	* DwflCache.java (getRelativeSysRoot): Use getCanonicalPath.
+
 2008-01-24  Stan Cox  <scox@redhat.com>
 
 	* DwflCache.java (Mod.sysroot): New.
