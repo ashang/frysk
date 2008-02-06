@@ -247,11 +247,12 @@ public class TearDownProcess
 		waitTimedOut = Wait.wait
 		    (-1,
 		     new WaitBuilder() {
-			 public void cloneEvent (int pid, int clone) {
+			 public void cloneEvent(ProcessIdentifier pid,
+						ProcessIdentifier clone) {
 			     capturedSendDetachContKill(pid);
 			 }
-
-			 public void forkEvent (int pid, int child) {
+			 public void forkEvent(ProcessIdentifier pid,
+					       ProcessIdentifier child) {
 			     capturedSendDetachContKill(pid);
 			 }
 			 

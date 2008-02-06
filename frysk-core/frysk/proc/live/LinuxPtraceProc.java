@@ -52,6 +52,7 @@ import frysk.proc.MemoryMap;
 import java.util.ArrayList;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.proc.Status;
 import java.util.logging.Level;
 import frysk.sys.proc.ProcBuilder;
@@ -83,8 +84,8 @@ public class LinuxPtraceProc extends LiveProc {
      * Create a new, definitely attached, definitely running fork of
      * Task.
      */
-    public LinuxPtraceProc(Task task, ProcId forkId) {
-	super(task, forkId);
+    public LinuxPtraceProc(Task task, ProcessIdentifier fork) {
+	super(task, new ProcId(fork.intValue()));
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);
     }

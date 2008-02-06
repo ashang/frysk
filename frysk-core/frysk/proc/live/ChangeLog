@@ -1,5 +1,12 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java (LinuxPtraceProc(Task,ProcessIdentifier)):
+	Replace LinuxPtraceProc(Task,TaskId).
+	* LinuxPtraceHost.java: Update.
+	* LinuxPtraceTask.java (LinuxPtraceTask(Task,ProcessIdentifer)):
+	Replace LinuxPtraceTask(Task,TaskId).
+	* LinuxWaitBuilder.java: Update to match WaitBuilder.
+
 	* LinuxPtraceHost.java: Update to match frysk.sys.Fork.
 	* TestRefresh.java: Ditto.
 

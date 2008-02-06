@@ -59,6 +59,7 @@ import frysk.event.Event;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.sys.Errno;
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Signal;
@@ -83,9 +84,9 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * Create a new attached clone of Task.
      */
-    public LinuxPtraceTask(Task task, TaskId clone) {
+    public LinuxPtraceTask(Task task, ProcessIdentifier clone) {
 	// XXX: shouldn't need to grub around in the old task's state.
-	super(task, clone);
+	super(task, new TaskId(clone.intValue()));
 	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
     }
     /**

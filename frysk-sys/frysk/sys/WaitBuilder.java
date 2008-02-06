@@ -42,16 +42,15 @@ package frysk.sys;
 /**
  * Let the Wait client build each wait-pid event.
  */
-public interface WaitBuilder
-{
+public interface WaitBuilder {
     /**
      * The task PID got a clone event; CLONE is the new task's ID.
      */
-    void cloneEvent (int pid, int clone);
+    void cloneEvent(ProcessIdentifier pid, ProcessIdentifier clone);
     /**
      * The task PID got a fork event; CHILD is the new process ID.
      */
-    void forkEvent (int pid, int child);
+    void forkEvent(ProcessIdentifier pid, ProcessIdentifier child);
     /**
      * The task PID got an exit event; if SIGNAL is non-NULL it
      * contains the terminating signal and STATUS is the negated

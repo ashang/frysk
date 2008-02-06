@@ -64,6 +64,8 @@
 #include "frysk/sys/Signal.h"
 #include "frysk/sys/WaitBuilder.h"
 #include "frysk/sys/SignalBuilder.h"
+#include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
 
 /* Unpack the WSTOPEVENT status field.
 
@@ -159,7 +161,8 @@ processStatus (int pid, int status,
       try {
 	// The event message contains the thread-ID of the new clone.
 	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
-	builder->cloneEvent (pid, clone);
+	builder->cloneEvent(frysk::sys::ProcessIdentifierFactory::create(pid),
+			    frysk::sys::ProcessIdentifierFactory::create(clone));
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
@@ -172,7 +175,8 @@ processStatus (int pid, int status,
 	// The event message contains the process-ID of the new
 	// process.
 	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
-	builder->forkEvent (pid, fork);
+	builder->forkEvent(frysk::sys::ProcessIdentifierFactory::create(pid),
+			   frysk::sys::ProcessIdentifierFactory::create(fork));
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due

@@ -72,6 +72,15 @@ public abstract class UnhandledWaitBuilder
      * An unhandled waitpid event was encountered, describe why and
      * call unhandled.
      */
+    private void unhandled(String what, ProcessIdentifier pid,
+			   String also, Object value) {
+	unhandled("unhandled " + what
+		  + " (pid " + pid + ", " + also + " " + value + ")");
+    }
+    /**
+     * An unhandled waitpid event was encountered, describe why and
+     * call unhandled.
+     */
     private void unhandled (String what, int pid, String also, String value)
     {
 	unhandled ("unhandled " + what
@@ -80,16 +89,14 @@ public abstract class UnhandledWaitBuilder
     /**
      * The task PID got a clone event; CLONE is the new task's ID.
      */
-    public void cloneEvent (int pid, int clone)
-    {
-	unhandled ("cloneEvent", pid, "clone", clone);
+    public void cloneEvent(ProcessIdentifier pid, ProcessIdentifier clone) {
+	unhandled("cloneEvent", pid, "clone", clone);
     }
     /**
      * The task PID got a fork event; CHILD is the new process ID.
      */
-    public void forkEvent (int pid, int child)
-    {
-	unhandled ("forkEvent", pid, "child", child);
+    public void forkEvent(ProcessIdentifier pid, ProcessIdentifier child) {
+	unhandled("forkEvent", pid, "child", child);
     }
     /**
      * The task PID got an exit event; if SIGNAL is non-NULL it is the

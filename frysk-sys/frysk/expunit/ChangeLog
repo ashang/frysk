@@ -1,3 +1,7 @@
+2008-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitObserver.java: Update to match WaitBuilder.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java: Split into Child.java.

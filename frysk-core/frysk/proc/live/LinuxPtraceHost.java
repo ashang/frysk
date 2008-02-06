@@ -255,7 +255,7 @@ public class LinuxPtraceHost extends LiveHost {
 			Proc myProc = getSelf();
 			myTask = new LinuxPtraceTask(myProc, myTaskId);
 		    }
-		    LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid.intValue()));
+		    LinuxPtraceProc proc = new LinuxPtraceProc(myTask, pid);
 		    new LinuxPtraceTask(proc, attachedObserver);
 		}
 	    });

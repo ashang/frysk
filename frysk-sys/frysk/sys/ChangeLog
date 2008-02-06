@@ -1,5 +1,11 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* WaitBuilder.java (cloneEvent(ProcessIdentifier,ProcessIdentifier)):
+	Replace cloneEvent(int,int).
+	* cni/Wait.cxx: Update.
+	* UnhandledWaitBuilder.java: Update.
+	(unhandled(String,ProcessIdentifier,String,Object)): New.
+
 	* Wait.java (drain(ProcessIdentifier))
 	(drainNoHang(ProcessIdentifier))
 	(wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long,boolean))

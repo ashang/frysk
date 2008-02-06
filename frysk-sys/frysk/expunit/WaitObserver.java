@@ -39,6 +39,7 @@
 
 package frysk.expunit;
 
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
 
@@ -85,10 +86,10 @@ class WaitObserver implements WaitBuilder {
 			  int status, boolean coreDumped) {
 	throw terminationException("Stopped with exit event");
     }
-    public void forkEvent (int pid, int offspring) {
+    public void forkEvent(ProcessIdentifier pid, ProcessIdentifier offspring) {
 	throw terminationException("Stopped with fork event");
     }
-    public void cloneEvent (int pid, int offspring) {
+    public void cloneEvent(ProcessIdentifier pid, ProcessIdentifier offspring) {
 	throw terminationException("Stopped with clone event");
     }
 }
