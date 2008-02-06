@@ -1,3 +1,7 @@
+2008-02-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* ProcStopUtil.java: New.
+
 2008-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664LinuxElfCorefile.java: Move to frysk.isa.corefiles.
@@ -11,7 +15,7 @@
 2008-02-04  Tim Moore  <timoore@redhat.com>
 
 	* ObservingTerminal.java: New file.
-
+	
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCoredumpAction.java (testElfCoreHeader()): Fetch the ISA
