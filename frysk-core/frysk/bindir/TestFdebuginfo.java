@@ -67,7 +67,7 @@ public class TestFdebuginfo extends TestLib {
 	TearDownExpect e = new TearDownExpect(new String[] { 
 		Config.getBinFile("fdebuginfo").getAbsolutePath ()
 	});
-	e.expect("ERROR: No argument provided");      
+	e.expect("ERROR: No argument provided.");      
     }    
 
     public void testBadArguments() {

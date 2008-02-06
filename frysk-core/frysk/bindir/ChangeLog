@@ -1,3 +1,8 @@
+2008-02-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebuginfo.java: Refactor, use ProcStopUtil.
+	* TestFdebuginfo.java (testNoArguments): Update.
+
 2008-02-04  Tim Moore  <timoore@redhat.com>
 
 	* fhpd.java (main): Use ObservingTerminal instead of PtyTerminal.

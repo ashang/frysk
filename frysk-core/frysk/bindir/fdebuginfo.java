@@ -1,7 +1,6 @@
-
 //This file is part of the program FRYSK.
 
-//Copyright  2007 Red Hat Inc.
+//Copyright  2008 Red Hat Inc.
 
 //FRYSK is free software; you can redistribute it and/or modify it
 //under the terms of the GNU General Public License as published by
@@ -40,96 +39,31 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
-import frysk.event.Event;
-import frysk.proc.Host;
-import frysk.proc.Manager;
-import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
+import frysk.event.ProcEvent;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.proc.dead.LinuxExeHost;
 
-import frysk.util.CommandlineParser;
-import frysk.util.CoreExePair;
-import frysk.util.Util;
 import frysk.util.DebuginfoPaths;
+import frysk.util.ProcStopUtil;
 
 public final class fdebuginfo
-{
-    private static CommandlineParser parser;
-
+{    
     /**
      * Entry function for fdebuginfo
-     * 
-     * @param args - pid of the process(es) or corefile
+     * @param args - pid of the process(es)/corefile/executable
      */  
     public static void main(String[] args)
     {
-	// Parse command line. Check if argument provided.
-	parser = new CommandlineParser("fdebuginfo")
-	{
-	    //@Override 
-	    public void parseCores (CoreExePair[] coreExePairs)
-	    {
-		for (int i = 0; i < coreExePairs.length; i++)
-		{       
-		    Proc proc = Util.getProcFromCoreExePair(coreExePairs[i]);
-		    new PrintDebuginfoEvent (proc).execute();
-		}  
-		System.exit(0);  
-	    }
-
-	    //@Override
-	    public void parsePids (ProcId[] pids)
-	    { 
-		for (int i= 0; i< pids.length; i++)
-		{       
-		    Proc proc = Util.getProcFromPid(pids[i]);
-		    new ProcBlockAction(proc, new PrintDebuginfoAction(proc));
-		    Manager.eventLoop.run();
-		}  
-		System.exit(0);
-	    }
-
-	    //@Override
-	    public void parseCommand(String[] command) {
-		File exeFile = new File(command[0]);
-		if (!exeFile.exists() || !exeFile.canRead()
-			|| !exeFile.isFile()) {
-		    System.err.println ("File does not exist or is " +
-		                        "not readable or is not a file.");
-		} else {
-		    Manager.eventLoop.start();
-		    Host exeHost = new LinuxExeHost(Manager.eventLoop, exeFile);
-		    Proc exeProc = Util.getProcFromExeFile(exeHost);
-		    new PrintDebuginfoEvent(exeProc).execute();
-		}
-		System.exit(0);
-	    }
-	};
-
-	parser.setHeader("Usage: fdebuginfo <PID> || fdebuginfo <EXEFILE> " +
-			 "|| fdebuginfo <COREFILE> [<EXEFILE>]");
-	parser.parse(args);
-
-	//Pid not found
-	System.err.println("ERROR: No argument provided");
-	parser.printHelp();
-	System.exit(1);   
+	ProcStopUtil fdebuginfo = new ProcStopUtil("fdebuginfo", args, 
+		                                    new PrintDebuginfoEvent());
+	fdebuginfo.setUsage("Usage: fdebuginfo <PID> || fdebuginfo <EXEFILE> " +
+	                    "|| fdebuginfo <COREFILE> [<EXEFILE>]");   
+        fdebuginfo.execute();
     }   
     
-    private static class PrintDebuginfoEvent implements Event
+    private static class PrintDebuginfoEvent implements ProcEvent
     {
-	private Proc proc = null;
-	
-	public PrintDebuginfoEvent(Proc proc) {
-	    this.proc = proc;
-	}
-
-	public void execute() {
+	public void execute(Proc proc) {
 	    /* Get and print the debuginfo install paths.
 	     */
 	    Task task  = proc.getMainTask();
@@ -137,31 +71,6 @@ public final class fdebuginfo
 	    String dInfo = dbg.getDebuginfo();          
 	    if (dInfo!=null)
 		System.out.print(dInfo); 
-	    System.exit(0);
 	}	
     }
-    
-    private static class PrintDebuginfoAction implements ProcObserver.ProcAction 
-    {
-	private Proc proc;
-
-	public PrintDebuginfoAction(Proc proc) {
-	    this.proc = proc;
-	}
-
-	public void allExistingTasksCompleted() {
-	    Manager.eventLoop.add(new PrintDebuginfoEvent(this.proc));
-	}
-	public void taskAddFailed(Object task, Throwable w) {
-	}
-	public void existingTask(Task task) {
-	}
-	public void addFailed(Object observable, Throwable w) {
-	}
-	public void addedTo(Object observable) {
-	}
-	public void deletedFrom(Object observable) {
-	}
-    }
 }
-
