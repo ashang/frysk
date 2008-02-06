@@ -47,8 +47,8 @@ import java.util.List;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.dead.DeadProc;
-import frysk.util.LinuxElfCorefile;
-import frysk.util.LinuxElfCorefileFactory;
+import frysk.isa.corefiles.LinuxElfCorefile;
+import frysk.isa.corefiles.LinuxElfCorefileFactory;
 
 public class GenerateCoreCommand extends ParameterizedCommand {
 

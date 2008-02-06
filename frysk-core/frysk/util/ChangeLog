@@ -1,3 +1,13 @@
+2008-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* X8664LinuxElfCorefile.java: Move to frysk.isa.corefiles.
+	* PPC64LinuxElfCorefile.java: Move to frysk.isa.corefiles.
+	* PPC32LinuxElfCorefile.java: Move to frysk.isa.corefiles.
+	* LinuxElfCorefileFactory.java: Move to frysk.isa.corefiles.
+	* LinuxElfCorefile.java: Move to frysk.isa.corefiles.
+	* IA32LinuxElfCorefile.java: Move to frysk.isa.corefiles.
+	* CoredumpAction.java: Update.
+
 2008-02-04  Tim Moore  <timoore@redhat.com>
 
 	* ObservingTerminal.java: New file.

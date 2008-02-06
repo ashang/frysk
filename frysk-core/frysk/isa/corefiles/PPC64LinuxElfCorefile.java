@@ -41,7 +41,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
+package frysk.isa.corefiles;
 
 import inua.eio.ArrayByteBuffer;
 

@@ -1,10 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2006, 2007, IBM Corp.
-// Copyright 2007, Red Hat Inc.
-// 
-// Contributed by
-// Jose Flavio Aguilar Paulino (joseflavio@gmail.com)
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,12 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
+package frysk.isa.corefiles;
+
+import inua.eio.ArrayByteBuffer;
 
 import java.util.Iterator;
 
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteBuffer;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
@@ -55,10 +51,10 @@ import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
 import lib.dwfl.ElfPrstatus;
-import frysk.isa.registers.PPC32Registers;
-import frysk.isa.registers.Register;
 import frysk.isa.banks.BankRegister;
-import frysk.isa.banks.LinuxPPCRegisterBanks;
+import frysk.isa.banks.LinuxX8664RegisterBanks;
+import frysk.isa.registers.Register;
+import frysk.isa.registers.X8664Registers;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.proc.AuxvBuilder;
@@ -67,11 +63,11 @@ import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 
 /**
- * PPC32LinuxElfCorefile. Extends LinuxCorefile. Fill in
- * specific PPC32 information for corefiles.
+ * X8664LinuxElfCorefile. Extends LinuxCorefile. Fill in
+ * specific x8664 information for corefiles.
  * 
  */
-public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
+public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 
     Proc process;
 
@@ -86,11 +82,11 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
      * @param process - The parent process to construct the core from.
      * @param blockedTasks - The process's tasks, in a stopped state
      */
-    public PPC32LinuxElfCorefile(Proc process, Task blockedTasks[]) {
+    public X8664LinuxElfCorefile(Proc process, Task blockedTasks[]) {
 	super(process, blockedTasks);
 	this.process = process;
 	this.blockedTasks = blockedTasks;
-	this.size = 32;
+	this.size = 64;
     }
 
     /* (non-Javadoc)
@@ -185,84 +181,87 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	// Order for these registers is found in /usr/include/asm/user.h
 	// This is not the same order that frysk iterators print out, nor
 	// are the names are the same. Create a string[] map to bridge
-	// gap between frysk and core file register order.
+	// gap between frysk and core file register order.        
+	
+	Register[] ptraceRegisterMap = {
+	  X8664Registers.R15,
+	  X8664Registers.R14,
+	  X8664Registers.R13,
+	  X8664Registers.R12,
+	  X8664Registers.RBP,
+	  X8664Registers.RBX,
+	  X8664Registers.R11,
+	  X8664Registers.R10,
+	  X8664Registers.R9,
+	  X8664Registers.R8,
+	  X8664Registers.RAX,
+	  X8664Registers.RCX,
+	  X8664Registers.RDX,				      
+	  X8664Registers.RSI,
+	  X8664Registers.RDI,
+	  X8664Registers.ORIG_RAX,
+	  X8664Registers.RIP,
+	  X8664Registers.CS,
+	  X8664Registers.RFLAGS,
+	  X8664Registers.RSP,
+	  X8664Registers.SS,
+	  X8664Registers.FS_BASE,
+	  X8664Registers.GS_BASE,
+	  X8664Registers.DS,
+	  X8664Registers.ES,
+	  X8664Registers.FS,
+	  X8664Registers.GS};
 
-        // The number of total common registers in PPC/PPC64 including nip, msr,
-        // etc. Defined in the asm-ppc/elf.h.
-        Register[] ptracePpcRegMap = { 
-	  PPC32Registers.NIP, PPC32Registers.MSR, PPC32Registers.ORIGR3,
-	  PPC32Registers.CTR, PPC32Registers.LR, PPC32Registers.XER,
-	  PPC32Registers.CCR, PPC32Registers.MQ, PPC32Registers.TRAP,
-	  PPC32Registers.DAR, PPC32Registers.DSISR, PPC32Registers.RESULT,
-	  PPC32Registers.GPR0, PPC32Registers.GPR1, PPC32Registers.GPR2,
-	  PPC32Registers.GPR3, PPC32Registers.GPR4, PPC32Registers.GPR5,
-	  PPC32Registers.GPR6, PPC32Registers.GPR7, PPC32Registers.GPR8,
-	  PPC32Registers.GPR9, PPC32Registers.GPR10, PPC32Registers.GPR11,
-	  PPC32Registers.GPR12, PPC32Registers.GPR13, PPC32Registers.GPR14,
-	  PPC32Registers.GPR15, PPC32Registers.GPR16, PPC32Registers.GPR17,
-	  PPC32Registers.GPR18, PPC32Registers.GPR19, PPC32Registers.GPR20,
-	  PPC32Registers.GPR21, PPC32Registers.GPR22, PPC32Registers.GPR23,
-	  PPC32Registers.GPR24, PPC32Registers.GPR25, PPC32Registers.GPR26,
-	  PPC32Registers.GPR27, PPC32Registers.GPR28, PPC32Registers.GPR29,
-	  PPC32Registers.GPR30, PPC32Registers.GPR31};
+	// Set GP register info
+	int index = 0;
+	int arraySize = 0;
+	int regSize;
+	int wordSize = task.getISA().wordSize();
 	
-        
-    	// Set GP register info
-    	int index = 0;
-    	int arraySize = 0;
-    	int regSize;
-    	int wordSize = task.getISA().wordSize();
-        int elfNGREG = 48;
-	
-    	// Allocate space in array. Even though there are some registers < wordSize, they still have
-    	// to sit in a wordSize area
-    	for (int l = 0; l < ptracePpcRegMap.length; l++)
-	  if (ptracePpcRegMap[l].getType().getSize() < wordSize)
+	// Allocate space in array. Even though there are some registers < wordSize, they still have
+	// to sit in a wordSize area
+	for (int l = 0; l < ptraceRegisterMap.length; l++)
+	  if (ptraceRegisterMap[l].getType().getSize() < wordSize)
 	    arraySize +=wordSize;
 	  else
-	    arraySize +=ptracePpcRegMap[l].getType().getSize();
+	    arraySize +=ptraceRegisterMap[l].getType().getSize();
 	
-    	int blankRegisterIndex = (elfNGREG - ptracePpcRegMap.length) * wordSize;
+	byte[] byteOrderedRegister= new byte[arraySize];
 	
-    	byte[] byteOrderedRegister= new byte[arraySize+blankRegisterIndex];
-	
-    	// Populate array, using wordSize as minimum size
-    	for (int i = 0; i < ptracePpcRegMap.length; i++) {
-	  regSize = ptracePpcRegMap[i].getType().getSize();
+	// Populate array, using wordSize as minimum size
+	for (int i = 0; i < ptraceRegisterMap.length; i++) {
+	  regSize = ptraceRegisterMap[i].getType().getSize();
 	  if (regSize < wordSize)
 	    regSize = wordSize;
-	  task.access(ptracePpcRegMap[i], 0, regSize, byteOrderedRegister, index, false);
+	  task.access(ptraceRegisterMap[i], 0, regSize, byteOrderedRegister, index, false);
 	  index += regSize;
-    	}
+	}
 	
-    	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
-	
+	prStatus.setPrGPRegisterBuffer(byteOrderedRegister);
+
 	// Write it
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
     }
 
-    /*
-         * (non-Javadoc)
-         * 
-         * @see frysk.util.LinuxElfCorefile#writeNoteFPRegset(lib.dwfl.ElfNhdr,
-         *      frysk.proc.Task)
-         */
+    /* (non-Javadoc)
+     * @see frysk.util.LinuxElfCorefile#writeNoteFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
+     */
     protected void writeNoteFPRegset(ElfNhdr nhdrEntry, Task task) {
 	
-   	ElfPrFPRegSet xfpRegSet = new ElfPrFPRegSet();
+    	ElfPrFPRegSet xfpRegSet = new ElfPrFPRegSet();
 	
-    	final int bankSize = 260;
-    	final int maxRegSize = 8;
+    	final int bankSize = 512;
+    	final int maxRegSize = 16;
     	byte[] scratch = new byte[maxRegSize];
     	byte[] byteOrderedRegister= new byte[bankSize];
     	ArrayByteBuffer byteOrderedBuffer = new ArrayByteBuffer(byteOrderedRegister);
     	
-    	Iterator registerIterator =  LinuxPPCRegisterBanks.FPREGS32.entryIterator();
+    	Iterator registerIterator =  LinuxX8664RegisterBanks.FPREGS.entryIterator();
     	while (registerIterator.hasNext()) {
 	    BankRegister bankRegister = ((BankRegister)registerIterator.next());
 	    Register register = bankRegister.getRegister();
 	    task.access(register, 0, register.getType().getSize(), scratch, 0, false);
-	    bankRegister.access(byteOrderedBuffer, 0, maxRegSize, scratch, 0, true);
+	    bankRegister.access(byteOrderedBuffer, 0, register.getType().getSize(), scratch, 0, true);
     	}
 	
     	byteOrderedBuffer.get(byteOrderedRegister);
@@ -271,25 +270,13 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	
     	// Write it
     	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, xfpRegSet);
-
-	ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
-
-	// Write FP Register info over wholesae. Do not interpret.
-	ByteBuffer registerMaps[] = task.getRegisterBuffersFIXME();
-	byte[] regBuffer = new byte[(int) registerMaps[1].capacity()];
-	registerMaps[1].get(regBuffer);
-
-	fpRegSet.setFPRegisterBuffer(regBuffer);
-
-	// Write it
-	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
     }
 
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#writeNotePRXFPRegset(lib.dwfl.ElfNhdr, frysk.proc.Task)
      */
-    protected boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
-	return false;
+    protected  boolean writeNotePRXFPRegset(ElfNhdr nhdrEntry, Task task) {
+        return false;
     }
 
     /* (non-Javadoc)
@@ -320,13 +307,14 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#getElfMachineType()
      */
     protected byte getElfMachineType() {
-	return ElfEMachine.EM_PPC;
+	return ElfEMachine.EM_X86_64;
     }
 
     /* (non-Javadoc)
      * @see frysk.util.LinuxElfCorefile#getElfMachineClass()
      */
     protected byte getElfMachineClass() {
-	return ElfEHeader.PHEADER_ELFCLASS32;
+	return ElfEHeader.PHEADER_ELFCLASS64;
     }
+    
 }
