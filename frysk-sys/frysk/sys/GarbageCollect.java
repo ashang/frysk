@@ -65,16 +65,16 @@ public class GarbageCollect {
 	    new Long(i);
 	}
     }
-    public static synchronized void run() {
+    public static synchronized boolean run() {
 	Garbage.create();
 	int agressive = 0;
 	while (!Garbage.collected) {
+	    System.gc();
 	    switch (agressive++) {
 	    case 0:
 	    case 1:
 		// Simple yield; if there's garbage to collect it will
 		// run.
-		System.gc();
 		Thread.yield();
 		break;
 	    case 2:
@@ -82,6 +82,9 @@ public class GarbageCollect {
 		// Create some garbage so that the GC feels a reason
 		// to run.
 		leakMemory(10000 << agressive);
+		// Now that there's more garbage, re-nudge the gc() so
+		// that it can see it (without this the gc() often
+		// didn't run).
 		System.gc();
 		try {
 		    Thread.sleep(50 << agressive);
@@ -89,9 +92,12 @@ public class GarbageCollect {
 		}
 		break;
 	    default:
-		throw new RuntimeException("Garbage uncollected");
+		System.err.println("garbage uncollected");
+		return false;
 	    }
+	    // Clean out any collected garbage.
 	    System.runFinalization();
 	}
+	return true;
     }
 }

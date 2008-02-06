@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -61,6 +61,7 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/Errno$Eperm.h"
 #include "frysk/sys/Errno$Eio.h"
+#include "frysk/sys/GarbageCollect.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 /**
@@ -181,43 +182,9 @@ throwRuntimeException (const char *message, const char *suffix, int val)
 }
 
 int
-tryGarbageCollect (int &count)
-{
-  switch (count++) {
-  case 0:
-    java::lang::System::gc ();
-    java::lang::Thread::yield ();
-    return count;
-  case 1:
-    fprintf (stderr, "yo dude, double garbage collect!\n");
-    java::lang::System::gc ();
-    java::lang::Thread::sleep (1);
-    return count;
-  default:
-    return 0;
-  }
-}
-
-void
-tryGarbageCollect (int &count, int err, const char *prefix)
-{
-  if (tryGarbageCollect (count) == 0)
-    throwErrno (err, prefix);
-}
-
-void
-tryGarbageCollect (int &count, int err, const char *prefix,
-		   const char *suffix, int val)
-{
-  if (tryGarbageCollect (count) == 0)
-    throwErrno (err, prefix, suffix, val);
-}
-
-int
 tryOpen (const char *file, int flags, int mode)
 {
   int fd;
-  int gc = 0;
   
   while (1)
     {
@@ -231,7 +198,8 @@ tryOpen (const char *file, int flags, int mode)
       switch (err)
 	{
 	case EMFILE:
-	  tryGarbageCollect (gc, err, "open");
+	  if (!frysk::sys::GarbageCollect::run())
+	    throwErrno(err, "open");
 	  continue;
 	  
 	default:

@@ -45,12 +45,12 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/FileDescriptor.h"
+#include "frysk/sys/GarbageCollect.h"
 #include "frysk/sys/Pipe.h"
 
 JArray<frysk::sys::FileDescriptor*>*
 frysk::sys::Pipe::pipe ()
 {
-  int gc_count = 0;
   const int nfds = 2;
   int filedes[nfds];
   while (::pipe (filedes) < 0) {
@@ -58,7 +58,8 @@ frysk::sys::Pipe::pipe ()
     // ::printf ("err = %d %s\n", err, strerror (err));
     switch (err) {
     case EMFILE:
-      tryGarbageCollect (gc_count, err, "pipe");
+      if (!frysk::sys::GarbageCollect::run())
+	throwErrno(err, "pipe");
       continue;
     default:
       throwErrno (err, "pipe");

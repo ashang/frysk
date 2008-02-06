@@ -47,6 +47,6 @@ import frysk.junit.TestCase;
 
 public class TestGarbageCollect extends TestCase {
     public void testGarbageCollect() {
-	GarbageCollect.run();
+	assertTrue("garbage collected", GarbageCollect.run());
     }
 }

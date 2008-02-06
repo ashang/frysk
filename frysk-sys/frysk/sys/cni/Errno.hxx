@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -67,13 +67,6 @@ extern jstring ajprintf (const char *fmt, ...)
 extern jstring vajprintf (const char *fmt, va_list ap);
 
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
 extern int tryOpen (const char *file, int flags);
 extern int tryOpen (const char *file, int flags, int mode);
 

@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007, 2008 Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/FileDescriptor.h"
+#include "frysk/sys/GarbageCollect.h"
 #include "frysk/sys/Size.h"
 
 void
@@ -175,14 +176,14 @@ void
 frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
 {
   errno = 0;
-  int gc_count = 0;
   // ::fprintf (stderr, "%d dup (%d, %d)\n", getpid (), (int)old->fd, (int)fd);
   while (::dup2 (old->fd, fd) < 0) {
     int err = errno;
     // ::fprintf (stderr, "err = %d %s\n", err, strerror (err));
     switch (err) {
     case EMFILE:
-      tryGarbageCollect (gc_count, err, "dup2");
+      if (!frysk::sys::GarbageCollect::run())
+	throwErrno(err, "dup2");
       continue;
     default:
       throwErrno (err, "dup2");
