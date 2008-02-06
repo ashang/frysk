@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,29 +43,23 @@ package frysk.sys;
  * Trace a process.
  */
 
-public class Ptrace
-{
+public class Ptrace {
     /**
      * Attach to the process specified by PID.
      */
-    public static native void attach (int pid);
-    /**
-     * Attach to the process specified by PID.
-     */
-    public static void attach (ProcessIdentifier pid)
-    {
-	attach(pid.hashCode());
+    public static void attach(ProcessIdentifier pid) {
+	attach(pid.intValue());
     }
+    public static native void attach(int pid);
     /**
      * Detach from the process specified by PID.
      */
-    public static void detach (ProcessIdentifier pid, int sig)
-    {
-	detach(pid.hashCode(), sig);
+    public static void detach(ProcessIdentifier pid, Signal sig) {
+	detach(pid.intValue(), sig.intValue());
     }
-    /**
-     * Detach from the process specified by PID.
-     */
+    public static void detach(ProcessIdentifier pid, int sig) {
+	detach(pid.intValue(), sig);
+    }
     public static void detach(int pid, Signal sig) {
 	detach(pid, sig.intValue());
     }
@@ -74,6 +68,9 @@ public class Ptrace
      * Single-step (instruction step) the process specified by PID, if
      * SIG is non-zero, deliver the signal.
      */
+    public static void singleStep(ProcessIdentifier pid, Signal sig) {
+	singleStep(pid.intValue(), sig.intValue());
+    }
     public static void singleStep(int pid, Signal sig) {
 	singleStep(pid, sig.intValue());
     }
@@ -82,6 +79,9 @@ public class Ptrace
      * Continue the process specified by PID, if SIG is non-zero,
      * deliver the signal.
      */
+    public static void cont(ProcessIdentifier pid, Signal sig) {
+	cont(pid.intValue(), sig.intValue());
+    }
     public static void cont(int pid, Signal sig) {
 	cont(pid, sig.intValue());
     }
@@ -90,6 +90,9 @@ public class Ptrace
      * Continue the process specified by PID, stopping when there is a
      * system-call; if SIG is non-zero deliver the signal.
      */
+    public static void sysCall(ProcessIdentifier pid, Signal sig) {
+	sysCall(pid.intValue(), sig.intValue());
+    }
     public static void sysCall(int pid, Signal sig) {
 	sysCall(pid, sig.intValue());
     }
@@ -98,44 +101,47 @@ public class Ptrace
      * Fetch the auxilary information associated with PID's last WAIT
      * event.
      */ 
+    public static long getEventMsg(ProcessIdentifier pid) {
+	return getEventMsg(pid.intValue());
+    }
     public static native long getEventMsg(int pid);
     /**
      * Set PID's trace options.  OPTIONS is formed by or'ing the
      * values returned by the option* methods below.
      */
+    public static void setOptions(ProcessIdentifier pid, long options) {
+	setOptions(pid.intValue(), options);
+    }
     public static native void setOptions (int pid, long options);
     /**
      * Return the bitmask for enabling clone tracing.
      */
-    public static native long optionTraceClone ();
+    public static native long optionTraceClone();
     /**
      * Return the bitmask for enabling fork tracing.
      */
-    public static native long optionTraceFork ();
+    public static native long optionTraceFork();
     /**
      * Return the bitmask for enabling exit tracing.
      */
-    public static native long optionTraceExit ();
+    public static native long optionTraceExit();
     /**
      * Return the bitmask for enabling SYSGOOD(?} tracing.
      */ 
-    public static native long optionTraceSysgood ();
+    public static native long optionTraceSysgood();
     /**
      * Return the bitmask for enabling exec tracing.
      */
-    public static native long optionTraceExec ();
-
+    public static native long optionTraceExec();
 
     /**
      * A ptrace register set that is transfered to/from PID in bulk.
      */
-    public static class RegisterSet
-    {
+    public static class RegisterSet {
 	protected final int ptLength;
 	protected final int ptGet;
 	protected final int ptSet;
-	RegisterSet (int ptLength, int ptGet, int ptSet)
-	{
+	RegisterSet(int ptLength, int ptGet, int ptSet) {
 	    this.ptLength = ptLength;
 	    this.ptGet = ptGet;
 	    this.ptSet = ptSet;
@@ -143,77 +149,97 @@ public class Ptrace
 	/**
 	 * Return the size of the register set in bytes.
 	 */
-	public int length ()
-	{
+	public int length() {
 	    return ptLength;
 	}
 	/**
 	 * Fetch PID's register set into DATA.
 	 */
-	public native void get (int pid, byte[] data);
+	public void get(ProcessIdentifier pid, byte[] data) {
+	    get(pid.intValue(), data);
+	}
+	public native void get(int pid, byte[] data);
 	/**
 	 * Store PID's registers from DATA.
 	 */
-	public native void set (int pid, byte[] data);
-	private static native RegisterSet regs ();
-	private static native RegisterSet fpregs ();
-	private static native RegisterSet fpxregs ();
-	public static final RegisterSet REGS = regs ();
-	public static final RegisterSet FPREGS = fpregs ();
-	public static final RegisterSet FPXREGS = fpxregs ();
+	public void set(ProcessIdentifier pid, byte[] data) {
+	    set(pid.intValue(), data);
+	}
+	public native void set(int pid, byte[] data);
+	private static native RegisterSet regs();
+	private static native RegisterSet fpregs();
+	private static native RegisterSet fpxregs();
+	public static final RegisterSet REGS = regs();
+	public static final RegisterSet FPREGS = fpregs();
+	public static final RegisterSet FPXREGS = fpxregs();
     }
 
     /**
      * A ptrace address space, that can be peeked or poked a "word" at
      * a time.
      */
-    public static class AddressSpace
-    {
+    public static class AddressSpace {
 	protected final String name;
 	protected final int ptPeek;
 	protected final int ptPoke;
-	AddressSpace (String name, int ptPeek, int ptPoke)
-	{
+	AddressSpace(String name, int ptPeek, int ptPoke) {
 	    this.name = super.toString() + ":" + name;
 	    this.ptPeek = ptPeek;
 	    this.ptPoke = ptPoke;
 	}
-	public String toString ()
-	{
+	public String toString() {
 	    return name;
 	}
-	public native long length ();
+	public native long length();
 	/**
 	 * Fetch a byte at ADDR of process PID.
 	 */
+	public int peek(ProcessIdentifier pid, long addr) {
+	    return peek(pid.intValue(), addr);
+	}
 	public native int peek (int pid, long addr);
 	/**
 	 * Store the byte at ADDR of process PID.
 	 */
-	public native void poke (int pid, long addr, int data);
+	public void poke(ProcessIdentifier pid, long addr, int data) {
+	    poke(pid.intValue(), addr, data);
+	}
+	public native void poke(int pid, long addr, int data);
 	/**
 	 * Fetch up-to LENGTH bytes starting at ADDR of process PID,
 	 * store them in BYTES, starting at OFFSET.
 	 */
-	public int peek (int pid, long addr, int length,
-			 byte[] bytes, int offset) {
+	public int peek(ProcessIdentifier pid, long addr, int length,
+			byte[] bytes, int offset) {
+	    return transfer(pid, addr, length, bytes, offset, ptPeek);
+	}
+	public int peek(int pid, long addr, int length,
+			byte[] bytes, int offset) {
 	    return transfer(pid, addr, length, bytes, offset, ptPeek);
 	}
 	/**
 	 * Store up-to LENGTH bytes starting at ADDR of process PID,
 	 * get values from BYTES, starting at OFFSET.
 	 */
-	public int poke (int pid, long addr, int length,
-			 byte[] bytes, int offset) {
+	public int poke(ProcessIdentifier pid, long addr, int length,
+			byte[] bytes, int offset) {
 	    return transfer(pid, addr, length, bytes, offset, ptPoke);
+	}
+	public int poke(int pid, long addr, int length,
+			byte[] bytes, int offset) {
+	    return transfer(pid, addr, length, bytes, offset, ptPoke);
+	}
+	private final int transfer(ProcessIdentifier pid, long addr, int length,
+				   byte[] bytes, int offset, int op) {
+	    return transfer(pid.intValue(), addr, length, bytes, offset, op);
 	}
 	private native final int transfer(int pid, long addr, int length,
 					  byte[] bytes, int offset, int op);
-	private static native AddressSpace text ();
-	private static native AddressSpace data ();
-	private static native AddressSpace usr ();
-	public static final AddressSpace TEXT = text ();
-	public static final AddressSpace DATA = data ();
-	public static final AddressSpace USR = usr ();
+	private static native AddressSpace text();
+	private static native AddressSpace data();
+	private static native AddressSpace usr();
+	public static final AddressSpace TEXT = text();
+	public static final AddressSpace DATA = data();
+	public static final AddressSpace USR = usr();
     }
 }

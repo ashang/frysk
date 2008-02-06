@@ -1,3 +1,19 @@
+2008-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Ptrace.java (detach(ProcessIdentifier,Signal)): New.
+	(singleStep(ProcessIdentifier,Signal)): New.
+	(cont(ProcessIdentifier,Signal)): New.
+	(sysCall(ProcessIdentifier,Signal)): New.
+	(getEventMsg(ProcessIdentifier)): New.
+	(setOptions(ProcessIdentifier,long)): New.
+	(RegisterSet.get(ProcessIdentifier,byte[])): New.
+	(RegisterSet.set(ProcessIdentifier,byte[])): New.
+	(AddressSpace.peek(ProcessIdentifier,long)): New.
+	(AddressSpace.poke(ProcessIdentifier,long,int)): New.
+	(AddressSpace.peek(ProcessIdentifier,long,int,byte[],int)): New.
+	(AddressSpace.poke(ProcessIdentifier,long,int,byte[],int)): New.
+	(AddressSpace.transfer(ProcessIdentifier,long,int,byte[],int,int)): New.
+
 2008-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Child.java: Extend ProcessIdentiferDecorator.
