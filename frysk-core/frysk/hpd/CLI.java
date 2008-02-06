@@ -313,7 +313,9 @@ public class CLI {
     }
 
     void addMessage(Message msg) {
-        messages.add(msg);
+	synchronized (messages) {
+	    messages.add(msg);
+	}
     }
 
     void addMessage(String msg, int type) {
@@ -321,20 +323,22 @@ public class CLI {
     }
 
     private void flushMessages() {
-        for (Iterator iter = messages.iterator(); iter.hasNext();) {
-            Message tempmsg = (Message) iter.next();
-	    String prefix = null;
-            if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
-                prefix = "Internal debugger error:  ";
-            else if (tempmsg.getType() == Message.TYPE_ERROR)
-                prefix = "Error: ";
-            else if (tempmsg.getType() == Message.TYPE_WARNING)
-                prefix = "Warning: ";
-            if (prefix != null)
-                outWriter.print(prefix);
-            outWriter.println(tempmsg.getMessage());
-            iter.remove();
-        }
+	synchronized (messages) {
+	    for (Iterator iter = messages.iterator(); iter.hasNext();) {
+		Message tempmsg = (Message) iter.next();
+		String prefix = null;
+		if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
+		    prefix = "Internal debugger error:  ";
+		else if (tempmsg.getType() == Message.TYPE_ERROR)
+		    prefix = "Error: ";
+		else if (tempmsg.getType() == Message.TYPE_WARNING)
+		    prefix = "Warning: ";
+		if (prefix != null)
+		    outWriter.print(prefix);
+		outWriter.println(tempmsg.getMessage());
+		iter.remove();
+	    }
+	}
     }
 
     PTSet createSet(String set) {
