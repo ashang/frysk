@@ -1,5 +1,12 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* WaitBuilder.java (execEvent(ProcessIdentifier)): Replace
+	execEvent(int).
+	(exitEvent(ProcessIdentifier,Signal,int,boolean)): Replace
+	exitEvent(int,Signal,int,boolean).
+	* cni/Wait.cxx (processStatus): Update.
+	* UnhandledWaitBuilder.java: Update.
+
 	* WaitBuilder.java (cloneEvent(ProcessIdentifier,ProcessIdentifier)):
 	Replace cloneEvent(int,int).
 	* cni/Wait.cxx: Update.

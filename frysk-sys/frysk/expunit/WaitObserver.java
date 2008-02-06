@@ -79,10 +79,10 @@ class WaitObserver implements WaitBuilder {
     public void syscallEvent (int pid) {
 	throw terminationException("Stopped with syscall event");
     }
-    public void execEvent (int pid) {
+    public void execEvent(ProcessIdentifier pid) {
 	throw terminationException("Stopped with exec event");
     }
-    public void exitEvent(int pid, Signal signal,
+    public void exitEvent(ProcessIdentifier pid, Signal signal,
 			  int status, boolean coreDumped) {
 	throw terminationException("Stopped with exit event");
     }

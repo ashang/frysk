@@ -1,6 +1,10 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
-	* WaitObserver.java: Update to match WaitBuilder.
+	* WaitObserver.java: Update to match WaitBuilder's exitEvent and
+	execEvent.
+	
+	* WaitObserver.java: Update to match WaitBuilder's forkEvent and
+	cloneEvent.
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 

@@ -63,8 +63,24 @@ public abstract class UnhandledWaitBuilder
      * An unhandled waitpid event was encountered, describe why and
      * call unhandled.
      */
+    private void unhandled(String what, ProcessIdentifier pid) {
+	unhandled("unhandled " + what + " (pid " + pid + ")");
+    }
+    /**
+     * An unhandled waitpid event was encountered, describe why and
+     * call unhandled.
+     */
     private void unhandled (String what, int pid, String also, int value)
     {
+	unhandled ("unhandled " + what
+		   + " (pid " + pid + ", " + also + " " + value + ")");
+    }
+    /**
+     * An unhandled waitpid event was encountered, describe why and
+     * call unhandled.
+     */
+    private void unhandled(String what, ProcessIdentifier pid,
+			   String also, int value) {
 	unhandled ("unhandled " + what
 		   + " (pid " + pid + ", " + also + " " + value + ")");
     }
@@ -102,10 +118,10 @@ public abstract class UnhandledWaitBuilder
      * The task PID got an exit event; if SIGNAL is non-NULL it is the
      * terminating signal, else STATUS is the exit status.
      */
-    public void exitEvent(int pid, Signal signal, int status,
-			  boolean coreDumped) {
+    public void exitEvent(ProcessIdentifier pid, Signal signal,
+			  int status, boolean coreDumped) {
 	if (signal != null)
-	    unhandled("exitEvent", pid, "signal", signal.toString());
+	    unhandled("exitEvent", pid, "signal", signal);
 	else
 	    unhandled("exitEvent", pid, "exit", status);
     }
@@ -113,9 +129,8 @@ public abstract class UnhandledWaitBuilder
      * The task PID got an exec event; the process has already
      * been overlayed.
      */
-    public void execEvent (int pid)
-    {
-	unhandled ("execEvent", pid);
+    public void execEvent(ProcessIdentifier pid) {
+	unhandled("execEvent", pid);
     }
     /**
      * XXX: It isn't currently possible to determine from the

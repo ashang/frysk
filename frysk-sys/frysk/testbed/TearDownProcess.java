@@ -255,18 +255,16 @@ public class TearDownProcess
 					       ProcessIdentifier child) {
 			     capturedSendDetachContKill(pid);
 			 }
-			 
-			 public void exitEvent (int pid, Signal signal,
-						int value,
-						boolean coreDumped) {
+			 public void exitEvent(ProcessIdentifier pid,
+					       Signal signal, int value,
+					       boolean coreDumped) {
 			     capturedSendDetachContKill(pid);
 			     // Do not remove PID from
 			     // pidsToKillDuringTearDown list; need to
 			     // let the terminated event behind it
 			     // bubble up.
 			 }
-			 
-			 public void execEvent (int pid) {
+			 public void execEvent(ProcessIdentifier pid) {
 			     capturedSendDetachContKill(pid);
 			 }
 			 

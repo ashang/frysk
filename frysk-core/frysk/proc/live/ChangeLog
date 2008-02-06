@@ -1,11 +1,15 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxWaitBuilder.java: Update to match WaitBuilder's exitEvent
+	and execEvent.
+
 	* LinuxPtraceProc.java (LinuxPtraceProc(Task,ProcessIdentifier)):
 	Replace LinuxPtraceProc(Task,TaskId).
 	* LinuxPtraceHost.java: Update.
 	* LinuxPtraceTask.java (LinuxPtraceTask(Task,ProcessIdentifer)):
 	Replace LinuxPtraceTask(Task,TaskId).
-	* LinuxWaitBuilder.java: Update to match WaitBuilder.
+	* LinuxWaitBuilder.java: Update to match WaitBuilder's cloneEvent
+	and forkEvent.
 
 	* LinuxPtraceHost.java: Update to match frysk.sys.Fork.
 	* TestRefresh.java: Ditto.

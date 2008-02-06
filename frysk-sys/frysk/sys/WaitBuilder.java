@@ -56,12 +56,13 @@ public interface WaitBuilder {
      * contains the terminating signal and STATUS is the negated
      * signal value, else STATUS contains the cardinal exit status.
      */
-    void exitEvent(int pid, Signal signal, int value, boolean coreDumped);
+    void exitEvent(ProcessIdentifier pid, Signal signal,
+		   int value, boolean coreDumped);
     /**
      * The task PID got an exec event; the process has already
      * been overlayed.
      */
-    void execEvent (int pid);
+    void execEvent(ProcessIdentifier pid);
     /**
      * XXX: It isn't currently possible to determine from the
      * syscall event whether it is entry or exit.  We must

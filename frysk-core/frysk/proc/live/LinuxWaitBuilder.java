@@ -132,7 +132,14 @@ class LinuxWaitBuilder implements WaitBuilder {
 		   + " possibly caused by earlier [test] code"
 		   + " failing to clean up all childen",
 		   new Object[] { what, new Integer(pid) });
+    }
 
+    private void logMissing(String what, ProcessIdentifier pid) {
+	logger.log(Level.WARNING,
+		   "No task for {0} pid {1,number,integer};"
+		   + " possibly caused by earlier [test] code"
+		   + " failing to clean up all childen",
+		   new Object[] { what, pid });
     }
 
     public void cloneEvent(ProcessIdentifier pid,
@@ -164,9 +171,8 @@ class LinuxWaitBuilder implements WaitBuilder {
 	attemptDeliveringFsckedKernelEvents ();
     }
     
-    public void exitEvent(int pid, Signal signal, int status,
-			  boolean coreDumped)
-    {
+    public void exitEvent(ProcessIdentifier pid, Signal signal,
+			  int status, boolean coreDumped) {
         LinuxPtraceTask task = searchId.get(pid, "{0} exitEvent\n");
 	if (task == null)
 	    // Stray pid from uncontrolled fork.
@@ -175,8 +181,7 @@ class LinuxWaitBuilder implements WaitBuilder {
 	    task.processTerminatingEvent(signal, status);
     }
     
-    public void execEvent (int pid)
-    {
+    public void execEvent(ProcessIdentifier pid) {
         LinuxPtraceTask task = searchId.get(pid, "{0} execEvent\n");
         task.processExecedEvent();
     }

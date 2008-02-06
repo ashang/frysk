@@ -1,6 +1,10 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
-	* TearDownProcess.java: Update to match WaitBuilder.
+	* TearDownProcess.java: Update to match WaitBuilder's execEvent
+	and exitEvent.
+
+	* TearDownProcess.java: Update to match WaitBuilder's forkEvent
+	and cloneEvent.
 
 	* TestTearDownProcess.java: Update to match frysk.sys.Fork.
 
