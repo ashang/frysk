@@ -1,3 +1,8 @@
+2007-08-27  Stan Cox  <scox@redhat.com>
+
+	* funit-type-class.cxx: Renamed from funit-class.cxx.
+	Change all references.
+
 2008-01-28  Stan Cox  <scox@redhat.com>
 
 	* gen-type-funit-tests.py (main): Add ptr_void_type_var.
