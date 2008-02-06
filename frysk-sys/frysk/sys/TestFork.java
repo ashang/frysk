@@ -75,13 +75,14 @@ public class TestFork
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
 	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
-	int pid = Fork.exec(null, "/dev/null", null,
-			    new String[] {
-				Config.getPkgLibFile("funit-procmask")
-				.getPath(),
-				"-n",
-				"1"
-			    });
+	ProcessIdentifier pid
+	    = Fork.exec(null, "/dev/null", null,
+			new String[] {
+			    Config.getPkgLibFile("funit-procmask")
+			    .getPath(),
+			    "-n",
+			    "1"
+			});
 	TearDownProcess.add(pid);
 	// Capture the child's status; to see if it was correct.
 	class ExitStatus extends UnhandledWaitBuilder {
@@ -111,7 +112,7 @@ public class TestFork
 		  },
 		  getTimeoutMilliseconds());
 	// (a timeout will also fail with the below)
-	assertEquals("pid", pid, exitStatus.pid);
+	assertEquals("pid", pid.intValue(), exitStatus.pid);
 	assertEquals("signal", null, exitStatus.signal);
 	assertEquals("status", 0, exitStatus.status);
     }

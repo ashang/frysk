@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,17 +44,23 @@ import frysk.proc.Manager;
 import frysk.proc.TaskObserver;
 import frysk.proc.Action;
 import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 public abstract class OffspringType {
     private OffspringType() { }
-    public abstract int startOffspring(String stdin, String stdout,
-				       String stderr, String[] argv);
+    public abstract ProcessIdentifier startOffspring(String stdin,
+						     String stdout,
+						     String stderr,
+						     String[] argv);
     /**
      * Create a daemon offspring.
      */
     static public final OffspringType DAEMON = new OffspringType() {
-	    public int startOffspring (String stdin, String stdout,
-				       String stderr, String[] argv) {
+	    public ProcessIdentifier startOffspring(String stdin,
+						    String stdout,
+						    String stderr,
+						    String[] argv) {
 		return Fork.daemon(stdin, stdout, stderr, argv);
 	    }
 	};
@@ -62,8 +68,10 @@ public abstract class OffspringType {
      * Create a child offspring.
      */
     static public final OffspringType CHILD = new OffspringType() {
-	    public int startOffspring (String stdin, String stdout,
-				       String stderr, String[] argv) {
+	    public ProcessIdentifier startOffspring(String stdin,
+						    String stdout,
+						    String stderr,
+						    String[] argv) {
 		return Fork.exec(stdin, stdout, stderr, argv);
 	    }
 	};
@@ -71,8 +79,10 @@ public abstract class OffspringType {
      * Create a running attached child offspring.
      */
     static protected final OffspringType ATTACHED_CHILD = new OffspringType() {
-	    public int startOffspring (String stdin, String stdout,
-				       String stderr, String[] argv) {
+	    public ProcessIdentifier startOffspring(String stdin,
+						    String stdout,
+						    String stderr,
+						    String[] argv) {
 		// Capture the child process id as it flys past.
 		class TidObserver
 		    extends TaskObserverBase
@@ -93,7 +103,7 @@ public abstract class OffspringType {
 						       tidObserver);
 		TestLib.assertRunUntilStop("starting attached child");
 		// Return that captured TID.
-		return tidObserver.tid;
+		return ProcessIdentifierFactory.createFIXME(tidObserver.tid);
 	    }
 	};
 }

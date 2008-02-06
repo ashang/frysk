@@ -108,11 +108,11 @@ public class TestWait
 
     public void testNoTimeout() {
 	WaitOnChild waitOnChild = new WaitOnChild ();
-	int pid = Fork.exec (new String[] { "/bin/false" });
+	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/false" });
 	assertFalse("timeout",
-		    Wait.waitAll (getTimeoutMilliseconds (), waitOnChild,
-				  unhandledSignalBuilder));
-	assertEquals ("pid", pid, waitOnChild.pid);
+		    Wait.waitAll(getTimeoutMilliseconds (), waitOnChild,
+				 unhandledSignalBuilder));
+	assertEquals ("pid", pid.intValue(), waitOnChild.pid);
     }
 
 
@@ -167,20 +167,20 @@ public class TestWait
 
     public void testWaitExit0() {
 	WaitOnChild waitOnChild = new WaitOnChild();
-	int pid = Fork.exec(new String[] { "/bin/true" });
+	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/true" });
 	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
 		     unhandledSignalBuilder);
-	assertEquals("pid", pid, waitOnChild.pid);
+	assertEquals("pid", pid.intValue(), waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 0, waitOnChild.status);
     }
 
     public void testWaitExit1() {
 	WaitOnChild waitOnChild = new WaitOnChild();
-	int pid = Fork.exec(new String[] { "/bin/false" });
+	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/false" });
 	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
 		     unhandledSignalBuilder);
-	assertEquals("pid", pid, waitOnChild.pid);
+	assertEquals("pid", pid.intValue(), waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 1, waitOnChild.status);
     }

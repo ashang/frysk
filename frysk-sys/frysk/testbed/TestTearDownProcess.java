@@ -46,54 +46,49 @@ import frysk.sys.Wait;
 import frysk.sys.Signal;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.SignalBuilder;
+import frysk.sys.ProcessIdentifier;
 
 public class TestTearDownProcess
     extends TestCase
 {
-    private void assertGone (int pid)
-    {
+    private void assertGone(ProcessIdentifier pid) {
 	boolean gone = false;
 	try {
 	    Signal.NONE.kill(pid);
-	}
-	catch (Errno.Esrch e) {
+	} catch (Errno.Esrch e) {
 	    gone = true;
 	}
-	assertTrue ("process gone", gone);
+	assertTrue("process gone", gone);
     }
 
-    public void testForkPtraceUnattached()
-    {
-	int pid = Fork.ptrace (new String[] { "/bin/true" });
-	TearDownProcess.add (pid);
+    public void testForkPtraceUnattached() {
+	ProcessIdentifier pid = Fork.ptrace(new String[] { "/bin/true" });
+	TearDownProcess.add(pid);
 	TearDownProcess.tearDown ();
-	assertGone (pid);
+	assertGone(pid);
     }
 
-    public void testForkPtraceAttached()
-    {
-	int pid = Fork.ptrace (new String[] { "/bin/true" });
-	long maxTime = System.currentTimeMillis() + getTimeoutMilliseconds ();
-	Wait.wait (pid,
-		   new UnhandledWaitBuilder ()
-		   {
-		       protected void unhandled (String why)
-		       {
-			   fail (why);
-		       }
-		       public void stopped(int pid, Signal signal) {
-			   // Toss.
-		       }
-		   },
-		   new SignalBuilder () {
-		       public void signal(Signal sig) {
-			   fail ("signal " + sig + " received");
-		       }
-		   },
-		   getTimeoutMilliseconds ());
-	assertFalse ("timeout", System.currentTimeMillis() >= maxTime);
+    public void testForkPtraceAttached() {
+	ProcessIdentifier pid = Fork.ptrace(new String[] { "/bin/true" });
+	long maxTime = System.currentTimeMillis() + getTimeoutMilliseconds();
+	Wait.wait(pid,
+		  new UnhandledWaitBuilder() {
+		      protected void unhandled(String why) {
+			  fail (why);
+		      }
+		      public void stopped(int pid, Signal signal) {
+			  // Toss.
+		      }
+		  },
+		  new SignalBuilder() {
+		      public void signal(Signal sig) {
+			  fail("signal " + sig + " received");
+		      }
+		  },
+		  getTimeoutMilliseconds());
+	assertFalse("timeout", System.currentTimeMillis() >= maxTime);
 	TearDownProcess.add (pid);
-	TearDownProcess.tearDown ();
-	assertGone (pid);
+	TearDownProcess.tearDown();
+	assertGone(pid);
     }
 }

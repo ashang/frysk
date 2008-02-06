@@ -40,6 +40,7 @@
 package frysk.testbed;
 
 import frysk.sys.Signal;
+import frysk.sys.ProcessIdentifier;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 
@@ -57,20 +58,21 @@ public class SynchronizedOffspring
     // mask all the way down to the exec'ed child.
     public static final Signal START_ACK = Signal.HUP;
 
-    private final int pid;
+    private final ProcessIdentifier pid;
+
     /**
      * Return the ProcessID of the child.
      */
-    public int getPid () {
-	return pid;
+    public int getPid() {
+	return pid.intValue();
     }
 
     /**
      * Create a child process (using startChild), return once the
      * process is running. Wait for acknowledge SIG.
      */
-    protected SynchronizedOffspring (OffspringType type,
-				     Signal sig, String[] argv) {
+    protected SynchronizedOffspring(OffspringType type,
+				    Signal sig, String[] argv) {
 	logger.log(Level.FINE, "{0} new ...\n", this);
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
 					    "startOffspring");
@@ -81,7 +83,7 @@ public class SynchronizedOffspring
 	TearDownProcess.add(pid);
 	ack.assertRunUntilSignaled();
 	logger.log(Level.FINE, "{0} ... new pid {1,number,integer}\n",
-		   new Object[] {this, new Integer(pid) });
+		   new Object[] { this, pid });
     }
 
     public SynchronizedOffspring(Signal sig, String[] argv) {

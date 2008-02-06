@@ -1,3 +1,8 @@
+2008-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Update to match frysk.sys.Fork.
+	* TestRefresh.java: Ditto.
+
 2008-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java (requestRefresh(Set,HostRefreshBuilder))

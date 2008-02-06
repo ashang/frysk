@@ -52,6 +52,7 @@ import java.util.Iterator;
 import frysk.proc.TaskId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver.Attached;
+import frysk.sys.ProcessIdentifier;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 import frysk.sys.Fork;
@@ -244,7 +245,8 @@ public class LinuxPtraceHost extends LiveHost {
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
 		    logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
-		    int pid = Fork.ptrace(stdin, stdout, stderr, args);
+		    ProcessIdentifier pid
+			= Fork.ptrace(stdin, stdout, stderr, args);
 		    // See if the Host knows about this task.
 		    TaskId myTaskId = new TaskId(Tid.get());
 		    Task myTask = get(myTaskId);
@@ -253,7 +255,7 @@ public class LinuxPtraceHost extends LiveHost {
 			Proc myProc = getSelf();
 			myTask = new LinuxPtraceTask(myProc, myTaskId);
 		    }
-		    LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
+		    LinuxPtraceProc proc = new LinuxPtraceProc (myTask, new ProcId(pid.intValue()));
 		    new LinuxPtraceTask(proc, attachedObserver);
 		}
 	    });

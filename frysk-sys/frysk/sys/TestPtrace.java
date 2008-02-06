@@ -61,52 +61,48 @@ public class TestPtrace
 	TearDownProcess.tearDown ();
     }
  
-    public void testChildContinue ()
-    {
-	final int pid = Fork.ptrace(null, null, null,
-				    new String[] { "/bin/true" });
-	assertTrue ("pid", pid > 0);
-	TearDownProcess.add (pid);
+    public void testChildContinue() {
+	final ProcessIdentifier pid
+	    = Fork.ptrace(null, null, null,
+			  new String[] {
+			      "/bin/true"
+			  });
+	assertTrue("pid", pid.intValue() > 0);
+	TearDownProcess.add(pid);
 	
 	// The initial stop.
-	Wait.waitAll (pid, new UnhandledWaitBuilder ()
-	    {
-		private final int id = pid;
-		protected void unhandled (String why)
-		{
+	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+		private final ProcessIdentifier id = pid;
+		protected void unhandled(String why) {
 		    fail (why);
 		}
 		public void stopped(int pid, Signal signal) {
-		    assertEquals("stopped pid", id, pid);
+		    assertEquals("stopped pid", id.intValue(), pid);
 		    assertEquals("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
 	Ptrace.singleStep(pid, Signal.NONE);
-	Wait.waitAll (pid, new UnhandledWaitBuilder ()
-	    {
-		private final int id = pid;
-		protected void unhandled (String why)
-		{
+	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+		private final ProcessIdentifier id = pid;
+		protected void unhandled(String why) {
 		    fail (why);
 		}
 		public void stopped(int pid, Signal signal) {
-		    assertEquals("stopped pid", id, pid);
+		    assertEquals("stopped pid", id.intValue(), pid);
 		    assertEquals("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
 	Ptrace.cont(pid, Signal.TERM);
-	Wait.waitAll (pid, new UnhandledWaitBuilder ()
-	    {
-		private final int id = pid;
-		protected void unhandled (String why)
-		{
+	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+		private final ProcessIdentifier id = pid;
+		protected void unhandled(String why) {
 		    fail (why);
 		}
 		public void terminated(int pid, Signal signal, int status,
 				       boolean coreDumped) {
-		    assertEquals("terminated pid", id, pid);
+		    assertEquals("terminated pid", id.intValue(), pid);
 		    assertEquals("terminated signal", Signal.TERM, signal);
 		    assertEquals("terminated status", -Signal.TERM.intValue(),
 				 status);

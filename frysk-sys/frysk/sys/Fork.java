@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,22 +44,20 @@ package frysk.sys;
  * sort of exec.
  */
 
-public final class Fork
-{
+public final class Fork {
     /**
      * Create a child process running ARGV[0] with arguments
      * ARGV[1..].
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native int exec (String in, String out, String err,
-				   String[] argv);
+    public static native ProcessIdentifier exec(String in, String out,
+						String err, String[] argv);
     /**
      * Create a child process running ARGV[0] with arguments
      * ARGV[1..].
      */
-    public static final int exec (String[] argv)
-    {
+    public static final ProcessIdentifier exec(String[] argv) {
 	return exec (null, null, null, argv);
     }
 
@@ -69,14 +67,13 @@ public final class Fork
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native int ptrace (String in, String out, String err,
-				     String[] argv);
+    public static native ProcessIdentifier ptrace(String in, String out,
+						  String err, String[] argv);
     /**
      * Create a child process running ARGV[0] with arguments
      * ARGV[1...]; mark the process for tracing.
      */
-    public static final int ptrace (String[] argv)
-    {
+    public static final ProcessIdentifier ptrace(String[] argv) {
 	return ptrace (null, null, null, argv);
     }
 
@@ -86,14 +83,13 @@ public final class Fork
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native int daemon (String in, String out, String err,
-				     String[] argv);
+    public static native ProcessIdentifier daemon(String in, String out,
+						  String err, String[] argv);
     /**
      * Create a "daemon" process running ARGV[0] with arguments
      * ARGV[1...]; a daemon has process ID 1 as its parent.
      */
-    public static final int daemon (String[] argv)
-    {
+    public static final ProcessIdentifier daemon(String[] argv) {
 	return daemon (null, null, null, argv);
     }
 }

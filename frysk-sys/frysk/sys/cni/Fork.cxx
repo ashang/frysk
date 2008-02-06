@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,6 +50,9 @@
 #include "frysk/sys/Fork.h"
 #include "frysk/sys/cni/Errno.hxx"
 
+#include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
+
 static void
 reopen (jstring file, const char *mode, FILE *stream)
 {
@@ -68,8 +71,7 @@ reopen (jstring file, const char *mode, FILE *stream)
 }
 
 jint
-spawn (jstring in, jstring out, jstring err, jstringArray args,
-       bool ptraceIt)
+spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt)
 {
   // Convert args into argv, argc.
   int argc = JvGetArrayLength (args);
@@ -115,24 +117,23 @@ spawn (jstring in, jstring out, jstring err, jstringArray args,
   }
 }
 
-jint
+frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::ptrace (jstring in, jstring out,
-					       jstring err, jstringArray args)
-{
-  return spawn (in, out, err, args, true);
+			  jstring err, jstringArray args) {
+  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, true));
 }
 
-jint
+frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::exec (jstring in, jstring out,
-					     jstring err, jstringArray args)
+			jstring err, jstringArray args)
 {
-  return spawn (in, out, err, args, false);
+  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false));
 }
 
 
-jint
+frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::daemon (jstring in, jstring out,
-					       jstring err, jstringArray args)
+			  jstring err, jstringArray args)
 {
   volatile int pid = -1;
   register int v;
@@ -163,5 +164,5 @@ frysk::sys::Fork::daemon (jstring in, jstring out,
 
   // printf ("v %d pid %d\n", v, pid);
 
-  return pid;
+  return frysk::sys::ProcessIdentifierFactory::create(pid);
 }

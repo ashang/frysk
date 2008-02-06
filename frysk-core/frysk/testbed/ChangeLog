@@ -1,3 +1,8 @@
+2008-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* OffspringType.java: Update to match frysk.sys.Fork.
+	* SynchronizedOffspring.java: Ditto.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestIsa.java: New.
