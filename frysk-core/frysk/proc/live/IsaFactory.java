@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
-import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
 
 public class IsaFactory
 {
@@ -77,50 +77,48 @@ public class IsaFactory
     return factory;
   }
 
-  /**
-   * Obtain ISA of task via pid.
-   *
-   * XXX: Instead of reading /proc/PID/exe, and relying on its
-   * presence, this code should do something like read /proc/PID/auxv
-   * and the processor memory to directly figure out what the ISA is.
-   * There are already race coditions, such as during termination,
-   * where /proc/PID/exe is no longer valid but the processes memory
-   * is still readable.
-   */
-  private Isa getIsa(int pid, Task task) 
-  {
-    logger.log (Level.FINE, "{0} getIsa\n", this);
-    
-    // FIXME: This should use task.proc.getExe().  Only that causes
-    // wierd failures; take a rain-check :-(
-    String exe;
-    try {
-	exe = new File("/proc/" + pid + "/exe").getCanonicalPath();
-    } catch (java.io.IOException e) {
-	throw new RuntimeException(MESSAGE, e);
+    /**
+     * Obtain ISA of task via pid.
+     *
+     * XXX: Instead of reading /proc/PID/exe, and relying on its
+     * presence, this code should do something like read
+     * /proc/PID/auxv and the processor memory to directly figure out
+     * what the ISA is.  There are already race coditions, such as
+     * during termination, where /proc/PID/exe is no longer valid but
+     * the processes memory is still readable.
+     */
+    Isa getIsa(ProcessIdentifier pid) {
+	logger.log (Level.FINE, "{0} getIsa\n", this);
+	
+	// FIXME: This should use task.proc.getExe().  Only that
+	// causes wierd failures; take a rain-check :-(
+	String exe;
+	try {
+	    exe = new File("/proc/" + pid + "/exe").getCanonicalPath();
+	} catch (java.io.IOException e) {
+	    throw new RuntimeException(MESSAGE, e);
+	}
+	Elf elfFile;
+	try {
+	    elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
+	} catch (ElfFileException e) {
+	    throw new RuntimeException (MESSAGE, e);
+	}
+	catch (ElfException e) {
+	    throw new RuntimeException (MESSAGE, e);
+	}
+	
+	try {
+	    ElfEHeader header = elfFile.getEHeader();
+	    Isa isa = (Isa)isaHash.get(Integer.valueOf(header.machine));
+	    if (isa == null)
+		// A "can't happen".
+		throw new RuntimeException ("Unknown machine type " + header.machine);
+	    return isa;
+	} finally {
+	    elfFile.close();
+	}
     }
-    Elf elfFile;
-    try {
-	elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
-    } catch (ElfFileException e) {
-	throw new RuntimeException (MESSAGE, e);
-    }
-    catch (ElfException e) {
-	throw new RuntimeException (MESSAGE, e);
-    }
-
-    try {
-	ElfEHeader header = elfFile.getEHeader();
-	Isa isa = (Isa)isaHash.get(Integer.valueOf(header.machine));
-	if (isa == null)
-	    // A "can't happen".
-	    throw new RuntimeException ("Unknown machine type " + header.machine);
-	return isa;
-    }
-    finally {
-	elfFile.close();
-    }
-  }
 
   /**
    * Obtain ISA via ElfMachine Type.
@@ -145,18 +143,4 @@ public class IsaFactory
       }
       return isa;
   }
-
-  public Isa getIsa(int pid) {
-	try {
-	    return getIsa(pid, null);
-	} catch (Exception e) {
-	    return null;
-	}
-    }
-  
-  public Isa getIsa(Task task)
-  {
-    return getIsa(task.getTid(), task);
-  }
-  
 }

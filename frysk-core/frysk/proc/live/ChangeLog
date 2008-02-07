@@ -1,5 +1,14 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* AddressSpaceByteBuffer.java: Replace "int pid" with
+	ProcessIdentifier.
+	* IsaFactory.java: Ditto.
+	* RegisterSetByteBuffer.java: Ditto.
+	* LogicalMemoryBuffer.java: Ditto.
+	* PtraceRegisterBanksFactory.java: Ditto.
+	* LinuxPtraceTask.java (tid): New.
+	* TestByteBuffer.java: Update.
+
 	* TestByteBuffer.java: Use ForkFactory.
 
 2008-02-06  Andrew Cagney  <cagney@redhat.com>

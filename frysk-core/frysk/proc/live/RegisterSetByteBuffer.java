@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import frysk.sys.Ptrace.RegisterSet;
 import frysk.event.Request;
 import frysk.proc.Manager;
 import inua.eio.ByteBuffer;
+import frysk.sys.ProcessIdentifier;
 
 /*
  * A ByteBuffer interface to structures returned by ptrace which must
@@ -52,23 +53,23 @@ import inua.eio.ByteBuffer;
 public class RegisterSetByteBuffer
     extends ByteBuffer
 {
-    private final int pid;
+    private final ProcessIdentifier pid;
     private final RegisterSet registerSet;
     private final byte[] bytes;
   
-    private RegisterSetByteBuffer (int pid, RegisterSet registerSet,
-				   long lowerExtreem, long upperExtreem)
-    {
+    private RegisterSetByteBuffer(ProcessIdentifier pid,
+				  RegisterSet registerSet,
+				  long lowerExtreem, long upperExtreem) {
 	super(lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.registerSet = registerSet;
-	bytes = new byte[registerSet.length ()];
+	bytes = new byte[registerSet.length()];
 	getRegs = new GetRegs();
 	setRegs = new SetRegs();
     }
-    public RegisterSetByteBuffer(int pid, RegisterSet registerSet) 
-    {
-	this (pid, registerSet, 0, registerSet.length());
+    public RegisterSetByteBuffer(ProcessIdentifier pid,
+				 RegisterSet registerSet) {
+	this(pid, registerSet, 0, registerSet.length());
     }
   
     private class GetRegs

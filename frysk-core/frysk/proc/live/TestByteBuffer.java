@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ import frysk.testbed.LocalMemory;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.Manager;
-
+import frysk.sys.ProcessIdentifier;
 import java.util.Arrays;
 
 public class TestByteBuffer
@@ -61,73 +61,61 @@ public class TestByteBuffer
     private ByteBuffer[] addressBuffers;
     private ByteBuffer[] registerBuffers;
 
-    public void setUp () throws Exception
-    {
-      int pid;
-      ByteBuffer addressSpaceByteBufferText;
-      ByteBuffer addressSpaceByteBufferData;
-      ByteBuffer memorySpaceByteBuffer;
-      ByteBuffer usrByteBuffer;
-      ByteBuffer registerByteBuffer;
-      ByteBuffer fpregisterByteBuffer;
-      ByteBuffer fpxregisterByteBuffer;
-
-      // Watch for spawned processes, etc.
-      super.setUp();
-
-      pid = ForkFactory.attachedDaemon().intValue();
-
-      // Text and Data are the same, but can be accessed independently.
-      addressSpaceByteBufferText
-	= new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
-      addressSpaceByteBufferData
-	= new AddressSpaceByteBuffer (pid, AddressSpace.DATA);
-
-      // Cheat with the proc, it is not actually used if no
-      // breakpoints are set (testing with breakpoints set is done through
-      // TestTaskObserverCode in the various BreakpointMemoryView tests).
-      Proc proc = new DummyProc();
-      BreakpointAddresses breakpoints = new BreakpointAddresses(proc);
-      memorySpaceByteBuffer = new LogicalMemoryBuffer(pid,
-						      AddressSpace.TEXT,
-						      breakpoints);
-
-      addressBuffers = new ByteBuffer[] { addressSpaceByteBufferText,
-					  addressSpaceByteBufferData,
-					  memorySpaceByteBuffer };
-
-      // The USER area is seen as a register buffer.
-      usrByteBuffer = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
-
-      // See how many other register sets there are.
-      if (RegisterSet.REGS != null)
-	{
-	  registerByteBuffer
-	    = new RegisterSetByteBuffer (pid, RegisterSet.REGS);
-	  if (RegisterSet.FPREGS != null)
-	    {
-	      fpregisterByteBuffer
-		= new RegisterSetByteBuffer (pid, RegisterSet.FPREGS);
-	      if (RegisterSet.FPXREGS != null)
-		{
-		  fpxregisterByteBuffer
-		    = new RegisterSetByteBuffer (pid, RegisterSet.FPXREGS);
-		  registerBuffers = new ByteBuffer[] { usrByteBuffer,
-						       registerByteBuffer,
-						       fpregisterByteBuffer,
-						       fpxregisterByteBuffer };
+    public void setUp () throws Exception {
+	// Watch for spawned processes, etc.
+	super.setUp();
+	
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
+	
+	// Text and Data are the same, but can be accessed independently.
+	ByteBuffer addressSpaceByteBufferText
+	    = new AddressSpaceByteBuffer(pid, AddressSpace.TEXT);
+	ByteBuffer addressSpaceByteBufferData
+	    = new AddressSpaceByteBuffer(pid, AddressSpace.DATA);
+	
+	// Cheat with the proc, it is not actually used if no
+	// breakpoints are set (testing with breakpoints set is done
+	// through TestTaskObserverCode in the various
+	// BreakpointMemoryView tests).
+	Proc proc = new DummyProc();
+	BreakpointAddresses breakpoints = new BreakpointAddresses(proc);
+	ByteBuffer memorySpaceByteBuffer
+	    = new LogicalMemoryBuffer(pid, AddressSpace.TEXT, breakpoints);
+	
+	addressBuffers = new ByteBuffer[] { addressSpaceByteBufferText,
+					    addressSpaceByteBufferData,
+					    memorySpaceByteBuffer };
+	
+	// The USER area is seen as a register buffer.
+	ByteBuffer usrByteBuffer
+	    = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
+	
+	// See how many other register sets there are.
+	if (RegisterSet.REGS != null) {
+	    ByteBuffer registerByteBuffer
+		= new RegisterSetByteBuffer(pid, RegisterSet.REGS);
+	    if (RegisterSet.FPREGS != null) {
+		ByteBuffer fpregisterByteBuffer
+		    = new RegisterSetByteBuffer(pid, RegisterSet.FPREGS);
+		if (RegisterSet.FPXREGS != null) {
+		    ByteBuffer fpxregisterByteBuffer
+			= new RegisterSetByteBuffer(pid, RegisterSet.FPXREGS);
+		    registerBuffers = new ByteBuffer[] { usrByteBuffer,
+							 registerByteBuffer,
+							 fpregisterByteBuffer,
+							 fpxregisterByteBuffer };
+		} else {
+		    registerBuffers = new ByteBuffer[] { usrByteBuffer,
+							 registerByteBuffer,
+							 fpregisterByteBuffer };
 		}
-	      else
+	    } else {
 		registerBuffers = new ByteBuffer[] { usrByteBuffer,
-						     registerByteBuffer,
-						     fpregisterByteBuffer };
+						     registerByteBuffer };
 	    }
-	  else
-	    registerBuffers = new ByteBuffer[] { usrByteBuffer,
-						 registerByteBuffer };
+	} else {
+	    registerBuffers = new ByteBuffer[] { usrByteBuffer };
 	}
-      else
-	registerBuffers = new ByteBuffer[] { usrByteBuffer };
     }
 
     public void tearDown() throws Exception

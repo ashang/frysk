@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.sys.ProcessIdentifier;
 import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
@@ -55,24 +56,27 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
   // The breakpoints associated with the process address space.
   private final BreakpointAddresses breakpoints;
 
-  // Private constructor used by subBuffer()
-  private LogicalMemoryBuffer(int tid, AddressSpace addressSpace,
-			      BreakpointAddresses breakpoints,
-			      long lower, long upper)
-  {
-    super(tid, addressSpace, lower, upper);
-    this.breakpoints = breakpoints;
-  }
+    /**
+     * Private constructor used by subBuffer()
+     */
+    private LogicalMemoryBuffer(ProcessIdentifier tid,
+				AddressSpace addressSpace,
+				BreakpointAddresses breakpoints,
+				long lower, long upper) {
+	super(tid, addressSpace, lower, upper);
+	this.breakpoints = breakpoints;
+    }
   
-  // Package local contructor used by LinuxTask to create a logical
-  // memory space for a task when requested.
-  LogicalMemoryBuffer(int tid,
-		      AddressSpace addressSpace,
-		      BreakpointAddresses breakpoints)
-  {
-    super(tid, addressSpace);
-    this.breakpoints = breakpoints;
-  }
+    /**
+     * Package local contructor used by LinuxTask to create a logical
+     * memory space for a task when requested.
+     */
+    LogicalMemoryBuffer(ProcessIdentifier tid,
+			AddressSpace addressSpace,
+			BreakpointAddresses breakpoints) {
+	super(tid, addressSpace);
+	this.breakpoints = breakpoints;
+    }
   
   protected int peek(long caret)
   {

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,23 +41,22 @@ package frysk.proc.live;
 
 import inua.eio.ByteBuffer;
 import frysk.sys.Errno;
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.proc.Mem;
 import frysk.event.Request;
 import frysk.proc.Manager;
 
-public class AddressSpaceByteBuffer
-    extends ByteBuffer
-{
+public class AddressSpaceByteBuffer extends ByteBuffer {
     protected final AddressSpace addressSpace;
-    protected final int pid;
+    protected final ProcessIdentifier pid;
 
     // Direct files access if possible, or null otherwise.
     final Mem mem;
 
-    protected AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
-				    long lowerExtreem, long upperExtreem)
-    {
+    protected AddressSpaceByteBuffer (ProcessIdentifier pid,
+				      AddressSpace addressSpace,
+				      long lowerExtreem, long upperExtreem) {
 	super (lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.addressSpace = addressSpace;
@@ -72,9 +71,9 @@ public class AddressSpaceByteBuffer
 	else
 	  mem = null;
     }
-    public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
-    {
-	this (pid, addressSpace, 0, addressSpace.length ());
+    public AddressSpaceByteBuffer(ProcessIdentifier pid,
+				  AddressSpace addressSpace) {
+	this(pid, addressSpace, 0, addressSpace.length());
     }
 
 

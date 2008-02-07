@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 // Copyright 2006, IBM Corp.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -43,6 +43,7 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.isa.ISA;
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.isa.banks.RegisterBanks;
@@ -57,7 +58,7 @@ import frysk.Config;
 
 class PtraceRegisterBanksFactory {
 
-    private static ByteBuffer[] x8664Banks(int pid) {
+    private static ByteBuffer[] x8664Banks(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
 	    new RegisterSetByteBuffer(pid, RegisterSet.REGS),
 	    new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
@@ -69,7 +70,7 @@ class PtraceRegisterBanksFactory {
 	return bankBuffers;
     }
 
-    private static ByteBuffer[] ia32Banks(int pid) {
+    private static ByteBuffer[] ia32Banks(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
 	    new RegisterSetByteBuffer(pid, RegisterSet.REGS),
 	    new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
@@ -82,7 +83,7 @@ class PtraceRegisterBanksFactory {
 	return bankBuffers;
     }
 
-    private static ByteBuffer[] ppcBanksBE(int pid) {
+    private static ByteBuffer[] ppcBanksBE(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
             new AddressSpaceByteBuffer(pid, AddressSpace.USR)
         };
@@ -93,7 +94,7 @@ class PtraceRegisterBanksFactory {
 	return bankBuffers;
     }
 
-    static RegisterBanks create(ISA isa, int pid) {
+    static RegisterBanks create(ISA isa, ProcessIdentifier pid) {
 	if (isa == ISA.X8664) {
 	    return new RegisterBanks(X86BankRegisters.X8664,
 				     x8664Banks(pid));

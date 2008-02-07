@@ -60,6 +60,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.Signal;
@@ -74,11 +75,14 @@ import frysk.isa.banks.RegisterBanks;
  */
 
 public class LinuxPtraceTask extends LiveTask {
+    private final ProcessIdentifier tid;
+
     /**
      * Create a new unattached Task.
      */
     public LinuxPtraceTask(Proc proc, TaskId id) {
 	super(proc, id);
+	tid = ProcessIdentifierFactory.createFIXME(id.hashCode());
 	newState = LinuxPtraceTaskState.detachedState();
     }
     /**
@@ -87,6 +91,7 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(Task task, ProcessIdentifier clone) {
 	// XXX: shouldn't need to grub around in the old task's state.
 	super(task, new TaskId(clone.intValue()));
+	tid = clone;
 	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
     }
     /**
@@ -95,6 +100,7 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(LinuxPtraceProc proc,
 			   TaskObserver.Attached attached) {
 	super(proc, attached);
+	tid = ProcessIdentifierFactory.createFIXME(proc.getPid());
 	newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation(this, attachedObservers,
@@ -113,7 +119,7 @@ public class LinuxPtraceTask extends LiveTask {
     ByteBuffer getRawMemory() {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getISA().order();
-	ByteBuffer memory = new AddressSpaceByteBuffer(getTid(),
+	ByteBuffer memory = new AddressSpaceByteBuffer(tid,
 						       AddressSpace.DATA);
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
@@ -126,7 +132,6 @@ public class LinuxPtraceTask extends LiveTask {
     public ByteBuffer getMemory() {
 	if (memory == null) {
 	    logger.log(Level.FINE, "{0} exiting get memory\n", this);
-	    int tid = getTid();
 	    ByteOrder byteOrder = getISA().order();
 	    BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
 	    memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
@@ -139,7 +144,7 @@ public class LinuxPtraceTask extends LiveTask {
 
     protected RegisterBanks getRegisterBanks() {
 	if (registerBanks == null)
-	    registerBanks = PtraceRegisterBanksFactory.create(getISA(), getTid());
+	    registerBanks = PtraceRegisterBanksFactory.create(getISA(), tid);
 	return registerBanks;
     }
     private RegisterBanks registerBanks;
@@ -167,7 +172,7 @@ public class LinuxPtraceTask extends LiveTask {
     public Isa getIsaFIXME() {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 	IsaFactory factory = IsaFactory.getSingleton();
-	return factory.getIsa(getTid());
+	return factory.getIsa(tid);
     }
 
     /**
@@ -255,7 +260,7 @@ public class LinuxPtraceTask extends LiveTask {
 	sigSendXXX = sig;
         incrementMod();
 	try {
-	    Ptrace.cont(getTid(), sig);
+	    Ptrace.cont(tid, sig);
 	} catch (Errno.Esrch e) {
 	    postDisappearedEvent(e);
 	}
@@ -265,7 +270,7 @@ public class LinuxPtraceTask extends LiveTask {
 	sigSendXXX = sig;
         incrementMod();
 	try {
-	    Ptrace.sysCall(getTid(), sig);
+	    Ptrace.sysCall(tid, sig);
 	} catch (Errno.Esrch e) {
 	    postDisappearedEvent(e);
 	}
@@ -276,7 +281,7 @@ public class LinuxPtraceTask extends LiveTask {
         incrementMod();
 	syscallSigretXXX = getIsaFIXME().isAtSyscallSigReturn(this);
 	try {
-	    Ptrace.singleStep(getTid(), sig);
+	    Ptrace.singleStep(tid, sig);
 	} catch (Errno.Esrch e) {
 	    postDisappearedEvent(e);
 	}
@@ -285,7 +290,7 @@ public class LinuxPtraceTask extends LiveTask {
     public void sendStop ()
     {
 	logger.log(Level.FINE, "{0} sendStop\n", this);
-	Signal.STOP.tkill(getTid());
+	Signal.STOP.tkill(tid);
     }
 
 
@@ -294,7 +299,7 @@ public class LinuxPtraceTask extends LiveTask {
 	logger.log(Level.FINE, "{0} sendAttach\n", this);
 	try
 	    {
-		Ptrace.attach(getTid());
+		Ptrace.attach(tid);
 
 		/*
 		 * XXX: Linux kernel has a 'feature' that if a process is already
@@ -329,10 +334,10 @@ public class LinuxPtraceTask extends LiveTask {
 	try {
 	    if (sig == Signal.STOP) {
 		logger.log(Level.FINE, "{0} sendDetach/signal STOP\n", this);
-		Signal.STOP.tkill(getTid());
-		Ptrace.detach(getTid(), Signal.NONE);
+		Signal.STOP.tkill(tid);
+		Ptrace.detach(tid, Signal.NONE);
 	    } else {
-		Ptrace.detach(getTid(), sig);
+		Ptrace.detach(tid, sig);
 	    }
 	} catch (Exception e) {
 	    // Ignore problems trying to detach, most of the time the
@@ -349,20 +354,20 @@ public class LinuxPtraceTask extends LiveTask {
 	| Ptrace.optionTraceExec();
     void initializeAttachedState() {
 	logger.log(Level.FINE, "{0} initializeAttachedState\n", this);
-	Ptrace.setOptions(getTid(), ptraceOptions);
+	Ptrace.setOptions(tid, ptraceOptions);
 	// FIXME: This should use task.proc.getExe().  Only that
 	// causes wierd failures; take a rain-check :-(
-	currentISA = ElfMap.getISA(new File("/proc/" + getTid() + "/exe"));
+	currentISA = ElfMap.getISA(new File("/proc/" + tid + "/exe"));
     }
     void startTracingSyscalls() {
 	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
 	ptraceOptions |= Ptrace.optionTraceSysgood();
-	Ptrace.setOptions(getTid(), ptraceOptions);
+	Ptrace.setOptions(tid, ptraceOptions);
     }
     void stopTracingSyscalls() {
 	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
 	ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
-	Ptrace.setOptions(getTid(), ptraceOptions);
+	Ptrace.setOptions(tid, ptraceOptions);
     }
 
 
