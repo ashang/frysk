@@ -112,7 +112,7 @@ class ListCommand extends ParameterizedCommand {
                 }
                 catch (NumberFormatException ignore) {
                     if ((cmd.parameter(0)).compareTo("$EXEC") == 0)
-                        line = frame.getLine().getLine() - 10;
+		      line = frame.getLine().getLine() - (windowSize / 2);
                     else {
                         DwarfDie funcDie = null;
 			DebugInfo debugInfo = cli.getTaskDebugInfo(task);
@@ -145,7 +145,7 @@ class ListCommand extends ParameterizedCommand {
             else if (frame.getLine().getLine() != exec_line) {
                 // list around pc.
                 exec_line = frame.getLine().getLine();
-                line = exec_line - 10;
+                line = exec_line - (windowSize / 2);
             }
  
             if (file == null || frame != currentFrame) {
@@ -201,8 +201,6 @@ class ListCommand extends ParameterizedCommand {
                         flag = "";
                     }
                 }
-                if (str != null && windowSize > 0)
-                    line += windowSize;
                 lr.close();
             }
             catch (IOException e) {

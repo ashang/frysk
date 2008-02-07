@@ -112,7 +112,7 @@ public class TestListCommand extends TestLib {
 	e.expect("98.*98");
 	e.expect("99.*99.*while");
 	e.expect("100.*100.*if");
-	e.send("list -length 10\n");
+	e.send("list 101 -length 10\n");
 	e.expect("101.*101.*quicksort..a,l,j");
 	e.expect("102.*102.*if");
 	e.expect("103.*103.*quicksort..a,i,r");
@@ -138,7 +138,7 @@ public class TestListCommand extends TestLib {
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.send("list\n");
 	e.expect(prompt);
-	e.send("list -length -10\n");
+	e.send("list 104 -length -10\n");
 	e.expect("104.*104");
 	e.expect("105.*105");
 	e.expect("106.*106");
@@ -149,7 +149,7 @@ public class TestListCommand extends TestLib {
 	e.expect("111.*111.*init_array");
 	e.expect("112.*112.*quicksort ");
 	e.expect("113.*113.*if");
-	e.send("list -length -10\n");
+	e.send("list 94 -length -10\n");
 	e.expect("94.*94.*a.i. =");
 	e.expect("95.*95.*a.j. =");
 	e.expect("96.*96.*i =");
