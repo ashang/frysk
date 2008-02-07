@@ -62,6 +62,7 @@ public class TestFtrace extends TestLib {
 	    return;
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
+		"-sys=",
 		"/bin/ls"
 	    });
 	e.expect("execve");
@@ -74,6 +75,7 @@ public class TestFtrace extends TestLib {
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
+		"-sys=",
 		""+task.getProc().getPid()
 	    });
 	e.expect(""+task.getProc().getPid()+"."+ task.getTid());
@@ -88,6 +90,7 @@ public class TestFtrace extends TestLib {
 	Task task = child.findTaskUsingRefresh(true);
         TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
+		"-sys=",
 		"-c",
 		""+task.getProc().getPid()
 	    });
@@ -100,6 +103,7 @@ public class TestFtrace extends TestLib {
     public void testFtraceHandlesPrcoessNotFound() {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
+		"-sys=",
 		"0"
 	    });
 	e.expect("No process with ID 0 found");
