@@ -119,17 +119,15 @@ public class PseudoTerminal
      * Convenience method, adds a child process bound to this
      * pseudo-terminal.
      */
-    public ProcessIdentifier addChild (String[] args)
-    {
-	return new Child (new RedirectStdio (name), new Exec (args));
+    public ProcessIdentifier addChild(String[] args) {
+	return ChildFactory.create(new RedirectStdio (name), new Exec (args));
     }
 
     /**
      * Convenience method, adds a daemon process bound to this
      * pseudo-terminal.
      */
-    public ProcessIdentifier addDaemon (String[] args)
-    {
-	return new Daemon (new RedirectStdio (name), new Exec (args));
+    public ProcessIdentifier addDaemon(String[] args) {
+	return DaemonFactory.create(new RedirectStdio (name), new Exec (args));
     }
 }

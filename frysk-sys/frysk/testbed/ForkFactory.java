@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,25 +40,40 @@
 package frysk.testbed;
 
 import frysk.junit.TestCase;
-import frysk.sys.Ptrace;
+import frysk.sys.Execute;
 import frysk.sys.Signal;
-import frysk.sys.SignalBuilder;
-import frysk.sys.UnhandledWaitBuilder;
-import frysk.sys.Wait;
+import frysk.sys.Itimer;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.Ptrace;
+import frysk.sys.Wait;
+import frysk.sys.UnhandledWaitBuilder;
+import frysk.sys.SignalBuilder;
+import frysk.sys.DaemonFactory;
 
 /**
- * Fork, and than attach to a sleeping instance of this process.
- *
- * This class makes use of the TmpProc class.
+ * Create a copy of this process running as a daemon.
  */
 
-public class AttachedSelf
-    extends DetachedSelf
-{
-    public AttachedSelf() {
-	Ptrace.attach(this);
-	Wait.wait(this, new UnhandledWaitBuilder() {
+public class ForkFactory {
+
+    public static ProcessIdentifier detachedDaemon() {
+	ProcessIdentifier pid = DaemonFactory.create(new Execute() {
+		final int timeout = TestCase.getTimeoutSeconds();
+		public void execute() {
+		    int remaining = timeout;
+		    do
+			remaining -= Itimer.sleep (remaining);
+		    while (remaining > 0);
+		}
+	    });
+	TearDownProcess.add(pid);
+	return pid;
+    }
+
+    public static ProcessIdentifier attachedDaemon() {
+	ProcessIdentifier pid = detachedDaemon();
+	Ptrace.attach(pid);
+	Wait.wait(pid, new UnhandledWaitBuilder() {
 		protected void unhandled(String why) {
 		    TestCase.fail (why);
 		}
@@ -69,9 +84,10 @@ public class AttachedSelf
 	    },
 	    new SignalBuilder() {
 		public void signal(Signal sig) {
-		    TestCase.fail ("unexpected signal " + sig);
+		    TestCase.fail("unexpected signal " + sig);
 		}
 	    },
 	    TestCase.getTimeoutMilliseconds());
+	return pid;
     }
 }

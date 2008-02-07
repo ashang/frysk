@@ -41,7 +41,7 @@ package frysk.sys;
 
 import frysk.junit.TestCase;
 import frysk.testbed.TearDownProcess;
-import frysk.testbed.AttachedSelf;
+import frysk.testbed.ForkFactory;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.testbed.LocalMemory;
 import frysk.testbed.LocalMemory.StackBuilder;
@@ -113,9 +113,8 @@ public class TestPtrace
     /**
      * Check attach (to oneself).
      */
-    public void testAttachDetach ()
-    {
-	final ProcessIdentifier pid = new Daemon(new Execute() {
+    public void testAttachDetach() {
+	final ProcessIdentifier pid = DaemonFactory.create(new Execute() {
 		public void execute() {
 		    Itimer.sleep (TestCase.getTimeoutSeconds());
 		}
@@ -130,7 +129,7 @@ public class TestPtrace
 		    fail (why);
 		}
 		public void stopped(ProcessIdentifier pid, Signal signal) {
-		    assertEquals("stopped pid", id, pid);
+		    assertSame("stopped pid", id, pid);
 		    assertSame("stopped sig", Signal.STOP, signal);
 		}
 	    });
@@ -149,22 +148,20 @@ public class TestPtrace
 	assertEquals("Errno", Errno.Echild.class, errno.getClass());
     }
 
-    private void verifyBytes (String what, int pid,
-			      AddressSpace space,
-			      byte[] bytes, long addr)
-    {
+    private void verifyBytes(String what, ProcessIdentifier pid,
+			     AddressSpace space,
+			     byte[] bytes, long addr) {
 	for (int i = 0; i < bytes.length; i++) {
-	    assertEquals (what + " " + i + " at " + addr + " in " + space,
-			  bytes[i] & 0xff, // signed - ulgh
-			  space.peek(pid, addr + i));
+	    assertEquals(what + " " + i + " at " + addr + " in " + space,
+			 bytes[i] & 0xff, // signed - ulgh
+			 space.peek(pid, addr + i));
 	}
     }
 
     private void verifyPeek (String what, AddressSpace space,
 			     byte[] bytes, long addr)
     {
-	verifyBytes (what, new AttachedSelf ().hashCode(),
-		     space, bytes, addr);
+	verifyBytes (what, ForkFactory.attachedDaemon(), space, bytes, addr);
     }
     public void testTextValPeek ()
     {
@@ -207,14 +204,13 @@ public class TestPtrace
 	    });
     }
 
-    public void verifyPoke (String what, AddressSpace space,
-			    byte[] bytes, long addr)
-    {
-	int pid = new AttachedSelf ().hashCode();
+    public void verifyPoke(String what, AddressSpace space,
+			   byte[] bytes, long addr) {
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	for (byte i = 4; i < 12; i++) {
 	    space.poke(pid, addr + i, i);
 	    bytes[i] = i;
-	    verifyBytes (what, pid, space, bytes, addr);
+	    verifyBytes(what, pid, space, bytes, addr);
 	}
     }
     public void testTextValPoke ()
@@ -258,10 +254,9 @@ public class TestPtrace
 	    });
     }
 
-    private void verifyPeekBytes (String why, AddressSpace space,
-				  byte[] startBytes, long startAddr)
-    {
-	int pid = new AttachedSelf().hashCode();
+    private void verifyPeekBytes(String why, AddressSpace space,
+				 byte[] startBytes, long startAddr) {
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	byte[] pidBytes = new byte[startBytes.length];
 	byte[] myBytes = new byte[startBytes.length];
 	for (int addr = 4; addr < 9; addr++) {
@@ -326,10 +321,9 @@ public class TestPtrace
 	    });
     }
 
-    private void verifyPokeBytes (String why, AddressSpace space,
-				  byte[] startBytes, long startAddr)
-    {
-	int pid = new AttachedSelf().hashCode();
+    private void verifyPokeBytes(String why, AddressSpace space,
+				 byte[] startBytes, long startAddr) {
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	byte[] newBytes = new byte[startBytes.length];
 	byte[] myBytes = new byte[startBytes.length];
 	byte[] pidBytes = new byte[startBytes.length];
@@ -402,19 +396,17 @@ public class TestPtrace
 	    });
     }
 
-    private void verifyOutOfBounds (String why, boolean expected,
-				    int length, byte[] bytes, int offset)
-    {
-	int pid = new AttachedSelf().hashCode();
+    private void verifyOutOfBounds(String why, boolean expected,
+				   int length, byte[] bytes, int offset) {
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	boolean caught = false;
 	try {
-	    AddressSpace.DATA.peek (pid, LocalMemory.getCodeAddr (), length,
-				    bytes, offset);
-	}
-	catch (ArrayIndexOutOfBoundsException e) {
+	    AddressSpace.DATA.peek(pid, LocalMemory.getCodeAddr (), length,
+				   bytes, offset);
+	} catch (ArrayIndexOutOfBoundsException e) {
 	    caught = true;
 	}
-	assertEquals (why + " exception", expected, caught);
+	assertEquals(why + " exception", expected, caught);
     }
     public void testLengthUnderBound ()
     {

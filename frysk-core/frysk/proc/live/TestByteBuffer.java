@@ -44,7 +44,7 @@ import frysk.junit.TestCase;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.dummy.DummyProc;
-import frysk.testbed.AttachedSelf;
+import frysk.testbed.ForkFactory;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.LocalMemory;
 import frysk.sys.Ptrace.RegisterSet;
@@ -75,7 +75,7 @@ public class TestByteBuffer
       // Watch for spawned processes, etc.
       super.setUp();
 
-      pid = new AttachedSelf().hashCode();
+      pid = ForkFactory.attachedDaemon().intValue();
 
       // Text and Data are the same, but can be accessed independently.
       addressSpaceByteBufferText

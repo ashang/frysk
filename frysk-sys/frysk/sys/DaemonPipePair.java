@@ -43,21 +43,16 @@ package frysk.sys;
  * A pair of pipes wired to a daemon process.
  */
 
-public class DaemonPipePair
-    extends PipePair
-{
-    protected ProcessIdentifier spawn (Redirect redirect,
-				       Execute exec)
-    {
-	return new Daemon (redirect, exec);
+public class DaemonPipePair extends PipePair {
+    protected ProcessIdentifier spawn(Redirect redirect,
+				      Execute exec) {
+	return DaemonFactory.create(redirect, exec);
     }
-    public DaemonPipePair (String[] argv)
-    {
-	super (new Exec (argv));
+    public DaemonPipePair(String[] argv) {
+	super(new Exec (argv));
     }
 
-    public DaemonPipePair (Execute exec)
-    {
-	super (exec);
+    public DaemonPipePair(Execute exec) {
+	super(exec);
     }
 }

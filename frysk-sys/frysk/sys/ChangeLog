@@ -1,3 +1,14 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* DaemonFactory.java: Replace Daemon.java.
+	* cni/DaemonFactory.cxx: Replace cni/Daemon.cxx.
+	* ChildFactory.java: Replace Child.java.
+	* cni/ChildFactory.cxx: Replace cni/Child.cxx.
+	* ChildPipePair.java: Update.
+	* DaemonPipePair.java: Update.
+	* PseudoTerminal.java: Update.
+	* TestPtrace.java: Update.
+
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* WaitBuilder.java (syscallEvent(ProcessIdentifier)): Replace

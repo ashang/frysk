@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,36 +37,44 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <alloca.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-public class Child extends ProcessIdentifierDecorator {
-    /**
-     * Create a child process (direct decendant of this process) that
-     * redirects its I/O to REDIRECT, and executes EXEC.
-     *
-     * Private.
-     */
-    private static native ProcessIdentifier child(Redirect redirect,
-						  Execute exec);
-    /**
-     * Create a child wired to IO redirect, running exec.
-     *
-     * Package private.
-     */
-    Child(Redirect redirect, Execute exec) {
-	super (child (redirect, exec));
-    }
-    /**
-     * Create a child wired to nothing; STDIN is closed, STDOUT/ERROR
-     * are the same as for this process.
-     */
-    public Child(Execute exec) {
-	this(new Redirect() {
-		protected void reopen() {
-		    FileDescriptor.in.close ();
-		}
-		protected void close() {
-		}
-	    }, exec);
-    }
+#include <gcj/cni.h>
+
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
+#include "frysk/sys/ProcessIdentifierDecorator.h"
+#include "frysk/sys/ChildFactory.h"
+#include "frysk/sys/Redirect.h"
+#include "frysk/sys/Execute.h"
+
+frysk::sys::ProcessIdentifier*
+frysk::sys::ChildFactory::child (frysk::sys::Redirect* redirect,
+				 frysk::sys::Execute* exec)
+{
+  // Fork/exec
+  errno = 0;
+  pid_t pid = fork ();
+  switch (pid) {
+  case -1:
+    // Fork failed.
+    throwErrno (errno, "fork");
+  case 0:
+    // Child
+    // ::fprintf (stderr, "%d child calls reopen\n", getpid ());
+    redirect->reopen ();
+    // ::fprintf (stderr, "%d child calls execute\n", getpid ());
+    exec->execute ();
+    ::_exit (0);
+  default:
+    redirect->close ();
+    return frysk::sys::ProcessIdentifierFactory::create(pid);
+  }
 }

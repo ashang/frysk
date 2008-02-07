@@ -1,3 +1,9 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* ForkFactory.java: New.
+	* DetachedSelf.java: Delete.
+	* AttachedSelf.java: Delete.
+
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownProcess.java: Update to match WaitBuilder's stopped,

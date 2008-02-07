@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,35 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+package frysk.sys;
 
-import frysk.junit.TestCase;
-import frysk.sys.Daemon;
-import frysk.sys.Execute;
-import frysk.sys.Itimer;
-
-/**
- * Fork, and than attach to a sleeping instance of this process.
- *
- * This class makes use of the TmpProc class.
- */
-
-public class DetachedSelf
-    extends Daemon
-{
-    public DetachedSelf ()
-    {
-	super (new Execute ()
-	       {
-		   final int timeout = TestCase.getTimeoutSeconds();
-		   public void execute ()
-		   {
-		       int remaining = timeout;
-		       do
-			   remaining -= Itimer.sleep (remaining);
-		       while (remaining > 0);
-		   }
-	       });
-	TearDownProcess.add (this);
+public class ChildFactory {
+    /**
+     * Create a child process (direct decendant of this process) that
+     * redirects its I/O to REDIRECT, and executes EXEC.
+     *
+     * Private.
+     */
+    private static native ProcessIdentifier child(Redirect redirect,
+						  Execute exec);
+    /**
+     * Create a child wired to IO redirect, running exec.
+     *
+     * Package private.
+     */
+    public static ProcessIdentifier create(Redirect redirect, Execute exec) {
+	return child(redirect, exec);
+    }
+    /**
+     * Create a child wired to nothing; STDIN is closed, STDOUT/ERROR
+     * are the same as for this process.
+     */
+    public static ProcessIdentifier create(Execute exec) {
+	return create(new Redirect() {
+		protected void reopen() {
+		    FileDescriptor.in.close ();
+		}
+		protected void close() {
+		}
+	    }, exec);
     }
 }

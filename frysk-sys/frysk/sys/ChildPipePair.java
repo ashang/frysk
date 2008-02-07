@@ -47,22 +47,15 @@ package frysk.sys;
  * The child process is created using the method spawn.
  */
 
-public class ChildPipePair
-    extends PipePair
-{
-    protected ProcessIdentifier spawn (Redirect redirect,
-				       Execute exec)
-    {
-	return new Child (redirect, exec);
+public class ChildPipePair extends PipePair {
+    protected ProcessIdentifier spawn(Redirect redirect,
+				      Execute exec) {
+	return ChildFactory.create(redirect, exec);
     }
-
-    public ChildPipePair (String[] argv)
-    {
-	super (new Exec (argv));
+    public ChildPipePair(String[] argv) {
+	super(new Exec(argv));
     }
-
-    public ChildPipePair (Execute exec)
-    {
-	super (exec);
+    public ChildPipePair(Execute exec) {
+	super(exec);
     }
 }

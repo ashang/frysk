@@ -1,3 +1,7 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* ForkFactory.java: New.
+
 2008-01-07  Nurdin Premji  <npremji@redhat.com>
 
 	* CompilerVersion.java: Added (C).

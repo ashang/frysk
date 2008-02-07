@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,12 +44,12 @@ package frysk.sys;
  * the parent.
  */
 
-public class Daemon extends ProcessIdentifierDecorator {
+public class DaemonFactory {
     /**
      * Create a daemon process (child of process 1 a.k.a. init) that
      * redirects its I/O to REDIRECT, and executes EXEC.
      *
-     * Package private.
+     * Private.
      */
     private static native ProcessIdentifier daemon(Redirect redirect,
 						   Execute exec);
@@ -57,21 +57,20 @@ public class Daemon extends ProcessIdentifierDecorator {
     /**
      * Create a daemon wired to REDIRECT, and running EXEC.
      */
-    Daemon(Redirect redirect, Execute exec) {
-	super (daemon (redirect, exec));
+    public static ProcessIdentifier create(Redirect redirect, Execute exec) {
+	return daemon(redirect, exec);
     }
 
     /**
      * Create a daemon wired to nothing; STDIN is closed, STDOUT/ERROR
      * are the same as for this process.
      */
-    public Daemon(Execute exec) {
-	this(new Redirect() {
+    public static ProcessIdentifier create(Execute exec) {
+	return create(new Redirect() {
 		protected void reopen() {
 		    FileDescriptor.in.close();
 		}
-		protected void close()
-		{
+		protected void close() {
 		}
 	    }, exec);
     }

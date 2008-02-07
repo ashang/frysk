@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,29 +51,55 @@
 #include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/ProcessIdentifierFactory.h"
 #include "frysk/sys/ProcessIdentifierDecorator.h"
-#include "frysk/sys/Child.h"
+#include "frysk/sys/DaemonFactory.h"
 #include "frysk/sys/Redirect.h"
 #include "frysk/sys/Execute.h"
 
 frysk::sys::ProcessIdentifier*
-frysk::sys::Child::child (frysk::sys::Redirect* redirect,
-			  frysk::sys::Execute* exec)
+frysk::sys::DaemonFactory::daemon(frysk::sys::Redirect* redirect,
+				  frysk::sys::Execute* exec)
 {
-  // Fork/exec
+  volatile int pid = -1;
+
+  // This is executed by the child with the parent blocked, the final
+  // process id ends up in PID.
   errno = 0;
-  pid_t pid = fork ();
-  switch (pid) {
+  register int v = vfork ();
+  switch (v) {
   case -1:
-    // Fork failed.
-    throwErrno (errno, "fork");
+    throwErrno (errno, "vfork");
   case 0:
-    // Child
-    // ::fprintf (stderr, "%d child calls reopen\n", getpid ());
-    redirect->reopen ();
-    // ::fprintf (stderr, "%d child calls execute\n", getpid ());
-    exec->execute ();
-    ::_exit (0);
+    // vforked child
+    // ::fprintf (stderr, "%d is vfork child\n", getpid ());
+    pid = fork ();
+    switch (pid) {
+    case -1:
+      // error handled by parent; look for pid<0.
+      _exit (0);
+    case 0:
+      // ::fprintf (stderr, "%d child calls redirect\n", getpid ());
+      redirect->reopen ();
+      // ::fprintf (stderr, "%d child calls execute\n", getpid ());
+      exec->execute ();
+      _exit (0);
+    default:
+      _exit (0);
+    }
   default:
+    // Reach here after the vfork child - or middle player - exits.
+    // Save the fork's error status.
+    int fork_errno = errno;
+    // Consume the middle players wait.
+    errno = 0;
+    pid_t wpid = ::waitpid (v, NULL, 0);
+    int wait_errno = errno;
+    // Did the fork succeed?  If not throw its status.
+    if (pid < 0)
+      throwErrno (fork_errno, "fork");
+    // Did the wait succeed?  If not throw its status.
+    if (wpid < 0)
+      throwErrno (wait_errno, "waitpid", "process %d", v);
+    // printf ("v %d pid %d\n", v, pid);
     redirect->close ();
     return frysk::sys::ProcessIdentifierFactory::create(pid);
   }
