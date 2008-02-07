@@ -2,6 +2,17 @@
 
 	* Ftrace.java: Update to use Host.requestProc(int,FindProc).
 
+2008-02-07  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java: Support fine-grained selection of syscalls to
+	trace/stack trace on.
+	(TracedSyscallProvider): New interface.
+	(shouldStackTraceOn): Reanamed to shouldStackTraceOnSymbol.
+	(tracedSyscallProvider): New member variable.
+	(setDontTraceSyscalls): Renamed to setTraceSyscalls.
+	(setSyscallStackTracing): Deleted.
+	(syscallSetForTask): New member variable.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* MappingGuard.java: Update to match

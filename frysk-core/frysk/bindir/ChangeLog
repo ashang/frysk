@@ -2,10 +2,21 @@
 
 	* fmaps.java: Refactor to use ProcStopUtil.
 
+2008-02-07  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Support fine-grained selection of syscalls to
+	trace/stack trace on.  Remove -t, -s options.
+	(Rule): New abstract class.
+	(SyscallRule, ByNumberSyscallRule, ByRegexpSyscallRule): New classes.
+	(MyFtraceController.sysRules): New variable.
+	(.gotSysRules): New method.
+	(.computeSyscallWorkingSet): New method.
+	(.parseSyscallRules): New method.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
-	
+
 	* fstep.java: Update to use Host.requestProc(int,FindProc).
-	
+
 2008-02-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebuginfo.java: Refactor, use ProcStopUtil.

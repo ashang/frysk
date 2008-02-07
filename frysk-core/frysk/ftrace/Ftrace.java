@@ -72,12 +72,10 @@ public class Ftrace
     boolean traceChildren = false;
 
     // True if we're tracing syscalls.
-    boolean traceSyscalls = true;
+    boolean traceSyscalls = false;
 
     // True if we're tracing mmaps/unmaps.
     boolean traceMmapUnmap = false;
-
-    HashSet syscallStackTraceSet = null;
 
     // Set of ProcId objects we trace; if traceChildren is set, we also
     // look for their children.
@@ -108,7 +106,18 @@ public class Ftrace
      * XXX: Ideally, this would also operate on tracepoints.
      */
     public static interface StackTracedSymbolsProvider {
-	boolean shouldStackTraceOn(Symbol symbol);
+	boolean shouldStackTraceOnSymbol(Symbol symbol);
+    }
+
+    /**
+     * External entity implementing this interface is called out for
+     * each new process, and should construct set of syscalls to trace
+     * and stack trace on.
+     */
+    public static interface TracedSyscallProvider {
+	/** Answers Map&lt;Syscall,bool&gt;, where the value is whether to
+    	    stack trace on given syscall. */
+	Map computeSyscallWorkingSet(Task task);
     }
 
     /**
@@ -123,15 +132,17 @@ public class Ftrace
     // Non-null if we're using ltrace.
     Controller ftraceController = null;
     StackTracedSymbolsProvider stackTraceSetProvider = null;
+    TracedSyscallProvider tracedSyscallProvider = null;
 
     public void setTraceChildren ()
     {
 	traceChildren = true;
     }
 
-    public void setDontTraceSyscalls ()
+    public void setTraceSyscalls (TracedSyscallProvider tracedSyscallProvider)
     {
-	traceSyscalls = false;
+	this.tracedSyscallProvider = tracedSyscallProvider;
+	this.traceSyscalls = true;
     }
 
     public void setTraceMmaps ()
@@ -157,10 +168,6 @@ public class Ftrace
 
     public void addTracePid (ProcId id) {
 	tracedParents.add(id);
-    }
-
-    public void setSyscallStackTracing (HashSet syscallSet) {
-	syscallStackTraceSet = syscallSet;
     }
 
     public void setWriter (PrintWriter writer) {
@@ -254,6 +261,8 @@ public class Ftrace
 	if (traceSyscalls) {
 	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
+	    Map workingSet = tracedSyscallProvider.computeSyscallWorkingSet(task);
+	    syscallSetForTask.put(task, workingSet);
 	}
 
 	task.requestAddForkedObserver(forkedObserver);
@@ -274,8 +283,12 @@ public class Ftrace
     }
 
     /** Remembers working set preferences for each task.
-	Map&lt;Task, Map&lt;File, TracePointWorkingSet&gt;&gt; */
+	Map&lt;Task, TracePointWorkingSet&gt; */
     private final HashMap driversForTask = new HashMap();
+
+    /** Remembers traced syscall set for each task.
+        Map&lt;Task, Map&lt;Syscall, Boolean&gt;&gt; */
+    private final HashMap syscallSetForTask = new HashMap();
 
     private class TracePointWorkingSet
 	implements Driver
@@ -397,9 +410,14 @@ public class Ftrace
     class MyAttachedObserver
 	implements TaskObserver.Attached
     {
-	public Action updateAttached (Task task)
+	private Set procs = new HashSet();
+	public synchronized Action updateAttached (Task task)
 	{
-	    addProc(task.getProc());
+	    Proc proc = task.getProc();
+	    if (!procs.contains(proc)) {
+		procs.add(proc);
+		addProc(task.getProc());
+	    }
 
 	    // To make sure all the observers are attached before the task
 	    // continues, the attachedObserver blocks the task.  As each of
@@ -429,7 +447,14 @@ public class Ftrace
 	}
 
 	public Action updateSyscallEnter(Task task, Syscall syscall) {
+	    syscallCache = syscall;
+
 	    String name = syscall.getName();
+	    Map syscallWorkingSet = (Map)syscallSetForTask.get(task);
+	    Boolean stackTrace = (Boolean)syscallWorkingSet.get(syscall);
+	    if (stackTrace == null)
+		return Action.CONTINUE;
+
 	    if (syscall.isNoReturn())
 		reporter.eventSingle(task, "syscall " + name,
 				     syscall.extractCallArguments(task));
@@ -437,19 +462,20 @@ public class Ftrace
 		reporter.eventEntry(task, syscall, "syscall", name,
 				    syscall.extractCallArguments(task));
 
-	    // If this system call is in the stack tracing HashSet,
-	    // get a stack trace before continuing on.
-	    if (syscallStackTraceSet != null
-		&& syscallStackTraceSet.contains(name))
+	    // If we should stack trace on this system call, do it
+	    // before continuing on.
+	    if (stackTrace.booleanValue())
 		reporter.generateStackTrace(task);
 
-	    syscallCache = syscall;
 	    return Action.CONTINUE;
 	}
 
 	public Action updateSyscallExit (Task task)
 	{
 	    Syscall syscall = syscallCache;
+	    if (((Map)syscallSetForTask.get(task)).get(syscall) == null)
+		return Action.CONTINUE;
+
 	    String name = syscall.getName();
 
 	    reporter.eventLeave(task, syscall,
@@ -477,29 +503,6 @@ public class Ftrace
     class ForkCloneObserverBase
 	implements TaskObserver
     {
-	protected Action updateOffspring (Task parent, Task offspring)
-	{
-	    if(traceChildren){
-		addProc(offspring.getProc());
-
-		if (offspring != offspring.getProc().getMainTask())
-		    // If this assertion doesn't hold, probably no
-		    // biggie, but you have to unblock the right tasks
-		    // in existingTask.
-		    throw new AssertionError("assert offspring == offspring.getProc().getMainTask()");
-
-		// Will be unblocked when existingTask picks it up,
-		// otherwise we'd miss on events.
-		return Action.BLOCK;
-	    }
-	    return Action.CONTINUE;
-	}
-
-	protected Action updateParent (Task parent, Task offspring)
-	{
-	    return Action.CONTINUE;
-	}
-
 	public void addFailed (Object observable, Throwable w)
 	{
 	}
@@ -521,12 +524,26 @@ public class Ftrace
     {
 	public Action updateForkedOffspring (Task parent, Task offspring)
 	{
-	    return updateOffspring (parent, offspring);
+	    if (offspring != offspring.getProc().getMainTask())
+		// If this assertion doesn't hold, probably no
+		// biggie, but you have to unblock the right tasks
+		// in existingTask.
+		throw new AssertionError("assert offspring == offspring.getProc().getMainTask()");
+
+	    if(traceChildren) {
+		addProc(offspring.getProc());
+
+		// Will be unblocked when existingTask picks it up,
+		// otherwise we'd miss on events.
+		return Action.BLOCK;
+	    }
+
+	    return Action.CONTINUE;
 	}
 
 	public Action updateForkedParent (Task parent, Task offspring)
 	{
-	    return updateParent (parent, offspring);
+	    return Action.CONTINUE;
 	}
     }
     TaskObserver.Forked forkedObserver = new MyForkedObserver();
@@ -537,12 +554,12 @@ public class Ftrace
     {
 	public Action updateClonedOffspring (Task parent, Task offspring)
 	{
-	    return updateOffspring (parent, offspring);
+	    return Action.CONTINUE;
 	}
 
 	public Action updateClonedParent (Task parent, Task offspring)
 	{
-	    return updateParent (parent, offspring);
+	    return Action.CONTINUE;
 	}
     }
     TaskObserver.Cloned clonedObserver = new MyClonedObserver();
@@ -682,7 +699,7 @@ public class Ftrace
 
 	    // If this systsysem call is in the stack tracing HashSet,
 	    // get a stack trace before continuing on.
-	    if (stackTraceSetProvider.shouldStackTraceOn(symbol))
+	    if (stackTraceSetProvider.shouldStackTraceOnSymbol(symbol))
 		reporter.generateStackTrace(task);
 
 	    return Action.CONTINUE;
