@@ -116,7 +116,12 @@ public abstract class SyscallTable {
     /**
      * Return the NUM'th system call; implemented using findSyscall.
      */
-    abstract Syscall getSyscall(long num);
+    abstract public Syscall getSyscall(long num);
+
+    /**
+     * Return the number of syscalls.
+     */
+    abstract public long getNumSyscalls();
 
     /** 
      * Assuming that TASK is at a system-call entry, return the system

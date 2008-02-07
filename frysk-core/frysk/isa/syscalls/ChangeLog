@@ -1,3 +1,12 @@
+2008-02-07  Petr Machata  <pmachata@redhat.com>
+
+	* SyscallTable.java (getNumSyscalls): New function.
+	(getSyscall(long)): Publicize.
+	* LinuxIA32SyscallTable.java: Likewise.
+	* LinuxPPC32SyscallTable.java: Likewise.
+	* LinuxPPC64SyscallTable.java: Likewise.
+	* LinuxX8664SyscallTable.java: Likewise.
+
 2008-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSyscallsWithAudit.java: Use frysk.testbed.IsaTestbed.

@@ -542,8 +542,12 @@ class LinuxPPC64SyscallTable extends SyscallTable {
 	    return getSyscall(syscall);
     }
 
-    Syscall getSyscall(long num) {
+    public Syscall getSyscall(long num) {
 	return findSyscall(syscallList, num);
+    }
+
+    public long getNumSyscalls() {
+	return syscallList.length;
     }
 
 }

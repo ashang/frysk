@@ -537,8 +537,12 @@ class LinuxIA32SyscallTable extends SyscallTable {
 	return null;
     }
 
-    Syscall getSyscall(long num) {
+    public Syscall getSyscall(long num) {
 	return findSyscall(syscallList, num);
+    }
+
+    public long getNumSyscalls() {
+	return syscallList.length;
     }
 
 }
