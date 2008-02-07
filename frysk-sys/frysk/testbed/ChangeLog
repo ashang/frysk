@@ -1,5 +1,10 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownProcess.java: Update to match WaitBuilder's stopped,
+	syscallEvent, terminated, and disappeared.
+	* AttachedSelf.java: Ditto.	
+	* TestTearDownProcess.java: Ditto.
+
 	* TearDownProcess.java: Update to match WaitBuilder's execEvent
 	and exitEvent.
 

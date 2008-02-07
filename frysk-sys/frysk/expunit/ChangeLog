@@ -1,5 +1,8 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* WaitObserver.java: Update to match WaitBuilder's disappeared,
+	terminated, stopped, and syscallEvent.
+	
 	* WaitObserver.java: Update to match WaitBuilder's exitEvent and
 	execEvent.
 	

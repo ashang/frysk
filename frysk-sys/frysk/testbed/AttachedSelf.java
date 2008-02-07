@@ -45,6 +45,7 @@ import frysk.sys.Signal;
 import frysk.sys.SignalBuilder;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.Wait;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * Fork, and than attach to a sleeping instance of this process.
@@ -55,25 +56,22 @@ import frysk.sys.Wait;
 public class AttachedSelf
     extends DetachedSelf
 {
-    public AttachedSelf ()
-    {
-	Ptrace.attach (this);
-	Wait.wait (this,
-		   new UnhandledWaitBuilder ()
-		   {
-		       protected void unhandled (String why)
-		       {
-			   TestCase.fail (why);
-		       }
-		       public void stopped(int pid, Signal signal) {
-			   // cool!
-		       }
-		   },
-		   new SignalBuilder () {
-		       public void signal(Signal sig) {
-			   TestCase.fail ("unexpected signal " + sig);
-		       }
-		   },
-		   TestCase.getTimeoutMilliseconds());
+    public AttachedSelf() {
+	Ptrace.attach(this);
+	Wait.wait(this, new UnhandledWaitBuilder() {
+		protected void unhandled(String why) {
+		    TestCase.fail (why);
+		}
+		public void stopped(ProcessIdentifier pid,
+				    Signal signal) {
+		    // cool!
+		}
+	    },
+	    new SignalBuilder() {
+		public void signal(Signal sig) {
+		    TestCase.fail ("unexpected signal " + sig);
+		}
+	    },
+	    TestCase.getTimeoutMilliseconds());
     }
 }

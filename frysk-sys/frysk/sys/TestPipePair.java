@@ -167,11 +167,11 @@ public class TestPipePair
 	pipe = new ChildPipePair(funitProcMask);
 	// Capture the child's output (look for 
 	class ExitStatus extends UnhandledWaitBuilder {
-	    int pid;
+	    ProcessIdentifier pid;
 	    Signal signal;
 	    int status;
-	    public void terminated(int pid, Signal signal, int status,
-				   boolean coreDumped) {
+	    public void terminated(ProcessIdentifier pid, Signal signal,
+				   int status, boolean coreDumped) {
 		logger.log(Level.FINE,
 			   "exited with status {0,number,integer}\n",
 			   new Integer(status));
@@ -193,7 +193,7 @@ public class TestPipePair
 		  },
 		  getTimeoutMilliseconds() * 10);
 	// (a timeout will also fail with the below)
-	assertEquals("pid", pipe.pid.intValue(), exitStatus.pid);
+	assertEquals("pid", pipe.pid, exitStatus.pid);
 	assertEquals("signal", null, exitStatus.signal);
 	assertEquals("status", 0, exitStatus.status);
     }

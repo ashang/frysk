@@ -142,9 +142,8 @@ log (java::util::logging::Logger *logger, pid_t pid, int status, int err)
    values are described below.  */
 
 static void
-processStatus (int pid, int status,
-	       frysk::sys::WaitBuilder* builder)
-{
+processStatus(frysk::sys::ProcessIdentifier* pid, int status,
+	      frysk::sys::WaitBuilder* builder) {
   if (0)
     ;
   else if (WIFEXITED (status))
@@ -160,28 +159,30 @@ processStatus (int pid, int status,
     case PTRACE_EVENT_CLONE:
       try {
 	// The event message contains the thread-ID of the new clone.
-	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
-	builder->cloneEvent(frysk::sys::ProcessIdentifierFactory::create(pid),
-			    frysk::sys::ProcessIdentifierFactory::create(clone));
+	frysk::sys::ProcessIdentifier* clone
+	  = frysk::sys::ProcessIdentifierFactory::create
+	  (frysk::sys::Ptrace::getEventMsg(pid));
+	builder->cloneEvent(pid, clone);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
 	// to a KILL -9).  Notify builder.
-	builder->disappeared (pid, err);
+	builder->disappeared(pid, err);
       }
       break;
     case PTRACE_EVENT_FORK:
       try {
 	// The event message contains the process-ID of the new
 	// process.
-	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
-	builder->forkEvent(frysk::sys::ProcessIdentifierFactory::create(pid),
-			   frysk::sys::ProcessIdentifierFactory::create(fork));
+	frysk::sys::ProcessIdentifier* fork
+	  = frysk::sys::ProcessIdentifierFactory::create
+	  (frysk::sys::Ptrace::getEventMsg(pid));
+	builder->forkEvent(pid, fork);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
 	// to a KILL -9).  Notify builder.
-	builder->disappeared (pid, err);
+	builder->disappeared(pid, err);
       }
       break;
     case PTRACE_EVENT_EXIT:
@@ -190,13 +191,11 @@ processStatus (int pid, int status,
 	// to decode that.
 	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
 	if (WIFEXITED (exitStatus)) {
-	  builder->exitEvent(frysk::sys::ProcessIdentifierFactory::create(pid), 
-			     NULL, WEXITSTATUS (exitStatus), false);
+	  builder->exitEvent(pid, NULL, WEXITSTATUS (exitStatus), false);
 	} else if (WIFSIGNALED (exitStatus)) {
 	  int termSig = WTERMSIG (exitStatus);
 	  frysk::sys::Signal* signal = frysk::sys::Signal::valueOf (termSig);
-	  builder->exitEvent(frysk::sys::ProcessIdentifierFactory::create(pid),
-			     signal, -termSig, WCOREDUMP (exitStatus));
+	  builder->exitEvent(pid, signal, -termSig, WCOREDUMP (exitStatus));
 	} else {
 	  throwRuntimeException ("unknown exit event", "status", exitStatus);
 	}
@@ -208,7 +207,7 @@ processStatus (int pid, int status,
       }
       break;
     case PTRACE_EVENT_EXEC:
-      builder->execEvent(frysk::sys::ProcessIdentifierFactory::create(pid));
+      builder->execEvent(pid);
       break;
     case 0:
       {
@@ -221,11 +220,12 @@ processStatus (int pid, int status,
       }
       break;
     default:
-      throwRuntimeException ("Unknown waitpid stopped event", "process", pid);
+      throwRuntimeException("Unknown waitpid stopped event", "process",
+			    pid->intValue());
     }
   }
   else
-    throwRuntimeException ("Unknown status", "process", pid);
+    throwRuntimeException("Unknown status", "process", pid->intValue());
 }
 
 /* Keep polling the waitpid queue moving everything to the eventqueue
@@ -283,7 +283,8 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
   while (head != tail) {
     // Process the result - check for a duplicate entry
     if (old_pid != head->pid || old_status != head->status)
-      processStatus (head->pid, head->status, builder);
+      processStatus(frysk::sys::ProcessIdentifierFactory::create(head->pid),
+		    head->status, builder);
     old_pid = head->pid; old_status = head->status;
     head = head->next;
   }
@@ -302,7 +303,8 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
   if (pid <= 0)
     throwErrno (myErrno, "waitpid", "process %d", (int)wpid);
   // Process the result.
-  processStatus (pid, status, builder);
+  processStatus(frysk::sys::ProcessIdentifierFactory::create(pid),
+		status, builder);
 }
 
 /** Drain wait events.  */
@@ -587,7 +589,8 @@ frysk::sys::Wait::wait (jint waitPid,
   
   // Deliver all pending waitpid() events.
   for (struct event *curr = firstEvent; curr != NULL; curr = curr->next) {
-    processStatus (curr->pid, curr->status, waitBuilder);
+    processStatus(frysk::sys::ProcessIdentifierFactory::create(curr->pid),
+		  curr->status, waitBuilder);
   }
 
   if (!ignoreECHILD && firstEvent == NULL && !interrupted && -pid == ECHILD)

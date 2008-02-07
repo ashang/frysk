@@ -1,5 +1,19 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* WaitBuilder.java (syscallEvent(ProcessIdentifier)): Replace
+	syscallEvent(int).
+	(stopped(ProcessIdentifier,Signal)): Replace stopped(int,Signal).
+	(terminated(ProcessIdentifier,Signal,int,boolean)): Replace
+	terminated(int,Signal,int,boolean).
+	(disappeared(ProcessIdentifier,Throwable)): Replace
+	disappeard(int,Throwable).
+	* cni/Wait.cxx (processStatus): Update.
+	* TestWait.java: Update.
+	* TestFork.java: Update.
+	* UnhandledWaitBuilder.java: Update.
+	* TestPipePair.java: Update.
+	* TestPtrace.java: Update.
+
 	* WaitBuilder.java (execEvent(ProcessIdentifier)): Replace
 	execEvent(int).
 	(exitEvent(ProcessIdentifier,Signal,int,boolean)): Replace

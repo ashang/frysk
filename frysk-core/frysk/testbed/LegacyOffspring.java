@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import frysk.sys.ProcessIdentifier;
 import frysk.proc.Manager;
 import frysk.junit.TestCase;
 import frysk.sys.Pid;
@@ -237,8 +238,8 @@ public class LegacyOffspring
 			protected void unhandled (String why) {
 			    TestCase.fail ("killing child (" + why + ")");
 			}
-			public void terminated(int pid, Signal signal,
-					       int value,
+			public void terminated(ProcessIdentifier pid,
+					       Signal signal, int value,
 					       boolean coreDumped) {
 			    // Termination with signal is ok.
 			    TestCase.assertTrue("terminated with signal",

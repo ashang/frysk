@@ -186,13 +186,7 @@ public class TearDownProcess
 	return pid;
     }
 
-    private static ProcessIdentifier capturedSendDetachContKill(int pid) {
-	return capturedSendDetachContKill
-	    (ProcessIdentifierFactory.createFIXME(pid));
-    }
-
-    public static void tearDown ()
-    {
+    public static void tearDown() {
 	// Make a preliminary pass through all the registered
 	// pidsToKillDuringTearDown trying to simply kill
 	// each. Someone else may have waited on their deaths already.
@@ -267,16 +261,15 @@ public class TearDownProcess
 			 public void execEvent(ProcessIdentifier pid) {
 			     capturedSendDetachContKill(pid);
 			 }
-			 
-			 public void syscallEvent (int pid) {
+			 public void syscallEvent(ProcessIdentifier pid) {
+			     capturedSendDetachContKill(pid);
+			 }
+			 public void stopped(ProcessIdentifier pid,
+					     Signal signal) {
 			     capturedSendDetachContKill(pid);
 			 }
 			 
-			 public void stopped(int pid, Signal signal) {
-			     capturedSendDetachContKill(pid);
-			 }
-			 
-			 private void drainTerminated (int pid) {
+			 private void drainTerminated(ProcessIdentifier pid) {
 			     // To be absolutly sure, again make
 			     // certain that the thread is detached.
 			     ProcessIdentifier id = capturedSendDetachContKill(pid);
@@ -289,14 +282,13 @@ public class TearDownProcess
 			     // Hopefully done with this PID.
 			     pidsToKillDuringTearDown.remove(id);
 			 }
-			 
-			 public void terminated(int pid, Signal signal,
-						int value,
+			 public void terminated(ProcessIdentifier pid,
+						Signal signal, int value,
 						boolean coreDumped) {
 			     drainTerminated(pid);
 			 }
-			 
-			 public void disappeared (int pid, Throwable w) {
+			 public void disappeared(ProcessIdentifier pid,
+						 Throwable w) {
 			     // The task vanished somehow, drain it.
 			     drainTerminated(pid);
 			 }

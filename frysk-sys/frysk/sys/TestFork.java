@@ -86,11 +86,11 @@ public class TestFork
 	TearDownProcess.add(pid);
 	// Capture the child's status; to see if it was correct.
 	class ExitStatus extends UnhandledWaitBuilder {
-	    int pid;
+	    ProcessIdentifier pid;
 	    Signal signal;
 	    int status;
-	    public void terminated(int pid, Signal signal, int status,
-				   boolean coreDumped) {
+	    public void terminated(ProcessIdentifier pid, Signal signal,
+				   int status, boolean coreDumped) {
 		logger.log(Level.FINE,
 			   "exited with status {0,number,integer}\n",
 			   new Integer(status));
@@ -112,7 +112,7 @@ public class TestFork
 		  },
 		  getTimeoutMilliseconds());
 	// (a timeout will also fail with the below)
-	assertEquals("pid", pid.intValue(), exitStatus.pid);
+	assertSame("pid", pid, exitStatus.pid);
 	assertEquals("signal", null, exitStatus.signal);
 	assertEquals("status", 0, exitStatus.status);
     }

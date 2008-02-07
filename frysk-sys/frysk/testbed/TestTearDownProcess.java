@@ -76,7 +76,8 @@ public class TestTearDownProcess
 		      protected void unhandled(String why) {
 			  fail (why);
 		      }
-		      public void stopped(int pid, Signal signal) {
+		      public void stopped(ProcessIdentifier pid,
+					  Signal signal) {
 			  // Toss.
 		      }
 		  },

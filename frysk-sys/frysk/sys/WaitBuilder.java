@@ -68,23 +68,24 @@ public interface WaitBuilder {
      * syscall event whether it is entry or exit.  We must
      * do state transitioning in the upper-level and figure it out.
      */
-    void syscallEvent (int pid);
+    void syscallEvent(ProcessIdentifier pid);
     /**
      * The task PID stopped with SIGNAL pending (could be SIGNONE).
      */
-    void stopped(int pid, Signal signal);
+    void stopped(ProcessIdentifier pid, Signal signal);
     /**
      * The task PID terminated (either WIFEXITED or WIFSIGNALED); if
      * SIGNAL is non-NULL then the termination is the specified signal
      * and STATUS is the negated signal value; else STATUS is the
      * cardinal exit status.
      */
-    void terminated(int pid, Signal signal, int value, boolean coreDumped);
+    void terminated(ProcessIdentifier pid, Signal signal,
+		    int value, boolean coreDumped);
     /**
      * The task PID disappeared.
      *
      * Received an event for PID but then that, by the time its
      * status was checked, the process had vanished.
      */
-    void disappeared (int pid, Throwable w);
+    void disappeared(ProcessIdentifier pid, Throwable w);
 }

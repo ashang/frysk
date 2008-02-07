@@ -112,7 +112,7 @@ public class TestWait
 	assertFalse("timeout",
 		    Wait.waitAll(getTimeoutMilliseconds (), waitOnChild,
 				 unhandledSignalBuilder));
-	assertEquals ("pid", pid.intValue(), waitOnChild.pid);
+	assertSame("pid", pid, waitOnChild.pid);
     }
 
 
@@ -151,14 +151,14 @@ public class TestWait
      * Class to capture termination information.
      */
     private static class WaitOnChild extends UnhandledWaitBuilder {
-	int pid = 0;
+	ProcessIdentifier pid;
 	Signal signal;
 	int status;
 	protected void unhandled (String what) {
 	    fail (what);
 	}
-	public void terminated(int pid, Signal signal, int status,
-			       boolean coreDumped) {
+	public void terminated(ProcessIdentifier pid, Signal signal,
+			       int status, boolean coreDumped) {
 	    this.pid = pid;
 	    this.signal = signal;
 	    this.status = status;
@@ -170,7 +170,7 @@ public class TestWait
 	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/true" });
 	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
 		     unhandledSignalBuilder);
-	assertEquals("pid", pid.intValue(), waitOnChild.pid);
+	assertSame("pid", pid, waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 0, waitOnChild.status);
     }
@@ -180,7 +180,7 @@ public class TestWait
 	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/false" });
 	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
 		     unhandledSignalBuilder);
-	assertEquals("pid", pid.intValue(), waitOnChild.pid);
+	assertSame("pid", pid, waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 1, waitOnChild.status);
     }

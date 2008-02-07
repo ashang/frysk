@@ -55,25 +55,8 @@ public abstract class UnhandledWaitBuilder
      * An unhandled waitpid event was encountered, describe why and
      * call unhandled.
      */
-    private void unhandled (String what, int pid)
-    {
-	unhandled ("unhandled " + what + " (pid " + pid + ")");
-    }
-    /**
-     * An unhandled waitpid event was encountered, describe why and
-     * call unhandled.
-     */
     private void unhandled(String what, ProcessIdentifier pid) {
 	unhandled("unhandled " + what + " (pid " + pid + ")");
-    }
-    /**
-     * An unhandled waitpid event was encountered, describe why and
-     * call unhandled.
-     */
-    private void unhandled (String what, int pid, String also, int value)
-    {
-	unhandled ("unhandled " + what
-		   + " (pid " + pid + ", " + also + " " + value + ")");
     }
     /**
      * An unhandled waitpid event was encountered, describe why and
@@ -92,15 +75,6 @@ public abstract class UnhandledWaitBuilder
 			   String also, Object value) {
 	unhandled("unhandled " + what
 		  + " (pid " + pid + ", " + also + " " + value + ")");
-    }
-    /**
-     * An unhandled waitpid event was encountered, describe why and
-     * call unhandled.
-     */
-    private void unhandled (String what, int pid, String also, String value)
-    {
-	unhandled ("unhandled " + what
-		   + " (pid " + pid + ", " + also + " " + value + ")");
     }
     /**
      * The task PID got a clone event; CLONE is the new task's ID.
@@ -137,15 +111,14 @@ public abstract class UnhandledWaitBuilder
      * syscall event whether it is entry or exit.  We must
      * do state transitioning in the upper-level and figure it out.
      */
-    public void syscallEvent (int pid)
-    {
+    public void syscallEvent(ProcessIdentifier pid) {
 	unhandled ("syscallEvent", pid);
     }
     /**
      * The task PID stopped with SIGNAL pending (SIGNAL could be
      * SIGNONE).
      */
-    public void stopped(int pid, Signal signal) {
+    public void stopped(ProcessIdentifier pid, Signal signal) {
 	unhandled("stopped", pid, "signal", signal.toString());
     }
     /**
@@ -153,8 +126,8 @@ public abstract class UnhandledWaitBuilder
      * non-NULL it is the terminating signal, else STATUS is the exit
      * status.
      */
-    public void terminated(int pid, Signal signal, int status,
-			   boolean coreDumped) {
+    public void terminated(ProcessIdentifier pid, Signal signal,
+			   int status, boolean coreDumped) {
 	if (signal != null)
 	    unhandled("terminated", pid, "signal", signal.toString());
 	else
@@ -166,8 +139,7 @@ public abstract class UnhandledWaitBuilder
      * Received an event for PID but then that, by the time its
      * status was checked, the process had vanished.
      */
-    public void disappeared (int pid, Throwable w)
-    {
-	unhandled ("disappeared", pid, "why", w.toString ());
+    public void disappeared(ProcessIdentifier pid, Throwable w) {
+	unhandled("disappeared", pid, "why", w.toString ());
     }
 }

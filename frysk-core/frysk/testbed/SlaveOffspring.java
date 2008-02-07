@@ -43,6 +43,7 @@ import frysk.proc.Manager;
 import frysk.junit.TestCase;
 import frysk.sys.Pid;
 import frysk.sys.Signal;
+import frysk.sys.ProcessIdentifier;
 import frysk.testbed.SignalWaiter;
 import java.util.LinkedList;
 import java.util.List;
@@ -244,8 +245,8 @@ public class SlaveOffspring
 			protected void unhandled (String why) {
 			    TestCase.fail ("killing child (" + why + ")");
 			}
-			public void terminated(int pid, Signal signal,
-					       int value,
+			public void terminated(ProcessIdentifier pid,
+					       Signal signal, int value,
 					       boolean coreDumped) {
 			    // Termination with signal is ok.
 			    TestCase.assertTrue("terminated with signal",

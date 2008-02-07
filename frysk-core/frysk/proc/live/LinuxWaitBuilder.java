@@ -88,12 +88,12 @@ class LinuxWaitBuilder implements WaitBuilder {
      * didn't exist) to the fscked-up list.  Will get re-processed
      * later.
      */
-    private void saveFsckedOrderedKernelStoppedEvent(final int aPid,
+    private void saveFsckedOrderedKernelStoppedEvent(final ProcessIdentifier aPid,
 						     final Signal aSignal) {
 	if (fsckedOrderedKernelEvents == null)
 	    fsckedOrderedKernelEvents = new LinkedList();
-	Event rescheduled = new Event () {
-		final int pid = aPid;
+	Event rescheduled = new Event() {
+		final ProcessIdentifier pid = aPid;
 		final Signal signal = aSignal;
 		public void execute() {
 		    LinuxWaitBuilder.this.stopped(pid, signal);
@@ -103,7 +103,7 @@ class LinuxWaitBuilder implements WaitBuilder {
 		}
 	    };
 	logger.log(Level.FINE, "{0} rescheduled\n", rescheduled);
-	fsckedOrderedKernelEvents.add (rescheduled);
+	fsckedOrderedKernelEvents.add(rescheduled);
     }
     
     // Hold onto a scratch ID; avoids overhead of allocating a new
@@ -126,14 +126,6 @@ class LinuxWaitBuilder implements WaitBuilder {
     }
     private final SearchId searchId;
     
-    private void logMissing(String what, int pid) {
-	logger.log(Level.WARNING,
-		   "No task for {0} pid {1,number,integer};"
-		   + " possibly caused by earlier [test] code"
-		   + " failing to clean up all childen",
-		   new Object[] { what, new Integer(pid) });
-    }
-
     private void logMissing(String what, ProcessIdentifier pid) {
 	logger.log(Level.WARNING,
 		   "No task for {0} pid {1,number,integer};"
@@ -186,8 +178,7 @@ class LinuxWaitBuilder implements WaitBuilder {
         task.processExecedEvent();
     }
     
-    public void disappeared (int pid, Throwable w)
-    {
+    public void disappeared(ProcessIdentifier pid, Throwable w) {
         LinuxPtraceTask task = searchId.get(pid, "{0} disappeared\n");
         // XXX Sometimes it seems it has already disappeared and this fails
         // Catch the failure, but not sure what to do with the failure right now
@@ -197,13 +188,12 @@ class LinuxWaitBuilder implements WaitBuilder {
         } catch (Exception e) {}
     }
 
-    public void syscallEvent (int pid)
-    {
+    public void syscallEvent(ProcessIdentifier pid) {
         LinuxPtraceTask task = searchId.get(pid, "{0} syscallEvent\n");
         task.processSyscalledEvent();
     }
     
-    public void stopped(int pid, Signal sig) {
+    public void stopped(ProcessIdentifier pid, Signal sig) {
         LinuxPtraceTask task = searchId.get(pid, "{0} stopped\n");
 	if (task == null) {
 	    // If there's no Task corresponding to TID, assume that
@@ -217,8 +207,8 @@ class LinuxWaitBuilder implements WaitBuilder {
 	task.processStoppedEvent(sig);
     }
     
-    public void terminated(int pid, Signal signal, int status,
-			   boolean coreDumped) {
+    public void terminated(ProcessIdentifier pid, Signal signal,
+			   int status, boolean coreDumped) {
         LinuxPtraceTask task = searchId.get(pid, "{0} terminated\n");
 	if (task == null)
 	    // Stray pid from uncontrolled fork.

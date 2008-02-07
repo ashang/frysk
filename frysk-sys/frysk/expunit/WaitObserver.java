@@ -60,10 +60,10 @@ class WaitObserver implements WaitBuilder {
     private RuntimeException terminationException(String msg) {
 	return new TerminationException(expectedSignal, expectedStatus, msg);
     }
-    public void disappeared(int pid, Throwable t) {
+    public void disappeared(ProcessIdentifier pid, Throwable t) {
 	throw terminationException("Process disappeared");
     }
-    public void terminated(int pid, Signal signal, int status,
+    public void terminated(ProcessIdentifier pid, Signal signal, int status,
 			   boolean coreDumped) {
 	if (signal != null) {
 	    if (signal != expectedSignal)
@@ -73,10 +73,10 @@ class WaitObserver implements WaitBuilder {
 		throw terminationException("Exited with status " + status);
 	}
     }
-    public void stopped(int pid, Signal signal) {
+    public void stopped(ProcessIdentifier pid, Signal signal) {
 	throw terminationException("Stopped with signal " + signal);
     }
-    public void syscallEvent (int pid) {
+    public void syscallEvent(ProcessIdentifier pid) {
 	throw terminationException("Stopped with syscall event");
     }
     public void execEvent(ProcessIdentifier pid) {

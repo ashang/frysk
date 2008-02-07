@@ -1,5 +1,8 @@
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* LegacyOffspring.java: Update to match WaitBuilder's terminated.
+	* SlaveOffspring.java: Ditto.
+
 	* OffspringType.java: Update to match frysk.sys.Fork.
 	* SynchronizedOffspring.java: Ditto.
 

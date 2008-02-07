@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -76,9 +76,9 @@ public class TestPtrace
 		protected void unhandled(String why) {
 		    fail (why);
 		}
-		public void stopped(int pid, Signal signal) {
-		    assertEquals("stopped pid", id.intValue(), pid);
-		    assertEquals("stopped sig", Signal.TRAP, signal);
+		public void stopped(ProcessIdentifier pid, Signal signal) {
+		    assertSame("stopped pid", id, pid);
+		    assertSame("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
@@ -88,9 +88,9 @@ public class TestPtrace
 		protected void unhandled(String why) {
 		    fail (why);
 		}
-		public void stopped(int pid, Signal signal) {
-		    assertEquals("stopped pid", id.intValue(), pid);
-		    assertEquals("stopped sig", Signal.TRAP, signal);
+		public void stopped(ProcessIdentifier pid, Signal signal) {
+		    assertSame("stopped pid", id, pid);
+		    assertSame("stopped sig", Signal.TRAP, signal);
 		}
 	    });
 
@@ -100,10 +100,10 @@ public class TestPtrace
 		protected void unhandled(String why) {
 		    fail (why);
 		}
-		public void terminated(int pid, Signal signal, int status,
-				       boolean coreDumped) {
-		    assertEquals("terminated pid", id.intValue(), pid);
-		    assertEquals("terminated signal", Signal.TERM, signal);
+		public void terminated(ProcessIdentifier pid, Signal signal,
+				       int status, boolean coreDumped) {
+		    assertSame("terminated pid", id, pid);
+		    assertSame("terminated signal", Signal.TERM, signal);
 		    assertEquals("terminated status", -Signal.TERM.intValue(),
 				 status);
 		}
@@ -115,45 +115,38 @@ public class TestPtrace
      */
     public void testAttachDetach ()
     {
-	final int pid = new Daemon (new Execute ()
-	    {
-		public void execute ()
-		{
+	final ProcessIdentifier pid = new Daemon(new Execute() {
+		public void execute() {
 		    Itimer.sleep (TestCase.getTimeoutSeconds());
 		}
-	    }).hashCode ();
-	TearDownProcess.add (pid);
-	assertTrue ("pid", pid > 0);
+	    });
+	TearDownProcess.add(pid);
+	assertTrue ("pid", pid.intValue() > 0);
 
 	Ptrace.attach(pid);
-	Wait.waitAll (pid, new UnhandledWaitBuilder ()
-	    {
-		private final int id = pid;
-		protected void unhandled (String why)
-		{
+	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+		private final ProcessIdentifier id = pid;
+		protected void unhandled(String why) {
 		    fail (why);
 		}
-		public void stopped(int pid, Signal signal) {
+		public void stopped(ProcessIdentifier pid, Signal signal) {
 		    assertEquals("stopped pid", id, pid);
-		    assertEquals("stopped sig", Signal.STOP, signal);
+		    assertSame("stopped sig", Signal.STOP, signal);
 		}
 	    });
 
 	Ptrace.detach(pid, Signal.NONE);
 	Errno errno = null;
 	try {
-	    Wait.waitAll (pid, new UnhandledWaitBuilder ()
-		{
-		    protected void unhandled (String why)
-		    {
+	    Wait.waitAll(pid, new UnhandledWaitBuilder() {
+		    protected void unhandled(String why) {
 			fail (why);
 		    }
 		});
-	}
-	catch (Errno e) {
+	} catch (Errno e) {
 	    errno = e;
 	}
-	assertEquals ("Errno", Errno.Echild.class, errno.getClass());
+	assertEquals("Errno", Errno.Echild.class, errno.getClass());
     }
 
     private void verifyBytes (String what, int pid,
