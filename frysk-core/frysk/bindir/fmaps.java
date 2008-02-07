@@ -39,60 +39,27 @@
 
 package frysk.bindir;
 
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
+import frysk.util.ProcStopUtil;
+import frysk.event.ProcEvent;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.MemoryMap;
-import java.io.File;
-import frysk.util.CoreExePair;
 
 public class fmaps {
     
     public static void main (String[] args) {
-	// Parse command line. Check pid provided.
-	
-	CommandlineParser parser = new CommandlineParser("fexe") {
-		
-		public void parseCores (CoreExePair[] corePairs) {
-		    for (int i = 0; i < corePairs.length; i++) {
-			File coreFile = corePairs[i].coreFile;
-			File exeFile = corePairs[i].exeFile;
-			Proc proc;
-			
-			if (exeFile == null)
-			    proc = Util.getProcFromCoreFile(coreFile);
-			else
-			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
-			printMaps(proc.getMaps());
-		    }
-		    
-		    System.exit(0);
-		}
-		
-		public void parsePids (ProcId[] pids) {
-		    for (int i= 0; i< pids.length; i++) {
-			ProcId id = pids[i];
-			Proc proc = Util.getProcFromPid(id);
-			printMaps(proc.getMaps());
-		    }
-		    System.exit(0);
-		}
-		
-		private void printMaps(MemoryMap[] maps)
-		{
-		    for(int i=0; i<maps.length; i++)
-			System.out.println(maps[i].toString());
-		}
-		
-	    };
-	
-	parser.setHeader("Usage: fmaps <PID>  || fmaps <COREFILE> [<EXEFILE>]");
-	parser.parse(args);
-	
-	//If we got here, we didn't find a pid.
-	System.err.println("Error: No PID or COREFILE.");
-	parser.printHelp();
-	System.exit(1);
+	ProcStopUtil fmaps = new ProcStopUtil("fmaps", args, 
+		                               new PrintMapsEvent());
+	fmaps.setUsage("Usage: fmaps <PID> || fmaps <EXEFILE> " +
+	               "|| fmaps <COREFILE> [<EXEFILE>]");   
+	fmaps.execute();
+    }
+    
+    private static class PrintMapsEvent implements ProcEvent
+    {
+	public void execute(Proc proc) {
+	    MemoryMap[] maps = proc.getMaps();
+	    for(int i=0; i<maps.length; i++)
+		System.out.println(maps[i].toString());
+	}	
     }
 }

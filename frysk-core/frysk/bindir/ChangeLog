@@ -1,7 +1,11 @@
+2008-02-07  Teresa Thomas  <tthomas@redhat.com>
+
+	* fmaps.java: Refactor to use ProcStopUtil.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
-
+	
 	* fstep.java: Update to use Host.requestProc(int,FindProc).
-
+	
 2008-02-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebuginfo.java: Refactor, use ProcStopUtil.
