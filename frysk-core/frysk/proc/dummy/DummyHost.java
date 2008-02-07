@@ -47,9 +47,6 @@ import java.util.Collection;
 import frysk.proc.HostRefreshBuilder;
 
 public class DummyHost extends Host {
-    public void requestRefreshXXX() {
-	throw new RuntimeException("requestCreateAttachedProc");
-    }
     public void requestCreateAttachedProc(String stdin, String stdout,
 					  String stderr, String[] args,
 					  Attached attached) {

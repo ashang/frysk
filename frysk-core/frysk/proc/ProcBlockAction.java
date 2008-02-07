@@ -170,7 +170,6 @@ public class ProcBlockAction
   public ProcBlockAction (File coreFile) {
     LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
 
-    core.requestRefreshXXX();
     Manager.eventLoop.runPending();
     proc = core.getSoleProcFIXME();
     if (proc == null)

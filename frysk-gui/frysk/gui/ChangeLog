@@ -1,3 +1,7 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Gui.java: Delete call to Host.requestRefreshXXX().
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* register/RegisterWindow.java: Update; Register moved to

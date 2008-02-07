@@ -61,9 +61,6 @@ abstract class DeadHost extends Host {
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
-    public void requestRefreshXXX() {
-	// ignore.
-    }
     public void requestRefresh(Collection knownProcesses,
 			       HostRefreshBuilder builder) {
 	// Ignore for now; should call back with the known processes

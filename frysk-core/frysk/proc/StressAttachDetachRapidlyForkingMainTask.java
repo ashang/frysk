@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
@@ -156,13 +158,23 @@ public class StressAttachDetachRapidlyForkingMainTask
 	child.getMainTask().requestAddForkedObserver (forkObserver);
 	
 	// Create a refresh time with a low refresh.
-	TimerEvent refreshTimer = new TimerEvent(0, 500){
-		public void execute() {
-		    Manager.host.requestRefreshXXX ();
-		}
-	    };
-
-	Manager.eventLoop.add (refreshTimer);
+	class Refresher extends TimerEvent implements HostRefreshBuilder {
+	    private final Host host;
+	    Refresher(Host host) {
+		super(0, 500);
+		this.host = host;
+	    }
+	    private final HashSet known = new HashSet();
+	    public void execute() {
+		host.requestRefresh(known, this);
+	    }
+	    public void construct(Collection newProcesses,
+				  Collection exitedProcesses) {
+		known.addAll(newProcesses);
+		known.removeAll(exitedProcesses);
+	    }
+	}
+	Manager.eventLoop.add (new Refresher(host));
 	
 	// Go ....
 	child.requestRemoveBlock();

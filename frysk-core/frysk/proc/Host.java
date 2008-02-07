@@ -128,13 +128,6 @@ public abstract class Host {
 
 
     /**
-     * Request that the Host scan the system's process tables
-     * refreshing the internal structure to match.  Optionally refresh
-     * each processes task list.
-     */
-    public abstract void requestRefreshXXX();
-
-    /**
      * Find a specifc process from its Id.
      */
     public abstract void requestProc(int pid, FindProc finder);

@@ -1,5 +1,7 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyHost.java (requestRefreshXXX()): Delete.	
+
 	* DummyHost.java (requestProc(int,FindProc)): Update to match
 	Host.
 

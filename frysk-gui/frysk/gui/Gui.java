@@ -39,6 +39,10 @@
 
 package frysk.gui;
 
+import frysk.proc.HostRefreshBuilder;
+import java.util.Collection;
+import java.util.HashSet;
+import frysk.proc.Host;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -376,21 +380,31 @@ public class Gui implements LifeCycleListener, Saveable {
 		});
 		backendStarter.start();
 		
-		TimerEvent refreshTimer = new TimerEvent(0, 3000)
-		    {
-			public void execute()
-			{
-			    CustomEvents.addEvent(new Runnable()
-				{
-				    public void run()
-				    {
-					Manager.host.requestRefreshXXX();
-				    }
-				});
-			}
-		    };
-		Manager.eventLoop.add(refreshTimer);
-
+		// Create a refresh time with a low refresh; FIXME:
+		// This belongs in the process-picker window.  That
+		// way the process picker gets to regulate when
+		// updates come through.  For instance, while a search
+		// (CNTRL-F) is being performed, refreshes are
+		// blocked.
+		class Refresher extends
+		    TimerEvent implements HostRefreshBuilder
+		{
+		    private final Host host;
+		    Refresher(Host host) {
+			super(0, 3000);
+			this.host = host;
+		    }
+		    private final HashSet known = new HashSet();
+		    public void execute() {
+			host.requestRefresh(known, this);
+		    }
+		    public void construct(Collection newProcesses,
+					  Collection exitedProcesses) {
+			known.addAll(newProcesses);
+			known.removeAll(exitedProcesses);
+		    }
+		}
+		Manager.eventLoop.add (new Refresher(Manager.host));
 	}
 	
 	/**

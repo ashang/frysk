@@ -1,5 +1,7 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadHost.java (requestRefreshXXX()): Delete.
+
 	* DeadHost.java (requestProc(int,FindProc): Update to match Host.
 
 2008-01-31  Andrew Cagney  <cagney@redhat.com>

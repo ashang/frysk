@@ -52,8 +52,11 @@ import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
+import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Action;
 import frysk.proc.Manager;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -393,59 +396,56 @@ public class TestTaskObserverBlocked
     fork.assertUnblockOffspring();
   }
 
-  /**
-   * Check that an unblocked offspring, that then exits, can be refreshed. This
-   * confirms that an unblocked task transitioned to detached.
-   */
-  public void testRefreshAfterUnblockedForkExits ()
-  {
-    SlaveOffspring proc = SlaveOffspring.createDaemon();
-    Task task = proc.findTaskUsingRefresh(true);
-    class ForkUnblock
-        extends TaskObserverBase
-        implements TaskObserver.Forked
-    {
-      Task parent;
+    /**
+     * Check that an unblocked offspring, that exits can be
+     * refreshed. This confirms that an unblocked task transitioned to
+     * detached.
+     */
+    public void testRefreshAfterUnblockedForkExits() {
+	SlaveOffspring proc = SlaveOffspring.createDaemon();
+	Task task = proc.findTaskUsingRefresh(true);
+	class ForkUnblock extends TaskObserverBase
+	    implements TaskObserver.Forked
+	{
+	    Task parent;
+	    Task offspring;
+	    public void addedTo (Object o) {
+		Manager.eventLoop.requestStop();
+	    }
+	    public Action updateForkedParent (Task parent, Task offspring) {
+		this.parent = parent;
+		this.offspring = offspring;
+		return Action.CONTINUE;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring) {
+		offspring.requestUnblock(this);
+		return Action.BLOCK;
+	    }
+	}
+	ForkUnblock forkUnblock = new ForkUnblock();
+	task.requestAddForkedObserver(forkUnblock);
+	assertRunUntilStop("adding fork observer");
 
-      Task offspring;
+	// Create a child process, will transition through to
+	// detached.
+	proc.assertSendAddForkWaitForAcks();
 
-      public void addedTo (Object o)
-      {
-        Manager.eventLoop.requestStop();
-      }
+	// Now make the child exit. Frysk's core can't see this since
+	// it isn't attached to the process.
+	proc.assertSendDelForkWaitForAcks();
 
-      public Action updateForkedParent (Task parent, Task offspring)
-      {
-        this.parent = parent;
-        this.offspring = offspring;
-        return Action.CONTINUE;
-      }
+	logger.log(Level.FINE, "{0} parent\n", forkUnblock.parent);
+	logger.log(Level.FINE, "{0} offspring\n", forkUnblock.offspring);
 
-      public Action updateForkedOffspring (Task parent, Task offspring)
-      {
-        offspring.requestUnblock(this);
-        return Action.BLOCK;
-      }
+	// Finally force a refresh.
+	host.requestRefresh(new HashSet(), new HostRefreshBuilder() {
+		public void construct(Collection newProcesses,
+				      Collection exitedProcesses) {
+		    // ignore; check in exitedProcesses?
+		}
+	    });
+	Manager.eventLoop.runPending();
     }
-    ForkUnblock forkUnblock = new ForkUnblock();
-    task.requestAddForkedObserver(forkUnblock);
-    assertRunUntilStop("adding fork observer");
-
-    // Create a child process, will transition through to
-    // detached.
-    proc.assertSendAddForkWaitForAcks();
-
-    // Now make the child exit. Frysk's core can't see this since
-    // it isn't attached to the process.
-    proc.assertSendDelForkWaitForAcks();
-
-    logger.log(Level.FINE, "{0} parent\n", forkUnblock.parent);
-    logger.log(Level.FINE, "{0} offspring\n", forkUnblock.offspring);
-
-    // Finally force a refresh.
-    host.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-  }
 
   /**
    * Check that new observers being added hot on the heals of an unblock get

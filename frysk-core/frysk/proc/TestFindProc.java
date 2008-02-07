@@ -145,22 +145,4 @@ public class TestFindProc
 	Manager.host.requestProc(0, finder);
 	assertRunUntilStop("testFindFailed");
     }
-  
-
-  public void testFindUsingRefresh ()
-  {
-    final SlaveOffspring ackProc = SlaveOffspring.createChild();
-
-    Proc proc;
-
-    ProcCounter o = new ProcCounter();
-    Manager.host.observableProcAddedXXX.addObserver(o);
-    // Try polling /proc.
-    Manager.host.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-    proc = Manager.host.getProc(new ProcId(ackProc.getPid()));
-
-    assertNotNull(proc);
-
-  }
 }

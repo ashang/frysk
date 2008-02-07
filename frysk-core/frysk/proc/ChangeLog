@@ -1,5 +1,9 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (requestRefreshXXX()): Delete.
+	* ProcBlockAction.java: Update.
+	* TestFindProc.java: Update.
+	
 	* FindProc.java (procNotFound(int)): Replace procNotFound(ProcId).
 	* Host.java (requestProc(int,FindProc)): Replace
 	requestProc(ProcId,FindProc).
