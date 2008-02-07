@@ -82,6 +82,7 @@ class ListCommand extends ParameterizedCommand {
 	return new Options();
     }
 
+    private DebugInfoFrame currentFrame = null;
     private File file = null;
     private int line;
     private int exec_line = 0;
@@ -147,7 +148,7 @@ class ListCommand extends ParameterizedCommand {
                 line = exec_line - 10;
             }
  
-            if (file == null) {
+            if (file == null || frame != currentFrame) {
                 if (frame.getLine() != SourceLocation.UNKNOWN) {
                     file = (frame.getLine()).getFile();
                     if (file == null) {
@@ -155,7 +156,8 @@ class ListCommand extends ParameterizedCommand {
                                        Message.TYPE_NORMAL);
                         return;
                     }
-                    line = (frame.getLine()).getLine() - 10;
+                    line = (frame.getLine()).getLine() - (windowSize / 2);
+		    currentFrame = frame;
 		    if (exec_line == 0)
 			exec_line = line;
                 }

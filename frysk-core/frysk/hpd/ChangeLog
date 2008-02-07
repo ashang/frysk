@@ -1,3 +1,8 @@
+2008-02-06  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (currentFrame): New.
+	(interpret): Use it.
+
 2008-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CLI.java (addMessage): Synchronize on message.
