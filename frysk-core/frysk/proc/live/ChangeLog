@@ -1,5 +1,11 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (getTask(ProcessIdentifier)): New.
+	(putTask(ProcessIdentifier,LinuxPtraceTask)): New.
+	* LinuxWaitBuilder.java (searchId): Delete.
+	(get(ProcessIdentifier,String)): New.
+	* LinuxPtraceTask.java: Register with LinuxPtraceHost.
+
 	* LinuxPtraceHost.java (requestRefreshXXX()): Delete.
 	* TestTaskObserverBlocked.java: Update.
 	

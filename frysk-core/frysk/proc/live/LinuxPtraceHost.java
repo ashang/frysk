@@ -61,6 +61,8 @@ import frysk.sys.Pid;
 import frysk.event.Event;
 import frysk.proc.FindProc;
 import frysk.proc.HostRefreshBuilder;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.Collection;
 
 /**
@@ -76,6 +78,17 @@ public class LinuxPtraceHost extends LiveHost {
 	eventLoop.add(new LinuxWaitBuilder(this));
     }
 
+
+    /**
+     * Maintain a cache of tasks indexed by ProcessIdentifier.
+     */
+    private final Map tasks = new WeakHashMap();
+    LinuxPtraceTask getTask(ProcessIdentifier pid) {
+	return (LinuxPtraceTask) tasks.get(pid);
+    }
+    void putTask(ProcessIdentifier pid, LinuxPtraceTask task) {
+	tasks.put(pid, task);
+    }
 
     /**
      * Either add or update a process, however, before doing that
