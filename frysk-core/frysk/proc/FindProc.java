@@ -56,5 +56,5 @@ public interface FindProc {
      * The process with the given ID was not found.
      * @param procId the procId that was not found.
      */
-    void procNotFound(ProcId procId);    
+    void procNotFound(int pid);    
 }

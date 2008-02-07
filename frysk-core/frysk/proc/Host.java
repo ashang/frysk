@@ -137,7 +137,7 @@ public abstract class Host {
     /**
      * Find a specifc process from its Id.
      */
-    public abstract void requestProc(ProcId procId, FindProc finder);
+    public abstract void requestProc(int pid, FindProc finder);
     
     /**
      * Given a set of knownProcesses and knownDaemons (children of

@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Manager;
 import frysk.proc.FindProc;
 import java.util.List;
@@ -59,7 +58,7 @@ class AttachCommand extends ParameterizedCommand {
 	    notifyAll();
 	}
 
-	public synchronized void procNotFound(ProcId procId) {
+	public synchronized void procNotFound(int pid) {
 	    proc = null;
 	    procSearchFinished = true;
 	    notifyAll();
@@ -102,7 +101,7 @@ class AttachCommand extends ParameterizedCommand {
 	for (int i = 0; i < cmd.size(); i++) {
 	    int pid = Integer.parseInt(cmd.parameter(i));
 	    ProcFinder findProc = new ProcFinder();
-	    Manager.host.requestProc(new ProcId(pid), findProc);
+	    Manager.host.requestProc(pid, findProc);
 	    synchronized (findProc) {
 		while (!findProc.procSearchFinished) {
 		    try {

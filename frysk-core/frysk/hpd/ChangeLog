@@ -1,3 +1,9 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* AttachCommand.java: Update to use
+	Host.requestProc(int,FindProc).
+	* TestLib.java: Ditto.
+
 2008-02-06  Stan Cox  <scox@redhat.com>
 
 	* ListCommand.java (currentFrame): New.

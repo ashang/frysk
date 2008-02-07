@@ -1,3 +1,7 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Update to use Host.requestProc(int,FindProc).
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* MappingGuard.java: Update to match

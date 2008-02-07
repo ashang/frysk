@@ -1,3 +1,7 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindowFactory.java (attachToPID(int)): Delete.
+
 2008-01-24  swagiaal  <swagiaal@toner.yyz.redhat.com>
 
 	* SourceWindow.java: Fix for NullPointerException

@@ -1,3 +1,9 @@
+2008-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* FCatch.java: Update to match Host.requestProc(int,FindProc).
+	* TestFCatch.java: Ditto.
+	* Util.java: Ditto.
+
 2008-02-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcStopUtil.java: New.

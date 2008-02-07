@@ -51,7 +51,6 @@ import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
@@ -121,23 +120,20 @@ public class TestFCatch
         Manager.host.requestCreateAttachedProc(command, new CatchObserver());
     }
 
-    private void init ()
-    {
-      logger.log(Level.FINE, "{0} init", this);
-
-      Manager.host.requestProc(this.procID, new FindProc()
-      {
-        public void procFound(Proc p) {
-	    proc = p;
-	    iterateTasks();
-        }
-        public void procNotFound(ProcId procId) {
-	    System.err.println("Couldn't find the process: " + procId.toString());
-	    Manager.eventLoop.requestStop();
-        }
-      });
-      logger.log(Level.FINE, "{0} exiting init", this);
-    }
+      private void init() {
+	  logger.log(Level.FINE, "{0} init", this);
+	  Manager.host.requestProc(this.procID.intValue(), new FindProc() {
+		  public void procFound(Proc p) {
+		      proc = p;
+		      iterateTasks();
+		  }
+		  public void procNotFound(int pid) {
+		      System.err.println("Couldn't find the process: " + pid);
+		      Manager.eventLoop.requestStop();
+		  }
+	      });
+	  logger.log(Level.FINE, "{0} exiting init", this);
+      }
 
     private void iterateTasks ()
     {

@@ -83,30 +83,28 @@ public class Util
 	  return getProcFromCoreFile(coreExePair.coreFile, coreExePair.exeFile);
   }
   
-  /**
-   * Return a Proc associated with the given pid.
-   * @param procId The given pid.
-   * @return A Proc for the given pid.
-   */
-  public static Proc getProcFromPid(ProcId procId)
-  {
-      class ProcFinder implements FindProc {
-	  Proc proc;
-	  public void procFound(Proc p) {
-	      proc = p;
-	      Manager.eventLoop.requestStop();
-	  }
-	  public void procNotFound(ProcId procId) { 
-	      System.err.println("Could not find the process: "
-				 + procId.intValue());
-	      Manager.eventLoop.requestStop();  
-	  } 
-      }
-      ProcFinder finder = new ProcFinder();
-      Manager.host.requestProc(procId, finder);
-      Manager.eventLoop.run();
-      return finder.proc;
-  }
+    /**
+     * Return a Proc associated with the given pid.
+     * @param procId The given pid.
+     * @return A Proc for the given pid.
+     */
+    public static Proc getProcFromPid(ProcId procId) {
+	class ProcFinder implements FindProc {
+	    Proc proc;
+	    public void procFound(Proc p) {
+		proc = p;
+		Manager.eventLoop.requestStop();
+	    }
+	    public void procNotFound(int pid) { 
+		System.err.println("Could not find the process: " + pid);
+		Manager.eventLoop.requestStop();  
+	    } 
+	}
+	ProcFinder finder = new ProcFinder();
+	Manager.host.requestProc(procId.hashCode(), finder);
+	Manager.eventLoop.run();
+	return finder.proc;
+    }
   
     /**
      * Return the Proc associated with an executable File.

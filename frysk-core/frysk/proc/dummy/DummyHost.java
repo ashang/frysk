@@ -40,7 +40,6 @@
 package frysk.proc.dummy;
 
 import frysk.proc.TaskObserver.Attached;
-import frysk.proc.ProcId;
 import frysk.proc.Proc;
 import frysk.proc.FindProc;
 import frysk.proc.Host;
@@ -59,7 +58,7 @@ public class DummyHost extends Host {
     public Proc getSelf() {
 	throw new RuntimeException("getSelf");
     }
-    public void requestProc(ProcId procId, FindProc finder) {
+    public void requestProc(int pid, FindProc finder) {
 	throw new RuntimeException("requestProc");
     }
     public void requestRefresh(Collection processes,

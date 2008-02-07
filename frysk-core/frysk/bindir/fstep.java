@@ -54,7 +54,6 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Option;
 import java.util.Iterator;
 import frysk.proc.Action;
-import frysk.proc.ProcId;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
@@ -175,14 +174,13 @@ public class fstep
       }
 
     final fstep step = new fstep();
-    if (pid != 0)
-      {
-	Manager.host.requestProc(new ProcId(pid), new FindProc() {
+    if (pid != 0) {
+	Manager.host.requestProc(pid, new FindProc() {
 	    public void procFound(Proc proc) {
 		Task mainTask = proc.getMainTask();
 		mainTask.requestAddAttachedObserver(step);
 	    }
-	    public void procNotFound(ProcId procId) {
+	    public void procNotFound(int pid) {
 		System.err.println("no such process: " + pid);
 		parser.printHelp();
 		System.exit(-1);

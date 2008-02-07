@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,10 +58,8 @@ import frysk.dom.DOMFrysk;
 import frysk.gui.Gui;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
-import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -166,25 +164,6 @@ public class SourceWindowFactory
     srcWin.addListener(new SourceWinListener());
     
     srcWin.grabFocus();
-  }
-  
-  public static void attachToPID (int pid)
-  {
-    ProcId procID = new ProcId(pid);
-
-    Manager.host.requestProc(procID, new FindProc()
-    {
-      public void procFound (Proc proc)
-      {
-        createSourceWindow(proc);
-      }
-
-      public void procNotFound (ProcId procId)
-      {
-        System.err.println("Couldn't find the process: " + procId.toString());
-        Gui.quitFrysk();
-      }
-    });
   }
   
   public static void attachToCore(File coreFile)

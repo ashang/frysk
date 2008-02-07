@@ -74,14 +74,15 @@ abstract class DeadHost extends Host {
 	throw new RuntimeException("getSelf");
     }
 
-    // Dead tasks never change.
-    public void requestProc(final ProcId theProcId, final FindProc theFinder) {
+    // FIXME: Should be able to just return the sole process (after
+    // validating that it is what was requested).
+    public void requestProc(final int theProcId, final FindProc theFinder) {
 	Manager.eventLoop.add(new Event() {
 		// Avoid implicit variables; gcj bug.
-		private final ProcId procId = theProcId;
+		private final int procId = theProcId;
 		private final FindProc finder = theFinder;
 		public void execute() {
-		    Proc proc = getProc(procId);
+		    Proc proc = getProc(new ProcId(procId));
 		    if (proc == null) {
 			finder.procNotFound(procId);
 		    } else {

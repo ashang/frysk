@@ -129,13 +129,12 @@ public class FCatch {
     private void init() {
 	logger.log(Level.FINE, "{0} init", this);
 
-	Manager.host.requestProc(this.procID, new FindProc() {
+	Manager.host.requestProc(this.procID.hashCode(), new FindProc() {
 	    public void procFound(Proc proc) {
 		iterateTasks(proc);
 	    }
-	    public void procNotFound(ProcId procId) {
-		System.err.println("Couldn't find the process: "
-			+ procId.toString());
+	    public void procNotFound(int pid) {
+		System.err.println("Couldn't find the process: " + pid);
 		Manager.eventLoop.requestStop();
 	    }
 	});

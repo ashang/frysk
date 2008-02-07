@@ -1,5 +1,8 @@
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (requestProc(int,FindProc)): Update to
+	match host.
+
 	* AddressSpaceByteBuffer.java: Replace "int pid" with
 	ProcessIdentifier.
 	* IsaFactory.java: Ditto.

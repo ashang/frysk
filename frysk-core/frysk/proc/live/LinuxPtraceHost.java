@@ -211,9 +211,9 @@ public class LinuxPtraceHost extends LiveHost {
 	builder.construct(newProcesses, exitedProcesses);
     }
 
-    public void requestProc(final ProcId theProcId, final FindProc theFinder) {
+    public void requestProc(final int theProcId, final FindProc theFinder) {
 	Manager.eventLoop.add(new Event() {
-		private final ProcId procId = theProcId;
+		private final int procId = theProcId;
 		private final FindProc finder = theFinder;
 		public void execute() {
 		    // Iterate (build) the /proc tree starting with
@@ -224,8 +224,8 @@ public class LinuxPtraceHost extends LiveHost {
 				procChanges.update(pid);
 			    }
 			};
-		    pidBuilder.construct(procId.id);
-		    final Proc proc = Manager.host.getProc(procId);
+		    pidBuilder.construct(procId);
+		    final Proc proc = Manager.host.getProc(new ProcId(procId));
 		    if (proc == null) {
 			finder.procNotFound(procId);
 		    } else {

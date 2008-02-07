@@ -95,14 +95,14 @@ public class TestBreakpoints
     
     // Make sure the core knows about it.
     Manager.host.requestProc
-	(new ProcId(process.pid.hashCode()),
+	(process.pid.intValue(),
 	 new FindProc() {
 	     public void procFound(Proc proc) {
 		 TestBreakpoints.this.proc = proc;
 		 Manager.eventLoop.requestStop();
 	     }
-	     public void procNotFound(ProcId procId) {
-		 fail("proc not found");
+	     public void procNotFound(int pid) {
+		 fail("proc not found " + pid);
 	     }
 	 });
     assertRunUntilStop("finding proc");

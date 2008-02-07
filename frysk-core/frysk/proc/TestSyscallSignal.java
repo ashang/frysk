@@ -71,40 +71,38 @@ public class TestSyscallSignal
   BufferedReader in;
   DataOutputStream out;
 
-  /**
-   * Launch our test program and setup clean environment with a runner
-   * eventloop.
-   */
-  public void setUp()
-  {
-    // Make sure everything is setup so spawned processes are recognized
-    // and destroyed in tearDown().
-    super.setUp();
-
-    // Create a process that we will communicate with through stdin/out.
-    DaemonPipePair process
-	= new DaemonPipePair(new String[] {
-				 Config.getPkgLibFile("funit-syscall-signal")
-				 .getPath()
-			     });
-    pid = process.pid;
-    TearDownProcess.add(pid);
-    in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));
-    out = new DataOutputStream(process.out.getOutputStream());
-
-    // Make sure the core knows about it.
-    Manager.host.requestProc(new ProcId(pid.hashCode()), new FindProc()
-	{
-	    public void procFound(Proc p) {
-		proc = p;
-		Manager.eventLoop.requestStop();
-	    }
-	    public void procNotFound (ProcId procId) {
-		fail("proc not found");
-	    }
-	});
-    assertRunUntilStop("finding proc");
-  }
+    /**
+     * Launch our test program and setup clean environment with a
+     * runner eventloop.
+     */
+    public void setUp() {
+	// Make sure everything is setup so spawned processes are
+	// recognized and destroyed in tearDown().
+	super.setUp();
+	
+	// Create a process that we will communicate with through stdin/out.
+	DaemonPipePair process
+	    = new DaemonPipePair(new String[] {
+		    Config.getPkgLibFile("funit-syscall-signal")
+		    .getPath()
+		});
+	pid = process.pid;
+	TearDownProcess.add(pid);
+	in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));
+	out = new DataOutputStream(process.out.getOutputStream());
+	
+	// Make sure the core knows about it.
+	Manager.host.requestProc(pid.intValue(), new FindProc() {
+		public void procFound(Proc p) {
+		    proc = p;
+		    Manager.eventLoop.requestStop();
+		}
+		public void procNotFound(int pid) {
+		    fail("proc not found " + pid);
+		}
+	    });
+	assertRunUntilStop("finding proc");
+    }
 
   public void testIt() throws IOException
   {

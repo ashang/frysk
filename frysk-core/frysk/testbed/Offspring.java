@@ -44,7 +44,6 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.Errno;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
 import java.util.Iterator;
 import frysk.sys.Signal;
 import frysk.junit.TestCase;
@@ -93,12 +92,12 @@ public abstract class Offspring {
 		proc = p;
 		Manager.eventLoop.requestStop();
 	    }
-	    public void procNotFound(ProcId procId) {
-		TestCase.fail("Couldn't find the given proc");
+	    public void procNotFound(int pid) {
+		TestCase.fail("Couldn't find the given proc " + pid);
 	    }
 	}
 	ProcFinder findProc = new ProcFinder();
-	Manager.host.requestProc(new ProcId(getPid()), findProc);
+	Manager.host.requestProc(getPid(), findProc);
 	Manager.eventLoop.run();
 	return findProc.proc;
     }

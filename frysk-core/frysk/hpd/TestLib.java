@@ -41,7 +41,6 @@ package frysk.hpd;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.testbed.TearDownExpect;
 import frysk.sys.ProcessIdentifier;
 import frysk.proc.FindProc;
@@ -72,14 +71,14 @@ class TestLib extends frysk.testbed.TestLib {
 		this.proc = proc;
 		Manager.eventLoop.requestStop();
 	    }
-	    public void procNotFound(ProcId procId) {
-		fail("Couldn't find child process");
+	    public void procNotFound(int pid) {
+		fail("Couldn't find child process " + pid);
 	    }
 
 	}
 
 	Finder finder = new Finder();
-	Manager.host.requestProc(new ProcId(pid.hashCode()), finder);
+	Manager.host.requestProc(pid.intValue(), finder);
 	Manager.eventLoop.run();
 	return finder.proc;
     }

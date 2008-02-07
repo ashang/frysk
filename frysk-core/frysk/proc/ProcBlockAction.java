@@ -50,8 +50,10 @@ import frysk.event.Event;
 import frysk.proc.dead.LinuxCoreHost;
 
 /**
- * This class blocks all of the threads in a process and performs a given action
- * defined by the method existingTask(Task task) on each task.
+ * This class blocks all of the threads in a process and performs a
+ * given action defined by the method existingTask(Task task) on each
+ * task.
+ *
  * Extensions of this class must implement existingTask(), and 
  * allExistingTasksCompleted() which is called when existingTask() has been 
  * called on all tasks.
@@ -150,21 +152,20 @@ public class ProcBlockAction
     requestAdd();
   }
   
-  public ProcBlockAction (ProcId procId)
-  {
-    logger.log(Level.FINE, "{0} new\n", this);
-    
-    Manager.host.requestProc(procId, new FindProc() {
-	    public void procFound(Proc proc) {
-		ProcBlockAction.this.proc = proc;
-		taskList = proc.getTasks();
-		requestAdd();
-	    }
-	    public void procNotFound(ProcId procId) {
-		throw new RuntimeException("Proc not found " + procId.intValue());
-	    }
-	});
-  }
+    public ProcBlockAction(int pid) {
+	logger.log(Level.FINE, "{0} new\n", this);
+	Manager.host.requestProc(pid, new FindProc() {
+		public void procFound(Proc proc) {
+		    ProcBlockAction.this.proc = proc;
+		    taskList = proc.getTasks();
+		    requestAdd();
+		}
+		public void procNotFound(int pid) {
+		    // This is not at all friendly!
+		    throw new RuntimeException("Proc not found " + pid);
+		}
+	    });
+    }
   
   public ProcBlockAction (File coreFile) {
     LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
