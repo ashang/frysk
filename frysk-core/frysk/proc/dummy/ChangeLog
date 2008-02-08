@@ -1,5 +1,7 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyTask.java (DummyTask(Proc,int)): New.
+
 	* DummyProc.java (DummyProc(DummyHost,int)): New.
 	* DummyHost.java (getName()): Implement.
 	(DummyHost(String)): New.

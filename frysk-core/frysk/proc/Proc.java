@@ -59,7 +59,7 @@ import frysk.sys.Signal;
  * A UNIX Process, containing tasks, memory, ...
  */
 
-public abstract class Proc {
+public abstract class Proc implements Comparable {
     protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
     final ProcId id;
@@ -392,5 +392,13 @@ public abstract class Proc {
 		+ ",pid=" + getPid()
 		+ ",state=" + getStateFIXME()
 		+ "}");
+    }
+
+    public int compareTo(Object o) {
+	Proc other = (Proc)o;
+	int comp = getHost().compareTo(other.getHost());
+	if (comp == 0)
+	    comp = getPid() - other.getPid();
+	return comp;
     }
 }

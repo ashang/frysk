@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Comparator;
 
 abstract class ActionPointCommands extends ParameterizedCommand {
 
@@ -143,22 +142,6 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 	Actions() {
 	    super(false, "actions", "actions", "List action points");
 	}
-	private static class TaskComparator implements Comparator {
-	    public int compare(Object o1, Object o2) {
-		Map.Entry me1 = (Map.Entry) o1;
-		Map.Entry me2 = (Map.Entry) o2;
-		int id1 = ((Task) me1.getKey()).getTaskId().intValue();
-		int id2 = ((Task) me2.getKey()).getTaskId().intValue();
-		if (id1 < id2)
-		    return -1;
-		else if (id1 > id2)
-		    return 1;
-		else
-		    return 0;
-	    }
-	}
-	private final TaskComparator taskComparator = new TaskComparator();
-
 	/*
          * Print out the specified actionpoints. These will be
          * filtered as per the possible arguments in the hpd. We have
@@ -230,7 +213,7 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 		    Map.Entry[] taskEntries
 			= new Map.Entry[taskEntrySet.size()];
 		    taskEntrySet.toArray(taskEntries);
-		    Arrays.sort(taskEntries, taskComparator);
+		    Arrays.sort(taskEntries);
 		    for (int i = 0; i < taskEntries.length; i++) {
 			int id = ((Task) taskEntries[i].getKey()).getTaskId()
 			    .intValue();

@@ -45,11 +45,15 @@ import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
 import frysk.proc.Task;
 import frysk.proc.Proc;
+import frysk.proc.TaskId;
 
 public class DummyTask extends Task {
 
     public DummyTask (Proc parent) {
-	super (parent, (TaskObserver.Attached) null);
+	super (parent, new TaskId(parent.getPid()));
+    }
+    public DummyTask (Proc parent, int pid) {
+	super(parent, new TaskId(pid));
     }
     public String getStateString() {
 	return "Attached";

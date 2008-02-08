@@ -1,5 +1,9 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (compareTo(Object)): New.
+	* Proc.java (compareTo(Object)): New.
+	* Host.java (compareTo(Object)): New.
+
 	* Host.java (getName()): Make abstract.
 
 2008-02-07  Andrew Cagney  <cagney@redhat.com>

@@ -359,4 +359,11 @@ public abstract class Task {
     }
     private SignalTable signalTable;
 
+    public int compareTo(Object o) {
+	Task other = (Task)o;
+	int comp = getProc().compareTo(other.getProc());
+	if (comp == 0)
+	    comp = getTid() - other.getTid();
+	return comp;
+    }
 }

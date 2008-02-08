@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * process that is running this code - frysk is self aware.
  */
 
-public abstract class Host {
+public abstract class Host implements Comparable {
     static protected final Logger logger = Logger.getLogger("frysk");//.proc
     /**
      * The host corresponds to a specific system.
@@ -231,4 +231,8 @@ public abstract class Host {
      * Returns the name of the host
      */
     public abstract String getName();
+
+    public int compareTo(Object o) {
+	return getName().compareTo(((Host)o).getName());
+    }
 }
