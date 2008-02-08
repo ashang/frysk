@@ -1,5 +1,7 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ActionPointCommands.java: Use Task.getTid().
+	
 	* ActionPointCommands.java: Don't use Comparator; rely on the
 	task's 'natural' order.
 

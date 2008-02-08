@@ -215,8 +215,7 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 		    taskEntrySet.toArray(taskEntries);
 		    Arrays.sort(taskEntries);
 		    for (int i = 0; i < taskEntries.length; i++) {
-			int id = ((Task) taskEntries[i].getKey()).getTaskId()
-			    .intValue();
+			int id = ((Task) taskEntries[i].getKey()).getTid();
 			SourceBreakpoint.State state = (SourceBreakpoint.State) taskEntries[i]
 			    .getValue();
 			if (state == SourceBreakpoint.ENABLED) {
@@ -257,7 +256,7 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 		    cli.outWriter.print("\"");
 		    cli.outWriter.print(uDisp.getName());
 		    cli.outWriter.print("\" ");
-		    cli.outWriter.print(uDisp.getTask().getTaskId().intValue());
+		    cli.outWriter.print(uDisp.getTask().getTid());
 		    cli.outWriter.println();
 		}
 		cli.outWriter.println();
