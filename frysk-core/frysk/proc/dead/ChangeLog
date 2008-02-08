@@ -1,3 +1,7 @@
+2008-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxCoreHost.java: Use CanonicalFile() througout.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadHost.java (requestRefreshXXX()): Delete.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import frysk.event.EventLoop;
 import java.util.LinkedList;
 import java.util.List;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import lib.dwfl.Elf;
@@ -71,7 +72,12 @@ public class LinuxCoreHost extends DeadHost {
     EventLoop eventLoop;
 
     private LinuxCoreHost(EventLoop eventLoop, File coreFile, boolean doRefresh) {
-	this.coreFile = coreFile;
+
+	try {
+	    this.coreFile = coreFile.getCanonicalFile();
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
+	}
 	this.eventLoop = eventLoop;
 	try {
 	    this.corefileElf = new Elf(coreFile.getPath(),
@@ -84,7 +90,7 @@ public class LinuxCoreHost extends DeadHost {
 	if ((corefileElf.getEHeader() == null) || 
 	    (corefileElf.getEHeader().type != ElfEHeader.PHEADER_ET_CORE)) {
 	    this.corefileElf.close();
-	    throw new RuntimeException("'" + this.coreFile.getAbsolutePath()
+	    throw new RuntimeException("'" + this.getName()
 				       + "' is not a corefile.");
 	}
 
@@ -103,15 +109,21 @@ public class LinuxCoreHost extends DeadHost {
 
 	if (exeSetToNull == false)
 	    if (exeFile.canRead() && exeFile.exists()) {
-		this.exeFile = exeFile;
+		try {
+		    this.exeFile = exeFile.getCanonicalFile();
+		} catch (IOException e) {
+		    status.hasExe = false;
+		    status.hasExeProblem = true;
+		}
 		status.hasExe = true;
 		status.hasExeProblem = false;
 	    } else {
 		status.hasExe = false;
 		status.hasExeProblem = true;
 		status.message = "The user provided executable: "
-		    + exeFile.getAbsolutePath() + " could not be accessed";
+		    + exeFile.getName() + " could not be accessed";
 	    }
+
 	this.sendRefresh();
     }
 
@@ -143,7 +155,7 @@ public class LinuxCoreHost extends DeadHost {
 
 	DeconstructCoreFile(Elf coreFileElf) {
 	    this.coreFileElf = coreFileElf;
-	    status.coreName = coreFile.getAbsolutePath();
+	    status.coreName = coreFile.getName();
 	    ElfEHeader eHeader = this.coreFileElf.getEHeader();
 
 	    // Get number of program header entries.
@@ -183,7 +195,7 @@ public class LinuxCoreHost extends DeadHost {
 		status.hasExe = false;
 	    else {
 		status.hasExe = true;
-		status.exeName = exeFile.getAbsolutePath();
+		status.exeName = exeFile.getName();
 	    }
 	    return proc;
 	}
