@@ -1,3 +1,7 @@
+2008-02-08  Stan Cox  <scox@redhat.com>
+
+	* fhpd.java (main): Space after -sysroot.
+
 2008-02-08  Teresa Thomas  <tthomas@redhat.com>
 
 	* fauxv.java: Refactor to use ProcStopUtil.

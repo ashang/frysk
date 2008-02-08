@@ -1,3 +1,10 @@
+2008-02-08  Stan Cox  <scox@redhat.com>
+
+	* TestListCommand.java (testListFrames): New.
+	(testListPC): Change for new funit-quicksort.
+	(testListFunction): Likewise.
+	(testListReverse): Likewise.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* ActionPointCommands.java: Use Task.getTid().

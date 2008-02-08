@@ -225,6 +225,12 @@ frysk_pkglibdir_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/funit-symbols-stripped: frysk/pkglibdir/funit-symbols
 	strip -o $@ frysk/pkglibdir/funit-symbols
 
+# Create executable for list tests for TestListCommand.java
+
+frysk_pkglibdir_funit_quicksort_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-bubblesort.c -DNO_MAIN
+
+# Create sysroot for TestSysRoot.java
+
 pkglib_PROGRAMS += frysk/pkglibdir/funit-addresses-stripped
 frysk_pkglibdir_funit_addresses_stripped_SOURCES =
 frysk/pkglibdir/funit-addresses-stripped: frysk/pkglibdir/funit-addresses
@@ -264,6 +270,8 @@ pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-symbols-stripped
 frysk_pkglibdir_arch32_funit_symbols_stripped_SOURCES =
 frysk/pkglibdir/arch32/funit-symbols-stripped: frysk/pkglibdir/arch32/funit-symbols
 	strip -o $@ frysk/pkglibdir/arch32/funit-symbols
+
+frysk_pkglibdir_arch32_funit_quicksort_LINK += $(srcdir)/frysk/pkglibdir/funit-bubblesort.c -DNO_MAIN
 
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-addresses-stripped
 frysk_pkglibdir_arch32_funit_addresses_stripped_SOURCES =
