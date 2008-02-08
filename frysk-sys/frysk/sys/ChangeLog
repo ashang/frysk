@@ -6,6 +6,13 @@
 	* ProcessIdentifierFactory.java (create(int)): Make public.
 	(createFIXME(int)): Delete.
 
+2008-02-08  Petr Machata  <pmachata@redhat.com>
+
+	* cni/Errno.cxx (vlog): Change the `message' type to const char*.
+	(logMessage, logFinest, logFine): Likewise.
+	(jLogMessage, jLogFine, jLogFinest): Likewise.
+	* cni/Errno.cxx: Likewise.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* DaemonFactory.java: Replace Daemon.java.

@@ -286,7 +286,7 @@ fill_string (void *p, jstring s)
  
 static void
 vlog (jobject myThis, java::util::logging::Logger* logger, 
-      java::util::logging::Level* level, char *message, va_list argp)
+      java::util::logging::Level* level, const char *message, va_list argp)
 {
 	if (!(logger->isLoggable(level)))
 		return;
@@ -303,7 +303,7 @@ vlog (jobject myThis, java::util::logging::Logger* logger,
 
 void 
 logMessage (jobject myThis, java::util::logging::Logger* logger, 
-            java::util::logging::Level* level, char *message, ...)
+            java::util::logging::Level* level, const char *message, ...)
 {
 	va_list argp;
 	
@@ -317,7 +317,7 @@ logMessage (jobject myThis, java::util::logging::Logger* logger,
  */
 void
 jLogMessage (jobject myThis, java::util::logging::Logger* logger, 
-             java::util::logging::Level* level, char *message, ...)
+             java::util::logging::Level* level, const char *message, ...)
 {
 	if (!(logger->isLoggable(level)))
 		return;
@@ -345,7 +345,7 @@ jLogMessage (jobject myThis, java::util::logging::Logger* logger,
 
 
 void 
-logFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+logFine (jobject myThis, java::util::logging::Logger* logger, const char *message, ...)
 {
 	va_list argp;
 	va_start(argp, message);
@@ -354,7 +354,7 @@ logFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...
 }
 	 
 void 
-logFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+logFinest (jobject myThis, java::util::logging::Logger* logger, const char *message, ...)
 {
 	va_list argp;
 	va_start(argp, message);
@@ -363,7 +363,7 @@ logFinest (jobject myThis, java::util::logging::Logger* logger, char *message, .
 }
 
 void 
-jLogFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+jLogFine (jobject myThis, java::util::logging::Logger* logger, const char *message, ...)
 {
 	if (!(logger->isLoggable(java::util::logging::Level::FINE)))
 		return;
@@ -390,7 +390,7 @@ jLogFine (jobject myThis, java::util::logging::Logger* logger, char *message, ..
 }
 
 void
-jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+jLogFinest (jobject myThis, java::util::logging::Logger* logger, const char *message, ...)
 {
 	if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
 		return;
