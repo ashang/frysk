@@ -1,3 +1,10 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* IA32LinuxElfCorefile.java: Update to match Stat.ppid.`
+	* PPC64LinuxElfCorefile.java: Ditto.
+	* X8664LinuxElfCorefile.java: Ditto.
+	* PPC32LinuxElfCorefile.java: Ditto.
+
 2008-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* X8664LinuxElfCorefile.java: Move from frysk.utils.

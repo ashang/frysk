@@ -118,7 +118,7 @@ public class TearDownProcess
      * be killed off during tearDown.
      */
     public static void add(int pid) {
-	add(ProcessIdentifierFactory.createFIXME(pid));
+	add(ProcessIdentifierFactory.create(pid));
     }
 
     /**
@@ -130,7 +130,7 @@ public class TearDownProcess
 	return pidsToKillDuringTearDown.contains (pid);
     }
     public static boolean contains(int pid) {
-	return contains(ProcessIdentifierFactory.createFIXME(pid));
+	return contains(ProcessIdentifierFactory.create(pid));
     }
 
     /**

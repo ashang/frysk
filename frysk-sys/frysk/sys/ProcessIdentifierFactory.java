@@ -74,7 +74,7 @@ public class ProcessIdentifierFactory {
     private static final Map processTable = new WeakHashMap();
     private static final ProcessIdentifierKey key = new ProcessIdentifierKey();
 
-    static ProcessIdentifier create(int pid) {
+    public static ProcessIdentifier create(int pid) {
 	synchronized (processTable) {
 	    key.pid = pid;
 	    ProcessIdentifier processIdentifier
@@ -85,12 +85,5 @@ public class ProcessIdentifierFactory {
 	    }
 	    return processIdentifier;
 	}
-    }
-
-    /**
-     * Is going away.
-     */
-    public static ProcessIdentifier createFIXME(int pid) {
-	return create(pid);
     }
 }

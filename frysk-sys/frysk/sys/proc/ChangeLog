@@ -1,3 +1,9 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Stat.java (scan(ProcessIdentifier)): New.
+	(scan(ProcessIdentifier,ProcessIdentifier)): New.	
+	(tid, ppid): Change type to ProcessIdentifier.
+
 2008-01-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Status.java (isStopped(int)): New.

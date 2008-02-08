@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,6 +50,8 @@
 #include "frysk/sys/proc/cni/slurp.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/Stat.h"
+#include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
 
 jboolean
 frysk::sys::proc::Stat::refresh (jint procPid)
@@ -61,7 +63,7 @@ frysk::sys::proc::Stat::refresh (jint procPid)
     
   const char* p = buf;
 
-  tid = scanJint (&p);
+  tid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
 
   // The "comm" needs special treatment, need to scan backwards for
   // ')' as the command itself could contain ')'.
@@ -76,7 +78,7 @@ frysk::sys::proc::Stat::refresh (jint procPid)
   p += ::strspn (p, " ");
   state = *p++;
 
-  ppid = scanJint (&p);
+  ppid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
   pgrp = scanJint (&p);
   session = scanJint (&p);
   ttyNr = scanJint (&p);
@@ -125,7 +127,7 @@ frysk::sys::proc::Stat::refreshThread (jint procPid, jint threadTid)
     
   const char* p = buf;
 
-  tid = scanJint (&p);
+  tid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
 
   // The "comm" needs special treatment, need to scan backwards for
   // ')' as the command itself could contain ')'.
@@ -140,7 +142,7 @@ frysk::sys::proc::Stat::refreshThread (jint procPid, jint threadTid)
   p += ::strspn (p, " ");
   state = *p++;
 
-  ppid = scanJint (&p);
+  ppid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
   pgrp = scanJint (&p);
   session = scanJint (&p);
   ttyNr = scanJint (&p);

@@ -132,13 +132,13 @@ public class TestLib
 	Stat stat = new Stat();
 	stat.refresh(proc.getPid());
 
-	if (stat.ppid == pid) {
+	if (stat.ppid.intValue() == pid) {
 	    logger.log(Level.FINE, "isChildOf proc is child\n");
 	    return true;
 	}
 	logger.log(Level.FINE,
 		   "isChildOf proc not child pid: {0} ppid: {1} parent: {2} proc: {3}\n",
-		   new Object[] { new Integer(pid), new Integer(stat.ppid),
+		   new Object[] { new Integer(pid), stat.ppid,
 				  proc.getParent(), proc });
 	return false;
     }

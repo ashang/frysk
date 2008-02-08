@@ -1,3 +1,8 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* OffspringType.java: Use ProcessIdentifierFactory.create(int).
+	* TestLib.java: Update to match Stat.ppid.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Offspring.java: Update to match Host.requestProc(int,FindProc).

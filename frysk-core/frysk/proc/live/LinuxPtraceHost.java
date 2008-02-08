@@ -136,7 +136,7 @@ public class LinuxPtraceHost extends LiveHost {
 		    // 1, has a parent.
 		    if (pid <= 1)
 			break;
-		    parent = update(stat.ppid);
+		    parent = update(stat.ppid.intValue());
 		    if (parent != null)
 			break;
 		}
@@ -155,9 +155,9 @@ public class LinuxPtraceHost extends LiveHost {
 			// Oops, just disappeared.
 			return null;
 		    Proc oldParent = proc.getParent();
-		    if (oldParent.getPid() != stat.ppid) {
+		    if (oldParent.getPid() != stat.ppid.intValue()) {
 			// Transfer ownership
-			Proc newParent = update(stat.ppid);
+			Proc newParent = update(stat.ppid.intValue());
 			oldParent.remove(proc);
 			proc.parent = newParent;
 			newParent.add(proc);

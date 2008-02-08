@@ -103,7 +103,7 @@ public abstract class OffspringType {
 						       tidObserver);
 		TestLib.assertRunUntilStop("starting attached child");
 		// Return that captured TID.
-		return ProcessIdentifierFactory.createFIXME(tidObserver.tid);
+		return ProcessIdentifierFactory.create(tidObserver.tid);
 	    }
 	};
 }

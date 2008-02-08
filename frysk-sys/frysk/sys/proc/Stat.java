@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,9 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
+
 /**
  * The contents of <tt>/proc/PID/stat</tt> file.
  */
@@ -47,13 +50,13 @@ public class Stat {
      * Create an unbounded Stat object.
      */
     public Stat() {
-	this.tid = -1;
+	this.tid = null;
     }
     /**
      * Create a Stat object for TID.
      */
     public Stat(int tid) {
-	this.tid = tid;
+	this.tid = ProcessIdentifierFactory.create(tid);
     }
 
     /**
@@ -62,7 +65,13 @@ public class Stat {
      * exist, or can't be read.  Throws an error if there is some sort
      * of scan problem.
      */
-    public native boolean refresh (int pid);
+    public Stat scan(ProcessIdentifier pid) {
+	if (refresh(pid.intValue()))
+	    return this;
+	else
+	    return null;
+    }
+    public native boolean refresh(int pid);
     
     /**
      * Refresh Stat from <tt>/proc/PID/task/TID/stat</tt>, return true if the
@@ -70,24 +79,29 @@ public class Stat {
      * exist, or can't be read.  Throws an error if there is some sort
      * of scan problem.
      */
+    public Stat scan(ProcessIdentifier pid, ProcessIdentifier tid) {
+	if (refreshThread(pid.intValue(), tid.intValue()))
+	    return this;
+	else
+	    return null;
+    }
     public native boolean refreshThread (int pid, int tid);
 
     /**
      * Refresh stat from <tt>/proc/</tt>{@link #pid}<tt>/stat</tt>.
      */
-    public final boolean refresh ()
-    {
-	return refresh (tid);
+    public final boolean refresh() {
+	return scan(tid) != null;
     }
 
     /** The thread id (== pid in main thread)  */
-    public int tid;
+    public ProcessIdentifier tid;
     /** The filename of the executable.  */
     public String comm;
     /** The state represented by a character from "RSDZTW".  */
     public char state;
     /** The parent process id.  */
-    public int ppid;
+    public ProcessIdentifier ppid;
     /** The process group ID.  */
     public int pgrp;
     /** The session ID.  */

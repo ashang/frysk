@@ -127,7 +127,7 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	prpsInfo.setPrGid(Status.getGID(pid));
 
 	prpsInfo.setPrPid(pid);
-	prpsInfo.setPrPpid(processStat.ppid);
+	prpsInfo.setPrPpid(processStat.ppid.intValue());
 	prpsInfo.setPrPgrp(processStat.pgrp);
 
 	prpsInfo.setPrSid(processStat.session);
@@ -174,7 +174,7 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 
 	// Set initial prstatus data
 	prStatus.setPrPid(task.getTid());
-	prStatus.setPrPpid(processStat.ppid);
+	prStatus.setPrPpid(processStat.ppid.intValue());
 	prStatus.setPrPgrp(processStat.pgrp);
 	prStatus.setPrSid(processStat.session);
 	prStatus.setPrSigPending(processStat.signal);

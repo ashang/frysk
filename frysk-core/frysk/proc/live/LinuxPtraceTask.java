@@ -82,7 +82,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public LinuxPtraceTask(Proc proc, TaskId id) {
 	super(proc, id);
-	tid = ProcessIdentifierFactory.createFIXME(id.hashCode());
+	tid = ProcessIdentifierFactory.create(id.hashCode());
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.detachedState();
     }
@@ -102,7 +102,7 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(LinuxPtraceProc proc,
 			   TaskObserver.Attached attached) {
 	super(proc, attached);
-	tid = ProcessIdentifierFactory.createFIXME(proc.getPid());
+	tid = ProcessIdentifierFactory.create(proc.getPid());
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {
