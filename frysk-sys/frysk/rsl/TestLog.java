@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -215,5 +215,11 @@ public class TestLog extends TestCase {
 	checkLevel("lhs", Level.FINE);
 	checkLevel("rhs", Level.FINEST);
 
+    }
+
+    public void testLevelComparison() {
+	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
+	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
+	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
     }
 }

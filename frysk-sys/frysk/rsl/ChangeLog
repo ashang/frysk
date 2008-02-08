@@ -1,5 +1,9 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLog.java (testLevelComparison()): New.
+	* Log.java (set(Level)): Fix compareTo(Object) call.
+	* Node.java (get(Class)): Fix compareTo(Object) call.
+	
 	* Node.java (get(String,Level)): Delete.
 	(get(Class)): New.
 	(extensions): New.

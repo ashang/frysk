@@ -169,7 +169,7 @@ ${sp}  }
 ${sp}  public int compareTo (Object o)
 ${sp}  {
 ${sp}    ${class} rhs = (${class}) o; // Can throw - ok.
-${sp}    return rhs.enumValue - this.enumValue;
+${sp}    return this.enumValue - rhs.enumValue;
 ${sp}  }
 EOF
     while get_token ; do

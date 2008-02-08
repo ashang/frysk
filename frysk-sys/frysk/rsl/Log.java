@@ -89,7 +89,7 @@ public final class Log {
      * Enable logging; package private.
      */
     Log set(Level level) {
-	this.logging = this.level.compareTo(level) >= 0;
+	this.logging = level.compareTo(this.level) >= 0;
 	return this;
     }
 

@@ -145,8 +145,8 @@ public final class Node {
 		    parentNode.extensions.put(childNode.path, childNode);
 		    // .. make certain that the child's logging level
 		    // is at least equal to the parent's logging
-		    // level.  XXX: This compareTo() is backwards!
-		    if (childNode.level.compareTo(parentNode.level) > 0)
+		    // level.
+		    if (childNode.level.compareTo(parentNode.level) < 0)
 			childNode.set(parentNode.level);
 		}
 	    }
