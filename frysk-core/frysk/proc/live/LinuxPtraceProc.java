@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.Status;
 import java.util.logging.Level;
 import frysk.sys.proc.ProcBuilder;
@@ -76,6 +77,7 @@ public class LinuxPtraceProc extends LiveProc {
      */
     public LinuxPtraceProc(Host host, Proc parent, ProcId pid, Stat stat) {
 	super(host, parent, pid);
+	((LinuxPtraceHost)host).putProc(ProcessIdentifierFactory.create(pid.hashCode()), this);
 	this.newState = LinuxPtraceProcState.initial(false);
 	this.stat = stat;
 	this.breakpoints = new BreakpointAddresses(this);
@@ -86,6 +88,7 @@ public class LinuxPtraceProc extends LiveProc {
      */
     public LinuxPtraceProc(Task task, ProcessIdentifier fork) {
 	super(task, new ProcId(fork.intValue()));
+	((LinuxPtraceHost)getHost()).putProc(fork, this);
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);
     }

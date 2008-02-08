@@ -1,5 +1,11 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (procs): New.
+	(getProc(ProcessIdentifier)): New.
+	(putProc(ProcessIdentifier,LinuxPtraceProc)): New.
+	(ProcChanges): Use.
+	* LinuxPtraceProc.java: Use.
+	
 	* LinuxPtraceHost.java: Update to match
 	ProcBuilder.build(ProcessIdentifier).
 	* LinuxPtraceProc.java: Ditto.

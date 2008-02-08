@@ -62,8 +62,6 @@ import frysk.sys.Pid;
 import frysk.event.Event;
 import frysk.proc.FindProc;
 import frysk.proc.HostRefreshBuilder;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.Collection;
 
 /**
@@ -83,12 +81,23 @@ public class LinuxPtraceHost extends LiveHost {
     /**
      * Maintain a cache of tasks indexed by ProcessIdentifier.
      */
-    private final Map tasks = new WeakHashMap();
+    private final HashMap tasks = new HashMap();
     LinuxPtraceTask getTask(ProcessIdentifier pid) {
 	return (LinuxPtraceTask) tasks.get(pid);
     }
     void putTask(ProcessIdentifier pid, LinuxPtraceTask task) {
 	tasks.put(pid, task);
+    }
+
+    /**
+     * Maintain a cache of procs indexed by ProcessIdentifier.
+     */
+    private final HashMap procs = new HashMap();
+    LinuxPtraceProc getProc(ProcessIdentifier pid) {
+	return (LinuxPtraceProc) procs.get(pid);
+    }
+    void putProc(ProcessIdentifier pid, LinuxPtraceProc proc) {
+	procs.put(pid, proc);
     }
 
     /**
@@ -107,14 +116,13 @@ public class LinuxPtraceHost extends LiveHost {
 	 * works backwards removing any that are processed, by the end
 	 * it contains processes that no longer exist.
 	 */
-	HashMap removed = (HashMap) ((HashMap) procPool).clone();
+	HashMap removed = (HashMap) procs.clone();
 
 	/**
 	 * Update PROCID, either adding it
 	 */
 	Proc update(ProcessIdentifier pid) {
-	    ProcId procId = new ProcId(pid.intValue());
-	    Proc proc = (Proc) procPool.get(procId);
+	    Proc proc = getProc(pid);
 	    if (proc == null) {
 		// New, unknown process. Try to find both the process
 		// and its parent. In the case of a daemon process, a
@@ -130,7 +138,7 @@ public class LinuxPtraceHost extends LiveHost {
 		    // Scan in the process's stat file. Of course, if
 		    // the stat file disappeared indicating that the
 		    // process exited, return NULL.
-		    if (! stat.refresh(procId.id))
+		    if (stat.scan(pid) == null)
 			return null;
 		    // Find the parent, every process, except process
 		    // 1, has a parent.
@@ -141,10 +149,10 @@ public class LinuxPtraceHost extends LiveHost {
 			break;
 		}
 		// .. and then add this process.
-		proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent, procId, stat);
+		proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent,
+					   new ProcId(pid.intValue()), stat);
 		added.add(proc);
-	    }
-	    else if (removed.get(procId) != null) {
+	    } else if (removed.containsKey(pid)) {
 		// Process 1 never gets a [new] parent.
 		if (pid.intValue() > 1) {
 		    Stat stat = ((LinuxPtraceProc) proc).getStat();
@@ -163,7 +171,7 @@ public class LinuxPtraceHost extends LiveHost {
 			newParent.add(proc);
 		    }
 		}
-		removed.remove(procId);
+		removed.remove(pid);
 	    }
 	    return proc;
 	}
@@ -215,21 +223,20 @@ public class LinuxPtraceHost extends LiveHost {
 
     public void requestProc(final int theProcId, final FindProc theFinder) {
 	Manager.eventLoop.add(new Event() {
-		private final int procId = theProcId;
+		private final ProcessIdentifier pid
+		    = ProcessIdentifierFactory.create(theProcId);
 		private final FindProc finder = theFinder;
 		public void execute() {
 		    // Iterate (build) the /proc tree starting with
 		    // the given procId.
-		    final ProcChanges procChanges = new ProcChanges();
-		    ProcBuilder pidBuilder = new ProcBuilder() {
-			    public void build(ProcessIdentifier pid) {
-				procChanges.update(pid);
-			    }
-			};
-		    pidBuilder.construct(procId);
-		    final Proc proc = Manager.host.getProc(new ProcId(procId));
+		    new ProcBuilder() {
+			public void build(ProcessIdentifier pid) {
+			    new ProcChanges().update(pid);
+			}
+		    }.construct(pid);
+		    Proc proc = getProc(pid);
 		    if (proc == null) {
-			finder.procNotFound(procId);
+			finder.procNotFound(pid.intValue());
 		    } else {
 			proc.sendRefresh();
 			finder.procFound(proc);
