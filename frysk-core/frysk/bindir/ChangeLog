@@ -1,3 +1,7 @@
+2008-02-08  Teresa Thomas  <tthomas@redhat.com>
+
+	* fauxv.java: Refactor to use ProcStopUtil.
+
 2008-02-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* fmaps.java: Refactor to use ProcStopUtil.

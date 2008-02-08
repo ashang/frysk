@@ -39,123 +39,41 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
-import frysk.event.Event;
-import frysk.proc.Manager;
+import frysk.event.ProcEvent;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
-import frysk.proc.ProcObserver;
-import frysk.proc.Task;
 import frysk.util.AuxvStringBuilder;
-import frysk.util.CommandlineParser;
-import frysk.util.CoreExePair;
-import frysk.util.Util;
+import frysk.util.ProcStopUtil;
 
 public class fauxv {
 
     static Proc proc = null;
 
     public static void main (String[] args) {
-	// Parse command line. Check pid provided.
-
-	CommandlineParser parser = new CommandlineParser("fauxv") {
-
-	    public void parseCores (CoreExePair[] corePairs) {
-		for (int i = 0; i < corePairs.length; i++) {
-		    File coreFile = corePairs[i].coreFile;
-		    File exeFile = corePairs[i].exeFile;
-		    if (exeFile == null)
-			proc = Util.getProcFromCoreFile(coreFile);
-		    else
-			proc = Util.getProcFromCoreFile(coreFile, exeFile);
-		    PrintAuxvEvent auxvPrint = new PrintAuxvEvent(proc);
-		    auxvPrint.execute();
-		    System.exit(0);
-		}
-	    }
-
-	    public void parsePids (ProcId[] pids) {
-		for (int i= 0; i< pids.length; i++) {
-		    ProcId id = pids[i];
-		    proc = Util.getProcFromPid(id);
-		    new ProcBlockAction(proc, new RichAuxvDump(proc));
-		    Manager.eventLoop.run();
-		    System.exit(0);
-		}
-	    }
-
-
-	};
-
-
-	parser.setHeader("Usage: fauxv <PID>  || fauxv <COREFILE> [<EXEFILE>]");
-	parser.parse(args);
-
-	//If we got here, we didn't find a pid.
-	System.err.println("Error: No PID or COREFILE.");
-	parser.printHelp();
-	System.exit(1);
+        ProcStopUtil fauxv = new ProcStopUtil("fauxv", args, 
+                                               new PrintAuxvEvent());
+        fauxv.setUsage("Usage: fauxv <PID>  || fauxv <COREFILE> [<EXEFILE>] " +
+        	       "|| fauvx <COREFILE> [<EXEFILE>]");  
+        fauxv.execute();
     }   
 
-    private static class PrintAuxvEvent implements Event
+    private static class PrintAuxvEvent implements ProcEvent
     {
+        public void execute(Proc proc) {
+            class BuildAuxv extends AuxvStringBuilder {
 
-	private Proc proc = null;
-	public PrintAuxvEvent(Proc proc)
-	{
-	    this.proc = proc;
-	}
-	public void execute() {
-	    class BuildAuxv extends AuxvStringBuilder {
+        	public StringBuffer auxvData = new StringBuffer();
+        	public void buildLine(String type, String desc, String value) {
+        	    auxvData.append(type+" (" + desc+") : " + value+"\n");
+        	}
+            }
+            BuildAuxv buildAuxv = new BuildAuxv();
 
-		public StringBuffer auxvData = new StringBuffer();
-		public void buildLine(String type, String desc, String value) {
-		    auxvData.append(type+" (" + desc+") : " + value+"\n");
-		}
-	    }	
-
-	    BuildAuxv buildAuxv = new BuildAuxv();
-	    buildAuxv.construct(proc.getAuxv(), proc);
-
-	    System.out.print(buildAuxv.auxvData.toString());
-
-	    System.exit(0);
-	}
-
-
-    }
-
-
-
-    private static class RichAuxvDump implements ProcObserver.ProcAction {
-
-	private Proc proc;
-
-
-	public RichAuxvDump(Proc proc)
-	{
-	    this.proc = proc;
-	}
-
-	public void allExistingTasksCompleted() {
-	    Manager.eventLoop.add(new PrintAuxvEvent(this.proc));
-	}
-
-	public void taskAddFailed(Object task, Throwable w) {
-	}
-
-	public void existingTask(Task task) {
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void deletedFrom(Object observable) {
-	}
+            if (proc.getAuxv() == null)
+        	System.out.println ("No auxv information available");
+            else {
+        	buildAuxv.construct(proc.getAuxv(), proc);
+        	System.out.print(buildAuxv.auxvData.toString());
+            }
+        }
     }
 }
