@@ -40,7 +40,6 @@
 package frysk.rsl;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.text.MessageFormat;
 import java.lang.reflect.Array;
 
@@ -101,35 +100,17 @@ public final class Log {
 	return logging;
     }
 
-    public static Tree get(String klass) {
-	return Tree.root.get(klass);
-    }
-    public static Log get(String klass, Level level) {
-	return Tree.root.get(klass, level);
-    }
-    public static Log fine(String klass) {
-	return get(klass, Level.FINE);
-    }
-    
-    public static Log finest(String klass) {
-	return get(klass, Level.FINEST);
-    }
-
-    public static Tree get(Class klass) {
-	return get(klass.getName());
-    }
-    public static Log get(Class klass, Level level) {
-	return get(klass.getName(), level);
-    }
+    /**
+     * For convenience, grab the FINE logger.
+     */
     public static Log fine(Class klass) {
-	return fine(klass.getName());
+	return LogFactory.fine(klass);
     }
+    /**
+     * For convenience, grab the FINEST logger.
+     */
     public static Log finest(Class klass) {
-	return finest(klass.getName());
-    }
-
-    public static int complete(String incomplete, List candidates) {
-	return Tree.root.complete(incomplete, candidates);
+	return LogFactory.finest(klass);
     }
 
     // Static?

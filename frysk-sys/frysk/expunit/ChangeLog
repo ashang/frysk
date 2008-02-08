@@ -1,3 +1,8 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Child.java: Update to match frysk.rsl.Log.
+	* Expect.java: Ditto.
+
 2008-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* WaitObserver.java: Update to match WaitBuilder's disappeared,

@@ -42,7 +42,6 @@ package frysk.expunit;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
-import frysk.rsl.Level;
 import java.io.File;
 
 /**
@@ -55,7 +54,7 @@ import java.io.File;
  */
 
 public class Expect {
-    private static final Log fine = Log.get(Expect.class, Level.FINE);
+    private static final Log fine = Log.fine(Expect.class);
 
     private final Child child;
     private final long timeoutMilliseconds;

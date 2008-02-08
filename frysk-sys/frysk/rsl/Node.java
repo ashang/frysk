@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Generate log information when enabled.
  */
-public final class Tree {
+public final class Node {
 
     private final TreeMap children = new TreeMap();
     private final Log[] loggers = new Log[Level.MAX.intValue()];
@@ -54,7 +54,7 @@ public final class Tree {
     private final String path;
     private final String name;
 
-    private Tree(String path, String name, Level level) {
+    private Node(String path, String name, Level level) {
 	this.path = path;
 	this.name = name;
 	this.level = level;
@@ -70,16 +70,16 @@ public final class Tree {
     /**
      * Package private for testing.
      */
-    Tree() {
+    Node() {
 	this("<root>", "<root>", Level.NONE);
     }
     /**
-     * The root note; also serves as a single global lock.
+     * The root Node; also serves as a single global lock.
      */
-    static final Tree root = new Tree();
+    static final Node root = new Node();
 
     /**
-     * Set this logger's logging level.
+     * Set this Node's logging level.
      */
     public final void set(Level level) {
 	synchronized (root) {
@@ -90,7 +90,7 @@ public final class Tree {
 		}
 	    }
 	    for (Iterator i = children.values().iterator(); i.hasNext(); ) {
-		Tree child = (Tree)i.next();
+		Node child = (Node)i.next();
 		child.set(level);
 	    }
 	}
@@ -99,7 +99,7 @@ public final class Tree {
     /**
      * POS starts at -1, then points at "." or the end of the name.
      */
-    private Tree get(String path, int pos) {
+    private Node get(String path, int pos) {
 	if (pos >= path.length()) {
 	    // Reached end if the string; find the logger.
 	    return this;
@@ -112,15 +112,15 @@ public final class Tree {
 	    if (dot < 0)
 		dot = path.length();
 	    String name = path.substring(pos + 1, dot);
-	    Tree child = (Tree)children.get(name);
+	    Node child = (Node)children.get(name);
 	    if (child == null) {
-		child = new Tree(path.substring(0, dot), name, level);
+		child = new Node(path.substring(0, dot), name, level);
 		children.put(name, child);
 	    }
 	    return child.get(path, dot);
 	}
     }
-    Tree get(String path) {
+    Node get(String path) {
 	synchronized (root) {
 	    return get(path, -1);
 	}
@@ -161,7 +161,7 @@ public final class Tree {
 	if (dot >= 0) {
 	    // More tokens to follow; recursively resolve.
 	    String name = incomplete.substring(pos + 1, dot);
-	    Tree child = (Tree)children.get(name);
+	    Node child = (Node)children.get(name);
 	    if (child == null)
 		return -1;
 	    else
@@ -178,7 +178,7 @@ public final class Tree {
 	    case 0:
 		return -1;
 	    case 1:
-		Tree child = (Tree)children.get(name);
+		Node child = (Node)children.get(name);
 		if (child != null) {
 		    // The final NAME was an exact match for a child;
 		    // and there are no other possible completions

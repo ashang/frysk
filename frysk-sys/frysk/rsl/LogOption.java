@@ -61,16 +61,16 @@ public class LogOption extends Option {
      * Parse ARG0 setting log levels.
      */
     public static void level(String arg0) throws OptionException {
-	level(Tree.root, arg0);
+	level(Node.root, arg0);
     }
     /**
      * Parse ARG0 setting log levels.
      */
-    static void level(Tree root, String arg0) throws OptionException {
+    static void level(Node root, String arg0) throws OptionException {
 	String[] logs = arg0.split(",");
 	for (int i = 0; i < logs.length; i++) {
 	    String[] logLevel = logs[i].split("=");
-	    Tree logger;
+	    Node logger;
 	    Level level;
 	    switch (logLevel.length) {
 	    case 1:

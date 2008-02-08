@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,26 +39,41 @@
 
 package frysk.rsl;
 
+import java.util.List;
+
 /**
- * Java logger compatibility class; to aid easy conversion.
+ * Create the specified logger.
  */
-public final class Logger {
-    public static Logger getLogger(String path) {
-	return new Logger(path);
+public final class LogFactory {
+
+    public static Node get(String klass) {
+	return Node.root.get(klass);
     }
-    private final Log[] logger = new Log[Level.MAX.intValue()];
-    private Logger(String path) {
-	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    this.logger[i] = LogFactory.get(path, Level.valueOf(i));
-	}
+    public static Log get(String klass, Level level) {
+	return Node.root.get(klass, level);
     }
-    public boolean isLoggable(Level level) {
-	return logger[level.intValue()].logging();
+    public static Log fine(String klass) {
+	return get(klass, Level.FINE);
     }
-    public void log(Level level, String message, Object[] param) {
-	logger[level.intValue()].format(message, param);
+    
+    public static Log finest(String klass) {
+	return get(klass, Level.FINEST);
     }
-    public void log(Level level, String message, Object param) {
-	logger[level.intValue()].format(message, param);
+
+    public static Node get(Class klass) {
+	return get(klass.getName());
+    }
+    public static Log get(Class klass, Level level) {
+	return get(klass.getName(), level);
+    }
+    public static Log fine(Class klass) {
+	return fine(klass.getName());
+    }
+    public static Log finest(Class klass) {
+	return finest(klass.getName());
+    }
+
+    public static int complete(String incomplete, List candidates) {
+	return Node.root.complete(incomplete, candidates);
     }
 }
