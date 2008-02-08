@@ -1,6 +1,6 @@
 /* 1 */ // This file is part of the program FRYSK.
 /* 2 */ //
-/* 3 */ // Copyright 2007, 2008 Red Hat Inc.
+/* 3 */ // Copyright 2008 Red Hat Inc.
 /* 4 */ //
 /* 5 */ // FRYSK is free software; you can redistribute it and/or modify it
 /* 6 */ // under the terms of the GNU General Public License as published by
@@ -41,72 +41,58 @@
 # /* 41 */ include <stdlib.h>
 # /* 42 */ define element_count 256
 /* 43 */ 
-/* 44 */ void quicksort (int [], int, int);
-/* 45 */ void bubblesort (int [], int, int);
-/* 46 */ 
-/* 47 */ /* quicksort the array A from start to finish */
-/* 48 */ 
-/* 49 */ void
-/* 50 */ quicksort (int a[], int l, int r)
-/* 51 */ {
-/* 52 */   int i, j, x, w;
-/* 53 */ 
-/* 54 */   i = l;
-/* 55 */   j = r;
-/* 56 */   x = a[(l + r) / 2];
-/* 57 */   do
-/* 58 */     {
-/* 59 */       while (a[i] < x) i = i + 1;
-/* 60 */       while (x < a[j]) j = j - 1;
-/* 61 */       if (i <= j)
-/* 62 */        {
-/* 63 */          w = a[i];
-/* 64 */          a[i] = a[j];
-/* 65 */          a[j] = w;
-/* 66 */          i = i + 1;
-/* 67 */          j = j - 1;
-/* 68 */        }
-/* 69 */     } while (i <= j);
-/* 70 */   if (l < j)
-/* 71 */     quicksort (a, l, j);
-/* 72 */   if (i < r)
-/* 73 */     quicksort (a, i, r);
-/* 74 */ }
-/* 75 */ 
-/* 76 */ void
-/* 77 */ init_array (int *sortlist, int *littlest, int *biggest)
-/* 78 */ {
-/* 79 */   int i, temp;
-/* 80 */   unsigned int seed;
-/* 81 */   for (i = 1; i <= element_count; i++)
-/* 82 */     {
-/* 83 */       temp = rand_r(&seed);
-/* 84 */       sortlist[i] = temp - (temp/100000) * 100000 - 50000;
-/* 85 */       if (sortlist[i] > *biggest) 
-/* 86 */ 	*biggest = sortlist[i];
-/* 87 */       else if (sortlist[i] < *littlest) 
-/* 88 */ 	*littlest = sortlist[i];
-/* 89 */     }
-/* 90 */ }
-/* 91 */ 
-/* 92 */ int
-/* 93 */ main()
-/* 94 */ {
-/* 95 */   int sortlist[element_count + 1];
-/* 96 */   int biggest, littlest;
-/* 97 */ 
-/* 98 */   init_array (sortlist, &littlest, &biggest);
-/* 99 */   quicksort (sortlist, 1, element_count);
-/* 100 */   if ((sortlist[1] != littlest) || (sortlist[element_count] != biggest))
-/* 101 */     {
-/* 102 */       return 1;
-/* 103 */     }
-/* 104 */ 
-/* 105 */   init_array (sortlist, &littlest, &biggest);
-/* 106 */   bubblesort(sortlist, 1, element_count);
-/* 107 */   if ((sortlist[1] != littlest) || (sortlist[element_count] != biggest))
-/* 108 */     {
-/* 109 */       return 1;
-/* 110 */     }
-/* 111 */   return 0;
-/* 112 */ }
+/* 44 */ /* bubblesort an array A.  */
+/* 45 */ 
+/* 46 */ void
+/* 47 */ bubblesort (int a[], int l, int r)
+/* 48 */ {
+/* 49 */   while (r > 1) {
+/* 50 */ 
+/* 51 */     int i = 1;
+/* 52 */     int j;
+/* 53 */     while (i < r) {
+/* 54 */ 
+/* 55 */       if (a[i] > a[i + 1]) {
+/* 56 */         j = a[i];
+/* 57 */         a[i] = a[i + 1];
+/* 58 */         a[i + 1] = j;
+/* 59 */       }
+/* 60 */       i = i + 1;
+/* 61 */     }
+/* 62 */ 
+/* 63 */     r = r - 1;
+/* 64 */   }
+/* 65 */ }
+/* 66 */ 
+# /* 67 */ ifndef NO_MAIN
+/* 68 */ static void
+/* 69 */ init_array (int *sortlist, int *littlest, int *biggest)
+/* 70 */ {
+/* 71 */   int i, temp;
+/* 72 */   unsigned int seed;
+/* 73 */   for (i = 1; i <= element_count; i++)
+/* 74 */     {
+/* 75 */       temp = rand_r (&seed);
+/* 76 */       sortlist[i] = temp - (temp/100000) * 100000 - 50000;
+/* 77 */       if (sortlist[i] > *biggest) 
+/* 78 */ 	*biggest = sortlist[i];
+/* 79 */       else if (sortlist[i] < *littlest) 
+/* 80 */ 	*littlest = sortlist[i];
+/* 81 */     }
+/* 82 */ }
+/* 83 */ 
+/* 84 */ int
+/* 85 */ main()
+/* 86 */ {
+/* 87 */   int sortlist[element_count + 1];
+/* 88 */   int biggest = 0, littlest = 0;
+/* 89 */ 
+/* 90 */   init_array (sortlist, &littlest, &biggest);
+/* 91 */   bubblesort(sortlist, 1, element_count);
+/* 92 */   if ((sortlist[1] != littlest) || (sortlist[element_count] != biggest))
+/* 93 */     {
+/* 94 */       return 1;
+/* 95 */     }
+/* 96 */   return 0;
+/* 97 */ }
+# /* 98 */ endif
