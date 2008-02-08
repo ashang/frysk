@@ -199,10 +199,8 @@ public class TearDownProcess
 	// their clones to the kill-list. Do this after the initial
 	// blast as, hopefully, that has stopped many of the threads
 	// dead in their tracks.
-	ProcBuilder missingTidsToKillDuringTearDown = new ProcBuilder()
-	    {
-		public void buildId (int id)
-		{
+	ProcBuilder missingTidsToKillDuringTearDown = new ProcBuilder() {
+		public void build(ProcessIdentifier id) {
 		    TearDownProcess.add(id);
 		}
 	    };

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/ProcBuilder.h"
+#include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/ProcessIdentifierFactory.h"
 
 gnu::gcj::RawData*
 frysk::sys::proc::ProcBuilder::open (jint pid)
@@ -83,7 +85,7 @@ frysk::sys::proc::ProcBuilder::scan (gnu::gcj::RawData* rawData)
     if (end == dirent->d_name)
       continue;
 
-    buildId (id);
+    build(frysk::sys::ProcessIdentifierFactory::create(id));
   }
 }
 

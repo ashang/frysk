@@ -1,5 +1,8 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownProcess.java: Update to match
+	ProcBuilder.build(ProcessIdentifier).
+	
 	* TearDownProcess.java: Use ProcessIdentifierFactory.create(int).
 
 2008-02-07  Andrew Cagney  <cagney@redhat.com>

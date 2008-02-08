@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,16 +47,14 @@ import frysk.sys.ProcessIdentifier;
  * directory for process/task IDs building each ID as it is
  * encountered.
  */
-public abstract class ProcBuilder
-{
+public abstract class ProcBuilder {
     /**
      * Iterate over the <tt>/proc</tt>pid<tt>/task</tt> directory
      * notifying ProcBuilder of each "interesting" entry.  Use
      * "finally" to ensure that the directory is always closed.
      */
-    public final boolean construct (int pid)
-    {
-	RawData dir = open (pid);
+    public final boolean construct(int pid) {
+	RawData dir = open(pid);
 	if (dir == null)
 	    return false;
 	try {
@@ -67,28 +65,26 @@ public abstract class ProcBuilder
 	}
 	return true;
     }
-    public final boolean construct (ProcessIdentifier pid)
-    {
-	return construct (pid.hashCode ());
+    public final boolean construct(ProcessIdentifier pid) {
+	return construct(pid.hashCode ());
     }
     /**
      * Iterate over the <tt>/proc</tt> directory notifying TaskBuilder
      * of each "interesting" entry.
      */
-    public final boolean construct ()
-    {
-	return construct (0);
+    public final boolean construct() {
+	return construct(0);
     }
     /**
      * Called for each process or task ID in the <tt>/proc</tt>, or
      * <tt>/proc/PID/task</tt> directory.
      */
-    abstract public void buildId (int id);
+    abstract public void build(ProcessIdentifier pid);
     /**
      * Private native methods for manipulating the <tt>/proc</tt>
      * directory.  Move to frysk.sys.Dir?
      */
-    native RawData open (int pid);
-    native void scan (RawData dir);
-    native void close (RawData dir);
+    native RawData open(int pid);
+    native void scan(RawData dir);
+    native void close(RawData dir);
 }

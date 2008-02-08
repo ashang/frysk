@@ -1,5 +1,9 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Update to match
+	ProcBuilder.build(ProcessIdentifier).
+	* LinuxPtraceProc.java: Ditto.
+
 	* LinuxPtraceTask.java: Use ProcssIdentifierFactory.create.
 	* LinuxPtraceHost.java: Update to match Stat.ppid.
 

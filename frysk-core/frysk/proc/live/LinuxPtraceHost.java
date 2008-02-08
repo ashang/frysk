@@ -53,6 +53,7 @@ import frysk.proc.TaskId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver.Attached;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Manager;
 import java.util.logging.Level;
 import frysk.sys.Fork;
@@ -111,9 +112,8 @@ public class LinuxPtraceHost extends LiveHost {
 	/**
 	 * Update PROCID, either adding it
 	 */
-	Proc update (int pid)
-	{
-	    ProcId procId = new ProcId(pid);
+	Proc update(ProcessIdentifier pid) {
+	    ProcId procId = new ProcId(pid.intValue());
 	    Proc proc = (Proc) procPool.get(procId);
 	    if (proc == null) {
 		// New, unknown process. Try to find both the process
@@ -134,9 +134,9 @@ public class LinuxPtraceHost extends LiveHost {
 			return null;
 		    // Find the parent, every process, except process
 		    // 1, has a parent.
-		    if (pid <= 1)
+		    if (pid.intValue() <= 1)
 			break;
-		    parent = update(stat.ppid.intValue());
+		    parent = update(stat.ppid);
 		    if (parent != null)
 			break;
 		}
@@ -146,18 +146,18 @@ public class LinuxPtraceHost extends LiveHost {
 	    }
 	    else if (removed.get(procId) != null) {
 		// Process 1 never gets a [new] parent.
-		if (pid > 1) {
+		if (pid.intValue() > 1) {
 		    Stat stat = ((LinuxPtraceProc) proc).getStat();
 		    // An existing process that hasn't yet been
 		    // updated. Still need check that its parent
 		    // didn't change (assuming there is one).
-		    if (! stat.refresh(pid))
+		    if (stat.scan(pid) == null)
 			// Oops, just disappeared.
 			return null;
 		    Proc oldParent = proc.getParent();
 		    if (oldParent.getPid() != stat.ppid.intValue()) {
 			// Transfer ownership
-			Proc newParent = update(stat.ppid.intValue());
+			Proc newParent = update(stat.ppid);
 			oldParent.remove(proc);
 			proc.parent = newParent;
 			newParent.add(proc);
@@ -174,7 +174,7 @@ public class LinuxPtraceHost extends LiveHost {
 	// procChanges where it can update the /proc tree.
 	final ProcChanges procChanges = new ProcChanges();
 	ProcBuilder pidBuilder = new ProcBuilder() {
-		public void buildId (int pid) {
+		public void build(ProcessIdentifier pid) {
 		    procChanges.update(pid);
 		}
 	    };
@@ -222,7 +222,7 @@ public class LinuxPtraceHost extends LiveHost {
 		    // the given procId.
 		    final ProcChanges procChanges = new ProcChanges();
 		    ProcBuilder pidBuilder = new ProcBuilder() {
-			    public void buildId (int pid) {
+			    public void build(ProcessIdentifier pid) {
 				procChanges.update(pid);
 			    }
 			};
@@ -269,7 +269,7 @@ public class LinuxPtraceHost extends LiveHost {
     public Proc getSelf() {
 	if (self == null) {
 	    ProcChanges procChanges = new ProcChanges();
-	    self = procChanges.update(Pid.get());
+	    self = procChanges.update(ProcessIdentifierFactory.create(Pid.get()));
 	}
 	return self;
     }

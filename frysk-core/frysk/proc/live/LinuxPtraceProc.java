@@ -237,22 +237,19 @@ public class LinuxPtraceProc extends LiveProc {
 	// starting with all known tasks has any existing tasks
 	// removed, so that by the end it contains a set of removed
 	// tasks.
-	class TidBuilder
-	    extends ProcBuilder
-	{
+	class TidBuilder extends ProcBuilder {
 	    Map added = new HashMap ();
 	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
 	    TaskId searchId = new TaskId ();
-	    public void buildId (int tid)
-	    {
-		searchId.id = tid;
+	    public void build(ProcessIdentifier tid) {
+		searchId.id = tid.intValue();
 		if (removed.containsKey (searchId)) {
 		    removed.remove (searchId);
 		}
 		else {
 		    // Add the process (it currently isn't attached).
 		    Task newTask = new LinuxPtraceTask(LinuxPtraceProc.this,
-						       new TaskId (tid));
+						       new TaskId (tid.intValue()));
 		    added.put (newTask.getTaskId(), newTask);
 		}
 	    }

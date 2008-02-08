@@ -1,5 +1,9 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcBuilder.java (build(ProcessIdentifier)): Replace
+	buildId(int).
+	* cni/ProcBuilder.cxx: Update.
+
 	* Stat.java (scan(ProcessIdentifier)): New.
 	(scan(ProcessIdentifier,ProcessIdentifier)): New.	
 	(tid, ppid): Change type to ProcessIdentifier.
