@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@
 package frysk.proc.live;
 
 import frysk.proc.Host;
+import java.net.UnknownHostException;
+import java.net.InetAddress;
 
 /**
  * A live Host/Proc/Task is characterised by its stateful nature;
@@ -49,4 +51,13 @@ import frysk.proc.Host;
 
 abstract class LiveHost extends Host {
 
+    public String getName() {
+	try {
+	    return InetAddress.getLocalHost().getHostName();
+	} catch (UnknownHostException e) {
+	    return "Unknown Host";
+	} catch (NullPointerException npe) {
+	    return "Problem reading network address";
+	}
+    }
 }

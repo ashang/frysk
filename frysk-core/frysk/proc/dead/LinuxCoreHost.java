@@ -202,7 +202,12 @@ public class LinuxCoreHost extends DeadHost {
 
     }
 
+    public String getName() {
+	return coreFile.getName();
+    }
+
     protected void finalize() throws Throwable {
 	corefileElf = null;
     }
+
 }

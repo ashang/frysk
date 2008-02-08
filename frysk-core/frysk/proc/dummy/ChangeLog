@@ -1,3 +1,9 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyProc.java (DummyProc(DummyHost,int)): New.
+	* DummyHost.java (getName()): Implement.
+	(DummyHost(String)): New.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyHost.java (requestRefreshXXX()): Delete.	

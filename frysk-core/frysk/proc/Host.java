@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.Collection;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Observable; // XXX: Temporary.
@@ -231,13 +230,5 @@ public abstract class Host {
     /**
      * Returns the name of the host
      */
-    public String getName() {
-	try {
-	    return java.net.InetAddress.getLocalHost().getHostName();
-	} catch (UnknownHostException e) {
-	    return "Unknown Host";
-	} catch (NullPointerException npe) {
-	    return "Problem reading network address";
-	}
-    }
+    public abstract String getName();
 }

@@ -47,6 +47,14 @@ import java.util.Collection;
 import frysk.proc.HostRefreshBuilder;
 
 public class DummyHost extends Host {
+    private final String name;
+    public DummyHost(String name) {
+	this.name = name;
+    }
+    public DummyHost() {
+	this("dummy-host");
+    }
+
     public void requestCreateAttachedProc(String stdin, String stdout,
 					  String stderr, String[] args,
 					  Attached attached) {
@@ -61,5 +69,8 @@ public class DummyHost extends Host {
     public void requestRefresh(Collection processes,
 			       HostRefreshBuilder results) {
 	throw new RuntimeException("requestRefresh");
+    }
+    public String getName() {
+	return name;
     }
 }

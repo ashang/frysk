@@ -1,3 +1,8 @@
+2008-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreHost.java (getName()): Implement.
+	* LinuxExeHost.java (getName()): Ditto.
+
 2008-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxCoreHost.java: Use CanonicalFile() througout.

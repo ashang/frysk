@@ -45,8 +45,11 @@ import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 
 public class DummyProc extends Proc {
+    public DummyProc(DummyHost host, int pid) {
+	super(host, null, new ProcId(pid));
+    }
     public DummyProc() {
-	super(new DummyHost(), null, new ProcId(42));
+	this(new DummyHost(), 42);
     }
   
     public String getCommand() {
