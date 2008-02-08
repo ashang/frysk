@@ -62,7 +62,7 @@ public class TestLog extends TestCase {
 	return root.get(path);
     }
     private Log get(String path, Level level) {
-	return root.get(path, level);
+	return root.get(path).get(level);
     }
 
     public void testRoot() {
@@ -141,6 +141,12 @@ public class TestLog extends TestCase {
 	checkLevel("", Level.NONE);
     }
     
+    public void testSubClassFINE() {
+	root.get(TestCase.class).set(Level.FINE);
+	assertTrue("this is loggging",
+		   root.get(TestLog.class).get(Level.FINE).logging());
+    }
+
     private void checkComplete(String incomplete, int expectedCursor,
 			       String[] expectedCandidates) {
 	// create a tree.

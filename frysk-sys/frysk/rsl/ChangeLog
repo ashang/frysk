@@ -1,5 +1,13 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Node.java (get(String,Level)): Delete.
+	(get(Class)): New.
+	(extensions): New.
+	* LogFactory.java (get(Class,Level)): Delete.
+	(get(String,Level)): Delete.
+	* TestLog.java: Update.
+	* Logger.java: Update.
+	
 	* Log.java: Split into.
 	* LogFactory.java: Split from Log.java.
 	* Node.java: Rename Tree.java.

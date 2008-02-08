@@ -49,7 +49,7 @@ public final class Logger {
     private final Log[] logger = new Log[Level.MAX.intValue()];
     private Logger(String path) {
 	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    this.logger[i] = LogFactory.get(path, Level.valueOf(i));
+	    this.logger[i] = LogFactory.get(path).get(Level.valueOf(i));
 	}
     }
     public boolean isLoggable(Level level) {

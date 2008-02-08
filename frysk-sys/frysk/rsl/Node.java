@@ -48,11 +48,14 @@ import java.util.List;
  */
 public final class Node {
 
+    // The children of this node, indexed by name.
     private final TreeMap children = new TreeMap();
+    // The extensions of this node, indexed by name.
+    private final TreeMap extensions = new TreeMap();
     private final Log[] loggers = new Log[Level.MAX.intValue()];
     private Level level;
-    private final String path;
-    private final String name;
+    private final String path; // path.to.Node
+    private final String name; // Node
 
     private Node(String path, String name, Level level) {
 	this.path = path;
@@ -79,7 +82,7 @@ public final class Node {
     static final Node root = new Node();
 
     /**
-     * Set this Node's logging level.
+     * Set this Node, and all sub-notes logging level.
      */
     public final void set(Level level) {
 	synchronized (root) {
@@ -92,6 +95,10 @@ public final class Node {
 	    for (Iterator i = children.values().iterator(); i.hasNext(); ) {
 		Node child = (Node)i.next();
 		child.set(level);
+	    }
+	    for (Iterator i = extensions.values().iterator(); i.hasNext(); ) {
+		Node extension = (Node)i.next();
+		extension.set(level);
 	    }
 	}
     }
@@ -126,25 +133,39 @@ public final class Node {
 	}
     }
 
-    /**
-     * Return the requested level.
-     */
-    private Log get(Level level) {
-	int l = level.intValue();
-	if (loggers[l] == null) {
-	    loggers[l] = new Log(path, name, level).set(this.level);
-	}
-	return loggers[l];
-    }
-    /**
-     * Return the requested logger.
-     */
-    Log get(String path, Level level) {
+    Node get(Class klass) {
 	synchronized (root) {
-	    return get(path, -1).get(level);
+	    Node childNode = get(klass.getName());
+	    Class parentClass = klass.getSuperclass();
+	    if (parentClass != null) {
+		Node parentNode = get(parentClass);
+		// Did the parent class know about this child class?
+		if (!parentNode.extensions.containsKey(childNode.path)) {
+		    // It didn't need to link it in; and ...
+		    parentNode.extensions.put(childNode.path, childNode);
+		    // .. make certain that the child's logging level
+		    // is at least equal to the parent's logging
+		    // level.  XXX: This compareTo() is backwards!
+		    if (childNode.level.compareTo(parentNode.level) > 0)
+			childNode.set(parentNode.level);
+		}
+	    }
+	    return childNode;
 	}
     }
 
+    /**
+     * Return the requested level.
+     */
+    Log get(Level level) {
+	synchronized (root) {
+	    int l = level.intValue();
+	    if (loggers[l] == null) {
+		loggers[l] = new Log(path, name, level).set(this.level);
+	    }
+	    return loggers[l];
+	}
+    }
 
     /**
      * Complete the logger.  On entry, POS is either -1 or the

@@ -49,28 +49,21 @@ public final class LogFactory {
     public static Node get(String klass) {
 	return Node.root.get(klass);
     }
-    public static Log get(String klass, Level level) {
-	return Node.root.get(klass, level);
-    }
     public static Log fine(String klass) {
-	return get(klass, Level.FINE);
+	return get(klass).get(Level.FINE);
     }
-    
     public static Log finest(String klass) {
-	return get(klass, Level.FINEST);
+	return get(klass).get(Level.FINEST);
     }
 
     public static Node get(Class klass) {
-	return get(klass.getName());
-    }
-    public static Log get(Class klass, Level level) {
-	return get(klass.getName(), level);
+	return Node.root.get(klass);
     }
     public static Log fine(Class klass) {
-	return fine(klass.getName());
+	return get(klass).get(Level.FINE);
     }
     public static Log finest(Class klass) {
-	return finest(klass.getName());
+	return get(klass).get(Level.FINEST);
     }
 
     public static int complete(String incomplete, List candidates) {
