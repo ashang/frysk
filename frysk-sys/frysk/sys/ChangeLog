@@ -1,5 +1,8 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* PseudoTerminal.java (getName(int)): Replace getName().
+	* cni/PseudoTerminal.cxx (PseudoTerminal::getName): Update.
+
 	* ProcessIdentifierFactory.java (create(int)): Make public.
 	(createFIXME(int)): Delete.
 

@@ -1,5 +1,8 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* LogOption.java: Permit "frysk", assume fine.
+	* Log.java: In log, append Level with a colon.
+	
 	* TestLog.java (testLevelComparison()): New.
 	* Log.java (set(Level)): Fix compareTo(Object) call.
 	* Node.java (get(Class)): Fix compareTo(Object) call.

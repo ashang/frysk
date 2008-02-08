@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,10 +49,10 @@ public class LogOption extends Option {
 
     public LogOption(String name) {
 	super(name,
-	      ("Set the logger LOG to level LEVEL.\n"
-	       + "The LEVEL can be [ NONE | FINE | FINEST ].\n"
-	       + "Example -" + name + " frysk=FINE"),
-	      "<LOG=LEVEL,...>");
+	      ("Set debug-tracing of COMP to LEVEL.\n"
+	       + "LEVEL can be [ NONE | FINE | FINEST ]; default is FINE.\n"
+	       + "Example: " + name + " frysk.rsl=FINE"),
+	      "<COMP=LEVEL,...>");
     }
     public void parsed (String arg0) throws OptionException {
 	level(arg0);
@@ -74,9 +74,14 @@ public class LogOption extends Option {
 	    Level level;
 	    switch (logLevel.length) {
 	    case 1:
-		// LEVEL
-		logger = root.get("");
+		// Either LEVEL or LOGGER
 		level = Level.valueOf(logLevel[0]);
+		if (level != null) {
+		    logger = root.get("");
+		} else {
+		    level = Level.FINE;
+		    logger = root.get(logLevel[0]);
+		}
 		break;
 	    case 2:
 		// LOGGER=LEVEL

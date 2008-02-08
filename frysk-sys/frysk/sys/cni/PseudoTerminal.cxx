@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -80,9 +80,9 @@ frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
 }
 
 jstring
-frysk::sys::PseudoTerminal::getName ()
+frysk::sys::PseudoTerminal::getName(jint fd)
 {
-  char* pts_name = ::ptsname (getFd());
+  char* pts_name = ::ptsname(fd);
   if (pts_name == NULL)
     throwErrno (errno, "ptsname");
   return JvNewStringUTF (pts_name);

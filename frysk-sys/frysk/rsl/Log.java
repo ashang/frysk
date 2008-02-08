@@ -128,7 +128,7 @@ public final class Log {
 	out.print(time % 1000);
 	out.print(": ");
 	out.print(path);
-	out.print(".");
+	out.print(":");
 	out.print(level.toPrint());
     }
 

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,34 +45,33 @@ import java.io.File;
  * Open a pty
  */
 
-public class PseudoTerminal
-    extends FileDescriptor
-{
+public class PseudoTerminal extends FileDescriptor {
+    /**
+     * Returns the pathname of corrsponding to the fd
+     */
+    private static native String getName(int fd);
+    /**
+     * Returns an open master fd for a pseudo-terminal.
+     */
+    private static native int open (boolean controllingTerminal);
+
     private final String name;
     private final File file;
 
     /**
      * Open a pseudo-terminal, a.k.a. pty, not wired to anything.
      */
-    public PseudoTerminal (boolean controllingTerminal)
-    {
-	super (open (controllingTerminal));
-	name = getName ();
+    public PseudoTerminal(boolean controllingTerminal) {
+	super(open(controllingTerminal));
+	name = getName(getFd());
 	file = new File (name);
     }
-    public PseudoTerminal ()
-    {
-	this (false);
+    public PseudoTerminal() {
+	this(false);
     }
 
-    /**
-     * Returns the pathname of corrsponding to the fd
-     */
-    private native String getName ();
-
-    public String toString ()
-    {
-	return getName ();
+    public String toString() {
+	return name;
     }
 
     /**
@@ -82,11 +81,6 @@ public class PseudoTerminal
     {
 	return file;
     }
-
-    /**
-     * Returns an open master fd for a pseudo-terminal.
-     */
-    private static native int open (boolean controllingTerminal);
 
     /**
      * Redirect stdin, stdout, and stderr to this PseudoTerminal.
