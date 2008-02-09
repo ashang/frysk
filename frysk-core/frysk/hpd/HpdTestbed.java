@@ -50,6 +50,7 @@ import java.io.File;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TearDownProcess;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * Variation on frysk.expunit.Expect that drives the HPD.
@@ -180,7 +181,9 @@ public class HpdTestbed extends TearDownExpect {
 			 new Regex("Attached to process ([0-9]+)\r\n"
 				   + h.prompt) {
 			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
+				 ProcessIdentifier pid
+				     = ProcessIdentifierFactory.create
+				     (Integer.parseInt(group(1)));
 				 TearDownProcess.add(pid);
 			     }
 			 },
@@ -221,8 +224,9 @@ public class HpdTestbed extends TearDownExpect {
 			 new Regex("Attached to process ([0-9]+)\r\n"
 				   + h.prompt) {
 			     public void execute() {
-				 int pid = Integer.parseInt(group(1));
-				 TearDownProcess.add(pid);
+				 TearDownProcess.add
+				     (ProcessIdentifierFactory.create
+				      (Integer.parseInt(group(1))));
 			     }
 			 },
 			 new Regex(".*\r\n" + h.prompt) {

@@ -40,10 +40,8 @@
 
 package frysk.testbed;
 
-import frysk.sys.ProcessIdentifierFactory;
 import frysk.junit.TestCase;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import java.util.Set;
 import java.util.HashSet;
 import frysk.sys.Errno;
@@ -61,38 +59,8 @@ import frysk.sys.WaitBuilder;
  * test run.
  */
 
-public class TearDownProcess
-{
-    private static final Logger logger = Logger.getLogger ("frysk");
-
-    /**
-     * Log the integer ARG squeezed between PREFIX and SUFFIX.
-     */
-    private static void log (Object arg1)
-    {
-	if (logger.isLoggable(Level.FINE))
-	    logger.log(Level.FINE, "{0} {1}\n",
-		       new Object[] { TearDownProcess.class, arg1 });
-    }
-    /**
-     * Log the integer ARG squeezed between PREFIX and SUFFIX.
-     */
-    private static void log (Object arg1, Object arg2)
-    {
-	if (logger.isLoggable(Level.FINE))
-	    logger.log(Level.FINE, "{0} {1} {2}\n",
-		       new Object[] { TearDownProcess.class, arg1, arg2 });
-    }
-    /**
-     * Log the integer ARG squeezed between PREFIX and SUFFIX.
-     */
-    private static void log (Object arg1, Object arg2, String arg3)
-    {
-	if (logger.isLoggable(Level.FINE))
-	    logger.log(Level.FINE, "{0} {1} {2} {3}\n",
-		       new Object[] { TearDownProcess.class, arg1,
-				      arg2, arg3 });
-    }
+public class TearDownProcess {
+    private static final Log fine = Log.fine(TearDownProcess.class);
 
     /**
      * A set of children that are to be killed off at the end of a
@@ -104,47 +72,32 @@ public class TearDownProcess
      * Add the pid to the set of pidsToKillDuringTearDown that should
      * be killed off during tearDown.
      */
-    public static void add (ProcessIdentifier pid)
-    {
-	log("killDuringTearDown", pid);
+    public static void add(ProcessIdentifier pid) {
+	fine.log("add", pid);
 	// Had better not try to register process one.
-	if (pid.hashCode() == 1)
+	if (pid.intValue() == 1)
 	    throw new RuntimeException("killing process one during teardown");
 	pidsToKillDuringTearDown.add(pid);
-    }
-
-    /**
-     * Add the pid to the set of pidsToKillDuringTearDown that should
-     * be killed off during tearDown.
-     */
-    public static void add(int pid) {
-	add(ProcessIdentifierFactory.create(pid));
     }
 
     /**
      * Return true if PID is a process identified for kill during
      * tearDown.
      */
-    public static boolean contains (ProcessIdentifier pid)
-    {
+    public static boolean contains(ProcessIdentifier pid) {
 	return pidsToKillDuringTearDown.contains (pid);
-    }
-    public static boolean contains(int pid) {
-	return contains(ProcessIdentifierFactory.create(pid));
     }
 
     /**
      * Try to blow away the child, catch a failure.
      */
-    private static boolean capturedSendTkill (ProcessIdentifier pid)
-    {
+    private static boolean capturedSendTkill(ProcessIdentifier pid) {
 	try {
 	    pid.kill ();
-	    log("kill", pid, "(SUCCESS)");
-	}
-	catch (Errno.Esrch e) {
+	    fine.log("kill", pid, "(SUCCESS)");
+	} catch (Errno.Esrch e) {
 	    // Toss it.
-	    log("kill -KILL", pid, "(failed - ESRCH)");
+	    fine.log("kill -KILL", pid, "(failed - ESRCH)");
 	    return false;
 	}
 	return true;
@@ -161,25 +114,23 @@ public class TearDownProcess
      * continued. Work around this by first sending all tasks a
      * continue ...
      */
-    private static ProcessIdentifier capturedSendDetachContKill (ProcessIdentifier pid)
-    {
+    private static ProcessIdentifier capturedSendDetachContKill
+	(ProcessIdentifier pid) {
 	// Do the detach
 	try {
 	    Ptrace.detach(pid, 0);
-	    log("detach", pid);
-	}
-	catch (Errno.Esrch e) {
+	    fine.log("detach", pid);
+	} catch (Errno.Esrch e) {
 	    // Toss it.
-	    log("detach", pid, "(failed - ESRCH)");
+	    fine.log("detach", pid, "(failed - ESRCH)");
 	}
 	// Unblock the thread
 	try {
 	    pid.tkill(Signal.CONT);
-	    log("tkill -CONT", pid);
-	}
-	catch (Errno.Esrch e) {
+	    fine.log("tkill -CONT", pid);
+	} catch (Errno.Esrch e) {
 	    // Toss it.
-	    log("tkill -CONT", pid, "(failed - ESRCH)\n");
+	    fine.log("tkill -CONT", pid, "(failed - ESRCH)");
 	}
 	// Finally send it a kill to finish things off.
 	capturedSendTkill(pid);
@@ -235,7 +186,7 @@ public class TearDownProcess
 	boolean waitTimedOut = false;
 	try {
 	    while (!waitTimedOut && ! pidsToKillDuringTearDown.isEmpty()) {
-		log("wait -1 ....");
+		fine.log("wait -1 ....");
 		waitTimedOut = Wait.wait
 		    (-1,
 		     new WaitBuilder() {
@@ -275,7 +226,7 @@ public class TearDownProcess
 			     // a second exit status behind this first
 			     // one, drain that also. Give up when
 			     // this PID has no outstanding events.
-			     log("Wait.drain", id, "\n");
+			     fine.log("Wait.drain", id);
 			     id.blockingDrain ();
 			     // Hopefully done with this PID.
 			     pidsToKillDuringTearDown.remove(id);

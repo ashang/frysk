@@ -1,5 +1,8 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Update to match
+	TearDownProcess.add(ProcessIdentifier).
+	
 	* OffspringType.java: Use ProcessIdentifierFactory.create(int).
 	* TestLib.java: Update to match Stat.ppid.
 

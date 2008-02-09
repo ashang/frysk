@@ -1,5 +1,12 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownProcess.java: Use frysk.rsl.Log.
+	(add(int)): Delete.
+	(contains(int)): Delete.
+	(log(Object)): Delete.
+	(log(Object,Object)): Delete.
+	(log(Object,Object,String)): Delete.
+
 	* TearDownProcess.java: Update to match
 	ProcBuilder.build(ProcessIdentifier).
 	

@@ -206,6 +206,13 @@ public final class Log {
 	    out.print(">>");
 	}
     }
+    /**
+     * Use poorly implemented reflection to dump Objects.
+     */
+    private void print(Object o) {
+	out.print(" ");
+	dump(o);
+    }
     
     /**
      * Chars are printed in quotes.
@@ -268,13 +275,6 @@ public final class Log {
 	out.print(" ");
 	out.print(s);
     }
-    /**
-     * Use poorly implemented reflection to dump Objects.
-     */
-    private void print(Object o) {
-	out.print(" ");
-	dump(o);
-    }
     
     /**
      * For compatibility with existing loggers.
@@ -297,151 +297,92 @@ public final class Log {
 	suffix();
     }
 
-    // Add at will and on demand.
+    // Static log methods.
     public void log(String p1) {
 	if (!logging)
 	    return;
-	prefix();
-	print(p1);
-	suffix();
+	prefix(); print(p1); suffix();
     }
-    
     public void log(String p1, char p2) {
 	if (!logging)
 	    return;
-	prefix();
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(); print(p1); print(p2); suffix();
     }
     public void log(String p1, char[] p2) {
 	if (!logging)
 	    return;
-	prefix();
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(); print(p1); print(p2); suffix();
     }
     public void log(String p1, String p2) {
 	if (!logging)
 	    return;
-	prefix();
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(); print(p1); print(p2); suffix();
+    }
+    public void log(String p1, Object p2) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); suffix();
+    }
+    public void log(String p1, Object p2, String p3) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); print(p3); suffix();
     }
     
+    // Non-static log methods; first parameter is the object.
     public void log(Object self, String p1) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	suffix();
+	prefix(self); print(p1); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, long p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, String p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, Object p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, int[] p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
-    // Add at will and on demand.
     public void log(Object self, String p1, long[] p2) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	suffix();
+	prefix(self); print(p1); print(p2); suffix();
     }
-
     public void log(Object self, String p1, int p2, String p3, char p4) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	print(p3);
-	print(p4);
-	suffix();
+	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
     }
-
     public void log(Object self, String p1, Object p2, String p3, Object p4) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	print(p3);
-	print(p4);
-	suffix();
+	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
     }
-    
     public void log(Object self, String p1, Object p2, String p3, int p4) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	print(p3);
-	print(p4);
-	suffix();
+	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
     }
-    
     public void log(Object self, String p1, Object p2, String p3, Object p4, String p5, Object p6) {
 	if (!logging)
 	    return;
-	prefix(self);
-	print(p1);
-	print(p2);
-	print(p3);
-	print(p4);
-	print(p5);
-	print(p6);
-	suffix();
+	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); suffix();
     }
 }

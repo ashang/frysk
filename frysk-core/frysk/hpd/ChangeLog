@@ -8,6 +8,9 @@
 
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* HpdTestbed.java: Update to match
+	TearDownProcess.add(ProcessIdentifier).
+
 	* ActionPointCommands.java: Use Task.getTid().
 	
 	* ActionPointCommands.java: Don't use Comparator; rely on the

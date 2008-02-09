@@ -39,6 +39,8 @@
 
 package frysk.testbed;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Proc;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -203,14 +205,18 @@ public class TestLib
 		public void update (Observable o, Object obj) {
 		    Proc proc = (Proc) obj;
 		    if (isChildOfMine(proc)) {
-			TearDownProcess.add(proc.getPid());
+			TearDownProcess.add
+			    (ProcessIdentifierFactory.create(proc.getPid()));
 			return;
 		    }
 		    Proc parent = proc.getParent();
 		    if (parent != null) {
-			int parentPid = proc.getParent().getPid();
+			ProcessIdentifier parentPid
+			    = ProcessIdentifierFactory.create(proc.getParent()
+							      .getPid());
 			if (TearDownProcess.contains(parentPid)) {
-			    TearDownProcess.add(proc.getPid());
+			    TearDownProcess.add(ProcessIdentifierFactory
+						.create(proc.getPid()));
 			    return;
 			}
 		    }
