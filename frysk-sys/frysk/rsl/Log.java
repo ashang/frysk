@@ -328,6 +328,11 @@ public final class Log {
 	    return;
 	prefix(); print(p1); print(p2); print(p3); suffix();
     }
+    public void log(String p1, long p2, String p3, int p4) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+    }
     
     // Non-static log methods; first parameter is the object.
     public void log(Object self, String p1) {

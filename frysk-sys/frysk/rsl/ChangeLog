@@ -1,5 +1,7 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (log(String,long,String,int)): New.
+
 	* Log.java (log(String,Object,String)): New.
 	(log(String,Object)): New.
 

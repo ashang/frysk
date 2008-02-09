@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@
 
 package frysk.testbed;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import java.io.File;
 import java.util.List;
 import java.util.LinkedList;
@@ -55,26 +54,22 @@ import java.util.Iterator;
  * reflect the current state of the file and not some past state.
  */
 
-public class TearDownFile
-    extends File
-{
-    private static final Logger logger = Logger.getLogger("frysk");
+public class TearDownFile extends File {
+    private static final Log fine = Log.fine(TearDownFile.class);
     static final long serialVersionUID = 1;
 
     /**
      * Create a temporary File using the current directory.
      */
-    public static TearDownFile create ()
-    {
+    public static TearDownFile create () {
 	try {
 	    File file;
 	    String name = TearDownFile.class.getName();
 	    File pwd = new File(".");
 	    file = File.createTempFile(name + ".", ".tmp", pwd);
-	    return new TearDownFile (file.getPath ());
-	}
-	catch (java.io.IOException e) {
-	    throw new RuntimeException (e);
+	    return new TearDownFile(file.getPath ());
+	} catch (java.io.IOException e) {
+	    throw new RuntimeException(e);
 	}
     }
 
@@ -83,19 +78,17 @@ public class TearDownFile
      * call, still exits.  This is different to File.exists() as that
      * test caches its results.
      */
-    public boolean stillExists ()
-    {
-	return new File(getPath ()).exists();
+    public boolean stillExists() {
+	return new File(getPath()).exists();
     }
 
     /**
      * Construct a TearDownFile object with the specified name.
      */
-    public TearDownFile (String name)
-    {
+    public TearDownFile(String name) {
 	super (name);
 	tmpFiles.add(this);
-	logger.log (Level.FINE, "{0} new\n", this);
+	fine.log(this, "new");
     }
 
     private static final List tmpFiles = new LinkedList();
@@ -103,12 +96,16 @@ public class TearDownFile
      * TearDown all TearDownFile-s created since this method was last
      * called.
      */
-    public static void tearDown ()
-    {
+    public static void tearDown() {
 	for (Iterator i = tmpFiles.iterator(); i.hasNext();) {
 	    TearDownFile tbd = (TearDownFile) i.next();
 	    i.remove();
-	    tbd.delete();
+	    try {
+		tbd.delete();
+		fine.log("tearDown", tbd);
+	    } catch (Exception e) {
+		fine.log("tearDown", tbd, "failed", e);
+	    }
 	}
     }
 }

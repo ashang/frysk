@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import frysk.expunit.Expect;
 import java.io.File;
+import frysk.rsl.Log;
 
 /**
  * Framework for cleaning up temporary processes created as part of a
@@ -51,6 +52,7 @@ import java.io.File;
  */
 
 public class TearDownExpect extends Expect {
+    private static final Log fine = Log.fine(TearDownExpect.class);
     public TearDownExpect(String[] args) {
 	super(args);
 	add(this);
@@ -74,6 +76,7 @@ public class TearDownExpect extends Expect {
      */
     private static void add (Expect expect) {
 	expects.add(expect);
+	fine.log("add", expect);
 	TearDownProcess.add(expect.getPid());
     }
 
@@ -82,7 +85,9 @@ public class TearDownExpect extends Expect {
 	    Expect e = (Expect)i.next();
 	    try {
 		e.close();
+		fine.log("tearDown", e);
 	    } catch (RuntimeException r) {
+		fine.log("tearDown", e, "failed", r);
 		// Toss; teardown.
 	    }
 	    i.remove();

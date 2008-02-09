@@ -1,5 +1,10 @@
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
+	* LocalMemory.java: Add logging.
+	* ForkFactory.java: Add logging.
+	* TearDownExpect.java: Add logging.
+	* TearDownFile.java: Use frysk.rsl.Log.
+
 	* TearDownProcess.java: Use frysk.rsl.Log.
 	(add(int)): Delete.
 	(contains(int)): Delete.

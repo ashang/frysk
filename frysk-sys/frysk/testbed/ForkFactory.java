@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import frysk.rsl.Log;
 import frysk.junit.TestCase;
 import frysk.sys.Execute;
 import frysk.sys.Signal;
@@ -55,6 +56,7 @@ import frysk.sys.DaemonFactory;
  */
 
 public class ForkFactory {
+    private static final Log fine = Log.fine(ForkFactory.class);
 
     public static ProcessIdentifier detachedDaemon() {
 	ProcessIdentifier pid = DaemonFactory.create(new Execute() {
@@ -67,6 +69,7 @@ public class ForkFactory {
 		}
 	    });
 	TearDownProcess.add(pid);
+	fine.log("detachedDaemon", pid);
 	return pid;
     }
 
@@ -88,6 +91,7 @@ public class ForkFactory {
 		}
 	    },
 	    TestCase.getTimeoutMilliseconds());
+	fine.log("attachedDaemon", pid);
 	return pid;
     }
 }

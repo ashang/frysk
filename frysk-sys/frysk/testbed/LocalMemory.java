@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,11 @@
 
 package frysk.testbed;
 
-public class LocalMemory
-{
+import frysk.rsl.Log;
+
+public class LocalMemory {
+    private static final Log fine = Log.fine(LocalMemory.class);
+
     /**
      * Known memory values.
      */
@@ -69,6 +72,7 @@ public class LocalMemory
      * Returns a copy of SIZE data bytes starting at getDataAddr.
      */
     public static byte[] getDataBytes () {
+	fine.log("getDataBytes", getDataAddr(), "size", SIZE);
 	return getBytes(getDataAddr(), SIZE);
     }
 
@@ -81,6 +85,7 @@ public class LocalMemory
      * getCodeAddr().
      */
     public static byte[] getCodeBytes() {
+	fine.log("getCodeBytes", getCodeAddr(), "size", SIZE);
 	return getBytes(getCodeAddr(), SIZE);
     }
 
