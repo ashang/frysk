@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,56 +39,33 @@
 
 package frysk.rsl;
 
-import frysk.junit.TestCase;
-import java.util.List;
-
 /**
- * Testlogging that is a sub-class of this directory.
+ * The level the node is set at.
  */
-
-public class TestLib extends TestCase {
-    private static final Log log = Log.fine(TestLog.class);
-    private Node root;
-    public void setUp() {
-	log.log("setUp");
-	root = new Node();
-    }
-    public void tearDown() {
-	log.log("tearDown");
-	root = null;
-    }
-    Node get(String path) {
-	return LogFactory.get(root, path);
-    }
-    Node get(Class path) {
-	return LogFactory.get(root, path);
-    }
-    Log get(String path, Level level) {
-	return get(path).get(level);
-    }
-    Log get(Class path, Level level) {
-	return get(path).get(level);
-    }
-    void set(String path, Level level) {
-	get(path).set(level);
-    }
-    void set(Class path, Level level) {
-	get(path).set(level);
-    }
-    int complete(String incomplete, List candidates) {
-	return LogFactory.complete(root, incomplete, candidates);
+public class TestSetting extends TestLib {
+    public void testNewer() {
+	Setting old = new Setting(Level.NONE);
+	Setting young = new Setting(Level.NONE);
+	assertFalse("old isNewer old", old.isNewer(old));
+	assertFalse("old isNewer yonger", old.isNewer(young));
+	assertTrue("young isNewer old", young.isNewer(old));
     }
 
-    void checkLevel(String path, Level level) {
-	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    Log log = get(path, Level.valueOf(i));
-	    assertEquals("level " + log, i <= level.intValue(), log.logging());
-	}
+    public void testLarger() {
+	Setting s = new Setting(Level.FINE);
+	assertTrue("FINE largerThan NONE", s.isLarger(Level.NONE));
     }
-    void checkLevel(Class path, Level level) {
-	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    Log log = get(path, Level.valueOf(i));
-	    assertEquals("level " + log, i <= level.intValue(), log.logging());
-	}
+
+    public void testLevel() {
+	Setting s = new Setting(Level.FINE);
+	assertEquals("level", Level.FINE, s.level());
+    }
+
+    public void testLeveling() {
+	Setting old = new Setting(Level.FINE);
+	Setting young = new Setting(Level.FINEST);
+	assertEquals("old level young", Level.FINEST, old.level(young));
+	assertEquals("young level old", Level.FINEST, young.level(old));
+	assertEquals("young level young", Level.FINEST, young.level(young));
     }
 }

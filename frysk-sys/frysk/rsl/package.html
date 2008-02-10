@@ -1,24 +1,122 @@
 <html>
 <body>
 
-This package provides a really simple logger mechanism.
+This package provides a basic logger mechanism.
 
 <h2>Overview</h2>
 
-The {@link frysk.rsl} package provides the client with a really simple
-logging mechanism.
+The {@link frysk.rsl} package provides the client with a baskc
+framework.  The framework is designed to make logging of a programmers
+code easy and fast; it is not designed for flexibility.
 
-<p>
+<h2>Reporting Interface</h2>
 
-Create a logger using:
+The log methods have two general forms, the first for calling from
+static methods and the second for calling from dynamic methods.  The
+static method looks like:
+
 <pre>
-private final Log log = Log.get(MyClass.class);
+Log.log(String message, ...)
 </pre>
-and use it with:
+
+and the dynamic method:
+
 <pre>
-log.fine("a message"); // static
-log.finest(this, "a message"); // dynamic
+Log.log(Object self, String message, ...)
 </pre>
+
+the logger calls then take alternating message strings and objects;
+for instance a typical use looks like:
+
+<pre>
+logger.log("myMethod an-arg", arg); // static
+logger.log(this, "myMethod an-arg", arg); // dynamic
+</pre>
+
+<h2>Output Format</h2>
+
+The log message is displayed blank seperated with specific types
+formatted as follows:
+
+<table border=1>
+<tr><th>Type</th><th>Format</th></tr>
+<tr><td>int</td><td>Signed Decimal</td></tr>
+<tr><td>long</td><td>Unsigned Hexadecimal</td></tr>
+<tr><td>String</td><td>The string (unquoted)</td></tr>
+<tr><td>Object</td><td>
+<table>
+<tr><td>Throwable</td><td>The throwable's and all causes's getMessage() wraped in &lt;&lt; &gt;&gt;</td></tr>
+<tr><td>String</td><td>The escaped string (control chars are converted escaped form))</td></tr>
+<tr><td>Other</td><td>The Object's toString() wraped in &lt;&lt; &gt;&gt;</td></tr></td></tr>
+</table></tr>
+
+<tr><td>[]</td><td>The array elements formatted according to above</td></tr>
+</table>
+
+for instance:
+
+<pre>
+logger.log("int", 1, "long", (long)1, "string", "foo", "object", (Object)"\t");
+... int 1 long 0x1 string foo object "\t"
+</pre>
+
+(notice how casting can be used to select between specific format.
+For instance "int" and "long", and "String" and "Object").
+
+<h2>Command Line Option Syntax</h2>
+
+The option parser expects the following syntax:
+
+<pre>
+OPTIONS ::= OPTION { "," OPTION }
+OPTION ::= LEVEL | PATH | LEVEL "=" PATH
+LEVEL ::= "FINE" | "FINEST" | ...
+PATH ::= ... path to package or class ...
+</pre>
+
+For instance:
+
+<table border=1>
+<tr><th>What</th><th>Effect</th></tr>
+<tr><td>FINEST</td><td>Set all loggers to FINEST</td></tr>
+<tr><td>frysk=FINEST</td><td>Set all frysk loggers to FINEST</td></tr>
+<tr><td>frysk</td><td>Set all frysk loggers to the default logging level (FINE)</td></tr>
+<tr><td>frysk.expunit.Expect=FINEST</td><td>Set the class, and all its sub-classes, to logging level FINEST</td></tr>
+<tr><td>frysk=FINE,inua=FINEST</td><td>Set both the frysk and inua packages logging levels</td></tr>
+<tr><td>java.lang.Object=FINE</td><td>Set anything that extends Object's (yes everything) to logging level FINE</td></tr>
+</table>
+
+<h2>Completer</h2>
+
+A completer is available for command-lines wanting to provide
+tab-completion of the known set of loggers.
+
+<h2>Comparison with Existing Loggers</h2>
+
+The following differences between this logger and <tt>log4j</tt>
+and <tt>java.util.Logging</tt> are worth noting:
+
+<ul>
+
+<li>class hierarchy is understood; consequently it is possible to
+manipulate the logging level of a class hierarchy
+
+<li>logging is lock free (the print object does); consequently the
+overhead of a logging call is greatly reduced and the chance of
+deadlock is eliminated
+
+<li>creating loggers and setting the log level uses a single global
+lock; since these calls occur during class initializaion which is
+typically serialized lock contention is not an issue
+
+<li>log calls do not leak memory; for instance, constructs such
+as <tt>"{0} arg {1}", new Object[] { this, new Integer(arg) }</tt> are
+not necessary (java 5 improves this)
+
+<li>the log interface is more limited; only a specific message call
+style and output format is possible
+
+</ul>
 
 </body>
 </html>

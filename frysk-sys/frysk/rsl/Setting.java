@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,56 +39,47 @@
 
 package frysk.rsl;
 
-import frysk.junit.TestCase;
-import java.util.List;
 
 /**
- * Testlogging that is a sub-class of this directory.
+ * The level the node is set at.
  */
+class Setting {
 
-public class TestLib extends TestCase {
-    private static final Log log = Log.fine(TestLog.class);
-    private Node root;
-    public void setUp() {
-	log.log("setUp");
-	root = new Node();
-    }
-    public void tearDown() {
-	log.log("tearDown");
-	root = null;
-    }
-    Node get(String path) {
-	return LogFactory.get(root, path);
-    }
-    Node get(Class path) {
-	return LogFactory.get(root, path);
-    }
-    Log get(String path, Level level) {
-	return get(path).get(level);
-    }
-    Log get(Class path, Level level) {
-	return get(path).get(level);
-    }
-    void set(String path, Level level) {
-	get(path).set(level);
-    }
-    void set(Class path, Level level) {
-	get(path).set(level);
-    }
-    int complete(String incomplete, List candidates) {
-	return LogFactory.complete(root, incomplete, candidates);
+    static final Setting EPOCH = new Setting(Level.NONE);
+
+    // A private variable to track a settings age.  Each time a new
+    // setting is created the age is incremented; the one with the
+    // largest age (most recent) wins.
+    private static int currentAge;
+
+    private int age;
+    private Level level;
+
+    Setting(Level level) {
+	this.age = currentAge++;
+	this.level = level;
     }
 
-    void checkLevel(String path, Level level) {
-	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    Log log = get(path, Level.valueOf(i));
-	    assertEquals("level " + log, i <= level.intValue(), log.logging());
-	}
+    public String toString() {
+	return level.toPrint() + "@" + age;
     }
-    void checkLevel(Class path, Level level) {
-	for (int i = 0; i < Level.MAX.intValue(); i++) {
-	    Log log = get(path, Level.valueOf(i));
-	    assertEquals("level " + log, i <= level.intValue(), log.logging());
-	}
+
+    Level level() {
+	return level;
+    }
+
+    boolean isNewer(Setting setting) {
+	return this.age > setting.age;
+    }
+
+    boolean isLarger(Level level) {
+	return this.level.compareTo(level) > 0;
+    }
+
+    Level level(Setting setting) {
+	if (this.age > setting.age)
+	    return this.level;
+	else
+	    return setting.level;
     }
 }

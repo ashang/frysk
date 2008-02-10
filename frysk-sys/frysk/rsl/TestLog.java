@@ -109,10 +109,16 @@ public class TestLog extends TestLib {
 	checkLevel("", Level.NONE);
     }
     
-    public void testSubClassFINE() {
-	set(TestLib.class, Level.FINE);
-	assertTrue("this is loggging",
-		   get(TestLog.class).get(Level.FINE).logging());
+    public void testSetSuperThenPackageGetsPackage() {
+	set(java.lang.Object.class, Level.FINE);
+	set(TestLog.class.getPackage().getName(), Level.FINEST);
+	checkLevel(TestLog.class, Level.FINEST);
+    }
+
+    public void testSetPackageThenSuperGetsSuper() {
+	set(TestLog.class.getPackage().getName(), Level.FINE);
+	set(java.lang.Object.class, Level.FINEST);
+	checkLevel(TestLog.class, Level.FINEST);
     }
 
     public void testLevelComparison() {

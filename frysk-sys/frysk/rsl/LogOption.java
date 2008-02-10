@@ -77,15 +77,15 @@ public class LogOption extends Option {
 		// Either LEVEL or LOGGER
 		level = Level.valueOf(logLevel[0]);
 		if (level != null) {
-		    logger = root.get("");
+		    logger = root;
 		} else {
 		    level = Level.FINE;
-		    logger = root.get(logLevel[0]);
+		    logger = LogFactory.get(root, logLevel[0]);
 		}
 		break;
 	    case 2:
 		// LOGGER=LEVEL
-		logger = root.get(logLevel[0]);
+		logger = LogFactory.get(root, logLevel[0]);
 		level = Level.valueOf(logLevel[1]);
 		break;
 	    default:

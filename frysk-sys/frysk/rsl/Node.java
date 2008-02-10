@@ -42,6 +42,7 @@ package frysk.rsl;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Generate log information when enabled.
@@ -50,181 +51,179 @@ public final class Node {
 
     // The children of this node, indexed by name.
     private final TreeMap children = new TreeMap();
-    // The extensions of this node, indexed by name.
-    private final TreeMap extensions = new TreeMap();
     private final Log[] loggers = new Log[Level.MAX.intValue()];
-    private Level level;
     private final String path; // path.to.Node
     private final String name; // Node
 
-    private Node(String path, String name, Level level) {
+    // The current level according to the parent child relationship.
+    private Setting childSetting;
+
+    // This node's super class if known (java.lang.Object points at
+    // itself).
+    private Node superNode;
+    // The list of sub-classes.
+    private final List extensions = new LinkedList();
+    // The current class level.
+    private Setting extensionSetting;
+
+    private Node(String path, String name, Setting childSetting) {
 	this.path = path;
 	this.name = name;
-	this.level = level;
+	this.childSetting = childSetting;
+	this.extensionSetting = Setting.EPOCH;
+    }
+
+    /**
+     * Package private; the root node.
+     */
+    Node() {
+	this(null, "<root>", new Setting(Level.NONE));
     }
 
     public String toString() {
 	return ("{" + super.toString()
 		+ ",path=" + path
-		+ ",level=" + level
+		+ ",childSetting=" + childSetting
+		+ ",extensionSetting=" + extensionSetting
 		+ "}");
     }
 
     /**
-     * Package private for testing.
+     * Set this Node, all child nodes, and extensions, to level.
      */
-    Node() {
-	this("<root>", "<root>", Level.NONE);
-    }
-    /**
-     * Set this Node, and all sub-notes logging level.
-     */
-    public final void set(Level level) {
+    public void set(Level level) {
 	synchronized (LogFactory.root) {
-	    this.level = level;
-	    for (int i = 0; i < Level.MAX.intValue(); i++) {
-		if (loggers[i] != null) {
-		    loggers[i].set(level);
-		}
+	    Setting newSetting = new Setting(level);
+	    setChildren(newSetting);
+	    setExtensions(newSetting);
+	    setLoggers(level);
+	}
+    }
+    private void setLoggers(Level level) {
+	for (int i = 0; i < Level.MAX.intValue(); i++) {
+	    if (loggers[i] != null) {
+		loggers[i].set(level);
 	    }
-	    for (Iterator i = children.values().iterator(); i.hasNext(); ) {
-		Node child = (Node)i.next();
-		child.set(level);
-	    }
-	    for (Iterator i = extensions.values().iterator(); i.hasNext(); ) {
-		Node extension = (Node)i.next();
-		extension.set(level);
-	    }
+	}
+    }
+    private void setChildren(Setting setting) {
+	childSetting = setting;
+	for (Iterator i = children.values().iterator(); i.hasNext(); ) {
+	    Node child = (Node)i.next();
+	    child.setChildren(setting);
+	    child.setLoggers(setting.level());
+	}
+    }
+    private void setExtensions(Setting setting) {
+	extensionSetting = setting;
+	for (Iterator i = extensions.iterator(); i.hasNext(); ) {
+	    Node extension = (Node)i.next();
+	    extension.setExtensions(setting);
+	    extension.setLoggers(setting.level());
 	}
     }
 
     /**
-     * POS starts at -1, then points at "." or the end of the name.
+     * Find the node NAME that is a child of this node; if the node is
+     * missing, create it.  Caller must synchronize.
      */
-    private Node get(String path, int pos) {
-	if (pos >= path.length()) {
-	    // Reached end if the string; find the logger.
-	    return this;
-	} else if (path.length() == 0) {
-	    // Got <<a.b.c.>> or even just <<>>.
-	    return this;
-	} else {
-	    // Split
-	    int dot = path.indexOf(".", pos + 1);
-	    if (dot < 0)
-		dot = path.length();
-	    String name = path.substring(pos + 1, dot);
-	    Node child = (Node)children.get(name);
-	    if (child == null) {
-		child = new Node(path.substring(0, dot), name, level);
-		children.put(name, child);
+    Node get(String name) {
+	Node child = (Node) children.get(name);
+	if (child == null) {
+	    if (path == null) {
+		child = new Node(name, name, childSetting);
+	    } else {
+		child = new Node(path + "." + name, name, childSetting);
 	    }
-	    return child.get(path, dot);
+	    children.put(name, child);
 	}
-    }
-    Node get(String path) {
-	synchronized (LogFactory.root) {
-	    return get(path, -1);
-	}
+	return child;
     }
 
-    Node get(Class klass) {
-	synchronized (LogFactory.root) {
-	    Node childNode = get(klass.getName());
-	    Class parentClass = klass.getSuperclass();
-	    if (parentClass != null) {
-		Node parentNode = get(parentClass);
-		// Did the parent class know about this child class?
-		if (!parentNode.extensions.containsKey(childNode.path)) {
-		    // It didn't need to link it in; and ...
-		    parentNode.extensions.put(childNode.path, childNode);
-		    // .. make certain that the child's logging level
-		    // is at least equal to the parent's logging
-		    // level.
-		    if (childNode.level.compareTo(parentNode.level) < 0)
-			childNode.set(parentNode.level);
-		}
+    /**
+     * Wire this node's super-class links up using KLASS; also update
+     * the node's level settings.
+     */
+    Node setClass(Node root, Class klass) {
+	// If this node doesn't know it's super-class find and
+	// fill it in.  At the same time, if the super's
+	// level-settings prove to be newer, adjust the levels
+	// accordingly.
+	if (superNode == null) {
+	    Class superKlass = klass.getSuperclass();
+	    if (superKlass == null) {
+		// found java.lang.Object; link it to itself.
+		superNode = this;
+	    } else {
+		// Find the super and link this to it.
+		superNode = LogFactory.get(root, superKlass.getName())
+		    .setClass(root, superKlass);
+		superNode.extensions.add(this);
+		// If the just discovered super's extension setting is
+		// newer, copy it down.
+		if (superNode.extensionSetting.isNewer(extensionSetting))
+		    extensionSetting = superNode.extensionSetting;
+		// If the newly discovered extension setting is
+		// newer than the child setting; update the
+		// loggers.
+		if (extensionSetting.isNewer(childSetting))
+		    setLoggers(extensionSetting.level());
 	    }
-	    return childNode;
 	}
+	return this;
     }
 
     /**
      * Return the requested level.
      */
-    Log get(Level level) {
+    public Log get(Level level) {
 	synchronized (LogFactory.root) {
 	    int l = level.intValue();
 	    if (loggers[l] == null) {
-		loggers[l] = new Log(path, name, level).set(this.level);
+		// Determine the level.
+		Level curr = childSetting.level(extensionSetting);
+		loggers[l] = new Log(path, name, level).set(curr);
 	    }
 	    return loggers[l];
 	}
     }
 
     /**
-     * Complete the logger.  On entry, POS is either -1 or the
-     * location of the last DOT indicating further name completion is
-     * needed; or the length indicating that either a "." or " "
-     * completion is needed.
-     *
-     * Returns the offset into INCOMPLETE that the completions apply
-     * to, or -1.
+     * Complete the NAME using the children of this node.  Returns the
+     * offset within NAME at which completions start or -1.
      */
-    private int complete(String incomplete, int pos,
-			 List candidates) {
-	int dot = incomplete.indexOf('.', pos + 1);
-	if (dot >= 0) {
-	    // More tokens to follow; recursively resolve.
-	    String name = incomplete.substring(pos + 1, dot);
-	    Node child = (Node)children.get(name);
-	    if (child == null)
-		return -1;
-	    else
-		return child.complete(incomplete, dot, candidates);
-	} else {
-	    // Final token, scan children for all partial matches.
-	    String name = incomplete.substring(pos + 1);
-	    for (Iterator i = children.keySet().iterator(); i.hasNext(); ) {
-		String child = (String)i.next();
-		if (child.startsWith(name))
-		    candidates.add(child);
-	    }
-	    switch (candidates.size()) {
-	    case 0:
-		return -1;
-	    case 1:
-		Node child = (Node)children.get(name);
-		if (child != null) {
-		    // The final NAME was an exact match for a child;
-		    // and there are no other possible completions
-		    // (size == 1); change the expansion to either "."
-		    // (have children) or " " (childless).
-		    candidates.remove(0);
-		    synchronized (child) {
-			if (child.children.size() > 0) {
-			    candidates.add(".");
-			} else {
-			    candidates.add(" ");
-			}
-			return incomplete.length();
-		    }
-		} else {
-		    // A single partial completion e.g., <<foo<TAB>>>
-		    // -> <<foobar>>.
-		    return pos + 1;
-		}
-	    default:
-		return pos + 1;
-	    }
+    int complete(String name, List candidates) {
+	System.out.println(path + " complete " + name);
+	for (Iterator i = children.keySet().iterator(); i.hasNext(); ) {
+	    String child = (String)i.next();
+	    if (child.startsWith(name))
+		candidates.add(child);
 	}
-    }
-    /**
-     * Complete the logger.
-     */
-    int complete(String incomplete, List candidates) {
-	synchronized(LogFactory.root) {
-	    return complete(incomplete, -1, candidates);
+	switch (candidates.size()) {
+	case 0:
+	    return -1;
+	case 1:
+	    if (candidates.get(candidates.size() - 1).equals(name)) {
+		// The NAME was an exact match for a child; and there
+		// are no other possible completions; change the
+		// expansion to either "."  (have children) or " "
+		// (childless).
+		Node child = (Node)children.get(name);
+		candidates.remove(0);
+		if (child.children.size() > 0) {
+		    candidates.add(".");
+		} else {
+		    candidates.add(" ");
+		}
+		return name.length();
+	    } else {
+		// A single partial completion e.g., <<foo<TAB>>> ->
+		// <<foobar>>.  The next completion will fill in the
+		// "." or <space>.
+		return 0;
+	    }
+	default:
+	    return 0;
 	}
     }
 }

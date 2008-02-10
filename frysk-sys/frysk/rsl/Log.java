@@ -129,7 +129,6 @@ public final class Log {
 	out.print(": ");
 	out.print(path);
 	out.print(":");
-	out.print(level.toPrint());
     }
 
     private void prefix() {

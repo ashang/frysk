@@ -51,8 +51,11 @@ public final class LogFactory {
      */
     static final Node root = new Node();
 
-    public static Node get(String klass) {
-	return root.get(klass);
+    /**
+     * Find the Node corresponding to PATH.
+     */
+    public static Node get(String path) {
+	return get(root, path);
     }
     public static Log fine(String klass) {
 	return get(klass).get(Level.FINE);
@@ -60,9 +63,23 @@ public final class LogFactory {
     public static Log finest(String klass) {
 	return get(klass).get(Level.FINEST);
     }
+    static Node get(Node node, String path) {
+	synchronized (root) {
+	    String[] names = path.split("\\.", -1);
+	    for (int i = 0; i < names.length; i++) {
+		String name = names[i];
+		if (name.length() > 0)
+		    node = node.get(name);
+	    }
+	    return node;
+	}
+    }
 
+    /**
+     * Find the node corresponding to KLASS.
+     */
     public static Node get(Class klass) {
-	return root.get(klass);
+	return get(root, klass);
     }
     public static Log fine(Class klass) {
 	return get(klass).get(Level.FINE);
@@ -70,8 +87,35 @@ public final class LogFactory {
     public static Log finest(Class klass) {
 	return get(klass).get(Level.FINEST);
     }
+    static Node get(Node root, Class klass) {
+	return get(root, klass.getName()).setClass(root, klass);
+    }
 
+    /**
+     * Return completions.
+     */
     public static int complete(String incomplete, List candidates) {
-	return root.complete(incomplete, candidates);
+	return complete(root, incomplete, candidates);
+    }
+    static int complete(Node node, String incomplete, List candidates) {
+	synchronized (root) {
+	    String[] names = incomplete.split("\\.", -1);
+	    System.out.println(java.util.Arrays.asList(names));
+	    System.out.println(names.length);
+	    for (int i = 0; i < names.length - 1; i++) {
+		if (names[i].length() > 0)
+		    node = node.get(names[i]);
+	    }
+	    String name;
+	    if (names.length > 0)
+		name = names[names.length - 1];
+	    else
+		name = "";
+	    int pos = node.complete(name, candidates);
+	    if (pos < 0)
+		return -1;
+	    else
+		return incomplete.lastIndexOf(name) + pos;
+	}
     }
 }

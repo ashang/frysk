@@ -1,5 +1,29 @@
 2008-02-10  Andrew Cagney  <cagney@redhat.com>
 
+	* LogFactory.java (get(Node,String)): New; use.
+	(get(Node,Class)): New; use
+	(complete(Node,String,List)): New; use.
+	* Log.java: Don't include the level in the message.
+	* Node.java (level): Delete.
+	(extensionSetting, childSetting): New.
+	(setChildren(Settings)): New.
+	(setExtensions(Setting)): New.
+	(setLoggers(Level)): New.
+	(get(String,int)): Delete.
+	(get(Class)): Delete.
+	(setClass(Node,Class)): New.
+	(get(String)): Re-write.
+	(complete(String,int,List)): Delete.
+	(complete(String,List)): Re-write.
+	* Setting.java: New.
+	* TestSetting.java: New.
+	* LogOption.java: Use LogFactory's get(Node,String).
+	* TestLib.java: Use LogFactory's get(Node,String) method.
+	* TetLog.java (testSubClassFINE()): Delete.
+	(testSetSuperThenPackageGetsPackage()): New.
+	(testSetPackageThenSuperGetsPackage()): New.
+	* package.html: Update.
+	
 	* TestLog.java: Break into ...
 	* TestCompletion.java: ... this. New.
 	* TestLib.java: ... this.  New.
