@@ -1,3 +1,14 @@
+2008-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLog.java: Break into ...
+	* TestCompletion.java: ... this. New.
+	* TestLib.java: ... this.  New.
+	* TestOptions.java: ... and this.  New.
+	* Node.java (root): Move to ...
+	* LogFactory.java (root): ... here.
+	* LogOption.java: Update.
+	* Log.java (log(String,Object,String,Object)): New.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (log(String,long,String,int)): New.

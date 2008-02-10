@@ -61,7 +61,7 @@ public class LogOption extends Option {
      * Parse ARG0 setting log levels.
      */
     public static void level(String arg0) throws OptionException {
-	level(Node.root, arg0);
+	level(LogFactory.root, arg0);
     }
     /**
      * Parse ARG0 setting log levels.

@@ -46,8 +46,13 @@ import java.util.List;
  */
 public final class LogFactory {
 
+    /**
+     * The root Node; also serves as a single global lock.
+     */
+    static final Node root = new Node();
+
     public static Node get(String klass) {
-	return Node.root.get(klass);
+	return root.get(klass);
     }
     public static Log fine(String klass) {
 	return get(klass).get(Level.FINE);
@@ -57,7 +62,7 @@ public final class LogFactory {
     }
 
     public static Node get(Class klass) {
-	return Node.root.get(klass);
+	return root.get(klass);
     }
     public static Log fine(Class klass) {
 	return get(klass).get(Level.FINE);
@@ -67,6 +72,6 @@ public final class LogFactory {
     }
 
     public static int complete(String incomplete, List candidates) {
-	return Node.root.complete(incomplete, candidates);
+	return root.complete(incomplete, candidates);
     }
 }

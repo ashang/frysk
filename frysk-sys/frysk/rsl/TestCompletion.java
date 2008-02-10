@@ -39,85 +39,55 @@
 
 package frysk.rsl;
 
+import java.util.LinkedList;
+
 /**
  * Testlogging that is a sub-class of this directory.
  */
 
-public class TestLog extends TestLib {
-    public void testGetRoot() {
-	assertSame("root", get(""), get(""));
-    }
-
-    public void testGetSelf() {
-	Log self = get("self", Level.FINE);
-	assertNotNull("self", self);
-    }
-
-    public void testPath() {
-	String path = "a.long.path";
-	assertEquals("path", path, get(path, Level.FINE).path());
-    }
-
-    public void testName() {
-	assertEquals("name", "path",
-		     get("a.long.path", Level.FINE).name());
-    }
-
-    public void testLevel() {
-	assertEquals("level", Level.FINE,
-		     get("a.long.path", Level.FINE).level());
-    }
-
-    public void testSingleton() {
-	Log lhs = get("the.lhs", Level.FINE);
-	Log rhs = get("the.rhs", Level.FINE);
-	assertNotNull("the.lhs", lhs);
-	assertNotNull("the.rhs", rhs);
-	assertTrue("lhs != rhs", lhs != rhs);
-	assertSame("the.lhs", lhs, get("the.lhs", Level.FINE));
-	assertSame("the.rhs", rhs, get("the.rhs", Level.FINE));
-    }
-
-    public void testLeveling() {
-	// create a tree
+public class TestCompletion extends TestLib {
+    private void checkComplete(String incomplete, int expectedCursor,
+			       String[] expectedCandidates) {
+	// create a tree.
 	get("the.lower.left.hand.side");
+	get("the.lower.left.half");
 	get("the.lower.right.hand.side");
-	// set a level
-	set("the.lower.left", Level.FINE);
-	checkLevel("the", Level.NONE);
-	checkLevel("the.lower", Level.NONE);
-	checkLevel("the.lower.left", Level.FINE);
-	checkLevel("the.lower.left.hand", Level.FINE);
-	checkLevel("the.lower.left.hand.side", Level.FINE);
-	checkLevel("the.lower.right", Level.NONE);
-	checkLevel("the.lower.right.hand", Level.NONE);
-	checkLevel("the.lower.right.hand.side", Level.NONE);
+	// Perfomr a completion
+	LinkedList candidates = new LinkedList();
+	int cursor = complete(incomplete, candidates);
+	assertEquals("candidate.size", expectedCandidates.length,
+		     candidates.size());
+	for (int i = 0; i < expectedCandidates.length; i++) {
+	    assertEquals("candidate[" + i + "]", expectedCandidates[i],
+			 candidates.get(i));
+	}
+	assertEquals("cursor", expectedCursor, cursor);
     }
-
-    public void testRootLevelFINE() {
-	// Set the root level before any children are created; should
-	// propogate down.
-	set("", Level.FINE);
-	checkLevel("the", Level.FINE);
+    public void testCompleteChildPresent() {
+	// children present, expand the dot
+	checkComplete("the", 3, new String[] {"." });
     }
-
-    public void testSubLevelFINE() {
-	// Set the sub-level before any children.
-	set("this", Level.FINE);
-	checkLevel("this.level", Level.FINE);
-	checkLevel("this", Level.FINE);
-	checkLevel("", Level.NONE);
+    public void testCompleteChildMissing() {
+	// no children present, expand the space
+	checkComplete("the.lower.left.half", 19, new String[] {" "});
     }
-    
-    public void testSubClassFINE() {
-	set(TestLib.class, Level.FINE);
-	assertTrue("this is loggging",
-		   get(TestLog.class).get(Level.FINE).logging());
+    public void testCompleteSingle() {
+	// single completion
+	checkComplete("the.", 4, new String[] {"lower" });
     }
-
-    public void testLevelComparison() {
-	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
-	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
-	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
+    public void testCompleteMultiple() {
+	// multiple completion
+	checkComplete("the.lower.",10,  new String[] { "left", "right" });
+    }
+    public void testCompleteMidway() {
+	// mid completion
+	checkComplete("the.lower.left.h", 15, new String[] { "half", "hand" });
+    }
+    public void testCompleteNothing() {
+	checkComplete("", 0, new String[] { "the" });
+    }
+    public void testCompleteBogus() {
+	// bogus completion
+	checkComplete("the.upper", -1, new String[0]);
     }
 }

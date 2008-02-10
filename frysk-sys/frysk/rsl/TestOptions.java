@@ -39,85 +39,45 @@
 
 package frysk.rsl;
 
+import gnu.classpath.tools.getopt.OptionException;
+
 /**
  * Testlogging that is a sub-class of this directory.
  */
 
-public class TestLog extends TestLib {
-    public void testGetRoot() {
-	assertSame("root", get(""), get(""));
+public class TestOptions extends TestLib {
+    private void parse(String option) {
+	try {
+	    LogOption.level(get(""), option);
+	} catch (OptionException e) {
+	    fail(e.getMessage());
+	}
     }
 
-    public void testGetSelf() {
-	Log self = get("self", Level.FINE);
-	assertNotNull("self", self);
+    public void testOptionFINE() {
+	checkLevel("", Level.NONE);
+	parse("FINE");
+	checkLevel("", Level.FINE);
     }
 
-    public void testPath() {
-	String path = "a.long.path";
-	assertEquals("path", path, get(path, Level.FINE).path());
-    }
-
-    public void testName() {
-	assertEquals("name", "path",
-		     get("a.long.path", Level.FINE).name());
-    }
-
-    public void testLevel() {
-	assertEquals("level", Level.FINE,
-		     get("a.long.path", Level.FINE).level());
-    }
-
-    public void testSingleton() {
-	Log lhs = get("the.lhs", Level.FINE);
-	Log rhs = get("the.rhs", Level.FINE);
-	assertNotNull("the.lhs", lhs);
-	assertNotNull("the.rhs", rhs);
-	assertTrue("lhs != rhs", lhs != rhs);
-	assertSame("the.lhs", lhs, get("the.lhs", Level.FINE));
-	assertSame("the.rhs", rhs, get("the.rhs", Level.FINE));
-    }
-
-    public void testLeveling() {
-	// create a tree
-	get("the.lower.left.hand.side");
-	get("the.lower.right.hand.side");
-	// set a level
-	set("the.lower.left", Level.FINE);
+    public void testOptionSubFINE() {
 	checkLevel("the", Level.NONE);
-	checkLevel("the.lower", Level.NONE);
-	checkLevel("the.lower.left", Level.FINE);
-	checkLevel("the.lower.left.hand", Level.FINE);
-	checkLevel("the.lower.left.hand.side", Level.FINE);
-	checkLevel("the.lower.right", Level.NONE);
-	checkLevel("the.lower.right.hand", Level.NONE);
-	checkLevel("the.lower.right.hand.side", Level.NONE);
-    }
-
-    public void testRootLevelFINE() {
-	// Set the root level before any children are created; should
-	// propogate down.
-	set("", Level.FINE);
+	parse("the=FINE");
 	checkLevel("the", Level.FINE);
     }
 
-    public void testSubLevelFINE() {
-	// Set the sub-level before any children.
-	set("this", Level.FINE);
-	checkLevel("this.level", Level.FINE);
-	checkLevel("this", Level.FINE);
-	checkLevel("", Level.NONE);
-    }
-    
-    public void testSubClassFINE() {
-	set(TestLib.class, Level.FINE);
-	assertTrue("this is loggging",
-		   get(TestLog.class).get(Level.FINE).logging());
+    public void testOptionCommaOption() {
+	checkLevel("lhs", Level.NONE);
+	checkLevel("rhs", Level.NONE);
+	parse("lhs=FINE,rhs=FINEST");
+	checkLevel("lhs", Level.FINE);
+	checkLevel("rhs", Level.FINEST);
+
     }
 
-    public void testLevelComparison() {
-	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
-	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
-	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
+    public void testOptionPackage() {
+	checkLevel("frysk", Level.NONE);
+	parse("frysk");
+	checkLevel("frysk", Level.FINE);
     }
 }

@@ -39,85 +39,56 @@
 
 package frysk.rsl;
 
+import frysk.junit.TestCase;
+import java.util.List;
+
 /**
  * Testlogging that is a sub-class of this directory.
  */
 
-public class TestLog extends TestLib {
-    public void testGetRoot() {
-	assertSame("root", get(""), get(""));
+public class TestLib extends TestCase {
+    private static final Log log = Log.fine(TestLog.class);
+    private Node root;
+    public void setUp() {
+	log.log("setUp");
+	root = new Node();
+    }
+    public void tearDown() {
+	log.log("tearDown");
+	root = null;
+    }
+    Node get(String path) {
+	return root.get(path);
+    }
+    Node get(Class path) {
+	return root.get(path);
+    }
+    Log get(String path, Level level) {
+	return root.get(path).get(level);
+    }
+    Log get(Class path, Level level) {
+	return root.get(path).get(level);
+    }
+    void set(String path, Level level) {
+	get(path).set(level);
+    }
+    void set(Class path, Level level) {
+	get(path).set(level);
+    }
+    int complete(String incomplete, List candidates) {
+	return root.complete(incomplete, candidates);
     }
 
-    public void testGetSelf() {
-	Log self = get("self", Level.FINE);
-	assertNotNull("self", self);
+    void checkLevel(String path, Level level) {
+	for (int i = 0; i < Level.MAX.intValue(); i++) {
+	    Log log = get(path, Level.valueOf(i));
+	    assertEquals("level " + log, i <= level.intValue(), log.logging());
+	}
     }
-
-    public void testPath() {
-	String path = "a.long.path";
-	assertEquals("path", path, get(path, Level.FINE).path());
-    }
-
-    public void testName() {
-	assertEquals("name", "path",
-		     get("a.long.path", Level.FINE).name());
-    }
-
-    public void testLevel() {
-	assertEquals("level", Level.FINE,
-		     get("a.long.path", Level.FINE).level());
-    }
-
-    public void testSingleton() {
-	Log lhs = get("the.lhs", Level.FINE);
-	Log rhs = get("the.rhs", Level.FINE);
-	assertNotNull("the.lhs", lhs);
-	assertNotNull("the.rhs", rhs);
-	assertTrue("lhs != rhs", lhs != rhs);
-	assertSame("the.lhs", lhs, get("the.lhs", Level.FINE));
-	assertSame("the.rhs", rhs, get("the.rhs", Level.FINE));
-    }
-
-    public void testLeveling() {
-	// create a tree
-	get("the.lower.left.hand.side");
-	get("the.lower.right.hand.side");
-	// set a level
-	set("the.lower.left", Level.FINE);
-	checkLevel("the", Level.NONE);
-	checkLevel("the.lower", Level.NONE);
-	checkLevel("the.lower.left", Level.FINE);
-	checkLevel("the.lower.left.hand", Level.FINE);
-	checkLevel("the.lower.left.hand.side", Level.FINE);
-	checkLevel("the.lower.right", Level.NONE);
-	checkLevel("the.lower.right.hand", Level.NONE);
-	checkLevel("the.lower.right.hand.side", Level.NONE);
-    }
-
-    public void testRootLevelFINE() {
-	// Set the root level before any children are created; should
-	// propogate down.
-	set("", Level.FINE);
-	checkLevel("the", Level.FINE);
-    }
-
-    public void testSubLevelFINE() {
-	// Set the sub-level before any children.
-	set("this", Level.FINE);
-	checkLevel("this.level", Level.FINE);
-	checkLevel("this", Level.FINE);
-	checkLevel("", Level.NONE);
-    }
-    
-    public void testSubClassFINE() {
-	set(TestLib.class, Level.FINE);
-	assertTrue("this is loggging",
-		   get(TestLog.class).get(Level.FINE).logging());
-    }
-
-    public void testLevelComparison() {
-	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
-	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
-	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
+    void checkLevel(Class path, Level level) {
+	for (int i = 0; i < Level.MAX.intValue(); i++) {
+	    Log log = get(path, Level.valueOf(i));
+	    assertEquals("level " + log, i <= level.intValue(), log.logging());
+	}
     }
 }

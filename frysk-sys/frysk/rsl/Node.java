@@ -77,15 +77,10 @@ public final class Node {
 	this("<root>", "<root>", Level.NONE);
     }
     /**
-     * The root Node; also serves as a single global lock.
-     */
-    static final Node root = new Node();
-
-    /**
      * Set this Node, and all sub-notes logging level.
      */
     public final void set(Level level) {
-	synchronized (root) {
+	synchronized (LogFactory.root) {
 	    this.level = level;
 	    for (int i = 0; i < Level.MAX.intValue(); i++) {
 		if (loggers[i] != null) {
@@ -128,13 +123,13 @@ public final class Node {
 	}
     }
     Node get(String path) {
-	synchronized (root) {
+	synchronized (LogFactory.root) {
 	    return get(path, -1);
 	}
     }
 
     Node get(Class klass) {
-	synchronized (root) {
+	synchronized (LogFactory.root) {
 	    Node childNode = get(klass.getName());
 	    Class parentClass = klass.getSuperclass();
 	    if (parentClass != null) {
@@ -158,7 +153,7 @@ public final class Node {
      * Return the requested level.
      */
     Log get(Level level) {
-	synchronized (root) {
+	synchronized (LogFactory.root) {
 	    int l = level.intValue();
 	    if (loggers[l] == null) {
 		loggers[l] = new Log(path, name, level).set(this.level);
@@ -228,7 +223,7 @@ public final class Node {
      * Complete the logger.
      */
     int complete(String incomplete, List candidates) {
-	synchronized(root) {
+	synchronized(LogFactory.root) {
 	    return complete(incomplete, -1, candidates);
 	}
     }
