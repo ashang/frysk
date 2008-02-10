@@ -1,5 +1,8 @@
 2008-02-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Node.java: Delete stray printlns.
+	* LogFactory.java: Ditto.
+	
 	* LogFactory.java (get(Node,String)): New; use.
 	(get(Node,Class)): New; use
 	(complete(Node,String,List)): New; use.

@@ -193,7 +193,6 @@ public final class Node {
      * offset within NAME at which completions start or -1.
      */
     int complete(String name, List candidates) {
-	System.out.println(path + " complete " + name);
 	for (Iterator i = children.keySet().iterator(); i.hasNext(); ) {
 	    String child = (String)i.next();
 	    if (child.startsWith(name))
@@ -209,7 +208,7 @@ public final class Node {
 		// expansion to either "."  (have children) or " "
 		// (childless).
 		Node child = (Node)children.get(name);
-		candidates.remove(0);
+		candidates.remove(candidates.size() - 1);
 		if (child.children.size() > 0) {
 		    candidates.add(".");
 		} else {
@@ -218,7 +217,7 @@ public final class Node {
 		return name.length();
 	    } else {
 		// A single partial completion e.g., <<foo<TAB>>> ->
-		// <<foobar>>.  The next completion will fill in the
+		// <<foobar>>.  The next completion request will fill in the
 		// "." or <space>.
 		return 0;
 	    }

@@ -100,8 +100,6 @@ public final class LogFactory {
     static int complete(Node node, String incomplete, List candidates) {
 	synchronized (root) {
 	    String[] names = incomplete.split("\\.", -1);
-	    System.out.println(java.util.Arrays.asList(names));
-	    System.out.println(names.length);
 	    for (int i = 0; i < names.length - 1; i++) {
 		if (names[i].length() > 0)
 		    node = node.get(names[i]);
