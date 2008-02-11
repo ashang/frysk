@@ -109,7 +109,7 @@ public class TestLoadCommand extends TestLib {
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("load", "Task Id ([0-9]+).*Task Id ([0-9]+).*");
+	e.sendCommandExpectPrompt("load", "Loaded Task Id ([0-9]+).*Task Id ([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();

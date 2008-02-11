@@ -1,3 +1,10 @@
+2008-02-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* UnloadCommand.java: New to unload loaded processes.
+	* LoadCommand.java: Add capability to list loaded procs.
+	* TestLoadCommand.java: Test above.
+
+
 2008-02-08  Stan Cox  <scox@redhat.com>
 
 	* TestListCommand.java (testListFrames): Tweak the expect output.

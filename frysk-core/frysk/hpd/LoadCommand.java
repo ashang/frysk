@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -91,6 +91,7 @@ public class LoadCommand extends ParameterizedCommand {
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {
+	
 	Options o = (Options)options;
 	
 	if (cmd.size() > 2) {
@@ -112,7 +113,12 @@ public class LoadCommand extends ParameterizedCommand {
 	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
 	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
 
-	int procID = cli.idManager.reserveProcID();
+	int procID;
+	if (cli.taskID < 0)
+	    procID = cli.idManager.reserveProcID();
+	else
+	    procID = cli.taskID;
+	
 	cli.idManager.manageProc(exeProc, procID);
 
 	Iterator foo = cli.targetset.getTasks();
@@ -139,7 +145,7 @@ public class LoadCommand extends ParameterizedCommand {
      * 
      * @param cli is the current commandline interface object
      */
-    private void listLoadedProcs(CLI cli) {
+    public static void listLoadedProcs(CLI cli) {
 	HashMap listLoaded = cli.getLoadedProcs();
 	if (listLoaded.isEmpty()) {
 	    cli.addMessage("No loaded procs currently", Message.TYPE_NORMAL);
@@ -151,7 +157,7 @@ public class LoadCommand extends ParameterizedCommand {
 	    Map.Entry me = (Map.Entry) foo.next();
 	    Proc proc = (Proc) me.getKey();
 	    Integer taskId = (Integer) me.getValue();
-	    cli.addMessage("Task Id " + taskId + " = " + proc.getExe(), Message.TYPE_NORMAL);
+	    cli.addMessage("Loaded Task Id " + taskId + " = " + proc.getExe(), Message.TYPE_NORMAL);
 	}
     }
 
