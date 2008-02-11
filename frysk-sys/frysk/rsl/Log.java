@@ -121,23 +121,22 @@ public final class Log {
 
     private static final long startTime = System.currentTimeMillis();
 
-    private void prePrefix() {
+    private void prefixTime() {
 	long time = System.currentTimeMillis() - startTime;
 	out.print(time / 1000);
 	out.print(".");
 	out.print(time % 1000);
 	out.print(": ");
+    }
+
+    private void prefix() {
+	prefixTime();
 	out.print(path);
 	out.print(":");
     }
 
-    private void prefix() {
-	prePrefix();
-	out.print(":");
-    }
-
     private void prefix(Object o) {
-	prePrefix();
+	prefixTime();
 	out.print(" [");
 	out.print(o.toString());
 	out.print("]:");

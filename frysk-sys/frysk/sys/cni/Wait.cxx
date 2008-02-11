@@ -51,8 +51,8 @@
 
 #include <gcj/cni.h>
 
-#include <java/util/logging/Logger.h>
-#include <java/util/logging/Level.h>
+#include "frysk/rsl/Log.h"
+#include "frysk/rsl/cni/Log.hxx"
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
@@ -82,9 +82,8 @@
 /* Decode and log a waitpid result, but only when logging.  */
 
 static void
-log (java::util::logging::Logger *logger, pid_t pid, int status, int err)
-{
-  if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
+logWait(frysk::rsl::Log* logger, pid_t pid, int status, int err) {
+  if (!logger->logging())
     return;
   if (pid > 0) {
     const char *wif_name = "<unknown>";
@@ -121,14 +120,12 @@ log (java::util::logging::Logger *logger, pid_t pid, int status, int err)
       sig = WTERMSIG (status);
       sig_name = strsignal (sig);
     }
-    logFinest (&frysk::sys::Wait::class$, logger,
-	       "frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
-	       pid, status, wif_name, sig, sig_name);
+    logf(logger, "waitpid %d -> status 0x%x %s %d (%s)",
+	 pid, status, wif_name, sig, sig_name);
   }
   else
-    logFinest (&frysk::sys::Wait::class$, logger,
-	       "frysk.sys.Wait pid %d errno %d (%s)\n",
-	       pid, err, strerror (err));
+    logf(logger, "waitpid %d -> errno %d (%s)",
+	 pid, err, strerror (err));
 }
 
 /* Decode a wait status notification using the WIFxxx macros,
@@ -234,7 +231,6 @@ processStatus(frysk::sys::ProcessIdentifier* pid, int status,
 void
 frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
 {
-  java::util::logging::Logger *logger = getLogger ();
   struct WaitResult {
     pid_t pid;
     int status;
@@ -256,7 +252,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
     errno = 0;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
     myErrno = errno;
-    log (logger, tail->pid, tail->status, errno);
+    logWait(logFine(), tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
     tail->next = (WaitResult*) alloca (sizeof (WaitResult));
@@ -299,7 +295,7 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
   errno = 0;
   pid_t pid = ::waitpid (wpid, &status, __WALL);
   int myErrno = errno;
-  log (getLogger(), pid, status, errno);
+  logWait(logFine(), pid, status, errno);
   if (pid <= 0)
     throwErrno (myErrno, "waitpid", "process %d", (int)wpid);
   // Process the result.
@@ -316,7 +312,7 @@ void frysk::sys::Wait::drain (jint wpid)
     errno = 0;
     pid_t pid = ::waitpid (wpid, &status, __WALL);
     int err = errno;
-    log (getLogger (), pid, status, err);
+    logWait(logFine(), pid, status, err);
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
@@ -331,7 +327,7 @@ void frysk::sys::Wait::drainNoHang (jint wpid)
     errno = 0;
     pid_t pid = ::waitpid (wpid, &status, __WALL| WNOHANG);
     int err = errno;
-    log (getLogger (), pid, status, err);
+    logWait(logFine(), pid, status, err);
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
@@ -402,11 +398,9 @@ frysk::sys::Wait::signalEmpty ()
 void
 frysk::sys::Wait::signalAdd (frysk::sys::Signal* sig)
 {
-  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Get the hash code.
   int signum = sig->hashCode ();
-  logFinest (&frysk::sys::Wait::class$, logger,
-	     "adding %d (%s)\n", signum, strsignal (signum));
+  logf(logFine(), "adding %d (%s)", signum, strsignal (signum));
   // Add it to the signal set.
   signalSet->add (sig);
   // Make certain that the signal is masked (this is ment to be
@@ -434,19 +428,17 @@ frysk::sys::Wait::wait (jint waitPid,
 			jlong millisecondTimeout,
 			jboolean ignoreECHILD)
 {
-  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Zero the existing timeout, and drain any pending SIGALRM
-  logFinest (&frysk::sys::Wait::class$, logger,
-	     "flush old timeout & SIGALRM\n");
+  logf(logFinest(), "zero current timeout & and flush pending SIGALRM");
   struct itimerval timeout;
   memset (&timeout, 0, sizeof (timeout));
   setitimer (ITIMER_REAL, &timeout, NULL);
   signal (SIGALRM, SIG_IGN);
 
   // Set up a new timeout and it's handler.
-  logFinest (&frysk::sys::Wait::class$, logger,
-	     "install new timeout & SIGALRM\n");
   if (millisecondTimeout > 0) {
+    logf(logFinest(), "install new timeout of %ld  & SIGALRM",
+	 (long) millisecondTimeout);
     struct sigaction alarm_action;
     memset (&alarm_action, 0, sizeof (alarm_action));
     alarm_action.sa_handler = waitInterrupt;
@@ -459,8 +451,8 @@ frysk::sys::Wait::wait (jint waitPid,
 
   // Get the signal mask of all allowed signals; clear the set of
   // received signals.  Need to include SIGALRM.  Since native calls
-  // don't guarentee that the initialized is called, explictly check
-  // that the set is initialized.
+  // don't guarentee that a class is initialized, explictly check that
+  // the set is initialized.
   if (signalSet == NULL)
     signalSet = new frysk::sys::SignalSet ();
   sigset_t mask = *getRawSet (signalSet);
@@ -481,6 +473,7 @@ frysk::sys::Wait::wait (jint waitPid,
   if (signum > 0) {
     // Interrupted by SIGNUM, disable further blocking.  When multiple
     // signals are pending, each will cause a longjmp back to here.
+    logf(logFinest(), "interrupted by signal %d", signum);
     sigdelset (&mask, signum);
     block = false;
   }
@@ -525,7 +518,7 @@ frysk::sys::Wait::wait (jint waitPid,
 
   // Made it all the way through a [blocking] waitpid call without
   // being restarted.
-  log (logger, pid, wait_jmpbuf.status, -pid);
+  logWait(logFine(), pid, wait_jmpbuf.status, -pid);
 
   // Create a linked list of the waitpid events that are received;
   // keep it on the stack to avoid malloc() overhead.
@@ -542,7 +535,7 @@ frysk::sys::Wait::wait (jint waitPid,
     while (true) {
       int status;
       pid = ::waitpid (waitPid, &status, __WALL|WNOHANG);
-      log (logger, pid, status, errno);
+      logWait(logFine(), pid, status, errno);
       if (pid <= 0)
 	break;
       if (pid == lastEvent->pid && status == lastEvent->status) {
@@ -552,8 +545,8 @@ frysk::sys::Wait::wait (jint waitPid,
 	// threads are different but in the same process, both events
 	// are seen.  Discard the duplicate.
 	continue;
-	logFinest (&frysk::sys::Wait::class$, logger,
-		   "discarding duplicate terminated event for pid %d\n", pid);
+	logf(logFinest(), "discarding duplicate terminated event for pid %d",
+	     pid);
       }
       // Append the event.
       lastEvent->next = (struct event*) alloca (sizeof (struct event));

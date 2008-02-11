@@ -39,7 +39,7 @@
 
 package frysk.sys;
 
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 /**
  * Wait for an event from either a process, task, or all processes and
@@ -47,18 +47,30 @@ import java.util.logging.Logger;
  */
 
 public final class Wait {
-    private static Logger logger;
     /**
      * Finds, and returns the logger, but only when logging is
      * enabled..
      */
-    static Logger getLogger() {
+    static Log logFine() {
 	// Seems that when calling a native static methods this isn't
 	// initialized, force it.
-	if (logger == null)
-	    logger = Logger.getLogger("frysk");
-	return logger;
+	if (fine == null)
+	    fine = Log.fine(Wait.class);
+	return fine;
     }
+    private static Log fine;
+    /**
+     * Finds, and returns the logger, but only when logging is
+     * enabled..
+     */
+    static Log logFinest() {
+	// Seems that when calling a native static methods this isn't
+	// initialized, force it.
+	if (finest == null)
+	    finest = Log.finest(Wait.class);
+	return finest;
+    }
+    private static Log finest;
 
     /**
      * Set of signals checked during poll.

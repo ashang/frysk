@@ -1,3 +1,8 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Use frysk.rsl.
+	* cni/Wait.cxx: Ditto.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* PseudoTerminal.java (getName(int)): Replace getName().

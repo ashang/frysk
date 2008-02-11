@@ -1,3 +1,10 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (prefixTime()): Replace prePrefix().
+	(prefix(), prefix(Object)): Use.
+	* cni/Log.hxx: New file.
+	* cni/Log.cxx: New file.
+	
 2008-02-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Node.java: Delete stray printlns.
