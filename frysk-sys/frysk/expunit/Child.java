@@ -162,7 +162,7 @@ class Child {
 	    long timeRemaining = endTime - System.currentTimeMillis();
 	    if (timeRemaining <= 0) {
 		fine.log(this, "match TIMEOUT");
-		throw new TimeoutException(timeoutMilliseconds / 1000, matches,
+		throw new TimeoutException(timeoutMilliseconds, matches,
 			output);
 	    }
 
