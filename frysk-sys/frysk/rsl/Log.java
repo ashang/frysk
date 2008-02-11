@@ -39,6 +39,7 @@
 
 package frysk.rsl;
 
+import inua.util.PrintWriter;
 import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.lang.reflect.Array;
@@ -114,19 +115,34 @@ public final class Log {
     }
 
     // Static?
-    private static PrintStream out = System.out;
+    private static PrintWriter out = new PrintWriter(System.out);
     static void set(PrintStream out) {
-	Log.out = out;
+	Log.out = new PrintWriter(out);
     }
 
     private static final long startTime = System.currentTimeMillis();
 
     private void prefixTime() {
 	long time = System.currentTimeMillis() - startTime;
-	out.print(time / 1000);
-	out.print(".");
-	out.print(time % 1000);
-	out.print(": ");
+	long millis = time % 1000;
+	time = time / 1000;
+	long secs = time % 60;
+	time = time / 60;
+	long mins = time % 60;
+	time = time / 60;
+	long hrs = time % 24;
+	time = time / 24;
+	long days = time;
+	out.print(days);
+	out.print(' ');
+	out.print(2, '0', hrs);
+	out.print(':');
+	out.print(2, '0', mins);
+	out.print(':');
+	out.print(2, '0', secs);
+	out.print('.');
+	out.print(3, '0', millis);
+	out.print(' ');
     }
 
     private void prefix() {
@@ -186,7 +202,13 @@ public final class Log {
      * @param o the object to dump
      */
     private void dump(Object o) {
-	if (o.getClass().isArray()) {
+	if (o instanceof char[]) {
+	    dump((char[])o);
+	} else if (o instanceof int[]) {
+	    dump((int[])o);
+	} else if (o instanceof long[]) {
+	    dump((long[])o);
+	} else if (o.getClass().isArray()) {
 	    out.print("[");
 	    for (int i = 0; i < Array.getLength(o); i++) {
 		if (i > 0)
@@ -208,7 +230,7 @@ public final class Log {
      * Use poorly implemented reflection to dump Objects.
      */
     private void print(Object o) {
-	out.print(" ");
+	out.print(' ');
 	dump(o);
     }
     
@@ -216,56 +238,66 @@ public final class Log {
      * Chars are printed in quotes.
      */
     private void print(char c) {
-	out.print(" '");
-	out.print(c);
-	out.print("'");
+	out.print(' ');
+	dump(c);
     }
-    private void print(char[] a) {
-	out.print(" {");
+    private void dump(char c) {
+	out.print('\'');
+	out.print(c);
+	out.print('\'');
+    }
+    private void dump(char[] a) {
+	out.print('[');
 	for (int i = 0; i < a.length; i++) {
 	    if (i > 0)
 		out.print(',');
-	    out.print('\'');
-	    out.print(a[i]);
-	    out.print('\'');
+	    dump(a[i]);
 	}
-	out.print('}');
+	out.print(']');
     }
 
     /**
      * Integers are printed in decimal.
      */
     private void print(int i) {
-	out.print(" ");
+	out.print(' ');
+	dump(i);
+    }
+    private void dump(int i) {
 	out.print(i);
     }
-    private void print(int[] a) {
-	out.print(" [");
+    private void dump(int[] a) {
+	out.print('[');
 	for (int i = 0; i < a.length; i++) {
 	    if (i > 0)
-		out.print(",");
-	    out.print(a[i]);
+		out.print(',');
+	    dump(i);
 	}
-	out.print("]");
+	out.print(']');
     }
 
     /**
      * Longs are printed in hex.
      */
     private void print(long l) {
-	out.print(" 0x");
-	out.print(Long.toHexString(l));
+	out.print(' ');
+	dump(l);
     }
-    private void print(long[] a) {
-	out.print(" [");
+    private void dump(long l) {
+	out.print("0x");
+	out.printx(l);
+
+    }
+    private void dump(long[] a) {
+	out.print('[');
 	for (int i = 0; i < a.length; i++) {
 	    if (i > 0)
-		out.print(",");
-	    out.print("0x");
-	    out.print(Long.toHexString(a[i]));
+		out.print(',');
+	    dump(a[i]);
 	}
-	out.print("]");
+	out.print(']');
     }
+
     /**
      * Strings are just copied.
      */
@@ -316,20 +348,15 @@ public final class Log {
 	    return;
 	prefix(); print(p1); print(p2); suffix();
     }
-    public void log(String p1, char[] p2) {
+    public void log(String p1, Object p2) {
 	if (!logging)
 	    return;
 	prefix(); print(p1); print(p2); suffix();
     }
     public void log(String p1, String p2) {
-	if (!logging)
-	    return;
-	prefix(); print(p1); print(p2); suffix();
-    }
-    public void log(String p1, Object p2) {
-	if (!logging)
-	    return;
-	prefix(); print(p1); print(p2); suffix();
+	// Needed to disambiguate log(String,String) which could be
+	// either log(Object,String) or log(String,Object).
+	log(p1, (Object)p2);
     }
     public void log(String p1, Object p2, String p3) {
 	if (!logging)
@@ -368,22 +395,7 @@ public final class Log {
 	    return;
 	prefix(self); print(p1); print(p2); suffix();
     }
-    public void log(Object self, String p1, String p2) {
-	if (!logging)
-	    return;
-	prefix(self); print(p1); print(p2); suffix();
-    }
     public void log(Object self, String p1, Object p2) {
-	if (!logging)
-	    return;
-	prefix(self); print(p1); print(p2); suffix();
-    }
-    public void log(Object self, String p1, int[] p2) {
-	if (!logging)
-	    return;
-	prefix(self); print(p1); print(p2); suffix();
-    }
-    public void log(Object self, String p1, long[] p2) {
 	if (!logging)
 	    return;
 	prefix(self); print(p1); print(p2); suffix();

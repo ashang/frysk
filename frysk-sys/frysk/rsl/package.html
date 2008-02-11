@@ -40,9 +40,9 @@ formatted as follows:
 
 <table border=1>
 <tr><th>Type</th><th>Format</th></tr>
+<tr><td>char</td><td>The character in single quotes</td></tr>
 <tr><td>int</td><td>Signed Decimal</td></tr>
 <tr><td>long</td><td>Unsigned Hexadecimal</td></tr>
-<tr><td>String</td><td>The string (unquoted)</td></tr>
 <tr><td>Object</td><td>
 <table>
 <tr><td>Throwable</td><td>The throwable's and all causes's getMessage() wraped in &lt;&lt; &gt;&gt;</td></tr>
@@ -56,12 +56,12 @@ formatted as follows:
 for instance:
 
 <pre>
-logger.log("int", 1, "long", (long)1, "string", "foo", "object", (Object)"\t");
-... int 1 long 0x1 string foo object "\t"
+logger.log("int", 1, "long", (long)1, "string", "foo\t");
+... int 1 long 0x1 string "foo\t"
 </pre>
 
-(notice how casting can be used to select between specific format.
-For instance "int" and "long", and "String" and "Object").
+(notice how casting can be used to select between decimal (int) and
+hex (long) specific formats.
 
 <h2>Command Line Option Syntax</h2>
 

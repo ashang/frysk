@@ -1,5 +1,21 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (prefixTime()): Print time in DAY HH:MM:SS.mmm format;
+	use inua.util.PrintWriter.
+	(log(String,String)): Simplify.
+	(log(Object,String,String)): Delete.
+	(log(String,char[])): Delete.
+	(log(Object,String,int[])): Delete.
+	(log(Object,String,long[])): Delete.
+	(dump(Object)): Check for instance of char[], int[] and long[].
+	(dump(char[])): Replace print(char[]).
+	(dump(int[])): Replace print(int[]).
+	(dump(long[])): Replace print(long[]).
+	(dump(char)): New.
+	(dump(int)): New.
+	(dump(long)): New.
+	* package.html: Update.
+
 	* Log.java (log(String,Object,String,Object,String,Object,String,Object)): New.
 	(log(String,int)): New.
 	(log(String,long)): New.
