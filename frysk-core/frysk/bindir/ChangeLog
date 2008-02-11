@@ -1,5 +1,10 @@
 2008-02-11  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java: Support -stack.
+	* ftrace.xml: Describe -stack.
+
+2008-02-11  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.xml: Describe -sys option, remove description of -S and -t.
 
 2008-02-11  Petr Machata  <pmachata@redhat.com>

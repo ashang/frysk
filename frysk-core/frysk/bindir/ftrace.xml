@@ -73,12 +73,11 @@
       <arg choice="opt">-m</arg>
       <arg choice="opt">-o=<replaceable>FILE</replaceable></arg>
       <arg choice="opt" rep="repeat">-p=<replaceable>PID</replaceable></arg>
-      <arg choice="opt">-s=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
-      <arg choice="opt">-S</arg>
-      <arg choice="opt">-t=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
+      <arg choice="opt">-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
       <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
+      <arg choice="opt">-stack</arg>
       <arg choice="opt">--</arg>
       <arg choice="plain"><replaceable>command</replaceable> <arg choice="opt"><replaceable>arguments</replaceable>...</arg></arg>
     </cmdsynopsis>
@@ -129,6 +128,16 @@
 	      <replaceable>SYSCALL</replaceable> ruleset are.  See
 	      below for description of
 	      <replaceable>SYSCALL</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-stack</term>
+	    <listitem>
+	      <para>Stack trace when traced system call is hit.  Note
+	      that this option also applies to traced symbols.  If you
+	      need to cherry-pick which event should stack trace, use
+	      # operator described in sections below.</para>
 	    </listitem>
 	  </varlistentry>
 	</variablelist>
@@ -187,6 +196,16 @@
 	      (Which doesn't have to be present, e.g. when a binary is
 	      stripped.)  See below for description of
 	      <replaceable>SYMBOL</replaceable> rule syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-stack</term>
+	    <listitem>
+	      <para>Stack trace when traced symbol is hit.  Note that
+	      this option also applies to traced system calls.  If you
+	      need to cherry-pick which event should stack trace, use
+	      # operator described in sections below.</para>
 	    </listitem>
 	  </varlistentry>
 

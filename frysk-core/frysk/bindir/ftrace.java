@@ -257,9 +257,15 @@ class MyFtraceController
 
     // Which symbols should yield a stack trace.
     private HashSet symbolsStackTraceSet = new HashSet();
+    private boolean stackTraceEverything = false;
+
+    public void stackTraceEverything() {
+	stackTraceEverything = true;
+    }
 
     public boolean shouldStackTraceOnSymbol(Symbol symbol) {
-	return symbolsStackTraceSet.contains(symbol);
+	return stackTraceEverything
+	    || symbolsStackTraceSet.contains(symbol);
     }
 
     public MyFtraceController() { }
@@ -306,7 +312,8 @@ class MyFtraceController
 	Map ret = new HashMap();
 	for (Iterator it = workingSet.iterator(); it.hasNext(); ) {
 	    Object syscall = it.next();
-	    ret.put(syscall, Boolean.valueOf(stackTraceSet.contains(syscall)));
+	    ret.put(syscall, Boolean.valueOf(stackTraceEverything
+					     || stackTraceSet.contains(syscall)));
 	}
 	return ret;
     }
@@ -594,6 +601,12 @@ class ftrace
 	parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    symRules.add(arg);
+		}
+	});
+
+	parser.add(new Option("stack", "stack trace on every traced entity") {
+		public void parsed(String arg) {
+		    controller.stackTraceEverything();
 		}
 	});
     }
