@@ -42,3 +42,9 @@ extern void logf(frysk::rsl::Log*, const char*, ...)
 
 extern void logf(frysk::rsl::Log*, jobject, const char*, ...)
   __attribute__((format(printf, 3, 4)));
+
+extern void log(frysk::rsl::Log*, const char*);
+extern void log(frysk::rsl::Log*, jobject, const char*);
+
+extern void log(frysk::rsl::Log*, const char*, jobject);
+extern void log(frysk::rsl::Log*, jobject, const char*, jobject);

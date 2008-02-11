@@ -65,3 +65,31 @@ logf(frysk::rsl::Log* logger, jobject object, const char* format, ...) {
   logger->log(object, message);
   va_end(ap);
 }
+
+void
+log(frysk::rsl::Log* logger, jobject self, const char* p1, jobject p2) {
+  if (!logger->logging())
+    return;
+  logger->log(self, JvNewStringUTF(p1), p2);
+}
+
+void
+log(frysk::rsl::Log* logger, const char* p1, jobject p2) {
+  if (!logger->logging())
+    return;
+  logger->log(JvNewStringUTF(p1), p2);
+}
+
+void
+log(frysk::rsl::Log* logger, jobject self, const char* p1) {
+  if (!logger->logging())
+    return;
+  logger->log(self, JvNewStringUTF(p1));
+}
+
+void
+log(frysk::rsl::Log* logger, const char* p1) {
+  if (!logger->logging())
+    return;
+  logger->log(JvNewStringUTF(p1));
+}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,14 +39,14 @@
 
 package lib.unwind;
 
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 import gnu.gcj.RawDataManaged;
 import gnu.gcj.RawData;
 
-public abstract class Unwind
-{
-  volatile Logger logger = Logger.getLogger("frysk");
+public abstract class Unwind {
+    static final Log fine = Log.fine(Unwind.class);
+    static final Log finest = Log.finest(Unwind.class);
   
     abstract RawDataManaged initRemote(AddressSpace addressSpace);
      

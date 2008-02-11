@@ -1,3 +1,9 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Unwind.java: Use frysk.rsl.
+	* Cursor.java: Ditto.
+	* cni/UnwindH.hxx: Ditto.
+
 2008-01-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* cni/UnwindH.hxx (get_eh_frame_hdr_addr): Prefer debug_frame.

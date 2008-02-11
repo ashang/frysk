@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,12 +40,12 @@
 package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
-public class Cursor
-{
-    static final Logger logger = Logger.getLogger("frysk");
+public class Cursor {
+    private static final Log fine = Log.fine(Cursor.class);
+    private static final Log finest = Log.finest(Cursor.class);
+
     final RawDataManaged cursor; 
     final Unwind unwinder;
     final AddressSpace addressSpace;
@@ -53,11 +53,11 @@ public class Cursor
 
     private Cursor(AddressSpace addressSpace, RawDataManaged cursor,
 		   Unwind unwinder) {
-	logger.log(Level.FINE, "{0} Create Cursor\n", this);
 	this.addressSpace = addressSpace;
 	this.cursor = cursor;
 	this.unwinder = unwinder;
 	this.step = 1;
+	fine.log(this, "Create Cursor");
     }
     public Cursor(AddressSpace addressSpace) {
 	this(addressSpace,
@@ -100,7 +100,7 @@ public class Cursor
     }
   
     public Cursor unwind() {
-	logger.log(Level.FINE, "{0}, unwind\n", this);
+	fine.log(this, "unwind");
 
 	//XXX: Don't unwind if no more, or unknown frames.
 	if (step == 0 || getIP() == 0)
@@ -111,8 +111,7 @@ public class Cursor
   
 	step = newCursor.step();
     
-	logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
-		   new Object[] {this, new Integer(step)});
+	finest.log(this, "unwind, step returned: ",  step);
     
 	if (step > 0)
 	    return newCursor;

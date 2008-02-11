@@ -1,5 +1,11 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Log.hxx (log(Log,Object,const char*,Object))
+	(log(Log,const char *,Object)): New.
+	(log(Log,const char *)): New.
+	(log(Log,Object,const char *)): New.
+	* cni/Log.cxx: Update.
+	
 	* Log.java (prefixTime()): Replace prePrefix().
 	(prefix(), prefix(Object)): Use.
 	* cni/Log.hxx: New file.

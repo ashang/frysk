@@ -57,11 +57,11 @@
 
 #include <java/lang/String.h>
 #include <java/lang/Object.h>
-#include <java/util/logging/Logger.h>
-#include <java/util/logging/Level.h>
 #include <java/lang/ArrayIndexOutOfBoundsException.h>
 
 #include "inua/eio/ByteBuffer.h"
+#include "frysk/rsl/Log.h"
+#include "frysk/rsl/cni/Log.hxx"
 #include "lib/dwfl/Dwfl.h"
 #include "lib/unwind/Unwind.h"
 #include "lib/unwind/AddressSpace.h"
@@ -216,7 +216,7 @@ get_proc_name(::unw_addr_space_t as,
 gnu::gcj::RawDataManaged*
 lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace)
 {
-  logFine(this, logger, "native initRemote");
+  logf(fine, this, "native initRemote");
   gnu::gcj::RawDataManaged *cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
 
   unw_init_remote((unw_cursor_t *) cursor,
@@ -229,8 +229,7 @@ lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace)
 gnu::gcj::RawData*
 lib::unwind::TARGET::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
 {
-
-  logFine(this, logger, "createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
+  logf(fine, this, "createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
   static unw_accessors_t accessors =
     {
       find_proc_info ,
@@ -249,7 +248,7 @@ lib::unwind::TARGET::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
 void
 lib::unwind::TARGET::destroyAddressSpace(gnu::gcj::RawData* addressSpace)
 {
-  logFine(this, logger, "destroyAddressSpace");
+  logf(fine, this, "destroyAddressSpace");
   unw_destroy_addr_space((unw_addr_space_t) addressSpace);
 }
 
@@ -257,8 +256,7 @@ void
 lib::unwind::TARGET::setCachingPolicy(gnu::gcj::RawData* addressSpace,
                                       lib::unwind::CachingPolicy* cachingPolicy)
 {
-  jLogFine(this, logger, "setCachingPolicy, cachingPolicy: {1}",
-           cachingPolicy);
+  log(fine, this, "setCachingPolicy, cachingPolicy:", cachingPolicy);
   unw_set_caching_policy((unw_addr_space_t) addressSpace,
                          (unw_caching_policy_t) cachingPolicy->hashCode());
 }
@@ -266,14 +264,14 @@ lib::unwind::TARGET::setCachingPolicy(gnu::gcj::RawData* addressSpace,
 jint
 lib::unwind::TARGET::isSignalFrame(gnu::gcj::RawDataManaged* cursor)
 {
-  logFine(this, logger, "isSignalFrame");
+  logf(fine, this, "isSignalFrame");
   return unw_is_signal_frame((unw_cursor_t *) cursor);
 }
 
 jint
 lib::unwind::TARGET::step(gnu::gcj::RawDataManaged* cursor)
 {
-  logFine (this, logger, "step cursor: %p", cursor);
+  logf(fine, this, "step cursor: %p", cursor);
   return unw_step((unw_cursor_t *) cursor);
 }
 
@@ -426,19 +424,19 @@ lib::unwind::TARGET::copyCursor(gnu::gcj::RawDataManaged* cursor)
 lib::unwind::ProcInfo*
 lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
 {
-  logFine (this, logger, "getProcInfo cursor: %p", cursor);
+  logf(fine, this, "getProcInfo cursor: %p", cursor);
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
   int ret = unw_get_proc_info((::unw_cursor_t *) cursor, procInfo);
 
-  logFine( this, logger, "getProcInfo finished get_proc_info");
+  logf(fine, this, "getProcInfo finished get_proc_info");
   lib::unwind::ProcInfo * myInfo;
   if (ret < 0)
     myInfo = new lib::unwind::ProcInfo((jint) ret);
   else
     myInfo = new lib::unwind::ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
-  jLogFine (this, logger, "getProcInfo returned: {1}", myInfo);
+  log(fine, this, "getProcInfo returned", myInfo);
   return myInfo;
 }
 
@@ -613,7 +611,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
-  logFine(this, logger, "Pre unw_get_unwind_table");
+  logf(fine, this, "Pre unw_get_unwind_table");
   
   unw_word_t peh_vaddr = 0;
   char *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
@@ -652,7 +650,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
                                eh_table_hdr);
   
   
-  logFine(this, logger, "Post unw_get_unwind_table");
+  logf(fine, this, "Post unw_get_unwind_table");
   lib::unwind::ProcInfo *myInfo;
   if (ret < 0)
     myInfo = new lib::unwind::ProcInfo((jint) ret);
@@ -668,10 +666,10 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
 					    jlong lowAddress, jlong highAddress,
 					    jlong offset)
 {
-  logFine(this, logger,
-          "entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
-          (unsigned long) lowAddress, (unsigned long) highAddress,
-          (unsigned long) offset);
+  logf(fine, this,
+       "entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
+       (unsigned long) lowAddress, (unsigned long) highAddress,
+       (unsigned long) offset);
   void *image;
   size_t size;
   unw_word_t magic;
@@ -684,13 +682,13 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   if (size > MAX_VDSO_SIZE)
     return new lib::unwind::ElfImage((jint) -1);
 
-  logFine(this, logger, "checked size, 0x%lx", (unsigned long) size);
+  logf(fine, this, "checked size, 0x%lx", (unsigned long) size);
   unw_addr_space_t as = (unw_addr_space_t) addressSpace->addressSpace;
   a = unw_get_accessors (as);
   if (! a->access_mem)
     return new lib::unwind::ElfImage((jint) -1);
 
-  logFine(this, logger, "checked access_mem");
+  logf(fine, this, "checked access_mem");
   /* Try to decide whether it's an ELF image before bringing it all
      in.  */
   if (size <= EI_CLASS || size <= sizeof (magic))
@@ -707,14 +705,14 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
         return new lib::unwind::ElfImage((jint) -1);
     }
 
-  logFine(this, logger, "checked magic size");
+  logf(fine, this, "checked magic size");
 
   image = mmap (0, size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (image == MAP_FAILED)
     return new lib::unwind::ElfImage((jint) -1);
 
-  logFine(this, logger, "mapped elfImage");
+  logf(fine, this, "mapped elfImage");
   if (sizeof (magic) >= SELFMAG)
     {
       *(unw_word_t *)image = magic;
@@ -723,11 +721,11 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   else
     hi = 0;
 
-  logFine(this, logger, "checked magic");
+  logf(fine, this, "checked magic");
   for (; hi < size; hi += sizeof (unw_word_t))
     {
-      logFinest(this, logger, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p",
-                segbase , image , hi, segbase+hi, (char *) image + hi);
+      logf(finest, this, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p",
+	   segbase , image , hi, segbase+hi, (char *) image + hi);
       int ret = (*a->access_mem) (as, segbase + hi,(unw_word_t *) ((char *) image + hi),
                                   0, (void *) addressSpace);
 
@@ -738,7 +736,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
         }
     }
 
-  logFine(this, logger, "read memory into elf image");
+  logf(fine, this, "read memory into elf image");
 
   if (segbase == mapoff)
     mapoff = 0;
@@ -747,7 +745,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
     = new lib::unwind::ElfImage(JvNewStringLatin1("[vdso]"), (jlong) image, (jlong) size,
 				(jlong) segbase, (jlong) mapoff);
 
-  jLogFine(this, logger, "elfImage returned: {1}", elfImage);
+  log(fine, this, "elfImage returned", elfImage);
   return elfImage;
 }
 
