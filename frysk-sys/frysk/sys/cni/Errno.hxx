@@ -40,9 +40,6 @@
 
 #include <stdarg.h>
 
-#include "java/util/logging/Logger.h"
-#include "java/util/logging/Level.h"
-
 // <<prefix>>: <<strerror(err)>>
 extern void throwErrno (int err, const char *prefix)
   __attribute__ ((noreturn));

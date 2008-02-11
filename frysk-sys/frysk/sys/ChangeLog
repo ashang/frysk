@@ -1,5 +1,8 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Errno.hxx: Delete unnecessary #include
+	<java/util/logging/Logger.h>
+	
 	* cni/Errno.hxx (logMessage(Logger,Level,const char*,...)): Delete.
 	(jLogMessage(Object,Logger,Level,const char*,...)): Delete.
 	(logFine(Object,Logger,const char*,...)): Delete.
