@@ -3,6 +3,8 @@
 	* UnloadCommand.java: New to unload loaded processes.
 	* LoadCommand.java: Add capability to list loaded procs.
 	* TestLoadCommand.java: Test above.
+	* KillCommand.java: Added path-to-proc to the output info.
+	* TopLevelCommand.java: Added UnloadCommand.java.
 
 
 2008-02-08  Stan Cox  <scox@redhat.com>

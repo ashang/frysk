@@ -39,8 +39,11 @@
 
 package frysk.hpd;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -60,18 +63,20 @@ public class KillCommand extends ParameterizedCommand {
 
     public void interpret(CLI cli, Input cmd, Object options) {
 	
-	ArrayList saveProcs = new ArrayList();
+	Map saveProcs = new HashMap();
+	saveProcs = new TreeMap();
 	int procPID = 0;
-	Iterator foo = cli.targetset.getTasks();
+	Iterator foo = cli.targetset.getTaskData();
 	while (foo.hasNext()) {
-	    Task task = (Task) foo.next();
+	    TaskData taskData = (TaskData) foo.next();
+	    Task task = taskData.getTask();
 	    Proc proc = task.getProc();
 	    if (proc.getPid() != procPID) {
-		cli.addMessage("Killing process " + proc.getPid(),
-		//	" that was created from " + proc.getExe(),
+		cli.addMessage("Killing process " + proc.getPid() +
+			" that was created from " + proc.getExe(),
 			Message.TYPE_NORMAL);
 		// Save the procs we are killing so we can re-load them later
-		saveProcs.add(proc.getExe());
+		saveProcs.put(new Integer(taskData.getParentID()), proc.getExe());
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();
@@ -81,19 +86,20 @@ public class KillCommand extends ParameterizedCommand {
 	synchronized (cli) {
 	    // Clear the running procs set
 	    cli.runningProcs.clear();
-	    // Clear the current targetset
-	    cli.idManager.clearProcIDs();
 	    // Clear the stepping engine structures
 	    cli.steppingEngine.clear();
 	    // Add back in the stepping observer for cli
 	    cli.steppingEngine.addObserver(cli.steppingObserver);
 	}
 	// Now loop through and re-load all of the killed procs
-	Iterator bar = saveProcs.iterator();
+	Iterator bar = saveProcs.keySet().iterator();
 	while (bar.hasNext()) {
-	    String cmdline = (String) bar.next();
+	    Integer procId = (Integer) bar.next();
+	    String cmdline = (String) saveProcs.get(procId);
+	    cli.taskID = procId.intValue();
 	    cli.execCommand("load " + cmdline + "\n");
 	}
+	cli.taskID = -1;
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {
