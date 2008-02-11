@@ -76,17 +76,14 @@ public class TestWait
     private long startTime;
     private long endTime;
 
-    public void setUp ()
-    {
+    public void setUp() {
 	Wait.signalEmpty ();
 	startTime = System.currentTimeMillis ();
+	endTime = startTime + getTimeoutMilliseconds();
     }
 
-    public void tearDown ()
-    {
-	endTime = System.currentTimeMillis ();
-	assertTrue ("timeout",
-		     startTime + getTimeoutMilliseconds () > endTime);
+    public void tearDown() {
+	assertTrue("timeout", System.currentTimeMillis() <= endTime);
     }
 
     public void testZeroTimeout ()
@@ -96,15 +93,13 @@ public class TestWait
 				  unhandledSignalBuilder));
     }
 
-    public void testShortTimeout ()
-    {
-	assertTrue("waitAll",
-		   Wait.waitAll (shortTimeout, unhandledWaitBuilder,
-				 unhandledSignalBuilder));
+    public void testShortTimeout() {
+	assertTrue("waitAll", Wait.waitAll (shortTimeout,
+					    unhandledWaitBuilder,
+					    unhandledSignalBuilder));
 	assertTrue ("some time passed",
-		    System.currentTimeMillis () > startTime + shortTimeout);
+		    System.currentTimeMillis () >= startTime + shortTimeout);
     }
-    
 
     public void testNoTimeout() {
 	WaitOnChild waitOnChild = new WaitOnChild ();

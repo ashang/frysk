@@ -1,5 +1,8 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestWait.java (testShortTimeout()): Fix comparison test.
+	(setUp(), tearDown()): Simplify timeout computation.
+
 	* Wait.java: Use frysk.rsl.
 	* cni/Wait.cxx: Ditto.
 
