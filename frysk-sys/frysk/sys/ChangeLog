@@ -1,5 +1,8 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPipePair.java: Use frysk.rsl.
+	* TestFork.java: Ditto.
+
 	* TestWait.java (testShortTimeout()): Fix comparison test.
 	(setUp(), tearDown()): Simplify timeout computation.
 

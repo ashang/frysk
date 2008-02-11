@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@
 package frysk.junit;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.textui.ResultPrinter;
@@ -49,35 +47,32 @@ import junit.framework.TestResult;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Iterator;
+import frysk.rsl.Log;
 
 /**
  * Overide JUnit's print methods with a version that displays each
  * test as it is run.  Makes tracking down problems when the run does
  * a crash 'n' burn easier.
  */
-class Results
-    extends ResultPrinter
-{
-    private static final Logger logger = Logger.getLogger("frysk");
+class Results extends ResultPrinter {
+    private static final Log fine = Log.fine(Results.class);
 
     private static Result result;
     private static final Set unresolved = new TreeSet();
     private static final Set resolved = new TreeSet();
     private static final Set unsupported = new TreeSet();
 
-    public void startTest (Test test)
-    {
-	logger.log (Level.FINE, "{0} ---- startTest ----\n", test);
+    public void startTest(Test test) {
+	fine.log("---- startTest ----", test);
 	System.out.print ("Running ");
 	System.out.print (test);
 	System.out.print (" ...");
 	System.out.flush ();
 	result = Result.PASS;
     }
-    private void addProblem (Test test, String name, String what, Throwable t)
-    {
-	logger.log (Level.FINE, "{0} --- {1} ---- {2}: {3}\n",
-		    new Object[] { test, name, what, t });
+    private void addProblem(Test test, String name, String what, Throwable t) {
+	fine.log("---- addProblem ----", test, "---", name, "---", what,
+		 ":", t);
 	// If a problem was previously recorded, move it to the
 	// unresolved set.
 	if (result != Result.PASS) {
@@ -111,9 +106,8 @@ class Results
 	result = Result.unsupported (reason);
 	unsupported.add(result);
     }
-    public void endTest (Test test)
-    {
-	logger.log (Level.FINE, "{0} ---- endTest ----\n", test);
+    public void endTest(Test test) {
+	fine.log("---- endTest ----", test);
 	result.println();
     }
 

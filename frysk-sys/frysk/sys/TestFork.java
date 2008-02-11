@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,18 +41,16 @@ package frysk.sys;
 
 import frysk.Config;
 import frysk.junit.TestCase;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.testbed.TearDownProcess;
 
 /**
  * Check the plumming of Fork/exec.
  */
 
-public class TestFork
-    extends TestCase
-{
-    static private Logger logger = Logger.getLogger("frysk");
+public class TestFork extends TestCase {
+    private static final Log fine = Log.fine(TestFork.class);
+
     private final SignalSet defaultSignalSet
 	= new SignalSet().getProcMask();
     /**
@@ -69,12 +67,12 @@ public class TestFork
      * child process.
      */
     public void testProcMask () {
-	logger.log(Level.FINE, "Masking SIGHUP\n");
+	fine.log("Masking SIGHUP");
 	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
-	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
+	fine.log("Creating funit-procmask to check the mask");
 	ProcessIdentifier pid
 	    = Fork.exec(null, "/dev/null", null,
 			new String[] {
@@ -91,9 +89,7 @@ public class TestFork
 	    int status;
 	    public void terminated(ProcessIdentifier pid, Signal signal,
 				   int status, boolean coreDumped) {
-		logger.log(Level.FINE,
-			   "exited with status {0,number,integer}\n",
-			   new Integer(status));
+		fine.log("exited with status", status);
 		this.pid = pid;
 		this.signal = signal;
 		this.status = status;
@@ -103,7 +99,7 @@ public class TestFork
 	    }
 	}
 	ExitStatus exitStatus = new ExitStatus();
-	logger.log(Level.FINE, "Capturing funit-procmask's exit status\n");
+	fine.log("Capturing funit-procmask's exit status");
 	Wait.wait(pid, exitStatus,
 		  new SignalBuilder() {
 		      public void signal(Signal sig) {

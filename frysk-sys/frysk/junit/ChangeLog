@@ -1,4 +1,9 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Results.java: Use frysk.rsl.
+
 2008-01-04  Nurdin Premji  <npremji@redhat.com>
+	
         * TestCase.java (unresolvedCompilerNoSupportForAT_CLASS): New.
 
 2007-12-28  Andrew Cagney  <cagney@redhat.com>

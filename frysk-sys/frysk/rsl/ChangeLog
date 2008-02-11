@@ -1,5 +1,9 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (log(String,Object,String,Object,String,Object,String,Object)): New.
+	(log(String,int)): New.
+	(log(String,long)): New.
+
 	* cni/Log.hxx (log(Log,Object,const char*,Object))
 	(log(Log,const char *,Object)): New.
 	(log(Log,const char *)): New.

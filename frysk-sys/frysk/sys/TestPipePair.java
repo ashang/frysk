@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,18 +41,16 @@ package frysk.sys;
 
 import frysk.junit.TestCase;
 import frysk.testbed.Tee;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.Config;
 
 /**
  * Test creation of a process wired up to a pipe.
  */
 
-public class TestPipePair
-    extends TestCase
-{
-    private static Logger logger = Logger.getLogger("frysk");
+public class TestPipePair extends TestCase {
+    private static final Log fine = Log.fine(TestPipePair.class);
+
     private PipePair pipe;
     public void tearDown ()
     {
@@ -139,12 +137,12 @@ public class TestPipePair
      * Test that a daemon's signal mask is empty.
      */
     public void testDaemonMask() {
-	logger.log(Level.FINE, "Masking SIGHUP\n");
+	fine.log("Masking SIGHUP");
 	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
-	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
+	fine.log("Creating funit-procmask to check the mask");
 	pipe = new DaemonPipePair(funitProcMask);
 	// For a daemon, it isn't possible to capture the processes
 	// exit status; instead read the output and check for the word
@@ -158,12 +156,12 @@ public class TestPipePair
      * Test that a child's signal mask is empty.
      */
     public void testChildMask() {
-	logger.log(Level.FINE, "Masking SIGHUP\n");
+	fine.log("Masking SIGHUP");
 	SignalSet set = new SignalSet(Signal.HUP);
 	set.blockProcMask();
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
-	logger.log(Level.FINE, "Creating funit-procmask to check the mask\n");
+	fine.log("Creating funit-procmask to check the mask");
 	pipe = new ChildPipePair(funitProcMask);
 	// Capture the child's output (look for 
 	class ExitStatus extends UnhandledWaitBuilder {
@@ -172,9 +170,7 @@ public class TestPipePair
 	    int status;
 	    public void terminated(ProcessIdentifier pid, Signal signal,
 				   int status, boolean coreDumped) {
-		logger.log(Level.FINE,
-			   "exited with status {0,number,integer}\n",
-			   new Integer(status));
+		fine.log("exited with status", status);
 		this.pid = pid;
 		this.signal = signal;
 		this.status = status;
@@ -184,7 +180,7 @@ public class TestPipePair
 	    }
 	}
 	ExitStatus exitStatus = new ExitStatus();
-	logger.log(Level.FINE, "Capturing funit-procmask's exit status\n");
+	fine.log("Capturing funit-procmask's exit status");
 	Wait.wait(pipe.pid, exitStatus,
 		  new SignalBuilder() {
 		      public void signal(Signal sig) {
