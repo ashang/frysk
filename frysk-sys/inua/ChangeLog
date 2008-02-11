@@ -1,3 +1,7 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/ByteBuffer.java: Remove java.util.logging.
+
 2007-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* elf/AT.java-sh: Rename elf/AT.shjava.

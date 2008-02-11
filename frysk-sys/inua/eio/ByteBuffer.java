@@ -43,15 +43,9 @@
 
 package inua.eio;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public abstract class ByteBuffer
     extends Buffer
 {
-
-  private Logger logger = Logger.getLogger("frysk");
-  
   protected ByteBuffer (long lowWater, long highWater)
   {
     super(lowWater, highWater);
@@ -71,12 +65,8 @@ public abstract class ByteBuffer
 
   protected int peek (long caret, byte[] bytes, int off, int len)
   {
-    logger.log(Level.FINE, "entering peek, caret: 0x{0}, off: 0x{1}, len: 0x{2}",
-               new Object[]{Long.toHexString(caret), Integer.toHexString(off), 
-                            Integer.toHexString(len)});
     for (int i = 0; i < len; i++)
       {
-	logger.log(Level.FINEST, "on byte: 0x{0}", Long.toHexString(i));
         bytes[off + i] = (byte) peek(caret + i);
       }
     return len;
@@ -93,9 +83,6 @@ public abstract class ByteBuffer
 
   protected final void peekFully (long caret, byte[] bytes, int off, int len)
   {
-    logger.log(Level.FINE, "entering peekFully, caret: 0x{0}, off: 0x{1}, len: 0x{2}\n",
-               new Object[]{Long.toHexString(caret), Integer.toHexString(off), 
-                            Integer.toHexString(len)});
     while (len > 0)
       {
         long xfer = peek(caret, bytes, off, len);
@@ -103,7 +90,6 @@ public abstract class ByteBuffer
         len -= xfer;
         caret += xfer;
       }
-    logger.log(Level.FINE, "exiting peekFully\n");
   }
 
   protected final void pokeFully (long caret, byte[] bytes, int off, int len)
@@ -338,13 +324,9 @@ public abstract class ByteBuffer
   public ByteBuffer get (long index, byte[] dst, int off, int len)
       throws BufferUnderflowException
   {
-    logger.log(Level.FINE, "entering index: 0x{0}, off: 0x{1}, len: {2}\n",
-               new Object[] {Long.toHexString(index), Long.toHexString(off),
-                             new Integer(len)});
     if (ULong.GT(index + len, limit()))
       throw new BufferUnderflowException();
     peekFully(lowWater + index,dst,off,len);
-    logger.log(Level.FINE, "exiting\n");
     return this;
   }
   
@@ -496,18 +478,14 @@ public abstract class ByteBuffer
   
   public final int getInt (long index)
   {
-    logger.log(Level.FINE, "{0} getInt\n", this);
     int peek = byteOrdered.peekInt(this, lowWater + index);
-    logger.log(Level.FINE, "{0} getInt Finished " + peek + " \n", this);
     return peek;
   }
   
   public final int getInt (ByteOrder byteOrder, long index)
   {
     ByteOrdered byteOrdered = ByteOrdered.order(byteOrder);
-    logger.log(Level.FINE, "{0} getInt\n", this);
     int peek = byteOrdered.peekInt(this, lowWater + index);
-    logger.log(Level.FINE, "{0} getInt Finished " + peek + " \n", this);
     return peek;
   }
   
