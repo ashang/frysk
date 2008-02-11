@@ -121,41 +121,21 @@
     <refsect2>
 	<title>System Call Tracing</title>
 
-	<para>System calls are traced by default.</para>
-
 	<variablelist>
-	    <varlistentry>
-		<term>-S</term>
-		<listitem>
-		    <para>Suppress system call tracing.</para>
-		</listitem>
-	    </varlistentry>
-
-	    <varlistentry>
-		<term>-s=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
-		<listitem>
-		    <para>Stack trace on this set of system calls.
-    		    When stack-traced syscall is encountered, a stack
-    		    trace of the calling task is printed out.  Each
-    		    <replaceable>SYSCALL</replaceable> entry is name
-    		    of one system call.</para>
-		</listitem>
-	    </varlistentry>
-
-	    <varlistentry>
-		<term>-t=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
-		<listitem>
-		    <para>Explicitly define syscalls that should be
-    		    traced.  Each <replaceable>SYSCALL</replaceable>
-    		    entry is name of one system call.</para>
-		</listitem>
-    	    </varlistentry>
+	  <varlistentry>
+	    <term>-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace system calls that match given
+	      <replaceable>SYSCALL</replaceable> ruleset are.  See
+	      below for description of
+	      <replaceable>SYSCALL</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
 	</variablelist>
     </refsect2>
 
-
     <refsect2>
-	<title>Entry Point Tracing</title>
+	<title>Symbol Tracing</title>
 
 	<variablelist>
 	  <varlistentry>
@@ -169,20 +149,21 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term>-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <term>-plt=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
 	    <listitem>
-	      <para>Trace library calls done via PLT entries matching each
-	      given <replaceable>RULE</replaceable>.  By tracing PLT
-	      entry, you effectively trace calls done FROM given library
-	      or executable, and generally can't say which library the
-	      call leads TO.  (At least for now.  Ftrace may grow brains
-	      for this in future.)  See below for description of
-	      <replaceable>RULE</replaceable> syntax.</para>
+	      <para>Trace library calls done via PLT entries matching
+	      each given <replaceable>SYMBOL</replaceable> ruleset.
+	      By tracing PLT entry, you effectively trace calls done
+	      FROM given library or executable, and generally can't
+	      say which library the call leads TO.  (At least for now.
+	      Ftrace may grow brains for this in future.)  See below
+	      for description of <replaceable>SYMBOL</replaceable>
+	      rule syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term>-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <term>-dyn=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
 	    <listitem>
 	      <para>Trace calls through the symbol entry points.  By
 	      tracing entry points, you catch all calls that end up at
@@ -193,19 +174,19 @@
 	      functions call each other in the library internals.  On the
 	      other hand, it may be useful to cherry pick few entry points
 	      to see when or if they are called, and with which arguments.
-	      See below for description of <replaceable>RULE</replaceable>
-	      syntax.</para>
+	      See below for description of <replaceable>SYMBOL</replaceable>
+	      rule syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term>-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <term>-sym=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
 	    <listitem>
 	      <para>Just like <option>-dyn</option>, but doesn't look for
 	      symbols in dynamic symbol table, but normal symbol table.
 	      (Which doesn't have to be present, e.g. when a binary is
 	      stripped.)  See below for description of
-	      <replaceable>RULE</replaceable> syntax.</para>
+	      <replaceable>SYMBOL</replaceable> rule syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -228,7 +209,7 @@
   </refsect1>
 
   <refsect1>
-    <title>RULE SYNTAX</title>
+    <title>SYMBOL RULE SYNTAX</title>
 
     <para>To decide which PLT slots or entry points should be traced,
     following process takes place.  Initial working set is empty.
@@ -277,15 +258,44 @@
     "foo@@".)</para>
 
     <para>Empty rule is considered to miss all components.  If you
-    need to match empty symbol, use regular expression "^$".</para>
+    need to match an empty symbol, use regular expression "^$".</para>
+  </refsect1>
 
+  <refsect1>
+    <title>SYSCALL RULE SYNTAX</title>
+
+    <para>Under the presence of the <option>-sys</option> option, all
+    system calls are always traced.  This is a limitation of the
+    ptrace layer.  The system call rules however serve as a simple way
+    of filtering the output.</para>
+
+    <para>System call rule syntax and semantics are the same as the
+    symbol rule syntax:</para>
+
+    <para>[-][#]<replaceable>pattern</replaceable></para>
+
+    <para>System call selection pattern syntax is then as
+    follows:</para>
+
+    <para><optional><replaceable>syscall name</replaceable>|<replaceable>syscall number</replaceable></optional></para>
+
+    <para>When the pattern is empty, then it matches all system calls
+    known to frysk.  When the pattern is simple number
+    (e.g. &quot;12&quot;), then the pattern matches system call with
+    the given number.  Otherwise the pattern is considered to be
+    written using extended regular expression syntax, and matched
+    agains system call names.</para>
   </refsect1>
 
   <refsect1>
     <title>EXAMPLES</title>
 
     <informalexample>
-      <para>Trace all plt library calls:</para>
+      <para>Trace all system calls:</para>
+      <cmdsynopsis><command>ftrace -sys= ls</command></cmdsynopsis>
+      <para>Trace variants of stat system call and moreover a system call #3:</para>
+      <cmdsynopsis><command>ftrace -sys=&quot;.*stat.*&quot;,3 ls</command></cmdsynopsis>
+      <para>Trace all library calls:</para>
       <cmdsynopsis><command>ftrace -plt= ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain
       substring "write" in their names:</para>
@@ -352,22 +362,17 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para> The option parser is greedy when looking for options so running ftrace on a program that uses options can be a problem, use -- to split between ftrace and the program. So change from:</para>
+    <para>I think ftrace doesn't handle tracing one function through both entry point and plt.</para>
+    <para>The option parser is greedy when looking for options so running ftrace on a program that uses options can be a problem, use -- to split between ftrace and the program. So change from:</para>
     <screen>~/prefix/bin/ftrace ~/prefix/lib64/frysk/funit --arch 32 frysk.proc.TestAbandon</screen>
     <para>to</para>
     <screen>~/prefix/bin/ftrace -- ~/prefix/lib64/frysk/funit --arch 32 frysk.proc.TestAbandon</screen>
-    <para>Report bugs to <ulink url="http:/sources.redhat.com/ftrace">
-    http://sources.redhat.com/ftrace/ </ulink>. </para>
+    <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk">
+    http://sources.redhat.com/frysk/ </ulink>. </para>
   </refsect1>
   
   <!-- refsect1>
     <title>SECURITY CONSIDERATIONS</title>
   </refsect1 -->
-
-  <refsect1>
-    <title>BUGS</title>
-    <para>I think ftrace doesn't handle tracing one function through both entry point and plt.</para>
-    <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk">http://sources.redhat.com/frysk</ulink>.</para>
-  </refsect1>
 
 </refentry>

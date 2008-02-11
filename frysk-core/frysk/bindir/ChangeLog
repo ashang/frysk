@@ -1,5 +1,9 @@
 2008-02-11  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.xml: Describe -sys option, remove description of -S and -t.
+
+2008-02-11  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Refactoring.
 	(Rule.checkVersionMatches): Moved from MyFtraceController.
 	(Rule.checkNameMatches): Likewise.
