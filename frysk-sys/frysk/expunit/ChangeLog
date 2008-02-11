@@ -1,3 +1,7 @@
+2008-02-08  Mark Wielaard  <mark@klomp.org>
+
+	* TimeoutException.java: Properly format message and add unit.
+	
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Child.java: Update to match frysk.rsl.Log.

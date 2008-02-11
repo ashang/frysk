@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ public class TimeoutException extends MatchException {
     static final long serialVersionUID = 1;
 
     TimeoutException(long millisecondTimeout, Match[] matches, String output) {
-	super("timeout of " + millisecondTimeout + "expired", matches, output);
+	super("timeout of " + millisecondTimeout + " milliseconds expired",
+	      matches, output);
     }
 }
