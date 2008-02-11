@@ -1,5 +1,13 @@
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Errno.hxx (logMessage(Logger,Level,const char*,...)): Delete.
+	(jLogMessage(Object,Logger,Level,const char*,...)): Delete.
+	(logFine(Object,Logger,const char*,...)): Delete.
+	(logFinest(Object,Logger,const char*,...)): Delete.
+	(jLogFine(Object,Logger,const char*,...)): Delete.
+	(jLogFinest(Object,Logger,const char*,...)): Delete.
+	* cni/Errno.cxx: Update.
+
 	* TestPipePair.java: Use frysk.rsl.
 	* TestFork.java: Ditto.
 
