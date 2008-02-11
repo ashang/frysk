@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,32 +39,30 @@
 
 package frysk.sys.termios;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Test's the Termios Special Control Character fields.
  */
-public class TestSpecial
-    extends TestLib
-{
+public class TestSpecial extends TestLib {
+    private static final Log fine = Log.fine(TestSpecial.class);
+
     /**
      * Verify that all Special characters work.
      */
-    private void verifySpecial (Special special)
-    {
-	logger.log (Level.FINE, "{0} verifySpecial {1}",
-		    new Object[] { this, special });
+    private void verifySpecial(Special special) {
+	fine.log(this, " verifySpecial", special);
 	char[] chars = new char[] { '\0', '\1' };
 	for (int i = 0; i < chars.length; i++) {
 	    char ch = chars[i];
-	    termios.set (special, ch);
-	    assertEquals ("set " + special + " to '" + ch + "'", ch,
-			  termios.get (special));
-	    setPseudoTerminal (termios);
-	    verifySttyOutputContains (special.toString (termios));
-	    getPseudoTerminal (termios);
-	    assertEquals ("stty " + special + " to '" + ch + "'", ch,
-			  termios.get (special));
+	    termios.set(special, ch);
+	    assertEquals("set " + special + " to '" + ch + "'", ch,
+			 termios.get(special));
+	    setPseudoTerminal(termios);
+	    verifySttyOutputContains(special.toString(termios));
+	    getPseudoTerminal(termios);
+	    assertEquals("stty " + special + " to '" + ch + "'", ch,
+			 termios.get(special));
 	}
     }
     /**

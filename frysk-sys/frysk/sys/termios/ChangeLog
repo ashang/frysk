@@ -1,3 +1,10 @@
+2008-02-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestMode.java: Use frysk.rsl.
+	* TestSpecial.java: Ditto.
+	* TestSpeed.java: Ditto.
+	* TestLib.java: Ditto.
+
 2007-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	Merged frysk.sys.Sig into frysk.sys.Signal.

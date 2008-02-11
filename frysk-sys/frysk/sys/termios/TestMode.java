@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,31 +39,29 @@
 
 package frysk.sys.termios;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Manipulates a terminal bound to FileDescriptor.
  */
-public class TestMode
-    extends TestLib
-{
+public class TestMode extends TestLib {
+    private static final Log fine = Log.fine(TestMode.class);
+
     /**
      * Verify that the specified mode is correctly wired.
      */
-    private void verifyMode (Mode mode)
-    {
-	logger.log (Level.FINE, "{0} verifyMode {1}",
-		    new Object[] { this, mode });
+    private void verifyMode(Mode mode) {
+	fine.log(this, "verifyMode", mode);
 	// Clear it.
-	termios.set (mode, false);
-	assertFalse ("set " + mode + " false", termios.get (mode));
-	setPseudoTerminal (termios);
-	verifySttyOutputContains (mode.toString (termios));
+	termios.set(mode, false);
+	assertFalse("set " + mode + " false", termios.get(mode));
+	setPseudoTerminal(termios);
+	verifySttyOutputContains(mode.toString(termios));
 	// Set it
-	termios.set (mode, true);
-	assertTrue ("set " + mode + " true", termios.get (mode));
-	setPseudoTerminal (termios);
-	verifySttyOutputContains (mode.toString (termios));
+	termios.set(mode, true);
+	assertTrue("set " + mode + " true", termios.get(mode));
+	setPseudoTerminal(termios);
+	verifySttyOutputContains(mode.toString(termios));
     }
 
     /**

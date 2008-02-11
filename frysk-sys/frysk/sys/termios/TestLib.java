@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@
 
 package frysk.sys.termios;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.junit.TestCase;
 import frysk.sys.PseudoTerminal;
 import frysk.sys.FileDescriptor;
@@ -51,10 +50,9 @@ import frysk.sys.Errno;
 /**
  * Manipulates a terminal bound to FileDescriptor.
  */
-public class TestLib
-    extends TestCase
-{
-  protected final static Logger logger = Logger.getLogger("frysk.sys.termios");
+public class TestLib extends TestCase {
+    private static final Log fine = Log.fine(TestLib.class);
+
     protected PseudoTerminal pty;
     private FileDescriptor fd;
     protected Termios termios;
@@ -117,30 +115,28 @@ public class TestLib
      * Run stty on the test PTY, verify that the output contains the
      * EXPECT string.
      */
-    protected void verifySttyOutputContains (String expected)
-    {
-	logger.log (Level.FINE, "{0} verifySttyOutputContains <<{1}>>\n",
-		    new Object[] { this, expected });
+    protected void verifySttyOutputContains(String expected) {
+	fine.log(this, "verifySttyOutputContains", expected);
 	// Checking for EOF won't work if there's an open file
 	// descriptor on the PTY slave.
-	assertNull ("file descriptor closed so EOF works", fd);
-	StringBuffer output = new StringBuffer ();
+	assertNull("file descriptor closed so EOF works", fd);
+	StringBuffer output = new StringBuffer();
 	// Create a child process, ensure that it has exited and hence
 	// that it finished binding to the pty before trying to read
 	// any output.  This assumes that there is sufficient space
 	// for all the stty output in the pty.
-	pid = pty.addChild (new String[] { "/bin/stty", "-a" });
-	pid.blockingDrain ();
+	pid = pty.addChild(new String[] { "/bin/stty", "-a" });
+	pid.blockingDrain();
 	while (true) {
-	    assertTrue (pty.ready (getTimeoutMilliseconds ()));
-	    int ch = pty.read ();
+	    assertTrue(pty.ready (getTimeoutMilliseconds()));
+	    int ch = pty.read();
 	    if (ch < 0)
 		break;
-	    output.append ((char) ch);
+	    output.append((char) ch);
 	}
-	int index = output.indexOf (expected);
-	assertTrue ("output <<" + output + ">> contains <<" + expected + ">>",
-		    index >= 0);
+	int index = output.indexOf(expected);
+	assertTrue("output <<" + output + ">> contains <<" + expected + ">>",
+		   index >= 0);
 	// Now check around it.
 	int[] checks = new int[] { index - 1, index + expected.length () };
 	for (int i = 0; i < checks.length; i++) {

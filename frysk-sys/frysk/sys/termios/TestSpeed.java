@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,33 +39,31 @@
 
 package frysk.sys.termios;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 
 /**
  * Manipulate the speed setting of a terminal.
  */
-public class TestSpeed
-    extends TestLib
-{
+public class TestSpeed extends TestLib {
+    private static final Log fine = Log.fine(TestSpeed.class);
+
     /**
      * Change the test PTY's speed.  Verify the results.
      */
-    private void verifySpeed (Speed speed)
-    {
-	logger.log (Level.FINE, "{0} verifySpeed {1}\n",
-		    new Object[] { this, speed });
-	termios.set (speed);
-	assertEquals ("input speed set", speed, termios.getInputSpeed ());
-	assertEquals ("output speed set", speed, termios.getOutputSpeed ());
-	setPseudoTerminal (termios);
-	assertEquals ("input speed same", speed, termios.getInputSpeed ());
-	assertEquals ("output speed same", speed, termios.getOutputSpeed ());
-	getPseudoTerminal (termios);
-	assertEquals ("input speed get", speed, termios.getInputSpeed ());
-	assertEquals ("output speed get", speed, termios.getOutputSpeed ());
-	verifySttyOutputContains ("speed " + speed);
+    private void verifySpeed(Speed speed) {
+	fine.log(this, "verifySpeed", speed);
+	termios.set(speed);
+	assertEquals("input speed set", speed, termios.getInputSpeed());
+	assertEquals("output speed set", speed, termios.getOutputSpeed());
+	setPseudoTerminal(termios);
+	assertEquals("input speed same", speed, termios.getInputSpeed());
+	assertEquals("output speed same", speed, termios.getOutputSpeed());
+	getPseudoTerminal(termios);
+	assertEquals("input speed get", speed, termios.getInputSpeed());
+	assertEquals("output speed get", speed, termios.getOutputSpeed());
+	verifySttyOutputContains("speed " + speed);
     }
 
     public void testSpeeds ()
@@ -91,17 +89,14 @@ public class TestSpeed
     /**
      * Check that the Speed names are correct.
      */
-    public void testSpeedNames ()
-	throws java.lang.IllegalAccessException
-    {
-	for (Iterator i = Mode.getStaticFields (Speed.class).iterator ();
-	     i.hasNext (); ) {
-	    Field field = (Field) i.next ();
-	    Speed speed = (Speed) field.get (null);
-	    logger.log (Level.FINE, "{0} testSpeedField {1}\n",
-			new Object[] { this, field.getName () });
-	    assertEquals ("speed field name", "BAUD_" + speed,
-			  field.getName ());
+    public void testSpeedNames() throws IllegalAccessException {
+	for (Iterator i = Mode.getStaticFields(Speed.class).iterator();
+	     i.hasNext(); ) {
+	    Field field = (Field) i.next();
+	    Speed speed = (Speed) field.get(null);
+	    fine.log(this, "testSpeedField", field.getName());
+	    assertEquals("speed field name", "BAUD_" + speed,
+			 field.getName());
 	}
     }
 }
