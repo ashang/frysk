@@ -42,6 +42,7 @@ package frysk.bindir;
 import inua.util.PrintWriter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -89,10 +90,44 @@ abstract class Rule
 	    + (this.stackTrace ? "#" : "");
     }
 
+    public void apply(Logger logger, Collection candidates,
+		    Set workingSet, Set stackTraceSet) {
+	if (this.addition)
+	    // For '+' rules iterate over candidates,
+	    // and add what matches to workingSet, and
+	    // maybe to stackTraceSet.
+	    for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
+		Object candidate = jt.next();
+		if (this.matches(candidate))
+		{
+		    if (workingSet.add(candidate))
+			logger.log(Level.CONFIG, this + ": add " + candidate + "'.");
+		    if (this.stackTrace
+			&& stackTraceSet.add(candidate))
+			logger.log(Level.CONFIG, this + ": stack trace on " + candidate + ".");
+		}
+	    }
+	else {
+	    // For '-' or '-#' rules iterate over
+	    // workingSet or stackTraceSet, and remove
+	    // what matches.
+	    Set iterateOver = this.stackTrace ? stackTraceSet : workingSet;
+	    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
+		Object candidate = jt.next();
+		if (this.matches(candidate)) {
+		    jt.remove();
+		    if (!this.stackTrace)
+			stackTraceSet.remove(candidate);
+		    logger.log(Level.CONFIG, this + ": remove " + candidate + ".");
+		}
+	    }
+	}
+    }
+
     abstract public boolean matches(Object traceable);
 }
 
-class WorkingSetRule
+class SymbolRule
     extends Rule
 {
     /** See namePattern */
@@ -104,8 +139,8 @@ class WorkingSetRule
      */
     final public Pattern namePattern;
 
-    public WorkingSetRule(boolean addition, boolean stackTrace,
-			  String nameRe, String sonameRe, String versionRe) {
+    public SymbolRule(boolean addition, boolean stackTrace,
+		      String nameRe, String sonameRe, String versionRe) {
 	super (addition, stackTrace);
 	this.sonamePattern = Pattern.compile((sonameRe != null) ? sonameRe : ".*");
 	this.versionPattern = Pattern.compile((versionRe != null) ? versionRe : ".*");
@@ -119,8 +154,49 @@ class WorkingSetRule
 	    + "@@" + this.versionPattern.pattern();
     }
 
+
+    private boolean checkVersionMatches(final TracePoint tp)
+    {
+	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
+	    ? (ElfSymbolVersion[])tp.symbol.verneeds
+	    : (ElfSymbolVersion[])tp.symbol.verdefs;
+
+	// When there is no version assigned to symbol, we pretend it has
+	// a version of ''.  Otherwise we require one of the versions to
+	// match the version pattern.
+	if (vers.length == 0) {
+	    if (this.versionPattern.matcher("").matches())
+		return true;
+	}
+	else
+	    for (int i = 0; i < vers.length; ++i)
+		if (this.versionPattern.matcher(vers[i].name).matches())
+		    return true;
+
+	return false;
+    }
+
+    private boolean checkNameMatches(final TracePoint tp)
+    {
+	Symbol symbol = tp.symbol;
+
+	if (this.namePattern.matcher(symbol.name).matches())
+	    return true;
+
+	if (symbol.aliases != null)
+	    for (int i = 0; i < symbol.aliases.size(); ++i) {
+		String alias = (String)symbol.aliases.get(i);
+		if (this.namePattern.matcher(alias).matches())
+		    return true;
+	    }
+
+	return false;
+    }
+
     public boolean matches(Object traceable) {
-	throw new AssertionError("NYI");
+	TracePoint tp = (TracePoint)traceable;
+	return checkNameMatches(tp)
+	    && checkVersionMatches(tp);
     }
 }
 
@@ -173,7 +249,7 @@ class MyFtraceController
 {
     protected static final Logger logger = Logger.getLogger("frysk");
 
-    // ArrayList<WorkingSetRule>
+    // ArrayList<SymbolRule>
     private final List pltRules = new ArrayList();
     private final List dynRules = new ArrayList();
     private final List symRules = new ArrayList();
@@ -208,48 +284,9 @@ class MyFtraceController
 	this.sysRules.addAll(rules);
     }
 
-    private boolean checkVersionMatches(final TracePoint tp, final WorkingSetRule rule)
-    {
-	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
-	    ? (ElfSymbolVersion[])tp.symbol.verneeds
-	    : (ElfSymbolVersion[])tp.symbol.verdefs;
-
-	// When there is no version assigned to symbol, we pretend it has
-	// a version of ''.  Otherwise we require one of the versions to
-	// match the version pattern.
-	if (vers.length == 0) {
-	    if (rule.versionPattern.matcher("").matches()) {
-		logger.log(Level.FINE, rule + ": `" + tp.symbol.name
-			   + "' version match, no version.");
-		return true;
-	    }
-	}
-	else
-	    for (int i = 0; i < vers.length; ++i)
-		if (rule.versionPattern.matcher(vers[i].name).matches()) {
-		    logger.log(Level.FINE, rule + ": `" + tp.symbol.name
-			       + "' version match `" + vers[i].name+ "'.");
-		    return true;
-		}
-
-	return false;
-    }
-
-    private boolean checkNameMatches(final WorkingSetRule rule, Symbol symbol)
-    {
-	if (rule.namePattern.matcher(symbol.name).matches())
-	    return true;
-
-	if (symbol.aliases != null)
-	    for (int i = 0; i < symbol.aliases.size(); ++i) {
-		String alias = (String)symbol.aliases.get(i);
-		if (rule.namePattern.matcher(alias).matches())
-		    return true;
-	    }
-
-	return false;
-    }
-
+    // Syscall working and stack trace sets can be pre-computed for
+    // each task.  This is in contrast to tracing rules, that are
+    // computed incrementally when DSOs are mapped.
     public Map computeSyscallWorkingSet(Task task) {
 	HashSet workingSet = new HashSet();
 	HashSet stackTraceSet = new HashSet();
@@ -262,36 +299,7 @@ class MyFtraceController
 	for (Iterator it = sysRules.iterator(); it.hasNext(); ) {
 	    final Rule rule = (Rule)it.next();
 	    logger.log(Level.FINEST, "Considering syscall rule " + rule + ".");
-
-	    if (rule.addition)
-		// For '+' rules iterate over candidates,
-		// and add what matches to workingSet, and
-		// maybe to stackTraceSet.
-		for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
-		    Object candidate = jt.next();
-		    if (rule.matches(candidate)) {
-			if (workingSet.add(candidate))
-			    logger.log(Level.CONFIG, rule + ": add `" + candidate + "'.");
-			if (rule.stackTrace
-			    && stackTraceSet.add(candidate))
-			    logger.log(Level.CONFIG, rule + ": stack trace on `" + candidate + "'.");
-		    }
-		}
-	    else {
-		// For '-' or '-#' rules iterate over
-		// workingSet or stackTraceSet, and remove
-		// what matches.
-		Set iterateOver = rule.stackTrace ? stackTraceSet : workingSet;
-		for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
-		    Object candidate = jt.next();
-		    if (rule.matches(candidate)) {
-			jt.remove();
-			if (!rule.stackTrace)
-			    stackTraceSet.remove(candidate);
-			logger.log(Level.CONFIG, rule + ": remove `" + candidate + "'.");
-		    }
-		}
-	    }
+	    rule.apply(logger, candidates, workingSet, stackTraceSet);
 	}
 
 	// Apply the two sets.
@@ -337,7 +345,7 @@ class MyFtraceController
 	// workingSet from candidates.  Candidates are initialized
 	// lazily inside the loop.
 	for (Iterator it = rules.iterator(); it.hasNext(); ) {
-	    final WorkingSetRule rule = (WorkingSetRule)it.next();
+	    final SymbolRule rule = (SymbolRule)it.next();
 	    logger.log(Level.FINEST, "Considering symbol rule " + rule + ".");
 
 	    // MAIN is meta-soname meaning "main executable".
@@ -357,38 +365,7 @@ class MyFtraceController
 			}, origin);
 		}
 
-		if (rule.addition)
-		    // For '+' rules iterate over candidates,
-		    // and add what matches to workingSet, and
-		    // maybe to stackTraceSet.
-		    for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
-			TracePoint tp = (TracePoint)jt.next();
-			if (checkNameMatches(rule, tp.symbol)
-			    && checkVersionMatches(tp, rule))
-			{
-			    if (workingSet.add(tp))
-				logger.log(Level.CONFIG, rule + ": add `" + tp.symbol.name + "'.");
-			    if (rule.stackTrace
-				&& stackTraceSet.add(tp))
-				logger.log(Level.CONFIG, rule + ": stack trace on `" + tp.symbol.name + "'.");
-			}
-		    }
-		else {
-		    // For '-' or '-#' rules iterate over
-		    // workingSet or stackTraceSet, and remove
-		    // what matches.
-		    Set iterateOver = rule.stackTrace ? stackTraceSet : workingSet;
-		    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
-			TracePoint tp = (TracePoint)jt.next();
-			if (checkNameMatches(rule, tp.symbol)
-			    && checkVersionMatches(tp, rule)) {
-			    jt.remove();
-			    if (!rule.stackTrace)
-				stackTraceSet.remove(tp);
-			    logger.log(Level.CONFIG, rule + ": remove `" + tp.symbol.name + "'.");
-			}
-		    }
-		}
+		rule.apply(logger, candidates, workingSet, stackTraceSet);
 	    }
 	}
 
@@ -490,7 +467,7 @@ class ftrace
 		symbolRe = null;
 
 	    logger.log(Level.FINE, i + ": " + str + ": symbol=" + symbolRe + ", soname=" + sonameRe + ", version=" + versionRe);
-	    WorkingSetRule rule = new WorkingSetRule(addition, stackTrace, symbolRe, sonameRe, versionRe);
+	    SymbolRule rule = new SymbolRule(addition, stackTrace, symbolRe, sonameRe, versionRe);
 	    rules.add(rule);
 	}
 	return rules;
