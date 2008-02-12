@@ -178,7 +178,7 @@ public class CLI {
             idManager.manageProc(proc, idManager.reserveProcID());
         // Assign this proc to the passed in procID 
         else
-            idManager.manageProcSelect(proc, this.taskID);
+            idManager.manageProc(proc, this.taskID);
     }
 
     final PrintWriter outWriter;

@@ -159,23 +159,34 @@ class StartRun extends ParameterizedCommand {
     public void interpretCmd(CLI cli, Input cmd, Object options) {
 	// See if there are any running tasks, if so, process them
 	// if there are not any procs loaded with the load/core commands
-	Iterator foo = cli.targetset.getTasks();
+	Iterator foo = cli.targetset.getTaskData();
 	if (foo.hasNext()) {
 	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
 		// Clear the parameters for this process
 		int oldPid = -1;
+		TaskData taskData = null;
 		while (foo.hasNext()) {
-		    Task task = (Task) foo.next();
+		    taskData = (TaskData) foo.next();
+		    Task task = taskData.getTask();
 		    // Need only one kill per PID(proc)
 		    if (task.getProc().getPid() == oldPid) {
 			continue;
-		    } else 
+		    } else {
 			cli.execCommand("kill\n");
-		    String paramList = getParameters(cmd, task);
-		    Input newcmd = new Input(task.getProc().getExe() + " " +
+			int taskid = taskData.getParentID();
+			synchronized (cli) {
+				cli.taskID = taskid;
+			}
+			String paramList = getParameters(cmd, task);
+		    	Input newcmd = new Input(task.getProc().getExe() + " " +
 			    paramList);
-		    run(cli, newcmd);
-		    oldPid = task.getProc().getPid();
+		    	run(cli, newcmd);
+		    	synchronized (cli) {
+				cli.taskID = -1;
+				cli.loadedProcs.clear();
+			}
+		    	oldPid = task.getProc().getPid();
+		    }
 		}
 		return;
 	    }
@@ -250,8 +261,6 @@ class StartRun extends ParameterizedCommand {
 	    cli.addMessage("starting/running with this command: " + 
 		    newcmd, Message.TYPE_NORMAL);
 	    run(cli, newcmd);
-	    //if (runToBreak)
-		//cli.execCommand("go\n");
 	    synchronized (cli) {
 		cli.taskID = -1;
 	    }

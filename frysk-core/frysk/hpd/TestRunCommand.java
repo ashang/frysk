@@ -141,4 +141,37 @@ public class TestRunCommand extends TestLib {
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
+    
+    /**
+     * This test case tests a kind of corner case where a single threaded process gets loaded and
+     * then right after a two-threaded looping process gets loaded.  Then a 'run' command is issued
+     * and the first process runs to completion.  If the 'run' command is issued again it should
+     * just rerun the currently running process and place in in the same place in the target set.
+     */
+    public void testRunCommandTwoProcesses() {
+	if (unresolved(5615))
+	    return;
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
+	"\\[1\\.0\\]\t\t0*\\t0.*");
+	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*Attached to process ([0-9]+).*" +
+		"starting.*" + "Running process ([0-9]+).*starting.*Running process ([0-9]+).*");
+	//e.sendCommandExpectPrompt("run", "Killing process ([0-9]+).*Loaded executable file.*" +
+	//	"Attached to process ([0-9]+).*starting.*Running process ([0-9]+).*starting.*" +
+	//	"Running process ([0-9]+).*");
+	e.send("run\n");
+	e.expect("Killing process ([0-9]+).*");
+	e.expect("Loaded executable file.*");
+	e.expect("Attached to process ([0-9]+).*");
+	e.expect("Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[1\\.0\\]\t\t([0-9]+)\t([0-9]+).*" +
+		"\\[1\\.1\\]\t\t([0-9]+).*\\t([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
 }

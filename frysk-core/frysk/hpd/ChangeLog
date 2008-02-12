@@ -5,6 +5,8 @@
 	* TestLoadCommand.java: Test above.
 	* KillCommand.java: Added path-to-proc to the output info.
 	* TopLevelCommand.java: Added UnloadCommand.java.
+	* CLI.java: Fix call to duplicate method.
+	* StartRun.java: Fix error in looping for start/run.
 
 
 2008-02-08  Stan Cox  <scox@redhat.com>

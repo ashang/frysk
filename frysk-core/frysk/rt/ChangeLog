@@ -1,3 +1,7 @@
+2008-02-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* ProcTaskIDManager.java: Remove duplicate method.
+
 2008-02-04  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointManager.java (enableBreakpoint, disableBreakpoint): Pass breakpoint in

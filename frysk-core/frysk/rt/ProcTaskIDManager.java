@@ -88,15 +88,6 @@ public class ProcTaskIDManager
         procList.add(null);
         return result;
     }
-    
-    public void manageProcSelect(Proc proc, int usedID) {
-	ProcEntry entry;
-	synchronized (this) {
-	    entry = new ProcEntry(proc, usedID);
-	    procList.set(usedID, entry);
-	    procMap.put(proc, new Integer(usedID));
-	}
-    }
 
     public void manageProc(Proc proc, int reservedID) {
         ProcEntry entry;
@@ -183,10 +174,13 @@ public class ProcTaskIDManager
         int id = getProcID(proc);
         if (id < 0)
             return Action.CONTINUE;
+        ProcEntry entry;
         synchronized (this) {
-            ProcEntry entry = (ProcEntry)procList.get(id);
+            entry = (ProcEntry)procList.get(id);
+        }
             if (entry == null)
                 return Action.CONTINUE;
+        synchronized (this) {
             int taskID = entry.tasks.size();
             entry.tasks.add(offspring);
             entry.taskMap.put(offspring, new Integer(taskID));
@@ -205,10 +199,13 @@ public class ProcTaskIDManager
         int id = getProcID(proc);
         if (id < 0 || procList.isEmpty())
             return Action.CONTINUE;
+        ProcEntry entry;
         synchronized (this) {
-            ProcEntry entry = (ProcEntry)procList.get(id);
-            if (entry == null)
-                return Action.CONTINUE;
+            entry = (ProcEntry)procList.get(id);
+        }
+        if (entry == null)
+            return Action.CONTINUE;
+        synchronized (this) {
             Integer taskIDInt = (Integer)entry.taskMap.get(task);
             if (taskIDInt != null) {
                 entry.taskMap.remove(task);
