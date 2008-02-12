@@ -1,3 +1,7 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java: Add more log methods.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (prefixTime()): Print time in DAY HH:MM:SS.mmm format;

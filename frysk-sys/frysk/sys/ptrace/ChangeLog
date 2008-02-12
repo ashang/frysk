@@ -1,0 +1,18 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestAddressSpace.java: Extract from frysk.sys.TestPtrace.
+	* TestPtrace.java: Extract from frysk.sys.TestPtrace.
+	* AddressSpace.java: Extract from frysk.sys.Ptrace.
+	* RegisterSet.java: Extract from frysk.sys.Ptrace.
+	* Ptrace.java: Extract from frysk.sys.Ptrace.
+	* cni/Ptrace.hxx: New.
+	* cni/AddressSpace.cxx: Extract from frysk/sys/cni/Ptrace.cxx.
+	* cni/RegisterSet.cxx: Extract from frysk/sys/cni/Ptrace.cxx.
+	* cni/Ptrace.cxx: Extract from frysk/sys/cni/Ptrace.cxx.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
