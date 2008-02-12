@@ -1,3 +1,11 @@
+2008-02-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Log.java (caller): New public method.
+	(empty): New private empty String[].
+	(callersArray): New private method.
+	(callers): New public method.
+	(callers(int)): New public method.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Add more log methods.

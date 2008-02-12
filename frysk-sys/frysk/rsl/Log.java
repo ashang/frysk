@@ -458,4 +458,75 @@ public final class Log {
     // 11 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, Object p6, String p7, int p8, String p9, int p10, String p11) {
     }
+
+  /**
+   * Convenience method to get the caller of a method in which you
+   * use the Log object. Returns the caller (of the caller) of this
+   * method as String or "<unknown>" if caller cannot be found or if
+   * logger isn't logging. Use as:
+   * <code>log.log(this, "method called by ", log.caller());</code>.
+   */
+  public String caller()
+  {
+    if (logging)
+      {
+	Throwable t = new Throwable();
+	StackTraceElement[] stackTrace = t.getStackTrace();
+	if (stackTrace.length > 2)
+	  return stackTrace[2].toString();
+      }
+
+    return "<unknown>";
+  }
+
+  // Empty caller array for use in callersArray.
+  static private final String[] empty = new String[0];
+
+  // Private method that should only be directly called from
+  // callers() or callers(int), which in turn should only be called
+  // directly from the method that uses the Log and wants to find
+  // its callers. Depends on actual caller being of depth 3.
+  private String[] callersArray(int max)
+  {
+    if (logging)
+      {
+        Throwable t = new Throwable();
+        StackTraceElement[] stackTrace = t.getStackTrace();
+	int length = stackTrace.length > 3 ? stackTrace.length - 3 : 0;
+	if (length > max)
+	  length = max;
+	String[] callers = new String[length];
+        while (length > 0)
+	  {
+	    callers[length - 1]
+	      = stackTrace[length + 2].toString();
+	    length--;
+	  }
+	return callers;
+      }
+
+    return empty;
+  }
+
+  /**
+   * Convenience method to get an array of callers of a method in
+   * which you use the Log object. Returns the callers (of the caller)
+   * of this method as a String[] or an empty array if the callers
+   * cannot be found or if logger isn't logging. Use as:
+   * <code>log.log(this, "method called by ", log.callers());</code>.
+   * This is pretty heavyweight when the Log is enabled, so use
+   * sparingly.
+   */
+  public String[] callers()
+  {
+    return callersArray(Integer.MAX_VALUE);
+  }
+
+  /**
+   * Same as callers() but only returns at most max callers.
+   */
+  public String[] callers(int max)
+  {
+    return callersArray(max);
+  }
 }
