@@ -157,7 +157,7 @@ public class LinuxCoreProc extends DeadProc {
 		throw new RuntimeException(e);
 	    }
 
-	fine.log(this,"getMemory() caller: ", fine.caller());
+	fine.log(this, "getMemory() caller: ", Log.CALLER);
 	return memory;
     }
 
@@ -271,7 +271,7 @@ public class LinuxCoreProc extends DeadProc {
     private Auxv[] auxv;
     public Auxv[] getAuxv() {
 
-	fine.log(this,"getAuxv()",fine.caller());
+	fine.log(this,"getAuxv()", Log.CALLER);
 
 	if (auxv == null) {
 	    fine.log(this,"Auxv is null, building");

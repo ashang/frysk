@@ -116,8 +116,15 @@ public final class Log {
 
     // Static?
     private static PrintWriter out = new PrintWriter(System.out);
-    static void set(PrintStream out) {
+    static PrintWriter set(PrintStream out) {
+	PrintWriter old = Log.out;
 	Log.out = new PrintWriter(out);
+	return old;
+    }
+    static PrintWriter set(PrintWriter out) {
+	PrintWriter old = Log.out;
+	Log.out = out;
+	return old;
     }
 
     private static final long startTime = System.currentTimeMillis();
@@ -202,7 +209,9 @@ public final class Log {
      * @param o the object to dump
      */
     private void dump(Object o) {
-	if (o instanceof char[]) {
+	if (o == null) {
+	    out.print("<<null>>");
+	} if (o instanceof char[]) {
 	    dump((char[])o);
 	} else if (o instanceof int[]) {
 	    dump((int[])o);
@@ -490,74 +499,16 @@ public final class Log {
 	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); print(p10); print(p11); suffix();
     }
 
-  /**
-   * Convenience method to get the caller of a method in which you
-   * use the Log object. Returns the caller (of the caller) of this
-   * method as String or "<unknown>" if caller cannot be found or if
-   * logger isn't logging. Use as:
-   * <code>log.log(this, "method called by ", log.caller());</code>.
-   */
-  public String caller()
-  {
-    if (logging)
-      {
-	Throwable t = new Throwable();
-	StackTraceElement[] stackTrace = t.getStackTrace();
-	if (stackTrace.length > 2)
-	  return stackTrace[2].toString();
-      }
 
-    return "<unknown>";
-  }
+    /**
+     * Assuming the use: <tt>log("caller", log.CALLER)</tt> prints the
+     * caller of the logging fuction.
+     */
+    public static final Callers CALLER = new Callers(4, 4);
 
-  // Empty caller array for use in callersArray.
-  static private final String[] empty = new String[0];
-
-  // Private method that should only be directly called from
-  // callers() or callers(int), which in turn should only be called
-  // directly from the method that uses the Log and wants to find
-  // its callers. Depends on actual caller being of depth 3.
-  private String[] callersArray(int max)
-  {
-    if (logging)
-      {
-        Throwable t = new Throwable();
-        StackTraceElement[] stackTrace = t.getStackTrace();
-	int length = stackTrace.length > 3 ? stackTrace.length - 3 : 0;
-	if (length > max)
-	  length = max;
-	String[] callers = new String[length];
-        while (length > 0)
-	  {
-	    callers[length - 1]
-	      = stackTrace[length + 2].toString();
-	    length--;
-	  }
-	return callers;
-      }
-
-    return empty;
-  }
-
-  /**
-   * Convenience method to get an array of callers of a method in
-   * which you use the Log object. Returns the callers (of the caller)
-   * of this method as a String[] or an empty array if the callers
-   * cannot be found or if logger isn't logging. Use as:
-   * <code>log.log(this, "method called by ", log.callers());</code>.
-   * This is pretty heavyweight when the Log is enabled, so use
-   * sparingly.
-   */
-  public String[] callers()
-  {
-    return callersArray(Integer.MAX_VALUE);
-  }
-
-  /**
-   * Same as callers() but only returns at most max callers.
-   */
-  public String[] callers(int max)
-  {
-    return callersArray(max);
-  }
+    /**
+     * Assuming the use: <tt>log("caller", log.CALLER)</tt> a list of
+     * callers.
+     */
+    public static final Callers CALLERS = new Callers(4, Integer.MAX_VALUE);
 }

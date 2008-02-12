@@ -1,5 +1,14 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Node.java (set(Level)): Return the node.
+	* Callers.java: Extract from Log.java.
+	* TestCallers.java: New.
+	* Log.java (CALLER): New.
+	(CALLERS): New.
+	(dump(Object)): Check for null.
+	(set(PrintWriter)): New.
+	(set(PrintStream)): Return old writer.
+	
 	* Log.java: Add more loggers.
 
 2008-02-12  Mark Wielaard  <mwielaard@redhat.com>

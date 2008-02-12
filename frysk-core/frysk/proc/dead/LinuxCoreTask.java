@@ -64,7 +64,7 @@ public class LinuxCoreTask extends DeadTask {
 	// ISAs. In an attempt to save system resources, get a
 	// reference to the proc's maps for now.
 
-	fine.log(this,"getMemory() called by ",fine.caller());
+	fine.log(this,"getMemory() called by ",Log.CALLER);
 	return parent.getMemory();
     }
 

@@ -91,13 +91,14 @@ public final class Node {
     /**
      * Set this Node, all child nodes, and extensions, to level.
      */
-    public void set(Level level) {
+    public Node set(Level level) {
 	synchronized (LogFactory.root) {
 	    Setting newSetting = new Setting(level);
 	    setChildren(newSetting);
 	    setExtensions(newSetting);
 	    setLoggers(level);
 	}
+	return this;
     }
     private void setLoggers(Level level) {
 	for (int i = 0; i < Level.MAX.intValue(); i++) {

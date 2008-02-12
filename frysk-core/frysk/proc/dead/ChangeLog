@@ -1,3 +1,8 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreProc.java: Use Log.CALLER.
+	* LinuxCoreTask.java: Ditto.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxCoreHost.java (getName()): Implement.
