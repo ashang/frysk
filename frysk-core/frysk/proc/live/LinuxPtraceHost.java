@@ -276,7 +276,7 @@ public class LinuxPtraceHost extends LiveHost {
     public Proc getSelf() {
 	if (self == null) {
 	    ProcChanges procChanges = new ProcChanges();
-	    self = procChanges.update(ProcessIdentifierFactory.create(Pid.get()));
+	    self = procChanges.update(Pid.get());
 	}
 	return self;
     }

@@ -114,7 +114,7 @@ public class TestRefresh extends TestLib {
 	    return assertFindProc(why, offspring.getPid().intValue());
 	}
 	Proc assertFindSelf() {
-	    Proc self = findProc(processes, Pid.get());
+	    Proc self = findProc(processes, Pid.get().intValue());
 	    assertNotNull ("self", self);
 	    return self;
 	}

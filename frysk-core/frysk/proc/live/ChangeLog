@@ -1,5 +1,8 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Update to match frysk.sys.Pid.
+	* TestRefresh.java: Ditto.
+
 	* TestRefresh.java: Update to match frysk.testbed.
 	* TestTaskObserverCode.java: Ditto.
 	* TestRuntimeIsa.java: Ditto.

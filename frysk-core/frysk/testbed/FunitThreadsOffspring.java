@@ -86,7 +86,7 @@ public class FunitThreadsOffspring
 	    command.add("--loop");
 	// Use getpid as this testsuite always runs the event loop
 	// from the main thread (which has tid==pid).
-	command.add(Integer.toString(Pid.get()));
+	command.add(Integer.toString(Pid.get().intValue()));
 	command.add(Integer.toString(START_ACK.hashCode()));
 	command.add(Integer.toString(TestCase.getTimeoutSeconds()));
 	command.add(Integer.toString(threads));

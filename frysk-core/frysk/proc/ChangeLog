@@ -1,5 +1,9 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestHostGet.java: Update to match frysk.sys.Pid.
+	* TestTaskTerminateObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 	* TestTaskTerminateObserver.java: Update to match frysk.testbed.
 	* TestTaskSyscallObserver.java: Update.
 	* TestProcGet.java: Ditto.

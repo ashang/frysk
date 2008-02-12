@@ -1,3 +1,7 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStepping.java: Update to match frysk.sys.Pid.
+
 2008-02-01  Rick Moseley  <rmoseley@redhat.com>
 
 	* SteppingEngine.java (setTaskRunning): New.

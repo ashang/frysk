@@ -77,7 +77,7 @@ public class ExecCommand {
 	    args.add("-b"); // Also brand exec
 	}
 	args.add("-m");
-	args.add(Integer.toString(Pid.get()));
+	args.add(Integer.toString(Pid.get().intValue()));
 	args.add("-s");
 	args.add(Integer.toString(SynchronizedOffspring.START_ACK.hashCode()));
 	args.add("-t");

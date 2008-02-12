@@ -214,8 +214,8 @@ public class TestTaskTerminateObserver
 	    (SynchronizedOffspring.START_ACK,
 	     new String[]{
 		getExecPath ("funit-threadexit"),
-		Integer.toString(Pid.get()),
-		Integer.toString(SynchronizedOffspring.START_ACK.hashCode()),
+		Integer.toString(Pid.get().intValue()),
+		Integer.toString(SynchronizedOffspring.START_ACK.intValue()),
 		Integer.toString(timeout), // Seconds
 	    });
 

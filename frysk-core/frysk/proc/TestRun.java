@@ -67,7 +67,7 @@ public class TestRun
 
     // Add an observer that counts the number of proc create
     // events.
-    ProcCounter procCounter = new ProcCounter(Pid.get());
+    ProcCounter procCounter = new ProcCounter(Pid.get().intValue());
 
     // Observe TaskObserver.Attached events; when any occur indicate
     // that the curresponding task should continue.

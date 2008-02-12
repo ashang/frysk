@@ -448,8 +448,8 @@ public class TestTaskSyscallObserver
 	    super(START_ACK,
 		  new String[] {
 		      getExecPath ("funit-syscallint"),
-		      Integer.toString(Pid.get()),
-		      Integer.toString(START_ACK.hashCode()),
+		      Integer.toString(Pid.get().intValue()),
+		      Integer.toString(START_ACK.intValue()),
 		      Integer.toString(restart ? 1 : 0)
 		  });
 	}

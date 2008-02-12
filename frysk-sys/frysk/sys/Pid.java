@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,14 +43,19 @@ package frysk.sys;
  * Get process information.
  */
 
-public final class Pid
-{
+public final class Pid {
     /**
      * Returns the process ID of this process.
      */
-    public static native int get ();
+    public static ProcessIdentifier get() {
+	return ProcessIdentifierFactory.create(pid());
+    }
+    private static native int pid();
     /**
      * Returns the process ID of the parent to this process.
      */
-    public static native int getParent ();
+    public static ProcessIdentifier getParent () {
+	return ProcessIdentifierFactory.create(parentPid());
+    }
+    private static native int parentPid();
 }

@@ -135,7 +135,7 @@ public class TestLib extends TestCase {
      * infinite recursion. XXX: Static to avoid gcc bugs.
      */
     static public boolean isChildOfMine (Proc proc) {
-	return isChildOf(Pid.get(), proc);
+	return isChildOf(Pid.get().intValue(), proc);
     }
 
     /**
@@ -163,7 +163,7 @@ public class TestLib extends TestCase {
      * infinite recursion. XXX: Static to avoid gcc bugs.
      */
     static public boolean isDescendantOfMine (Proc proc) {
-	return isDescendantOf(Pid.get(), proc);
+	return isDescendantOf(Pid.get().intValue(), proc);
     }
 
     /**

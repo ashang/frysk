@@ -1,3 +1,7 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDebugInfoStackTrace.java: Update to match frysk.sys.Pid.
+
 2008-02-04  Teresa Thomas  <tthomas@redhat.com>
 
 	* ValueUavailableException.java: Renamed to...

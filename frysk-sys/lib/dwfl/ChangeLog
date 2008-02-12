@@ -1,3 +1,8 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Dwfl.java (Dwfl(ProcessIdentifier,String)): Replace
+	Dwfl(int,String).
+
 2008-02-05  Stan Cox  <scox@redhat.com>
 
 	* cni/Dwfl.cxx (Dwfl::dwflBegin): Check debuginfo CRC.

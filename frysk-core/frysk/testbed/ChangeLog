@@ -1,5 +1,11 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* ExecCommand.java: Update to match frysk.sys.Pid.
+	* TestLib.java: Ditto.
+	* SlaveOffspring.java: Ditto.
+	* LegacyOffspring.java: Ditto.
+	* FunitThreadsOffspring.java: Ditto.
+
 	Replace "int pid" with ProcessIdentifier; use frysk.rsl.
 	* TestLib.java: Update.
 	* TestfileTokenScanner.java: Update.

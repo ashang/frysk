@@ -323,7 +323,7 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-siglongjmp"),
-					    Integer.toString(Pid.get()),
+					    Integer.toString(Pid.get().intValue()),
 					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;
@@ -370,7 +370,7 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-goto"),
-					    Integer.toString(Pid.get()),
+					    Integer.toString(Pid.get().intValue()),
 					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;
@@ -420,7 +420,7 @@ public class TestStepping extends TestLib {
 	    = new SynchronizedOffspring(Signal.USR1,
 					new String[] {
 					    getExecPath("funit-rt-sigraise"),
-					    Integer.toString(Pid.get()),
+					    Integer.toString(Pid.get().intValue()),
 					    Integer.toString(Signal.USR1.intValue())
 					});
 	this.testStarted = false;

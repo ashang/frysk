@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ package lib.dwfl;
 
 import java.util.LinkedList;
 import gnu.gcj.RawData;
+import frysk.sys.ProcessIdentifier;
 
 public class Dwfl {
 
@@ -54,8 +55,8 @@ public class Dwfl {
 	pointer = dwflBegin(sysroot);
     }
 
-    Dwfl(int pid, String sysroot) {
-	pointer = dwflBegin(sysroot, pid);
+    Dwfl(ProcessIdentifier pid, String sysroot) {
+	pointer = dwflBegin(sysroot, pid.intValue());
     }
 
     /**

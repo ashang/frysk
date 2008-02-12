@@ -77,7 +77,7 @@ public class SlaveOffspring
 	// Use getpid as this testsuite always runs the event loop
 	// from the main thread (which has tid==pid).
 	command.add("-m");
-	command.add(Integer.toString(Pid.get()));
+	command.add(Integer.toString(Pid.get().intValue()));
 	// Append any arguments.
 	if (argv != null) {
 	    for (int n = 0; n < argv.length; n++)

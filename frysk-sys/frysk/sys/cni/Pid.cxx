@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,16 +43,13 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/Pid.h"
-#include "frysk/sys/cni/Errno.hxx"
 
 jint
-frysk::sys::Pid::get ()
-{
-  return ::getpid ();
+frysk::sys::Pid::pid() {
+  return ::getpid();
 }
 
 jint
-frysk::sys::Pid::getParent ()
-{
+frysk::sys::Pid::parentPid() {
   return ::getppid ();
 }

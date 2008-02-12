@@ -98,7 +98,7 @@ public class TestDebugInfoStackTrace
     SynchronizedOffspring process
 	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-looper"),
-					 Integer.toString(Pid.get ()),
+					 Integer.toString(Pid.get().intValue()),
 					 Integer.toString(Signal.USR1.intValue())
 				     });
     myTask = process.findTaskUsingRefresh(true);
@@ -216,7 +216,7 @@ public class TestDebugInfoStackTrace
     SynchronizedOffspring process
 	= new SynchronizedOffspring (Signal.USR1, new String[] {
 					 getExecPath ("funit-rt-threader"),
-					 Integer.toString(Pid.get ()),
+					 Integer.toString(Pid.get().intValue()),
 					 Integer.toString(Signal.USR1.intValue())
 				     });
     myTask = process.findTaskUsingRefresh(true);
@@ -266,7 +266,7 @@ public class TestDebugInfoStackTrace
   SynchronizedOffspring process
       = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
-				       Integer.toString(Pid.get()),
+				       Integer.toString(Pid.get().intValue()),
 				       Integer.toString(Signal.USR1.intValue())
 				   });
   myTask = process.findTaskUsingRefresh(true);
@@ -304,7 +304,7 @@ public class TestDebugInfoStackTrace
   SynchronizedOffspring process
       = new SynchronizedOffspring (Signal.USR1, new String[] {
 				       getExecPath ("funit-rt-stepper"),
-				       Integer.toString(Pid.get ()),
+				       Integer.toString(Pid.get().intValue()),
 				       Integer.toString(Signal.USR1.intValue())
 				   });
   myTask = process.findTaskUsingRefresh(true);
