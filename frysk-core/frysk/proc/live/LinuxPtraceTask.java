@@ -61,8 +61,8 @@ import inua.eio.ByteOrder;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
-import frysk.sys.Ptrace;
-import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.ptrace.Ptrace;
+import frysk.sys.ptrace.AddressSpace;
 import frysk.sys.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.isa.ISA;
@@ -350,11 +350,10 @@ public class LinuxPtraceTask extends LiveTask {
 
     // XXX: Should be selecting the trace flags based on the contents
     // of .observers?  Ptrace.optionTraceSysgood not set by default
-    private long ptraceOptions
-	= Ptrace.optionTraceClone()
-	| Ptrace.optionTraceFork()
-	| Ptrace.optionTraceExit()
-	| Ptrace.optionTraceExec();
+    private long ptraceOptions = (Ptrace.OPTION_CLONE
+				  | Ptrace.OPTION_FORK
+				  | Ptrace.OPTION_EXIT
+				  | Ptrace.OPTION_EXEC);
     void initializeAttachedState() {
 	logger.log(Level.FINE, "{0} initializeAttachedState\n", this);
 	Ptrace.setOptions(tid, ptraceOptions);
@@ -364,12 +363,12 @@ public class LinuxPtraceTask extends LiveTask {
     }
     void startTracingSyscalls() {
 	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
-	ptraceOptions |= Ptrace.optionTraceSysgood();
+	ptraceOptions |= Ptrace.OPTION_SYSGOOD;
 	Ptrace.setOptions(tid, ptraceOptions);
     }
     void stopTracingSyscalls() {
 	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
-	ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
+	ptraceOptions &= ~Ptrace.OPTION_SYSGOOD;
 	Ptrace.setOptions(tid, ptraceOptions);
     }
 

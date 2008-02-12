@@ -1,3 +1,12 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java: Use frysk.sys.ptrace.
+	* AddressSpaceByteBuffer.java: Ditto; simplify.
+	* LogicalMemoryBuffer.java: Ditto.
+	* TestByteBuffer.java: Ditto.
+	* PtraceRegisterBanksFactory.java: Ditto.
+	* RegisterSetByteBuffer.java: Ditto; simplify.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java (procs): New.

@@ -71,7 +71,7 @@ public class RegisterSet {
     public void transfer(ProcessIdentifier pid, byte[] data,
 			 boolean write) {
 	fine.log(this, "transfer", pid, write ? "write ..." : "read ...");
-	transfer(write ? ptGet : ptSet, pid.intValue(), data, ptLength);
+	transfer(write ? ptSet : ptGet, pid.intValue(), data, ptLength);
     }
 
     private static native void transfer(int op, int pid, byte[] data,

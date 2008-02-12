@@ -1,3 +1,8 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* ForkFactory.java: Use frysk.sys.ptrace.
+	* TearDownProcess.java: Ditto.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* LocalMemory.java: Add logging.

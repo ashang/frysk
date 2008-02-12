@@ -39,7 +39,7 @@
 
 package frysk.proc.live;
 
-import frysk.sys.Ptrace.RegisterSet;
+import frysk.sys.ptrace.RegisterSet;
 import frysk.event.Request;
 import frysk.proc.Manager;
 import inua.eio.ByteBuffer;
@@ -64,93 +64,61 @@ public class RegisterSetByteBuffer
 	this.pid = pid;
 	this.registerSet = registerSet;
 	bytes = new byte[registerSet.length()];
-	getRegs = new GetRegs();
-	setRegs = new SetRegs();
     }
     public RegisterSetByteBuffer(ProcessIdentifier pid,
 				 RegisterSet registerSet) {
 	this(pid, registerSet, 0, registerSet.length());
     }
   
-    private class GetRegs
-	extends Request
-    {
-	GetRegs()
-	{
+    private class TransferRequest extends Request {
+	TransferRequest() {
 	    super(Manager.eventLoop);
 	}
-	public final void execute()
-	{
-	    registerSet.get(pid, bytes);
+	private boolean write;
+	public final void execute() {
+	    registerSet.transfer(pid, bytes, write);
 	}
-	public void request ()
-	{
-	    if (isEventLoopThread())
-		execute();
-	    else synchronized (this) {
-		super.request();
+	private void request(boolean write) {
+	    if (isEventLoopThread()) {
+		registerSet.transfer(pid, bytes, write);
+	    } else {
+		synchronized (this) {
+		    this.write = write;
+		    super.request();
+		}
 	    }
 	}
+	void getRegs() {
+	    request(false); // read
+	}
+	void setRegs() {
+	    request(true); // write
+	}
     }
-    private final GetRegs getRegs;
-    private void getRegs()
-    {
-	getRegs.request();
-    }
+    private final TransferRequest transfer = new TransferRequest();
 
-    private class SetRegs
-	extends Request
-    {
-	SetRegs()
-	{
-	    super(Manager.eventLoop);
-	}
-	public void execute()
-	{
-	    registerSet.set(pid, bytes);
-	}
-	public void request ()
-	{
-	    if (isEventLoopThread())
-		// Skip the event-loop
-		execute ();
-	    else synchronized (this) {
-		super.request();
-	    }
-	}
-    }
-    private final SetRegs setRegs;
-    private void setRegs()
-    {
-	setRegs.request();
-    }
-
-    protected int peek (long index) 
-    {
-	getRegs();
+    protected int peek(long index) {
+	transfer.getRegs();
 	return bytes[(int)index];
     }
   
-    protected void poke (long index, int value)
-    {
-	getRegs();
+    protected void poke(long index, int value) {
+	transfer.getRegs();
 	bytes[(int)index] = (byte)value;
-	setRegs();
+	transfer.setRegs();
     }
   
-    protected int peek (long index, byte[] bytes, int off, int len) 
-    {
-	getRegs();
+    protected int peek(long index, byte[] bytes, int off, int len) {
+	transfer.getRegs();
 	System.arraycopy(this.bytes, (int) index, bytes, off, len);
 	return len;
     }
 
-    protected int poke (long index, byte[] bytes, int off, int len)
-    {
-      getRegs();
-      System.arraycopy(bytes, off, this.bytes, (int) index, len);
-      setRegs();
-      return len;
+    protected int poke(long index, byte[] bytes, int off, int len) {
+	transfer.getRegs();
+	System.arraycopy(bytes, off, this.bytes, (int) index, len);
+	transfer.setRegs();
+	return len;
     }
   
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,

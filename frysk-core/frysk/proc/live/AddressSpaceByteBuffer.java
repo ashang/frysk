@@ -42,7 +42,7 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.ptrace.AddressSpace;
 import frysk.sys.proc.Mem;
 import frysk.event.Request;
 import frysk.proc.Manager;
@@ -52,7 +52,7 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
     protected final ProcessIdentifier pid;
 
     // Direct files access if possible, or null otherwise.
-    final Mem mem;
+    private Mem mem;
 
     protected AddressSpaceByteBuffer (ProcessIdentifier pid,
 				      AddressSpace addressSpace,
@@ -62,14 +62,11 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
 	this.addressSpace = addressSpace;
 	peekRequest = new PeekRequest();
 	pokeRequest = new PokeRequest();
-	peeksRequest = new PeeksRequest();
-	pokesRequest = new PokesRequest();
-
 	if (addressSpace == AddressSpace.TEXT
 	    || addressSpace == AddressSpace.DATA)
-	  mem = new Mem(pid);
-	else
-	  mem = null;
+	    // Try to use /proc; but if any error occures clear it and
+	    // revert back to ptrace.
+	    mem = new Mem(pid);
     }
     public AddressSpaceByteBuffer(ProcessIdentifier pid,
 				  AddressSpace addressSpace) {
@@ -102,8 +99,7 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
 	}
     }
     private final PeekRequest peekRequest;
-    protected int peek (long index)
-    {
+    protected int peek(long index) {
 	return peekRequest.request (index);
     }
 
@@ -132,125 +128,64 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
 	}
     }
     private final PokeRequest pokeRequest;
-    protected void poke (long index, int value)
-    {
+    protected void poke(long index, int value) {
 	pokeRequest.request (index, value);
     }
 
-    private class PeeksRequest
-	extends Request
-    {
+    private class TransferRequest extends Request {
 	private long index;
-	private int length;
-	private int offset;
 	private byte[] bytes;
-	PeeksRequest()
-	{
+	private int offset;
+	private int length;
+	private boolean write;
+	TransferRequest() {
 	    super(Manager.eventLoop);
 	}
-
-        private int peek(long index, byte[] bytes, int offset, int length)
-	{
-	  if (mem != null)
-	    {
-	      try
-		{
-		  return mem.pread(index, bytes, offset, length);
-		}
-	      catch (Errno e)
-		{
-		  // try again through address space.
+        private void transfer(long index, byte[] bytes, int offset, int length,
+			      boolean write) {
+	    if (mem != null && !write) {
+		try {
+		    mem.pread(index, bytes, offset, length);
+		    return;
+		} catch (Errno e) {
+		    // Give up on mem; and fall back to ptrace.  This
+		    // can happen when /proc isn't mounted, or when a
+		    // process is terminating and the kernel scrubs
+		    // the /proc entry before its time.
+		    mem = null;
 		}
 	    }
-
-	  return addressSpace.peek(pid, index, length, bytes, offset);
+	    addressSpace.transfer(pid, index, bytes, offset, length,
+				  write);
 	}
 
-	public void execute ()
-	{
-	  length = peek(index, bytes, offset, length);
+	public void execute() {
+	    transfer(index, bytes, offset, length, write);
 	}
 
-	public int request (long index, byte[] bytes,
-			    int offset, int length)
-	{
+	public void request(long index, byte[] bytes, int offset, int length,
+			    boolean write) {
 	    if (isEventLoopThread())
-	      return peek(index, bytes, offset, length);
+		transfer(index, bytes, offset, length, write);
 	    else synchronized (this) {
 		this.index = index;
 		this.bytes = bytes;
 		this.offset = offset;
 		this.length = length;
-		request();
-		return length;
+		this.write = write;
+		super.request();
 	    }
 	}
     }
-    private final PeeksRequest peeksRequest;
-    protected int peek (long index, byte[] bytes, int offset, int length)
-    {
-	return peeksRequest.request(index, bytes, offset, length);
-    }
+    private final TransferRequest transfer = new TransferRequest();
 
- 
-    private class PokesRequest
-      extends Request
-    {
-      private long index;
-      private int length;
-      private int offset;
-      private byte[] bytes;
-
-      PokesRequest()
-      {
-	super(Manager.eventLoop);
-      }
-
-      private int poke(long index, byte[] bytes, int offset, int length)
-      {
-	if (mem != null)
-	  {
-	    try
-	      {
-		return mem.pwrite(index, bytes, offset, length);
-	      }
-	    catch (Errno e)
-	      {
-		// try again through address space.
-	      }
-	  }
-	
-	// We lose here since AddressSpace isn't optimized for bulk poke.
-	for (int i = offset; i < length; i++)
-	  addressSpace.poke(pid, index + i, bytes[i]);
+    protected int peek(long index, byte[] bytes, int offset, int length) {
+	transfer.request(index, bytes, offset, length, false); // read
 	return length;
-      }
-
-      public void execute ()
-      {
-	length = poke(index, bytes, offset, length);
-      }
-
-      public int request (long index, byte[] bytes,
-			  int offset, int length)
-      {
-	if (isEventLoopThread())
-	  return poke(index, bytes, offset, length);
-	else synchronized (this) {
-	  this.index = index;
-	  this.bytes = bytes;
-	  this.offset = offset;
-	  this.length = length;
-	  request();
-	  return length;
-	}
-      }
     }
-
-    private final PokesRequest pokesRequest;
-    protected int poke(long index, byte[] bytes, int off, int len)
-    {
-      return pokesRequest.request(index, bytes, off, len);
+    protected int poke(long index, byte[] bytes, int offset, int length) {
+	transfer.request(index, bytes, offset, length, true); // write
+	return length;
     }
 
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,

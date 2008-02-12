@@ -1,11 +1,11 @@
 // This file is part of the program FRYSK.
-//
-// Copyright 2007, 2008, Red Hat Inc.
-//
+// 
+// Copyright 2008, Red Hat Inc.
+// 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
 // the Free Software Foundation; version 2 of the License.
-//
+// 
 // FRYSK is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -37,61 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+package frysk.sys.ptrace;
 
-import frysk.rsl.Log;
-import frysk.junit.TestCase;
-import frysk.sys.Execute;
-import frysk.sys.Signal;
-import frysk.sys.Itimer;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.ptrace.Ptrace;
-import frysk.sys.Wait;
-import frysk.sys.UnhandledWaitBuilder;
-import frysk.sys.SignalBuilder;
-import frysk.sys.DaemonFactory;
+import frysk.junit.TestCase;
+import frysk.testbed.TearDownProcess;
+import frysk.testbed.ForkFactory;
 
 /**
- * Create a copy of this process running as a daemon.
+ * Trace a process.
  */
 
-public class ForkFactory {
-    private static final Log fine = Log.fine(ForkFactory.class);
-
-    public static ProcessIdentifier detachedDaemon() {
-	ProcessIdentifier pid = DaemonFactory.create(new Execute() {
-		final int timeout = TestCase.getTimeoutSeconds();
-		public void execute() {
-		    int remaining = timeout;
-		    do
-			remaining -= Itimer.sleep (remaining);
-		    while (remaining > 0);
-		}
-	    });
-	TearDownProcess.add(pid);
-	fine.log("detachedDaemon", pid);
-	return pid;
+public class TestRegisterSet extends TestCase {
+    /**
+     * Rip down everything related to PID.
+     */
+    public void tearDown() {
+	TearDownProcess.tearDown ();
     }
 
-    public static ProcessIdentifier attachedDaemon() {
-	ProcessIdentifier pid = detachedDaemon();
-	Ptrace.attach(pid);
-	Wait.wait(pid, new UnhandledWaitBuilder() {
-		protected void unhandled(String why) {
-		    TestCase.fail (why);
-		}
-		public void stopped(ProcessIdentifier pid,
-				    Signal signal) {
-		    // cool!
-		}
-	    },
-	    new SignalBuilder() {
-		public void signal(Signal sig) {
-		    TestCase.fail("unexpected signal " + sig);
-		}
-	    },
-	    TestCase.getTimeoutMilliseconds());
-	fine.log("attachedDaemon", pid);
-	return pid;
+    private void verifyTransfer(String what, RegisterSet regs) {
+	if (unsupported(what, regs == null))
+	    return;
+	ProcessIdentifier pid = ForkFactory.attachedDaemon();
+	// Read, write, read.
+	byte[] bytes = new byte[regs.length()];
+	regs.transfer(pid, bytes, false); // read
+	byte old = bytes[0];
+	bytes[0] = (byte) ~old;
+	regs.transfer(pid, bytes, true); // write
+	regs.transfer(pid, bytes, false); // read
+	assertEquals("modified", (byte)~old, bytes[0]);
+    }
+
+    public void testREGS() {
+	verifyTransfer("REGS", RegisterSet.REGS);
+    }
+    public void testFPREGS() {
+	verifyTransfer("FPREGS", RegisterSet.FPREGS);
+    }
+    public void testFPXREGS() {
+	verifyTransfer("FPXREGS", RegisterSet.FPXREGS);
     }
 }

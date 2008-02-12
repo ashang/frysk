@@ -42,7 +42,7 @@ package frysk.proc.live;
 import frysk.sys.ProcessIdentifier;
 import java.util.Iterator;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.ptrace.AddressSpace;
 
 /**
  * MemorySpaceByteBuffer that filters out anything the frysk core

@@ -1,3 +1,10 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx: Delete.
+	* TestPtrace.java: Delete.
+	* Ptrace.java: Delete.
+	* cni/Wait.cxx: Use frysk.sys.ptrace.Ptrace.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.hxx: Delete unnecessary #include

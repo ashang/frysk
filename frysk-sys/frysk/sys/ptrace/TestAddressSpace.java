@@ -164,8 +164,9 @@ public class TestAddressSpace extends TestCase {
 	    for (int length = 0; length < 9; length++) {
 		for (int offset = 0; offset < 9; offset++) {
 		    // Copy the bytes in
-		    space.peek(pid, startAddr + addr,
-			       pidBytes, offset, length);
+		    space.transfer(pid, startAddr + addr,
+				   pidBytes, offset, length,
+				   false); // read
 		    // Mimic the copy using local data.
 		    for (int i = 0; i < length; i++)
 			myBytes[offset + i] = startBytes[addr + i];
@@ -234,13 +235,15 @@ public class TestAddressSpace extends TestCase {
 		    for (int i = 0; i < newBytes.length; i++)
 			newBytes[i] = (byte)(addr + length + offset + i);
 		    // Copy the sub buffer out.
-		    space.poke(pid, startAddr + addr,
-			       newBytes, offset, length);
+		    space.transfer(pid, startAddr + addr,
+				   newBytes, offset, length,
+				   true); // write
 		    // Fake the copy using local data.
 		    for (int i = 0; i < length; i++)
 			myBytes[addr + i] = newBytes[offset + i];
 		    // Verify
-		    space.peek(pid, startAddr, pidBytes, 0, startBytes.length);
+		    space.transfer(pid, startAddr, pidBytes, 0,
+				   startBytes.length, false); // read
 		    for (int i = 0; i < myBytes.length; i++)
 			assertEquals (why
 				      + " addr=" + addr
@@ -294,8 +297,9 @@ public class TestAddressSpace extends TestCase {
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	boolean caught = false;
 	try {
-	    AddressSpace.DATA.peek(pid, LocalMemory.getCodeAddr(),
-				   bytes, offset, length);
+	    AddressSpace.DATA.transfer(pid, LocalMemory.getCodeAddr(),
+				       bytes, offset, length,
+				       false); // read
 	} catch (ArrayIndexOutOfBoundsException e) {
 	    caught = true;
 	}

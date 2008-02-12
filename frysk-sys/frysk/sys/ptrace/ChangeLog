@@ -1,5 +1,11 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* AddressSpace.java (peek(ProcessIdentifer,long,byte[],int,int))
+	(poke(ProcessIdentifer,long,byte[],int,int)): Delete.
+	* TestAddressSpace.java: Update.
+	* TestRegisterSet.java: New.
+	* RegisterSet.java: Map write onto ptSet.
+
 	* TestAddressSpace.java: Extract from frysk.sys.TestPtrace.
 	* TestPtrace.java: Extract from frysk.sys.TestPtrace.
 	* AddressSpace.java: Extract from frysk.sys.Ptrace.

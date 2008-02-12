@@ -90,11 +90,29 @@ public class AddressSpace {
 
     /**
      * Transfer data between the local BYTES array and process PID.
-     * Up to LENGTH bytes are copied, starting at OFFSET in the BYTES
-     * array.
+     * Locally the data starts at OFFSET and goes for LENGTH bytes.
      *
-     * This is a target oriented transfer; hence LENGTH as an address
-     * sized quantity is a long..
+     * This is a host oriented transfer; hence LENGTH, which must fall
+     * within the bounds of BYTES, is an int.
+     */
+    public void transfer(ProcessIdentifier pid, long addr,
+			 byte[] bytes, int offset, int length,
+			 boolean write) {
+	fine.log(this, "transfer", pid, "addr", addr,
+		 "offset", offset, "length", length,
+		 write ? "write ..." : "read ...");
+	transfer(write ? ptPoke : ptPeek, pid.intValue(), addr,
+		 bytes, offset, length);
+    }
+
+    /**
+     * Transfer data between the local BYTES array and process PID.
+     * Up to LENGTH bytes are copied, starting at OFFSET in the BYTES
+     * array.  The number of bytes actually transfered is returned.
+     *
+     * This is a target oriented transfer; hence LENGTH, as an address
+     * sized quantity, is a long and can be larger than the bounds of
+     * BYTES.
      */
     public int transfer(ProcessIdentifier pid, long addr, long length,
 			byte[] bytes, int offset, boolean write) {
@@ -114,39 +132,6 @@ public class AddressSpace {
 	return size;
     }
 
-    /**
-     * Fetch up-to LENGTH bytes starting at ADDR of process PID,
-     * store them in BYTES, starting at OFFSET.
-     */
-    public void peek(ProcessIdentifier pid, long addr,
-		     byte[] bytes, int offset, int length) {
-	transfer(pid, addr, bytes, offset, length, false);
-    }
-
-    /**
-     * Store up-to LENGTH bytes starting at ADDR of process PID,
-     * get values from BYTES, starting at OFFSET.
-     */
-    public void poke(ProcessIdentifier pid, long addr,
-		     byte[] bytes, int offset, int length) {
-	transfer(pid, addr, bytes, offset, length, true);
-    }
-    
-    /**
-     * Transfer data between the local BYTES array and process PID.
-     * Locally the data starts at OFFSET and goes for LENGTH bytes.
-     *
-     * This is a host oriented transfer; hence LENGTH is an int.
-     */
-    public void transfer(ProcessIdentifier pid, long addr,
-			 byte[] bytes, int offset, int length,
-			 boolean write) {
-	fine.log(this, "transfer", pid, "addr", addr,
-		 "offset", offset, "length", length,
-		 write ? "write ..." : "read ...");
-	transfer(write ? ptPoke : ptPeek, pid.intValue(), addr,
-		 bytes, offset, length);
-    }
     private native final void transfer(int op, int pid, long addr,
 				       byte[] bytes, int offset, int length);
 
