@@ -49,9 +49,11 @@ import frysk.proc.TaskId;
 import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.registers.RegistersFactory;
+import frysk.rsl.Log;
 
 public class LinuxCoreTask extends DeadTask {
 
+    private static final Log fine = Log.fine(LinuxCoreTask.class);
     private final LinuxCoreProc parent;
 
     public ByteBuffer getMemory() {
@@ -61,6 +63,8 @@ public class LinuxCoreTask extends DeadTask {
 	// memory maps in some architectures, but not in the current
 	// ISAs. In an attempt to save system resources, get a
 	// reference to the proc's maps for now.
+
+	fine.log(this,"getMemory() called by ",fine.caller());
 	return parent.getMemory();
     }
 

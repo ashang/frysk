@@ -61,6 +61,7 @@ import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
+import frysk.rsl.Log;
 
 public class LinuxCoreProc extends DeadProc {
   
@@ -73,10 +74,13 @@ public class LinuxCoreProc extends DeadProc {
     // Segment and solib metadata
     private MapAddressHeader metaData[];
     private boolean metaDataBuilt = false;
+    
+    private static final Log fine = Log.fine(LinuxCoreProc.class);
 
 
     public LinuxCoreProc(ElfData data, LinuxCoreHost host, ProcId procId ) {
 	super(host, null, procId);
+	fine.log(this, "LinuxCoreProc(ElfData, LinuxCoreHost, ProcId)");
 	this.elfData = data;
 	this.elfProc = ElfPrpsinfo.decode(elfData);
 	this.corefileBackEnd = host.coreFile;
@@ -93,28 +97,36 @@ public class LinuxCoreProc extends DeadProc {
     }	
 
     public String getCommand() {
+	fine.log(this,"getCommand()", elfProc.getPrFname());
 	return elfProc.getPrFname();
     }
 
     public String getExe() {
-	if (this.exefileBackEnd != null)
+	if (this.exefileBackEnd != null) {
+	    fine.log(this,"getExe()", this.exefileBackEnd.getPath());
 	    return this.exefileBackEnd.getPath();
+	}
 	// Only place to find full path + exe is
 	// in the args list. Remove ./ if present.
 	String[] args = getCmdLine();
 	if (args.length > 0) {
 	    if (args[0].startsWith("./"))
 		args[0]=args[0].substring(2);
+	    fine.log(this, "getExe()", args[0]);
 	    return args[0];
-	} else
+	} else {
+	    fine.log(this, "getExe()", elfProc.getPrFname());
 	    return elfProc.getPrFname();
+	}
     }
 
     public int getUID() {
+	fine.log(this,"getUID()", elfProc.getPrUid());
 	return (int) elfProc.getPrUid();
     }
 
     public int getGID() {
+	fine.log(this,"getGID()", elfProc.getPrGid());
 	return (int) elfProc.getPrGid();
     }
 
@@ -124,6 +136,7 @@ public class LinuxCoreProc extends DeadProc {
 	String rawArgs = elfProc.getPrPsargs();
 	String args[] = rawArgs.split(" ");
  
+	fine.log(this,"getCmdLine()", args);
 	return args;
     }
 
@@ -144,6 +157,7 @@ public class LinuxCoreProc extends DeadProc {
 		throw new RuntimeException(e);
 	    }
 
+	fine.log(this,"getMemory() caller: ", fine.caller());
 	return memory;
     }
 
@@ -216,28 +230,51 @@ public class LinuxCoreProc extends DeadProc {
 
     private MemoryMap[] memoryMaps;
     public MemoryMap[] getMaps () {
+	fine.log(this,"getMaps()");
 	if (memoryMaps == null) {
+	    fine.log(this,"getMaps() - Maps need to be built");
 	    ArrayList maps = new ArrayList ();
 	    // Build meta data if not already built.
 	    if (!metaDataBuilt)
 		constructMetaData ();
+
 	    // Refactor metadata into format expected by clients of 
 	    // sendrecMaps.
-	    for (int i=0; i<metaData.length; i++)
+	    for (int i=0; i<metaData.length; i++) {
+		fine.log(this,"getMaps() maps ",
+			 
+			 "0x"+Long.toHexString(metaData[i].vaddr)+ 
+			 "-0x" + Long.toHexString(metaData[i].vaddr_end)+
+			 " read: " + metaData[i].permRead + 
+			 " write: " + metaData[i].permWrite +
+			 " execute: " + metaData[i].permExecute + 
+			 " false" +
+			 " 0x" +  Long.toHexString(metaData[i].solibOffset) + 
+			 " -1,-1,-1,-1,-1, " +
+			 " " + metaData[i].name+"\n");
+
 		maps.add(new MemoryMap(metaData[i].vaddr, metaData[i].vaddr_end,
 				       metaData[i].permRead, metaData[i].permWrite,
 				       metaData[i].permExecute,false,
 				       metaData[i].solibOffset,-1,-1,-1,-1,-1,
 				       metaData[i].name));
-	    
+		}
 	    memoryMaps = (MemoryMap[]) maps.toArray(new MemoryMap[maps.size()]);
-	}
+	} else { fine.log("getMaps() - maps already built, returning cache");}
+
+
+	fine.log(this,"getMaps() - Completed metadata.");
+
 	return memoryMaps;
     }
 
     private Auxv[] auxv;
     public Auxv[] getAuxv() {
+
+	fine.log(this,"getAuxv()",fine.caller());
+
 	if (auxv == null) {
+	    fine.log(this,"Auxv is null, building");
 	    final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
 	    class BuildAuxv extends AuxvBuilder {
 		Auxv[] vec;
@@ -254,7 +291,7 @@ public class LinuxCoreProc extends DeadProc {
 	    BuildAuxv auxv = new BuildAuxv ();
 	    auxv.construct (prAuxv.getAuxvBuffer());
 	    this.auxv = auxv.vec;
-	}
+	} else {fine.log(this,"Returning cached Auxv");}
 	return auxv;
     }
 
@@ -273,12 +310,18 @@ public class LinuxCoreProc extends DeadProc {
      */
     private void constructMetaData () {
 
+	fine.log(this,"constructMetaData()");
+
 	// We'll bake basic meta data for all corefiles
 	metaData = constructBasicMapMetadata ();
+
 	if (exefileBackEnd != null) {
+	    fine.log(this,"constructMetaData() - exe backend is not " +
+		     "null, bake enhanced data");
 	    // If an executable is available that is paired with
 	    // the corefile, much richer metadata can be constructed.
 	    metaData = constructEnhancedMapMetadata (metaData);
+	    fine.log(this,"constructMetaData() - Enhanced metadata complete.");
 	}
     }
 
@@ -293,6 +336,7 @@ public class LinuxCoreProc extends DeadProc {
      */
     private MapAddressHeader[] constructBasicMapMetadata () {
 
+	fine.log(this,"constructBasicMapMetaData()");	
 	String name = "";
 	ArrayList tempMetaData = new ArrayList ();
 	// Read in contents of the corefile 
@@ -345,14 +389,15 @@ public class LinuxCoreProc extends DeadProc {
      *
      */
     private MapAddressHeader[] constructEnhancedMapMetadata(MapAddressHeader[] basicMetaData) {
-
+	
+	fine.log(this,"constructEnhancedMapMetadata()");
 	// Clone data. Don't use data that the caller passed.
 	MapAddressHeader[] tempMaps = new MapAddressHeader[basicMetaData.length];
 	System.arraycopy(basicMetaData,0,tempMaps,0,basicMetaData.length);
 
 	// Find Dynamic Segment
 	DynamicSegmentTuple dynamicTuple = getDynamicSegmentAddress();
-
+	
 	// From that segment address, find linkmap table.
 	long linkmapAddress = getLinkmapAddress(dynamicTuple);
 
@@ -367,20 +412,24 @@ public class LinuxCoreProc extends DeadProc {
 	// Edge case: Get interp address so when we traverse the linkmap
 	// it can be paired with its name
 	long interpAddr = getExeInterpreterAddress (); 
-
+	
 	// Build the linkmap table from the linkmap tabl address
 	class BuildLinkMap extends LinkmapBuilder {
 
 	    public ArrayList list = new ArrayList();
       
 	    public void buildMap (long l_addr, long l_ld, long saddr, String name) {
-
+		fine.log(this, "New linkmap item: l_addr = 0x"+Long.toHexString(l_addr) +
+			 " l_ld = 0x"+Long.toHexString(l_ld) +
+			 " s_addr = 0x"+Long.toHexString(l_addr) + 
+			 " name = " + name);
 		list.add(new Linkmap(l_addr, l_ld, saddr, name));
 	    }
 	}
     
 	// Create a temporary, noncache resetting view into the corefile
-	// memory. We can pass metadata as basic metadata has already been constructed.
+	// memory. We can pass metadata as basic metadata has already
+	// been constructed.	
 	CorefileByteBuffer tempMemory = null;
 	try {
 	    tempMemory = new CorefileByteBuffer(this.corefileBackEnd, metaData);
@@ -388,13 +437,16 @@ public class LinuxCoreProc extends DeadProc {
 	    throw new RuntimeException(e);
 	}
     
+	fine.log(this, "Building linkmap");
 	BuildLinkMap linkMap = new BuildLinkMap();
 	linkMap.construct(linkmapAddress,tempMemory);
 	Iterator linkMapIterator = linkMap.list.iterator();
 	while (linkMapIterator.hasNext()) {
 	    Linkmap tempMap = (Linkmap) linkMapIterator.next();
-	    if (tempMap.s_addr == interpAddr)
+	    if (tempMap.s_addr == interpAddr) {
+		fine.log("Found interpretator at linkmap address 0x"+Long.toHexString(tempMap.s_addr));
 		tempMap.name = interpName;
+	    }
 	}
 
 	// From the list of solibs in the linkamp,  build
@@ -427,9 +479,8 @@ public class LinuxCoreProc extends DeadProc {
 
 
 	// Add in case for executables maps.
-	SOMaps.construct(this.exefileBackEnd,0,this.getMainTask().getISA().wordSize());
+	SOMaps.construct(this.exefileBackEnd,0,this.getMainTask().getISA().wordSize());	    
 
-    
 	// Reconcile maps
 	Iterator i = SOMaps.list.iterator();
 	while (i.hasNext()) {
@@ -463,10 +514,14 @@ public class LinuxCoreProc extends DeadProc {
      * executable has been provided
      */
     private boolean isExeProvided () {
+	boolean provided = false;
+
 	if (this.exefileBackEnd != null) 
 	    if ((this.exefileBackEnd.isFile()) && (this.exefileBackEnd.canRead()))
-		return true;
-	return false;
+		provided = true;
+ 	fine.log(this, "isExeProvided()" + provided);
+	
+	return provided;
     }
 
     /**
@@ -475,6 +530,7 @@ public class LinuxCoreProc extends DeadProc {
      */
     private DynamicSegmentTuple getDynamicSegmentAddress() {
 
+	fine.log(this,"getDynamicSegmentAddress()");
 	// If we do not have an executable, we cannot find
 	// the dynamic segment in the corefile.
 	if (!isExeProvided ())
@@ -489,6 +545,9 @@ public class LinuxCoreProc extends DeadProc {
 	    exeDynamicTuple.addr = exeDynamicTuple.addr + 
 		coreEntryPoint - exeEntryPoint;
     
+	fine.log(this,"getDynamicSegmentAddress() tuple: 0x" + 
+		 Long.toHexString(exeDynamicTuple.addr) + 
+		 " Size " + exeDynamicTuple.size);
 	return exeDynamicTuple;
     
     }
@@ -499,12 +558,12 @@ public class LinuxCoreProc extends DeadProc {
      **/
     private DynamicSegmentTuple getExeDynamicSegmentAddress () {
     
+	fine.log(this,"getExeDynamicSegmentAddress()");
 	DynamicSegmentTuple exeDynamicAddr = null;
 	Elf exeElf = openElf(this.exefileBackEnd);
 	if (exeElf != null) {
 	    ElfEHeader eHeader = exeElf.getEHeader();
-	
-
+	    
 	    // Find dynamic segment by iterating through program segment
 	    // headers
 	    for(int headerCount=0; headerCount<eHeader.phnum; headerCount++) {
@@ -519,7 +578,11 @@ public class LinuxCoreProc extends DeadProc {
 	    }
 	
 	    exeElf.close();
-	}
+	} 
+
+	fine.log(this,"getDynamicExeSegmentAddress() tuple: 0x" + 
+		 Long.toHexString(exeDynamicAddr.addr) + 
+		 " Size " + exeDynamicAddr.size);
 
 	return exeDynamicAddr;
     }
@@ -530,9 +593,14 @@ public class LinuxCoreProc extends DeadProc {
      * at the address specified by the DT_DEBUG field.
      */
     private long getLinkmapAddress(DynamicSegmentTuple tuple) {
+
+	fine.log(this,"getLinkmapAddress()");
 	final int DT_DEBUG = 21;
-	if (tuple == null)
+	if (tuple == null) {
+	    fine.log(this,"Dynamic segment is null, linkmap set to 0");
 	    return 0;
+
+	}
 
 	long dynSegmentEndAddress = tuple.addr + tuple.size;
 	long dtDebugAddress = 0;
@@ -583,6 +651,7 @@ public class LinuxCoreProc extends DeadProc {
 	    actualAddress = internalMem.getUWord();
 	}
 
+	fine.log(this,"Linkmap address is: 0x"+Long.toHexString(actualAddress));
 	return actualAddress;
     }
 
@@ -609,6 +678,8 @@ public class LinuxCoreProc extends DeadProc {
      * interpeters address
      */
     private long getExeInterpreterAddress () {
+
+	fine.log(this,"getExeInterpreterAddress()");
 	Elf exeElf = openElf(this.exefileBackEnd);
 	long interpreterAddress = 0;
 	if (exeElf != null) {
@@ -626,6 +697,7 @@ public class LinuxCoreProc extends DeadProc {
 	    exeElf.close();
 	}
 
+	fine.log(this,"Interpreter Addr: 0x"+Long.toHexString(interpreterAddress));
 	return interpreterAddress;
     }
 
@@ -634,6 +706,7 @@ public class LinuxCoreProc extends DeadProc {
      * interpeters name
      */
     private String getExeInterpreterName () {
+	fine.log(this,"getExeInterpreterName()");
 	Elf exeElf = openElf(this.exefileBackEnd);
 	String interpName = "";
 	if (exeElf != null) {
@@ -654,7 +727,7 @@ public class LinuxCoreProc extends DeadProc {
 	
 	    exeElf.close();
 	}
-
+	fine.log(this,"Interpreter name:", interpName);
 	return interpName;
     }
 
@@ -663,6 +736,7 @@ public class LinuxCoreProc extends DeadProc {
      * entry point
      */
     private long getCorefileEntryPoint () {
+	fine.log(this,"getCorefileEntryPoint()");
 	// Need auxv data
 	Auxv[] auxv = getAuxv ();
 	long entryPoint = 0;
@@ -677,6 +751,7 @@ public class LinuxCoreProc extends DeadProc {
 		break;
 	    }
 
+	fine.log(this,"Corefile Entrypoint: 0x"+Long.toHexString(entryPoint));
 	return entryPoint;
     }
 
@@ -685,6 +760,7 @@ public class LinuxCoreProc extends DeadProc {
      * VDSO address
      */
     private long getCorefileVDSOAddress () {
+	fine.log(this,"getCorefileVDSOAddress()");
 	Auxv[] auxv = getAuxv();
 	long vdsoEntryPoint = 0;
 
@@ -697,7 +773,7 @@ public class LinuxCoreProc extends DeadProc {
 		vdsoEntryPoint = auxv[i].val;
 		break;
 	    }
-
+	fine.log(this,"Corefile VDSO Address 0x"+Long.toHexString(vdsoEntryPoint));
 	return vdsoEntryPoint;
     }
 

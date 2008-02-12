@@ -110,8 +110,9 @@ public class LinuxCoreHost extends DeadHost {
 	if (exeSetToNull == false)
 	    if (exeFile.canRead() && exeFile.exists()) {
 		try {
-		    this.exeFile = exeFile.getCanonicalFile();
-		} catch (IOException e) {
+		    //this.exeFile = exeFile.getCanonicalFile();
+		      this.exeFile = exeFile;
+		} catch (Exception e) {
 		    status.hasExe = false;
 		    status.hasExeProblem = true;
 		}

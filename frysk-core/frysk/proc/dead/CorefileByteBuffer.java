@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ import lib.dwfl.ElfPHeader;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+import frysk.rsl.Log;
 
 public class CorefileByteBuffer 
 	extends ByteBuffer
@@ -65,6 +66,8 @@ public class CorefileByteBuffer
   File exeFile = null;
   StatelessFile coreFileRaw = null;
   boolean fileOpen = false;
+    
+  private static final Log finest = Log.finest(CorefileByteBuffer.class);
 
   private CorefileByteBuffer(File file, long lowerExtreem, 
 			     long upperExtreem, 
@@ -104,6 +107,8 @@ public class CorefileByteBuffer
   protected int peek(long address) 
   {
 
+
+    finest.log(this,"peek() address 0x" + Long.toHexString(address));
     byte[] buffer = new byte[1];
     MapAddressHeader metaLine = findMetaData(address);
 
@@ -120,6 +125,10 @@ public class CorefileByteBuffer
 	      StatelessFile temp = new StatelessFile(new File(metaLine.name));
 	      long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
 	      temp.pread(offset, buffer,0,1);
+	      finest.log(this,"peek'ed() 0x"+Integer.toHexString(buffer[0] & 0xff) +
+			 " from address 0x"+Long.toHexString(address) +  
+			 " offset 0x"+Long.toHexString(offset) +
+			 " from file: " +metaLine.name);
 	    }
 	}
 	
@@ -180,18 +189,28 @@ public class CorefileByteBuffer
         data = offsetList[i];
         
         if ((address >= data.vaddr) && 
-            (address <= (data.vaddr_end)))
+            (address <= (data.vaddr_end))) {
+	    finest.log(this, "findMetaData() memory location 0x" + 
+		       Long.toHexString(address)+ " found at " +
+		       "0x"+Long.toHexString(data.vaddr)+"-"+
+		       "0x"+Long.toHexString(data.vaddr_end)+
+		       " Name: "+data.name);
+		       
 	  return data;
+	}
       }
 
+    finest.log(this, "findMetaData() cannot find metadata for addr 0x"+Long.toHexString(address));
     return null;
   }
   private boolean checkCorefileAddress(MapAddressHeader data)
   {
+    boolean isCoreFile = false;
     if (data.fileSize > 0)
-      return true;
-    else
-      return false;
+      isCoreFile = true;
+
+    finest.log(this,"checkCorefileAddress()= " + isCoreFile);
+    return isCoreFile;
     
   }
 	  
