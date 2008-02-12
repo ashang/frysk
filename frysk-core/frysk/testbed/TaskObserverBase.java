@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,11 +40,10 @@
 package frysk.testbed;
 
 import frysk.proc.TaskObserver;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import frysk.junit.TestCase;
 import java.util.LinkedList;
 import java.util.List;
+import frysk.rsl.Log;
 
 /**
  * A base class for implementing TaskObservers. This provides a
@@ -54,18 +53,16 @@ import java.util.List;
  * applicable observer.
  */
 
-public abstract class TaskObserverBase
-    implements TaskObserver
-{
-    protected static final Logger logger = Logger.getLogger("frysk");
+public abstract class TaskObserverBase implements TaskObserver {
+    private static final Log fine = Log.fine(TaskObserverBase.class);
+
     /**
      * Count of number of times that this observer was added to a Task's
      * observer set.
      */
     private List added = new LinkedList();
     public void addedTo (Object o) {
-	logger.log(Level.FINE, "{0} addedTo {1}\n",
-		   new Object[] {this, o});
+	fine.log(this, "addedTo", o);
 	added.add(o);
     }
     public int addedCount() {
@@ -78,8 +75,7 @@ public abstract class TaskObserverBase
      */
     private List deleted = new LinkedList();
     public void deletedFrom (Object o) {
-	logger.log(Level.FINE, "{0} deletedFrom {1}\n",
-		   new Object[] {this, o});
+	fine.log(this, "deletedFrom", o);
 	deleted.add(o);
     }
     public int deletedCount() {

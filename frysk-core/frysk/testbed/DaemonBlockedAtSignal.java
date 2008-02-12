@@ -45,14 +45,18 @@ import frysk.proc.TaskObserver;
 import frysk.proc.Task;
 import frysk.proc.Manager;
 import java.io.File;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * Creates an attached process that is blocked at a signal. 
  */
-public class DaemonBlockedAtSignal {
-    
+public class DaemonBlockedAtSignal extends Offspring {
     private final Task mainTask;
-  
+    public ProcessIdentifier getPid() {
+	return ProcessIdentifierFactory.create(mainTask.getTid());
+    }
+
     private class RunToSignal extends TaskObserverBase
 	implements TaskObserver.Signaled, TaskObserver.Terminated
     {

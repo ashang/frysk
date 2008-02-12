@@ -1,3 +1,13 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskTerminateObserver.java: Update to match frysk.testbed.
+	* TestTaskSyscallObserver.java: Update.
+	* TestProcGet.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestFindProc.java: Ditto.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (compareTo(Object)): New.

@@ -47,18 +47,17 @@ import frysk.proc.Manager;
 import java.util.Iterator;
 import frysk.sys.Signal;
 import frysk.junit.TestCase;
-import java.util.logging.Logger;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * A generic test process created by this testbed.
  */
 
 public abstract class Offspring {
-    protected final static Logger logger = Logger.getLogger("frysk");
     /**
      * Return the process's system identifier.
      */
-    public abstract int getPid();
+    public abstract ProcessIdentifier getPid();
     /**
      * Package private.
      */
@@ -97,7 +96,7 @@ public abstract class Offspring {
 	    }
 	}
 	ProcFinder findProc = new ProcFinder();
-	Manager.host.requestProc(getPid(), findProc);
+	Manager.host.requestProc(getPid().intValue(), findProc);
 	Manager.eventLoop.run();
 	return findProc.proc;
     }

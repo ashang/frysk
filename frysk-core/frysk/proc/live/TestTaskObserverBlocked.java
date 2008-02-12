@@ -527,7 +527,8 @@ public class TestTaskObserverBlocked
       // An object that, when the child process exits, both sets
       // a flag to record that event, and requests that the
       // event loop stop.
-      StopEventLoopWhenProcRemoved childRemoved = new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+      StopEventLoopWhenProcRemoved childRemoved
+	  = new StopEventLoopWhenProcRemoved(child);
 
       // Repeatedly run the event loop until the child exits
       // (every time there is a spawn the event loop will stop).

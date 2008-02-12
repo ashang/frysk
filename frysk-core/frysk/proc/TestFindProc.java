@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -120,8 +120,8 @@ public class TestFindProc
      * Find out how many processes are associated with the test process.
      * Should be just the one.
      */
-    FindProc finder = new MyFinder(ackProc.getPid());
-    Manager.host.requestProc(ackProc.getPid(), finder);
+    FindProc finder = new MyFinder(ackProc.getPid().intValue());
+    Manager.host.requestProc(ackProc.getPid().intValue(), finder);
     assertRunUntilStop("testFindProc");
 
     int postFind = o.getCount();

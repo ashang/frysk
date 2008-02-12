@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,41 +42,45 @@ package frysk.testbed;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.proc.Proc;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.proc.Manager;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * An observer that stops the eventloop when the process with the
  * given pid is removed.
  */
-public class StopEventLoopWhenProcRemoved
-	implements Observer
-{
-    private final Logger logger = Logger.getLogger("frysk");
+public class StopEventLoopWhenProcRemoved implements Observer {
+    private static final Log fine
+	= Log.fine(StopEventLoopWhenProcRemoved.class);
 
     public boolean p;
 
-    private int pid;
+    private ProcessIdentifier pid;
 
-    public StopEventLoopWhenProcRemoved (int pid) {
+    public StopEventLoopWhenProcRemoved(ProcessIdentifier pid) {
 	this.pid = pid;
 	Manager.host.observableProcRemovedXXX.addObserver(this);
+    }
+    public StopEventLoopWhenProcRemoved(Offspring pid) {
+	this(pid.getPid());
+    }
+    public StopEventLoopWhenProcRemoved(Proc proc) {
+	this(ProcessIdentifierFactory.create(proc.getPid()));
     }
 
     public void update (Observable o, Object obj) {
 	Proc proc = (Proc) obj;
-	if (proc.getPid() == this.pid) {
+	if (proc.getPid() == this.pid.intValue()) {
 	    // Shut things down.
-	    logger.log(Level.FINE,
-		       "{0} update {1} has been removed stopping event loop\n",
-		       new Object[] { this, proc });
+	    fine.log(this, "update", proc,
+		     "has been removed stopping event loop");
 	    Manager.eventLoop.requestStop();
 	    p = true;
 	} else {
-	    logger.log(Level.FINE,
-		       "{0} update {1} has been removed NOT stopping event loop\n",
-		       new Object[] { this, proc });
+	    fine.log(this, "update", proc,
+		     "has been removed NOT stopping event loop");
 	}
     }
 }

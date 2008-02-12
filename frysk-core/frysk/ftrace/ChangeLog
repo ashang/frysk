@@ -1,3 +1,8 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLtrace.java: Update to match frysk.testbed.
+	* TestMappingGuard.java: Ditto.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Update to use Host.requestProc(int,FindProc).

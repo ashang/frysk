@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.sys.Signal;
 import frysk.proc.Manager;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Create a process running funit-exec as described by ExecCommand.
@@ -58,6 +58,8 @@ import java.util.logging.Level;
  * arguments.
  */
 public class ExecOffspring extends SynchronizedOffspring {
+    private static final Log fine = Log.fine(ExecOffspring.class);
+
     /**
      * Invoke funit-exec as specified by COMMAND.
      */
@@ -91,7 +93,7 @@ public class ExecOffspring extends SynchronizedOffspring {
      * set up to send the START_ACK to this process.
      */
     public void assertRunExec(String why) {
-	logger.log(Level.FINE, why + "\n");
+	fine.log(this, "assertRunExec", why);
 	SignalWaiter ack
 	    = new SignalWaiter(Manager.eventLoop, START_ACK, why);
 	requestExec();
@@ -104,7 +106,7 @@ public class ExecOffspring extends SynchronizedOffspring {
      * this process.
      */
     public void assertRunThreadExec(String why) {
-	logger.log(Level.FINE, why + "\n");
+	fine.log(this, "assertRunThreadExec", why);
 	SignalWaiter ack
 	    = new SignalWaiter(Manager.eventLoop, START_ACK, why);
 	requestThreadExec();

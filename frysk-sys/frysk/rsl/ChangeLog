@@ -1,3 +1,7 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java: Add more loggers.
+
 2008-02-12  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Log.java (caller): New public method.

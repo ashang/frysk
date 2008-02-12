@@ -94,7 +94,7 @@ public class TestTaskTerminateObserver
 	    });
 	
 	// Bail once it has exited.
-	new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+	new StopEventLoopWhenProcRemoved(child);
 	
 	// Set up an observer that watches for both Terminating and
 	// Terminated events.
@@ -231,7 +231,7 @@ public class TestTaskTerminateObserver
 	// the way through to being removed so that both terminating
 	// and terminated events are seen by this test.
 	daemon.signal(frysk.sys.Signal.TERM);
-	new StopEventLoopWhenProcRemoved(task.getTid());
+	new StopEventLoopWhenProcRemoved(daemon);
 	assertRunUntilStop("terminate process");
 
 	// Check that there was a terminate event.

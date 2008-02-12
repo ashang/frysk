@@ -103,7 +103,7 @@ public class TestRefresh extends TestLib {
 	    assertIn(why, proc.getPid(), what);
 	}
 	void assertIn(String why, Offspring offspring, int what) {
-	    assertIn(why, offspring.getPid(), what);
+	    assertIn(why, offspring.getPid().intValue(), what);
 	}
 	Proc assertFindProc(String why, int pid) {
 	    Proc proc = findProc(processes, pid);
@@ -111,7 +111,7 @@ public class TestRefresh extends TestLib {
 	    return proc;
 	}
 	Proc assertFindProc(String why, Offspring offspring) {
-	    return assertFindProc(why, offspring.getPid());
+	    return assertFindProc(why, offspring.getPid().intValue());
 	}
 	Proc assertFindSelf() {
 	    Proc self = findProc(processes, Pid.get());
@@ -318,6 +318,7 @@ public class TestRefresh extends TestLib {
 	assertEquals ("proc's getCmdLine[0]",
 		      proc.getPid () + ":" + proc.getPid (),
 		      proc.getCmdLine ()[0]);
-	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+	assertEquals ("pid after exec", child.getPid().intValue(),
+		      proc.getPid ());
     }
 }

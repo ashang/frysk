@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ package frysk.testbed;
 import frysk.sys.Signal;
 import frysk.sys.ProcessIdentifier;
 import frysk.proc.Manager;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Create an offspring that has synchronized with this test-framework
@@ -50,9 +50,9 @@ import java.util.logging.Level;
  * is ready before the test proceeds.
  */
 
-public class SynchronizedOffspring
-    extends Offspring
-{
+public class SynchronizedOffspring extends Offspring {
+    private static final Log fine = Log.fine(SynchronizedOffspring.class);
+
     // NOTE: Use a different signal to thread add/del. Within this
     // process the signal is masked and Linux appears to propogate the
     // mask all the way down to the exec'ed child.
@@ -63,8 +63,8 @@ public class SynchronizedOffspring
     /**
      * Return the ProcessID of the child.
      */
-    public int getPid() {
-	return pid.intValue();
+    public ProcessIdentifier getPid() {
+	return pid;
     }
 
     /**
@@ -73,17 +73,14 @@ public class SynchronizedOffspring
      */
     protected SynchronizedOffspring(OffspringType type,
 				    Signal sig, String[] argv) {
-	logger.log(Level.FINE, "{0} new ...\n", this);
+	fine.log(this, "new");
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
 					    "startOffspring");
-	pid = type.startOffspring(null, (logger.isLoggable(Level.FINE)
-					 ? null
-					 : "/dev/null"),
+	pid = type.startOffspring(null, fine.logging() ? null : "/dev/null",
 				  null, argv);
 	TearDownProcess.add(pid);
 	ack.assertRunUntilSignaled();
-	logger.log(Level.FINE, "{0} ... new pid {1,number,integer}\n",
-		   new Object[] { this, pid });
+	fine.log(this, "... new pid", pid);
     }
 
     public SynchronizedOffspring(Signal sig, String[] argv) {

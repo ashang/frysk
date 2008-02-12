@@ -116,7 +116,7 @@ public class LegacyOffspring
     /**
      * Tell TID to create a new offspring. Wait for the acknowledgment.
      */
-    private void spawn (int tid, Signal sig, String why) {
+    private void spawn(ProcessIdentifier tid, Signal sig, String why) {
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, SPAWN_ACK, why);
 	// XXX: Just trust that TID is part of this process.
 	sig.tkill(tid);
@@ -140,11 +140,6 @@ public class LegacyOffspring
 	return this;
     }
 
-    /** Add a Task. */
-    public void assertSendAddCloneWaitForAcks (int tid) {
-	spawn(tid, ADD_CLONE_SIG, "addClone");
-    }
-
     /** Delete a Task. */
     public void assertSendDelCloneWaitForAcks () {
 	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, PARENT_ACK,
@@ -161,11 +156,6 @@ public class LegacyOffspring
     public Signal[] requestFork() {
 	signal(ADD_FORK_SIG);
 	return SPAWN_ACK;
-    }
-
-    /** Add a child Proc. */
-    public void assertSendAddForkWaitForAcks (int tid) {
-	spawn(tid, ADD_FORK_SIG, "addFork");
     }
 
     /** Delete a child Proc. */

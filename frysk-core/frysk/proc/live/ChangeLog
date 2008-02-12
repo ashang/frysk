@@ -1,5 +1,9 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRefresh.java: Update to match frysk.testbed.
+	* TestTaskObserverCode.java: Ditto.
+	* TestRuntimeIsa.java: Ditto.
+
 	* LinuxPtraceTask.java: Use frysk.sys.ptrace.
 	* AddressSpaceByteBuffer.java: Ditto; simplify.
 	* LogicalMemoryBuffer.java: Ditto.

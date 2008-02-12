@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,23 +39,20 @@
 
 package frysk.testbed;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import frysk.event.EventLoop;
 import frysk.event.SignalEvent;
 import frysk.sys.SignalSet;
 import frysk.junit.TestCase;
 import frysk.sys.Signal;
+import frysk.rsl.Log;
 
 /**
  * Installs signal-handlers for, and then runs the event loop until
  * the specified set of signals have all been received.
  */
 
-public final class SignalWaiter
-    extends TestCase
-{
-    private final Logger logger = Logger.getLogger ("frysk");
+public final class SignalWaiter extends TestCase {
+    private static final Log fine = Log.fine(SignalWaiter.class);
 
     private final String reason;
     private final Signal[] sigs;
@@ -73,10 +70,8 @@ public final class SignalWaiter
 	    this.eventLoop = eventLoop;
 	}
 	
-	public void execute ()
-	{
-	    logger.log(Level.FINE, "{0} execute ({1})\n",
-		       new Object[] { this, reason });
+	public void execute() {
+	    fine.log(this, "execute", reason);
 	    eventLoop.requestStop();
 	    eventLoop.remove(this);
 	    outstanding.remove(this.getSignal());
@@ -114,11 +109,9 @@ public final class SignalWaiter
     {
 	// Run the event loop.
 	while (outstanding.size() > 0) {
-	    logger.log(Level.FINE, "{0} start: outstanding {1}\n",
-		       new Object[] {this, outstanding});
+	    fine.log(this, "start: outstanding", outstanding);
 	    assertTrue (eventLoop.runPolling (getTimeoutMilliseconds()));
-	    logger.log(Level.FINE, "{0} stop: outstanding{1}\n",
-		       new Object[] {this, outstanding});
+	    fine.log(this, "stop: outstanding", outstanding);
 	}
     }
 }

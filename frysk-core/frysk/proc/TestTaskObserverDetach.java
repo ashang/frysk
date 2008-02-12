@@ -117,7 +117,7 @@ public class TestTaskObserverDetach
 	    if (!eventIsSignal ())
 		assertRunUntilStop ("delivering signal");
 	    
-	    StatState.TRACED_OR_STOPPED.assertIs(task.getTid());
+	    StatState.TRACED_OR_STOPPED.assertIs(task);
 	    
 	    // Set up an ack handler to catch the process
 	    // acknowledging that it has completed the relevant task.

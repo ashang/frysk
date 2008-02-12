@@ -327,12 +327,14 @@ public final class Log {
 	suffix();
     }
 
-    // Static log methods.
+    // static 1 parameter
     public void log(String p1) {
 	if (!logging)
 	    return;
 	prefix(); print(p1); suffix();
     }
+
+    // static 2 parameters
     public void log(String p1, char p2) {
 	if (!logging)
 	    return;
@@ -358,10 +360,24 @@ public final class Log {
 	// either log(Object,String) or log(String,Object).
 	log(p1, (Object)p2);
     }
+
+    // static 3 parameters
     public void log(String p1, Object p2, String p3) {
 	if (!logging)
 	    return;
 	prefix(); print(p1); print(p2); print(p3); suffix();
+    }
+
+    // static 4 parameters
+    public void log(String p1, int p2, String p3, Object p4) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+    }
+    public void log(String p1, long p2, String p3, int p4) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
     }
     public void log(String p1, Object p2, String p3, long p4) {
 	if (!logging)
@@ -373,23 +389,29 @@ public final class Log {
 	    return;
 	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
     }
-    public void log(String p1, long p2, String p3, int p4) {
+
+    // static 8 parameters
+    public void log(String p1, Object p2, String p3, Object p4, String p5, Object p6, String p7, Object p8) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix(); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); suffix();
     }
-    public void log(String p1, Object p2, String p3, Object p4, String p5, Object p6, String p7, Object p8) {
+    public void log(String p1, int p2, String p3, Object p4, String p5, Object p6, String p7, Object p8) {
 	if (!logging)
 	    return;
 	prefix(); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); suffix();
     }
     
     // Non-static log methods; first parameter is the object.
+
+    // dynamic 1 parameter
     public void log(Object self, String p1) {
 	if (!logging)
 	    return;
 	prefix(self); print(p1); suffix();
     }
+
+    // dynamic 2 parameters
     public void log(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
@@ -405,11 +427,15 @@ public final class Log {
 	    return;
 	prefix(self); print(p1); print(p2); suffix();
     }
+
+    // dynamic 3 parameters
     public void log(Object self, String p1, Object p2, String p3) {
 	if (!logging)
 	    return;
 	prefix(self); print(p1); print(p2); print(p3); suffix();
     }
+
+    // dynamic 4 parameters
     public void log(Object self, String p1, int p2, String p3, char p4) {
 	if (!logging)
 	    return;
@@ -425,13 +451,15 @@ public final class Log {
 	    return;
 	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
     }
+
+    // dynamic 5 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5) {
 	if (!logging)
 	    return;
 	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); suffix();
     }
 
-    // 6 parameters
+    // dynamic 6 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6) {
 	if (!logging)
 	    return;
@@ -443,7 +471,7 @@ public final class Log {
 	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); suffix();
     }
 
-    // 9 parameters
+    // dynamic 9 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, int p6, String p7, int p8, String p9) {
 	if (!logging)
 	    return;
@@ -455,8 +483,11 @@ public final class Log {
 	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); suffix();
     }
 
-    // 11 parameters
+    // dynamic 11 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, Object p6, String p7, int p8, String p9, int p10, String p11) {
+	if (!logging)
+	    return;
+	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); print(p10); print(p11); suffix();
     }
 
   /**

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ package frysk.ftrace;
 import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.*;
 
@@ -92,14 +91,12 @@ public class TestMappingGuard
 	String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
+	
 	MyMappingObserver observer = new MyMappingObserver();
 	MappingGuard.requestAddMappingObserver(task, observer);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 

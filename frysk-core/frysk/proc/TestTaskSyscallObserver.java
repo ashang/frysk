@@ -260,7 +260,7 @@ public class TestTaskSyscallObserver
 
     // XXX: This is wrong; the task isn't a child so this will
     // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+    new StopEventLoopWhenProcRemoved(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
@@ -293,7 +293,6 @@ public class TestTaskSyscallObserver
         }
 
       logger.log(Level.FINE, "{0} **updateAttached\n", task);
-      new StopEventLoopWhenProcRemoved(task.getProc().getPid());
       task.requestAddSyscallsObserver(syscallObserver1);
       // task.requestUnblock(this);
       return Action.BLOCK;
@@ -357,7 +356,7 @@ public class TestTaskSyscallObserver
 
     // XXX: This is wrong; the task isn't a child so this will
     // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+    new StopEventLoopWhenProcRemoved(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
@@ -423,7 +422,7 @@ public class TestTaskSyscallObserver
       // Create program making syscalls
       DaemonBlockedAtEntry child
 	  = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-syscalls"));
-    new StopEventLoopWhenProcRemoved(child.getMainTask().getProc().getPid());
+      new StopEventLoopWhenProcRemoved(child);
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
                                                                       child.getMainTask());
@@ -580,7 +579,7 @@ public class TestTaskSyscallObserver
     // return;
     PipeReadChild prc = new PipeReadChild(false);
 
-    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid());
+    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid().intValue());
     new StopEventLoopWhenProcRemoved(prc.getPid());
 
     assertRunUntilStop("run \"syscallint\" until exit");
@@ -598,7 +597,7 @@ public class TestTaskSyscallObserver
   {
     PipeReadChild prc = new PipeReadChild(true);
 
-    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid());
+    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid().intValue());
     new StopEventLoopWhenProcRemoved(prc.getPid());
 
     assertRunUntilStop("run \"syscallint\" with restart until exit");

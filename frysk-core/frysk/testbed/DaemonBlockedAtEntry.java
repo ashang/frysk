@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,14 +45,21 @@ import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 import frysk.proc.Task;
 import frysk.proc.Manager;
-import java.util.logging.Level;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
+import frysk.rsl.Log;
 
 /**
  * Creates an attached process halted at it's entry point address
  * (i.e., the program's first instruction).
  */
-public class DaemonBlockedAtEntry {
+public class DaemonBlockedAtEntry extends Offspring {
+    private static final Log fine = Log.fine(DaemonBlockedAtEntry.class);
+
     private final Task mainTask;
+    public ProcessIdentifier getPid() {
+	return ProcessIdentifierFactory.create(mainTask.getTid());
+    }
   
     private static class ExecBlockingObserver
 	extends TaskObserverBase
@@ -65,13 +72,11 @@ public class DaemonBlockedAtEntry {
 	}
 	public Action updateExeced (Task task) {
 	    if (fired) {
-		logger.log(Level.FINE,
-			   "{0} first exec already occcured, continue\n",
-			   this);
+		fine.log(this, "first exec already occcured, continue");
 		// Only trigger the first time.
 		return Action.CONTINUE;
 	    }
-	    logger.log(Level.FINE, "{0} first exec, blocking\n", this);
+	    fine.log(this, "first exec, blocking");
 	    Manager.eventLoop.requestStop();
 	    fired = true;
 	    return Action.BLOCK;

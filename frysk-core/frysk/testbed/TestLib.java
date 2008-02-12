@@ -53,27 +53,16 @@ import frysk.sys.Signal;
 import frysk.sys.proc.Stat;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 /**
  * Utility for JUnit tests.
  */
 
-public class TestLib
-    extends TestCase
-{
-    protected final static Logger logger = Logger.getLogger("frysk");
-
-    /**
-     * Log the integer ARG squeezed between PREFIX and SUFFIX.
-     */
-    protected void log (String prefix, int arg, String suffix)
-    {
-	if (logger.isLoggable(Level.FINE))
-	    logger.log(Level.FINE, "{0} " + prefix + "{1,number,integer}" + suffix,
-		       new Object[] { this, new Integer(arg) });
-    }
+public class TestLib extends TestCase {
+    protected final static java.util.logging.Logger logger
+	= java.util.logging.Logger.getLogger("frysk");
+    private static final Log fine = Log.fine(TestLib.class);
 
     /**
      * Return a String specifying the absolute path of the executable.
@@ -88,12 +77,10 @@ public class TestLib
      * period poll for external events. XXX: Static to avoid gcc bugs.
      */
     protected static void assertRunUntilStop (long timeout, String reason) {
-	logger.log(Level.FINE, "{0} assertRunUntilStop start: {1}\n",
-		   new Object[] { TestLib.class, reason });
+	fine.log("assertRunUntilStop start", reason);
 	assertTrue("event loop run explictly stopped (" + reason + ")",
 		   Manager.eventLoop.runPolling(timeout * 1000));
-	logger.log(Level.FINE, "{0} assertRunUntilStop stop: {1}\n",
-		   new Object[] { TestLib.class, reason });
+	fine.log("assertRunUntilStop stop", reason);
     }
 
     /**
@@ -118,12 +105,11 @@ public class TestLib
      * bugs.
      */
     static public boolean isChildOf (int pid, Proc proc) {
-	logger.log(Level.FINE, "isChildOf pid: {0} proc: {1}\n",
-		   new Object[] { new Integer(pid), proc });
+	fine.log("isChildOf pid", pid, "proc", proc);
 
 	// Process 1 has no parent so can't be a child of mine.
 	if (proc.getPid() == 1) {
-	    logger.log(Level.FINE, "isChildOf proc is init\n");
+	    fine.log("isChildOf proc is init");
 	    return false;
 	}
 
@@ -135,13 +121,11 @@ public class TestLib
 	stat.refresh(proc.getPid());
 
 	if (stat.ppid.intValue() == pid) {
-	    logger.log(Level.FINE, "isChildOf proc is child\n");
+	    fine.log("isChildOf proc is child");
 	    return true;
 	}
-	logger.log(Level.FINE,
-		   "isChildOf proc not child pid: {0} ppid: {1} parent: {2} proc: {3}\n",
-		   new Object[] { new Integer(pid), stat.ppid,
-				  proc.getParent(), proc });
+	fine.log("isChildOf proc not child pid", pid, "ppid", stat.ppid,
+		 "parent", proc.getParent(), "proc", proc);
 	return false;
     }
 
@@ -188,7 +172,7 @@ public class TestLib
     protected Host host;
 
     public void setUp () {
-	logger.log(Level.FINE, "{0} <<<<<<<<<<<<<<<< start setUp\n", this);
+	fine.log(this, "<<<<<<<<<<<<<<<< start setUp");
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX();
 	// Detect all test processes added to the process tree,
@@ -222,11 +206,11 @@ public class TestLib
 		    }
 		}
 	    });
-	logger.log(Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
+	fine.log(this, "<<<<<<<<<<<<<<<< end setUp");
     }
 
     public void tearDown () {
-	logger.log(Level.FINE, "{0} >>>>>>>>>>>>>>>> start tearDown\n", this);
+	fine.log(">>>>>>>>>>>>>>>> start tearDown");
 
 	// Check that there are no pending signals that should have
 	// been drained as part of testing. Do this <em>before</em>
@@ -264,6 +248,6 @@ public class TestLib
 	
 	DwflCache.clear();
 	
-	logger.log(Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
+	fine.log(">>>>>>>>>>>>>>>> end tearDown");
     }
 }

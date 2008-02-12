@@ -1,3 +1,27 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	Replace "int pid" with ProcessIdentifier; use frysk.rsl.
+	* TestLib.java: Update.
+	* TestfileTokenScanner.java: Update.
+	* TaskObserverBase.java: Update.
+	* SignalWaiter.java: Update.
+	* Offspring.java (getPid()): Return a ProcessIdentifier.
+	(logger): Delete.
+	* ExecOffspring.java: Update.
+	* SynchronizedOffspring.java: Update.
+	* SlaveOffspring.java: Update.
+	(assertSendAddForkWaitForAcks(int)): Delete.
+	(assertSendAddCloneWaitForAcks(int)): Delete.
+	* LegacyOffspring.java: Update.
+	(assertSendAddForkWaitForAcks(int)): Delete.
+	(assertSendAddCloneWaitForAcks(int)): Delete.
+	* StopEventLoopWhenProcRemoved.java: Update.
+	* StatState.java: Update.
+	(assertRunUntil(Task)): New.
+	(assertIs(Task)): New.
+	* DaemonBlockedAtSignal.java: Extend Offspring; update.
+	* DaemonBlockedAtEntry.java: Ditto; update.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Update to match

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,50 +42,46 @@ package frysk.testbed;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 public class TestfileTokenScanner {
-
-    	protected static final Logger logger = Logger.getLogger("frysk");
+    private static final Log fine = Log.fine(TestfileTokenScanner.class);
     
-	File file;
+    private final File file;
 
-	public TestfileTokenScanner(File file) {
-	    this.file = file;
-	    logger.log(Level.FINE, "{0} new\n", this);
+    public TestfileTokenScanner(File file) {
+	this.file = file;
+	fine.log(this, "new");
+    }
+
+    public int findTokenLine(String token) {
+	fine.log(this, "Searching for token", token);
+	String line = "";
+	int lineNumber = 0;
+	BufferedReader br = null;
+	
+	try {
+	    br = new BufferedReader(new FileReader(file));
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
-
-	public int findTokenLine(String token) {
-	    
-	    logger.log(Level.FINE, "{0} Searching for token: \n", token);
-	    String line = "";
-	    int lineNumber = 0;
-	    BufferedReader br = null;
-	    
-	    try {
-		br = new BufferedReader(new FileReader(file));
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
-
-	    try {
-		line = br.readLine();
-		while (line != null) {
-		    ++lineNumber;
-
-		    if (line.indexOf(token) > -1) {
-			
-			logger.log(Level.FINE, "{0} Found token in line: \n", line);
-			return lineNumber;
-		    }
-		    
-		    line = br.readLine();
+	
+	try {
+	    line = br.readLine();
+	    while (line != null) {
+		++lineNumber;
+		
+		if (line.indexOf(token) > -1) {
+		    fine.log(this, "Found token in line", line);
+		    return lineNumber;
 		}
-	    } catch (Exception e) {
-		e.printStackTrace();
+		
+		line = br.readLine();
 	    }
-
-	    return 0;
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
+	
+	return 0;
+    }
 }

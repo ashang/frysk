@@ -83,7 +83,7 @@ public class TestRuntimeIsa extends TestLib {
       task.requestAddAttachedObserver(attacher);
       assertRunUntilStop("testIsa attach");
       task.requestDeleteAttachedObserver(attacher);
-      StatState.SLEEPING.assertRunUntil(task.getTid());
+      StatState.SLEEPING.assertRunUntil(task);
       assertHasNoIsa("after detach", task);
   }
 
@@ -196,12 +196,12 @@ public class TestRuntimeIsa extends TestLib {
 	assertRunUntilStop("First attach");
 	assertNotNull("Proc has an isa", proc.getMainTask().getISA());
 	task.requestDeleteAttachedObserver(attacher);
-	StatState.SLEEPING.assertRunUntil(task.getTid());
+	StatState.SLEEPING.assertRunUntil(task);
 	assertHasNoIsa("after 1st detach", proc.getMainTask());
 	task.requestAddAttachedObserver(attacher);
 	assertRunUntilStop("Second attach");
 	task.requestDeleteAttachedObserver(attacher);
-	StatState.SLEEPING.assertRunUntil(task.getTid());
+	StatState.SLEEPING.assertRunUntil(task);
 	assertHasNoIsa("after 2nd detach", proc.getMainTask());
 	task.requestAddAttachedObserver(attacher);
 	assertRunUntilStop("Third attach");

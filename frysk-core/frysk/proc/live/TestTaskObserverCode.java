@@ -895,8 +895,7 @@ public class TestTaskObserverCode extends TestLib
     DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(argv);
     task = child.getMainTask();
     proc = task.getProc();
-    int pid = proc.getPid();
-
+    
     long address1 = getFunctionEntryAddress("breakpoint_me");
     CodeObserver code1 = new CodeObserver(task, address1);
     code1.block = false;
@@ -906,7 +905,7 @@ public class TestTaskObserverCode extends TestLib
     task.requestAddTerminatingObserver(terminatingObserver);
     assertRunUntilStop("add terminating observer");
 
-    new StopEventLoopWhenProcRemoved(pid);
+    new StopEventLoopWhenProcRemoved(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run \"fork\" until exit");
     assertTrue("breakpoint hit", code1.hit);

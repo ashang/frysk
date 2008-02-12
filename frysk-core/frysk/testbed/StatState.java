@@ -44,6 +44,9 @@ import frysk.junit.TestCase;
 import frysk.sys.proc.Stat;
 import frysk.rsl.Log;
 import frysk.event.TimerEvent;
+import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * Class for directly tracking <tt>/proc/$$/stat</tt>.
@@ -73,13 +76,12 @@ public class StatState {
      * Asserts that TID is in the specified state; or transitions to
      * that state within a short period of time.
      */
-    public void assertIs(int tid) {
+    public void assertIs(ProcessIdentifier tid) {
 	fine.log(this, "assertInState", tid);
 	Stat stat = new Stat();
 	long startTime = System.currentTimeMillis();
-	stat.refresh(tid);
 	do {
-	    stat.refresh();
+	    stat.scan(tid);
 	    finest.log(this, "assertInState tid", tid, "in", stat.state);
 	    if (stat.state == state)
 		break;
@@ -93,17 +95,22 @@ public class StatState {
 	TestCase.assertEquals("Stat state for tid " + tid,
 			      state, stat.state);
     }
+    public void assertIs(Task task) {
+	assertIs(ProcessIdentifierFactory.create(task.getTid()));
+    }
 
     private static class Probe extends TimerEvent {
 	private final Stat stat;
 	private final StatState state;
-	Probe(int pid, StatState state) {
+	private final ProcessIdentifier pid;
+	Probe(ProcessIdentifier pid, StatState state) {
 	    super(0, 100); // Refresh every 100ms
-	    this.stat = new Stat(pid);
+	    this.stat = new Stat();
 	    this.state = state;
+	    this.pid = pid;
 	}
 	public void execute() {
-	    stat.refresh();
+	    stat.scan(pid);
 	    finest.log(state, "assertRunToState tid", stat.tid, "in",
 		       stat.state);
 	    if (state.state == stat.state) {
@@ -113,12 +120,15 @@ public class StatState {
 	}
     }
 
-    public void assertRunUntil(int tid) {
+    public void assertRunUntil(ProcessIdentifier tid) {
 	fine.log(this, "assertRunToState tid", tid);
 	Manager.eventLoop.add(new Probe(tid, this));
 	long timeout = TestCase.getTimeoutMilliseconds();
 	TestCase.assertTrue("run to state: " + state,
 			    Manager.eventLoop.runPolling(timeout));
 	
+    }
+    public void assertRunUntil(Task task) {
+	assertRunUntil(ProcessIdentifierFactory.create(task.getTid()));
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -69,23 +69,19 @@ public class TestRun
     // events.
     ProcCounter procCounter = new ProcCounter(Pid.get());
 
-    // Observe TaskObserver.Attached events; when any occur
-    // indicate that the curresponding task should continue.
-    class TaskCreatedContinuedObserver
-        extends TaskObserverBase
+    // Observe TaskObserver.Attached events; when any occur indicate
+    // that the curresponding task should continue.
+    class TaskCreatedContinuedObserver extends TaskObserverBase
         implements TaskObserver.Attached
     {
-      final TaskSet attachedTasks = new TaskSet();
-
-      int tid;
-
-      public Action updateAttached (Task task)
-      {
-        attachedTasks.add(task);
-        tid = task.getTid();
-        Manager.eventLoop.requestStop();
-        return Action.CONTINUE;
-      }
+	final TaskSet attachedTasks = new TaskSet();
+	Proc proc;
+	public Action updateAttached(Task task) {
+	    attachedTasks.add(task);
+	    proc = task.getProc();
+	    Manager.eventLoop.requestStop();
+	    return Action.CONTINUE;
+	}
     }
     TaskCreatedContinuedObserver createdObserver = new TaskCreatedContinuedObserver();
 
@@ -97,7 +93,7 @@ public class TestRun
     assertRunUntilStop("run \"rm\" to entry for tid");
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcRemoved(createdObserver.tid);
+    new StopEventLoopWhenProcRemoved(createdObserver.proc);
 
     // Run the event loop, cap it at 5 seconds.
     assertRunUntilStop("run \"rm\" to exit");
@@ -117,24 +113,21 @@ public class TestRun
     TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
 
-    // Observe TaskObserver.Attached events; when any occur
-    // indicate that the curresponding task should block, and then
-    // request that the event-loop stop.
+    // Observe TaskObserver.Attached events; when any occur indicate
+    // that the curresponding task should block, and then request that
+    // the event-loop stop.
     class TaskCreatedStoppedObserver
         extends TaskObserverBase
         implements TaskObserver.Attached
     {
-      int tid;
-
-      final TaskSet attachedTasks = new TaskSet();
-
-      public Action updateAttached (Task task)
-      {
-        attachedTasks.add(task);
-        tid = task.getTid();
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
+	Proc proc;
+	final TaskSet attachedTasks = new TaskSet();
+	public Action updateAttached(Task task) {
+	    attachedTasks.add(task);
+	    proc = task.getProc();
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
     }
     TaskCreatedStoppedObserver createdObserver = new TaskCreatedStoppedObserver();
 
@@ -144,8 +137,8 @@ public class TestRun
                                                  tmpFile.toString() },
                                    createdObserver);
 
-    // Run the event loop. TaskCreatedStoppedObserver will BLOCK
-    // the process at the entry point.
+    // Run the event loop. TaskCreatedStoppedObserver will BLOCK the
+    // process at the entry point.
     assertRunUntilStop("run \"rm\" to entry");
 
     // A single task should be blocked at its entry point.
@@ -153,7 +146,7 @@ public class TestRun
     assertTrue("tmp file exists", tmpFile.stillExists());
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcRemoved(createdObserver.tid);
+    new StopEventLoopWhenProcRemoved(createdObserver.proc);
 
     // Unblock the attached task and resume the event loop. This
     // will allow the "rm" command to run to completion.

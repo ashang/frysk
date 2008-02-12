@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ package frysk.ftrace;
 
 import frysk.Config;
 import frysk.proc.Action;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.*;
 
@@ -249,13 +248,11 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-syscalls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
 
 	MappingGuard.requestAddMappingObserver(task, mappingObserver);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -346,8 +343,6 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
 
 	GenericMappingObserver mappingObserver
 	    = new GenericMappingObserver(new ObserverCreator() {
@@ -363,7 +358,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, mappingObserver);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -439,15 +434,13 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
+	
 	String symbols[] = {"fun1", "alias1", "alias2"};
 	MyObserverCreator3 observerCreator = new MyObserverCreator3("alias2", "fun1", enterAliases, leaveAliases);
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -467,14 +460,12 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
+	
 	Multicontroller observerCreator = new Multicontroller(N, "trace_me_1");
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -495,9 +486,7 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
+	
 	int N = 10;
 	String[] symbols = {"trace_me_1", "trace_me_2"};
 	Multicontroller[] controllers = new Multicontroller[symbols.length];
@@ -508,7 +497,7 @@ public class TestLtrace
 	}
 	assertRunUntilStop("add mapping guards");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -530,14 +519,12 @@ public class TestLtrace
 	String[] cmd = {Config.getPkgLibFile("funit-calls").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
-	Proc proc = task.getProc();
-	int pid = proc.getPid();
-
+	
 	SimpleController controller = new SimpleController("recursive");
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(controller));
 	assertRunUntilStop("add mapping guards");
 
-	new StopEventLoopWhenProcRemoved(pid);
+	new StopEventLoopWhenProcRemoved(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
