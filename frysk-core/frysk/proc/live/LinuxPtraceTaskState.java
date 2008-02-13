@@ -182,7 +182,7 @@ class LinuxPtraceTaskState extends State {
 		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
 		    task.sendAttach();
 		    if (task.getProc().getMainTask() == task
-			&& Status.isStopped(task.getTid())) {
+			&& Status.isStopped(task.tid)) {
 			// The attach has been initiated on the main
 			// task of the process; the process state
 			// should transition to (T) TRACED.  If it is

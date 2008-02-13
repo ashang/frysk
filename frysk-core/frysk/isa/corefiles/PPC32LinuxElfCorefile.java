@@ -125,8 +125,8 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 
 	// Set rest of prpsinfo
 	prpsInfo.setPrFlag(processStat.flags);
-	prpsInfo.setPrUid(Status.getUID(pid));
-	prpsInfo.setPrGid(Status.getGID(pid));
+	prpsInfo.setPrUid(Status.getUID(ProcessIdentifierFactory.create(pid)));
+	prpsInfo.setPrGid(Status.getGID(ProcessIdentifierFactory.create(pid)));
 
 	prpsInfo.setPrPid(pid);
 	prpsInfo.setPrPpid(processStat.ppid.intValue());

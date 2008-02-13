@@ -1,5 +1,10 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Status.java (getGID(ProcessIdentifier)): Replace getGID(int).
+	(isStopped(ProcessIdentifier)): Replace isStopped(int).
+	(getUID(ProcessIdentifier)): Replace getUID(int).
+	* TestStatus.java: Update.
+
 	* Stat.java (scan(int)): Replace refresh(int).
 	(scan(int,int)): Replace refreshThread(int,int).
 	(refresh()): Delete.

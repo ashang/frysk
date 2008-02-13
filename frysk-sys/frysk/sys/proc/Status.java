@@ -39,6 +39,8 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+
 /**
  * Partial wrapper for /proc/$$/status.
  *
@@ -48,6 +50,7 @@ package frysk.sys.proc;
  * This class extracts that information from either /proc/$$/status or
  * from a buffer that has been been passed to it for parsing.
  */
+
 public class Status {
 
     private native static byte[] statusSlurp (int pid);
@@ -58,8 +61,7 @@ public class Status {
      * @param byteBuffer[] - source byte byffer
      * @return String[] - converted String buffer
      */
-    private static String[] byteBuffertoStringbuffer(byte[] byteBuffer)
-    {
+    private static String[] byteBuffertoStringbuffer(byte[] byteBuffer) {
         String byteString = new String(byteBuffer);
         return byteString.split("\n");
     }
@@ -71,35 +73,28 @@ public class Status {
      * @param byteidBuffer - buffer to search.
      * @return int either GID or UID of process, or -1 on error. 
      */
-    private static int getID(String idType, byte[] byteidBuffer)
-    {
-		// As fetching a GID/UID are very similar
-		// we just pass of the search code to a simple
-		// lookup method
-		
-		String[] idBuffer = byteBuffertoStringbuffer(byteidBuffer);
-		int idIndex = 5;
-		int idIndexEnd = 0;
-		for (int i=0; i<idBuffer.length; i++)
-		{
-			if (idBuffer[i].startsWith(idType))
-			{
-				idIndexEnd = idIndex;
-				for (int j=idIndex; j<idBuffer[i].length(); j++)
-				if (idBuffer[i].charAt(j)=='\t')
-					break;
-				else
-			   		idIndexEnd++;
-				if (idIndex == idIndexEnd)
-					return -1;
-				else 
-					return Integer.parseInt(idBuffer[i].substring(idIndex,idIndexEnd));
-			}
-		}
-	
-		// if we get here, id not found in status
-	
-		return -1;
+    private static int getID(String idType, byte[] byteidBuffer) {
+	// As fetching a GID/UID are very similar we just pass of the
+	// search code to a simple lookup method
+	String[] idBuffer = byteBuffertoStringbuffer(byteidBuffer);
+	int idIndex = 5;
+	int idIndexEnd = 0;
+	for (int i=0; i<idBuffer.length; i++) {
+	    if (idBuffer[i].startsWith(idType)) {
+		idIndexEnd = idIndex;
+		for (int j=idIndex; j<idBuffer[i].length(); j++)
+		    if (idBuffer[i].charAt(j)=='\t')
+			break;
+		    else
+			idIndexEnd++;
+		if (idIndex == idIndexEnd)
+		    return -1;
+		else 
+		    return Integer.parseInt(idBuffer[i].substring(idIndex,idIndexEnd));
+	    }
+	}
+	// if we get here, id not found in status
+	return -1;
     }
 
     /**
@@ -108,8 +103,7 @@ public class Status {
      * @param buffer - buffer search.
      * @return int - UID in buffer.
      */
-    public static int getUID(byte[] buffer)
-    {
+    public static int getUID(byte[] buffer) {
 	if (buffer != null)
 		return getID("Uid", buffer);
 	else
@@ -122,9 +116,8 @@ public class Status {
      * @param spid - PID of process to search.
      * @return int - UID of process PID.
      */
-    public static int getUID(int spid)
-    {	
-	byte[] buffer = statusSlurp(spid);
+    public static int getUID(ProcessIdentifier pid) {
+	byte[] buffer = statusSlurp(pid.intValue());
     	return getUID(buffer);
     }
 
@@ -134,8 +127,7 @@ public class Status {
      * @param buffer - buffer search.
      * @return int - GID in buffer.
      */
-    public static int getGID(byte[] buffer)
-    {
+    public static int getGID(byte[] buffer) {
     	if (buffer != null)
     		return getID("Gid", buffer);
     	else
@@ -148,17 +140,16 @@ public class Status {
      * @param spid - PID of process to search.
      * @return int - GID of process PID.
      */
-    public static int getGID(int spid)
-    {
-    	byte[] buffer = statusSlurp(spid);
+    public static int getGID(ProcessIdentifier pid) {
+    	byte[] buffer = statusSlurp(pid.intValue());
     	return getGID(buffer);
     }
 
     /**
      * Returns true if the PID is in a stopped state.
      */
-    public static boolean isStopped(int pid) {
-	byte[] buf = statusSlurp(pid);
+    public static boolean isStopped(ProcessIdentifier pid) {
+	byte[] buf = statusSlurp(pid.intValue());
 	if (buf == null)
 	    return false; // lost task?
 	String status = new String(buf);

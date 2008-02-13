@@ -102,8 +102,10 @@ public class TestStatus
 
 	// Test null buffer
 
-	assertEquals ("Null Buffer Process UID", -1, Status.getUID(null));
-	assertEquals ("Null Buffer Process GID", -1, Status.getGID(null));
+	assertEquals("Null Buffer Process UID", -1,
+		     Status.getUID((byte[])null));
+	assertEquals("Null Buffer Process GID", -1,
+		     Status.getGID((byte[])null));
 
     }	
     

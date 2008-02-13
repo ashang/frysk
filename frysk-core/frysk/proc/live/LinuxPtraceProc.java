@@ -176,11 +176,11 @@ public class LinuxPtraceProc extends LiveProc {
     }
 
     public int getUID() {
-	return Status.getUID (getPid ());
+	return Status.getUID(ProcessIdentifierFactory.create(getPid()));
     }
 
     public int getGID() {
-	return Status.getGID(getPid());
+	return Status.getGID(ProcessIdentifierFactory.create(getPid()));
     }
 
     /**
