@@ -257,7 +257,7 @@ public class LinuxPtraceHost extends LiveHost {
 		    ProcessIdentifier pid
 			= Fork.ptrace(stdin, stdout, stderr, args);
 		    // See if the Host knows about this task.
-		    TaskId myTaskId = new TaskId(Tid.get());
+		    TaskId myTaskId = new TaskId(Tid.get().intValue());
 		    Task myTask = get(myTaskId);
 		    if (myTask == null) {
 			// If not, find this process and add this task to it.

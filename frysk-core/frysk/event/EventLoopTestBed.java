@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ package frysk.event;
 
 import frysk.sys.Signal;
 import frysk.sys.Tid;
+import frysk.sys.ProcessIdentifier;
 import frysk.junit.TestCase;
 
 /**
@@ -51,7 +52,7 @@ abstract class EventLoopTestBed
     extends TestCase
 {
     private EventLoop eventLoop;
-    private int eventTid;
+    private ProcessIdentifier eventTid;
 
     /**
      * Return the event loop to be tested.
@@ -62,8 +63,7 @@ abstract class EventLoopTestBed
      * Re-create the event loop ready for the next test.  Always
      * include a CNTRL-C handler so that the tests can be aborted.
      */
-    public void setUp ()
-    {
+    public void setUp() {
 	eventLoop = newEventLoop ();
 	eventLoop.add(new SignalEvent(Signal.INT) {
 		public void execute () {

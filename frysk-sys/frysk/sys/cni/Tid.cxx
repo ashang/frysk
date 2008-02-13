@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ _syscall0(pid_t,gettid)
 #include "frysk/sys/Tid.h"
 
 jint
-frysk::sys::Tid::get ()
-{
+frysk::sys::Tid::tid() {
   return ::gettid ();
 }

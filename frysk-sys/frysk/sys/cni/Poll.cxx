@@ -55,6 +55,7 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
 #include "frysk/sys/Signal.h"
@@ -79,7 +80,7 @@ handler (int signum, siginfo_t *siginfo, void *context)
   // For what ever reason, the signal can come in on the wrong thread.
   // When that occures, re-direct it (explicitly) to the thread that
   // can handle the signal.
-  pid_t me = frysk::sys::Tid::get ();
+  pid_t me = frysk::sys::Tid::tid();
   if (poll_jmpbuf.tid == me) {
 #if 0
     fprintf (stderr, "pid %d got signal %d (%s) from %d\n",
@@ -190,7 +191,7 @@ frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
   // setjmp, re-starting this code, forcing the poll (even if it
   // wasn't reached) to be canceled.
 
-  poll_jmpbuf.tid = frysk::sys::Tid::get ();
+  poll_jmpbuf.tid = frysk::sys::Tid::tid();
   errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   if (errno != 0)
     throwErrno (errno, "pthread_sigmask.UNBLOCK");

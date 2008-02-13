@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,10 +43,13 @@ package frysk.sys;
  * Get task (thread) information.
  */
 
-public final class Tid
-{
+public final class Tid {
     /**
      * Returns the thread ID of this thread/task.
      */
-    public static native int get ();
+    public static ProcessIdentifier get() {
+	return ProcessIdentifierFactory.create(tid());
+    }
+    // XXX: Used by poll.
+    static native int tid();
 }

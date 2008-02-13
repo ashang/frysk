@@ -1,5 +1,7 @@
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Tid.java: Return a ProcessIdentifier.
+
 	* Pid.java: Return a ProcessIdentifier.
 
 	* cni/Ptrace.cxx: Delete.

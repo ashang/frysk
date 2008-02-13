@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.event;
 
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.Signal;
 import frysk.sys.Tid;
 import frysk.sys.WaitBuilder;
@@ -100,29 +101,26 @@ public abstract class EventLoop
      * EventLoop thread modifies any of the event queues, the event
      * thread will need to be woken up using a Signal.IO.
      */
-    private int tid = -1; // can change once
-    final boolean isCurrentThread()
-    {
-	if (tid == -1) {
+    private ProcessIdentifier tid = null; // can change once
+    final boolean isCurrentThread() {
+	if (tid == null) {
 	    updateTid();
 	    return true;
 	}
 	return tid == Tid.get();
     }
-    private void wakeupBlockedEventLoop()
-    {
+    private void wakeupBlockedEventLoop() {
 	// Some how got into a state where both the event-loop is
 	// running (isGoingToBlock) and the event-loop thread-id
 	// wasn't set.
-	if (tid <= 0)
+	if (tid == null)
 	    throw new RuntimeException ("EventLoop.tid botch");
 	Signal.IO.tkill(tid);
     }
     private Exception firstSet;
-    private void updateTid()
-    {
-	int newTid = Tid.get();
-	if (tid <= 0) {
+    private void updateTid() {
+	ProcessIdentifier newTid = Tid.get();
+	if (tid == null) {
  	    firstSet = new Exception();
 	    tid = newTid;
 	    return;

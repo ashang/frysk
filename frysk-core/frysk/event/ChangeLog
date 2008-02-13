@@ -1,3 +1,8 @@
+2008-02-12  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Update to match frysk.sys.Tid.
+	* EventLoopTestBed.java: Ditto.
+
 2008-02-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcEvent.java: New.
