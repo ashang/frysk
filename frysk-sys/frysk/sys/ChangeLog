@@ -1,3 +1,10 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java-sh (kill(int)): Delete.
+	(tkill(int)): Delete.
+	(tkill(int,int)): Make private.
+	* ProcessIdentifier.java: Update.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Tid.java: Return a ProcessIdentifier.

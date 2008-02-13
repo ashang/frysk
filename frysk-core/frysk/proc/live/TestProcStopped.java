@@ -52,6 +52,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcBlockAction;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 public class TestProcStopped extends TestLib {
 
@@ -170,7 +172,10 @@ public class TestProcStopped extends TestLib {
 	ackProc.signal(Signal.TERM);
 	class Signaled extends TaskObserverBase implements TaskObserver.Signaled {
 	    public void addedTo(Object o) {
-		Signal.CONT.tkill(((Task)o).getTid());
+		// FIXME: Should use HOST or similar to send the signal.
+		ProcessIdentifier pid =
+		    ProcessIdentifierFactory.create(((Task) o).getTid());
+		Signal.CONT.tkill(pid);
 	    }
 	    public Action updateSignaled(Task task,
 					 frysk.isa.signals.Signal signal) {

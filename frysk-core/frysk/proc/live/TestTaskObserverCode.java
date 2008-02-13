@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.ElfCommand;
 import frysk.dwfl.DwflCache;
@@ -222,7 +224,9 @@ public class TestTaskObserverCode extends TestLib
     // step over the currently pending breakpoint. And will then kill
     // the process when delivered.
     code.hit = false;
-    frysk.sys.Signal.TERM.tkill(task.getTid());
+    // FIXME: Should send the request to the host.
+    ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+    frysk.sys.Signal.TERM.tkill(tid);
     task.requestUnblock(code);
     assertRunUntilStop("wait for TERM signal"); 
     assertEquals("term signaled", frysk.sys.Signal.TERM.intValue(),
@@ -934,7 +938,8 @@ public class TestTaskObserverCode extends TestLib
   }
   
     void requestDummyRun(Task t) {
-	dummySig.tkill(t.getTid());
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(t.getTid());
+	dummySig.tkill(tid);
     }
 
     /**
@@ -944,7 +949,8 @@ public class TestTaskObserverCode extends TestLib
      * a code observer on the dummy (), pb1_func () and/or pb2_func ()
      * functions.
      */
-    void requestDummyRun(int tid) {
+    void requestDummyRun(int id) {
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(id);
 	dummySig.tkill(tid);
     }
 

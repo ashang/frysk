@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Gui.java: Update to match frysk.sys.Signal.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Delete call to Host.requestRefreshXXX().

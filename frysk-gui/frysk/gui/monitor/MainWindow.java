@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,7 +42,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import org.gnu.gdk.Color;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnomevte.Terminal;
@@ -165,7 +166,9 @@ public class MainWindow extends Window implements Saveable{
     public void killTerminalShell() {
 	if (shellTask != null)
 	    try {
-		Signal.HUP.kill(shellTask.getTid());
+		ProcessIdentifier tid
+		    = ProcessIdentifierFactory.create(shellTask.getTid());
+		Signal.HUP.kill(tid);
 	    } catch (Exception e) {
 		errorLog.log(Level.WARNING, "Could not kill process"
 			     +  shellTask.getTid(),e);

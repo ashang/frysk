@@ -44,7 +44,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.scopes.SourceLocation;
 import frysk.sys.Signal;
 import frysk.testbed.Offspring;
@@ -649,7 +650,9 @@ public class TestSteppingEngine extends TestLib {
 	    }
 
 	    public void addedTo(Object observable) {
-		Signal.KILL.kill(((Task) observable).getProc().getPid());
+		ProcessIdentifier pid
+		    = ProcessIdentifierFactory.create(((Task)observable).getProc().getPid());
+		Signal.KILL.kill(pid);
 	    }
 
 	    public void addFailed(Object observable, Throwable w) {

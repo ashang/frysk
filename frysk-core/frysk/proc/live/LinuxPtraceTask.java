@@ -75,7 +75,7 @@ import frysk.isa.banks.RegisterBanks;
  */
 
 public class LinuxPtraceTask extends LiveTask {
-    private final ProcessIdentifier tid;
+    final ProcessIdentifier tid;
 
     /**
      * Create a new unattached Task.

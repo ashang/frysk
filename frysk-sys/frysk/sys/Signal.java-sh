@@ -102,12 +102,6 @@ public class Signal implements Comparable {
     /**
      * Deliver SIG to process PID.
      */
-    public void kill(int pid) {
-	kill(pid, sig);
-    }
-    /**
-     * Deliver SIG to process PID.
-     */
     public void kill(ProcessIdentifier pid) {
 	kill(pid.intValue(), this.intValue());
     }
@@ -115,16 +109,10 @@ public class Signal implements Comparable {
     /**
      * Deliver SIGNAL to task (or thread) LWP.
      */
-    public final void tkill(int lwp) {
-	tkill(lwp, this.intValue());
-    }
-    /**
-     * Deliver SIGNAL to task (or thread) LWP.
-     */
     public final void tkill(ProcessIdentifier lwp) {
 	tkill(lwp.intValue(), this.intValue());
     }
-    public static native void tkill(int lwp, int signum);
+    private static native void tkill(int lwp, int signum);
 
     /**
      * Momentarialy sets the signal handler for Sig to SIGIGN so that

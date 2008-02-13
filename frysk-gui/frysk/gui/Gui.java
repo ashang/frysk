@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import org.gnu.gdk.Color;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
@@ -310,7 +311,9 @@ public class Gui implements LifeCycleListener, Saveable {
 				= Integer.parseInt(contents[i].getName()
 						   .substring(4));
 			    try {
-				Signal.USR1.kill(currentlyRunningPID);
+				ProcessIdentifier pid
+				    = ProcessIdentifierFactory.create(currentlyRunningPID);
+				Signal.USR1.kill(pid);
 			    } catch (Exception e) {
 				/* The lock file shouldn't be there */
 				contents[i].delete();

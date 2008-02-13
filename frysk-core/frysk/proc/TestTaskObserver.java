@@ -48,6 +48,8 @@ import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TaskObserverBase;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * Generic observer tests - that the framework functions ok.
@@ -101,7 +103,9 @@ public class TestTaskObserver
 		frysk.sys.Signal sig = theSig;
 		public void execute () {
 		    try {
-			sig.tkill(pid);
+			ProcessIdentifier id
+			    = ProcessIdentifierFactory.create(pid);
+			sig.tkill(id);
 			sig = frysk.sys.Signal.NONE;
 		    } catch (Errno.Esrch e) {
 			Manager.eventLoop.requestStop ();
@@ -244,7 +248,8 @@ public class TestTaskObserver
 	// detaching the task.  This results in the task in the
 	// detaching state getting the terminating event instead of
 	// the more typical stopped.
-	frysk.sys.Signal.KILL.kill(task.getTid());
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+	frysk.sys.Signal.KILL.kill(tid);
 
 	detach (new Task[] { task }, attachedObserver, false);
     }

@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* QuitCommand.java: Update to match frysk.sys.Signal.
+
 2008-02-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* UnloadCommand.java: New to unload loaded processes.
@@ -7,7 +11,6 @@
 	* TopLevelCommand.java: Added UnloadCommand.java.
 	* CLI.java: Fix call to duplicate method.
 	* StartRun.java: Fix error in looping for start/run.
-
 
 2008-02-08  Stan Cox  <scox@redhat.com>
 

@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.isa.syscalls.Syscall;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
@@ -541,7 +543,8 @@ public class TestTaskSyscallObserver
           throw new RuntimeException("read exited without signal");
         // We want to signal the process so it will interrupt the
         // read.
-        Signal.USR1.tkill(task.getTid());
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+        Signal.USR1.tkill(tid);
       }
     }
 

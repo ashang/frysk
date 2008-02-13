@@ -50,7 +50,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.util.CountDownLatch;
 import frysk.event.Event;
 import frysk.sys.Signal;
@@ -198,7 +199,9 @@ public abstract class Proc implements Comparable {
      */
   
     public void requestKill() {
-	Signal.KILL.kill(this.getPid());
+	// FIXME: Should be handled by lower-level code.
+	ProcessIdentifier pid = ProcessIdentifierFactory.create(this.getPid());
+	Signal.KILL.kill(pid);
 	// Throw the countDown on the queue so that the command
 	// thread will wait until events provoked by Signal.kill()
 	// are handled.

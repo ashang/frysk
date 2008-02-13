@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import java.util.logging.Level;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
@@ -187,7 +189,8 @@ public class TestProcTasksObserver extends TestLib {
 		
 	//Delete a clone.
 	Task task = ackProcess.findTaskUsingRefresh(false);
-	Signal.BUS.tkill(task.getTid());
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+	Signal.BUS.tkill(tid);
 		
 	assertRunUntilStop("delete 2");
 		
@@ -226,7 +229,8 @@ public class TestProcTasksObserver extends TestLib {
 	ackProcess.assertSendAddCloneWaitForAcks();
 		
 	Task task = ackProcess.findTaskUsingRefresh(false);
-	Signal.BUS.tkill(task.getTid());
+	ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+	Signal.BUS.tkill(tid);
 		
 	assertRunUntilStop("clone then kill 2");
 

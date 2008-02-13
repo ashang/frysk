@@ -53,6 +53,7 @@ import frysk.isa.syscalls.SyscallTableFactory;
 import frysk.testbed.TearDownProcess;
 import frysk.Config;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * XXX: This code should be simplified, eliminating local parallelism
@@ -133,7 +134,8 @@ public class TestSyscallSignal
 	assertRunUntilStop ("syso entered is 42");
     
     // Now send a signal to the process while blocked. Then unblock.
-    Signal.HUP.tkill(task.getTid());
+    ProcessIdentifier tid = ProcessIdentifierFactory.create(task.getTid());
+    Signal.HUP.tkill(tid);
     task.requestUnblock(syso);
 
     // Sanity check that the functions have actually been run.

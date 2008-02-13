@@ -40,6 +40,8 @@
 
 package frysk.util;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -79,7 +81,8 @@ public class TestFCatch
 
     assertRunUntilStop("Adding all observers");
 
-    frysk.sys.Signal.SEGV.kill(proc.getPid());
+    ProcessIdentifier pid = ProcessIdentifierFactory.create(proc.getPid());
+    frysk.sys.Signal.SEGV.kill(pid);
 
     assertRunUntilStop("Building stacktrace");
 

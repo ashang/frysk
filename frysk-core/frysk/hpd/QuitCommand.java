@@ -47,6 +47,8 @@ import frysk.proc.Proc;
 import frysk.sys.Signal;
 import frysk.util.CountDownLatch;
 import java.util.List;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 class QuitCommand extends ParameterizedCommand {
     // Do the killing in the event loop in order to not invalidate
@@ -66,7 +68,10 @@ class QuitCommand extends ParameterizedCommand {
             for (Iterator iterator = cli.runningProcs.iterator();
 		 iterator.hasNext();) {
                 Proc p = (Proc) iterator.next();
-                Signal.KILL.kill(p.getPid());
+		// FIXME: Should be sending the kill request to the
+		// host; which then passes it down to back-end code.
+		ProcessIdentifier pid = ProcessIdentifierFactory.create(p.getPid());
+                Signal.KILL.kill(pid);
             }
             // Throw the countDown on the queue so that the command
             // thread will wait until events provoked by Signal.kill()

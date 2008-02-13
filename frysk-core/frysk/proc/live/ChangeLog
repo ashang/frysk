@@ -1,3 +1,9 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java (tid): Make package private.
+	* LinuxPtraceTaskState.java: Update to match frysk.sys.Signal.
+	* TestProcStopped.java: Ditto.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java: Update to match frysk.sys.Pid.

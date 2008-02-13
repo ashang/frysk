@@ -192,7 +192,7 @@ class LinuxPtraceTaskState extends State {
 			// differentiates between STOPPED an TRACED.
 			logger.log(Level.FINE,
 				   "{0} wake the suspended process", task);
-			Signal.CONT.tkill(task.getTid());
+			Signal.CONT.tkill(task.tid);
 			return new Attaching(true);
 		    } else {
 			return new Attaching(false);
@@ -226,7 +226,7 @@ class LinuxPtraceTaskState extends State {
 		    for (int i = 0; i < sigs.length; i++) {
 			logger.log(Level.FINE, "{0} re-sending {1}\n",
 				   new Object[] { this, sigs[i] });
-			sigs[i].tkill(task.getTid());
+			sigs[i].tkill(task.tid);
 		    }
 		    // And convert the CONT back into a STOP.
 		    signal = Signal.STOP;

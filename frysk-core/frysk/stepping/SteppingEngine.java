@@ -50,7 +50,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.event.RequestStopEvent;
@@ -1252,7 +1253,9 @@ public class SteppingEngine {
 		    contextMap.put(task.getProc(), new Integer(i));
 		} else {
 		    contextMap.remove(task.getProc());
-		    frysk.sys.Signal.KILL.kill(task.getProc().getPid());
+		    ProcessIdentifier pid
+			= ProcessIdentifierFactory.create(task.getProc().getPid());
+		    frysk.sys.Signal.KILL.kill(pid);
 		}
 	    }
 	}

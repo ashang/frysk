@@ -68,14 +68,14 @@ public abstract class ProcessIdentifier implements Comparable {
      * Send a fatal signal (SIGKILL) to this process.
      */
     public void kill() {
-	Signal.KILL.kill(intValue());
+	Signal.KILL.kill(this);
     }
 
     /**
      * Send a signal to THIS pid.
      */
     public void tkill(Signal signal) {
-	signal.tkill(intValue());
+	signal.tkill(this);
     }
 
     /**

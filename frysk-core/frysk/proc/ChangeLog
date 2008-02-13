@@ -1,3 +1,11 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Update to match frysk.sys.Signal.
+	* TestSyscallSignal.java: Ditto.
+	* TestProcTasksObserver.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestHostGet.java: Update to match frysk.sys.Pid.
