@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,26 +39,29 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+
 /**
  * The build the command line argument list from the contents of the
  * file <tt>/proc/PID/cmdline</tt>.
  *
  * While this isn't a pure builder pattern, it is close enough.
  */
-public abstract class CmdLineBuilder
-{
+public abstract class CmdLineBuilder {
     /**
      * Create a CmdLineBuilder; can only extend.
      */
-    protected CmdLineBuilder ()
-    {
+    protected CmdLineBuilder() {
     }
 
     /**
      * Scan the maps file found in <tt>/proc/PID/cmdline</tt> building
      * up the command line.  Return true if the scan was successful.
      */
-    public final native boolean construct (int pid);
+    public boolean construct(ProcessIdentifier pid) {
+	return construct(pid.intValue());
+    }
+    private final native boolean construct (int pid);
 
     /**
      * Scan the CMDLINE byte array building the corresponding command

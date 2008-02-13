@@ -1,5 +1,8 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* CmdLineBuilder.java (construct(ProcessIdentifier)): New.
+	(construct(int)): Make private.
+
 	* AuxvBuilder.java (construct(int)): Make private.
 	(construct(ProcessIdentifier)): New.
 

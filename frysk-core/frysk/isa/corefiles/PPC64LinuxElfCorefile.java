@@ -156,7 +156,7 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 	    }
 	}
 	BuildCmdLine cmdLine = new BuildCmdLine();
-	cmdLine.construct(pid);
+	cmdLine.construct(ProcessIdentifierFactory.create(pid));
 
 	// Set it
 	prpsInfo.setPrPsargs(cmdLine.prettyArgs);

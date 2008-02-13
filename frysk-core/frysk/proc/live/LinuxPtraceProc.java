@@ -169,7 +169,7 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 	    }
 	    BuildCmdLine cmdLine = new BuildCmdLine ();
-	    cmdLine.construct (getPid ());
+	    cmdLine.construct(ProcessIdentifierFactory.create(getPid()));
 	    this.cmdLine = cmdLine.argv;
 	}
 	return cmdLine;

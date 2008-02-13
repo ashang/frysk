@@ -1,5 +1,10 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* IA32LinuxElfCorefile.java: Update to match CmdLineBuilder.
+	* X8664LinuxElfCorefile.java: Ditto.
+	* PPC64LinuxElfCorefile.java: Ditto.
+	* PPC32LinuxElfCorefile.java: Ditto.
+	
 	* IA32LinuxElfCorefile.java: Update to match AuxvBuilder.
 	* PPC32LinuxElfCorefile.java: Ditto.
 	* PPC64LinuxElfCorefile.java: Ditto.
