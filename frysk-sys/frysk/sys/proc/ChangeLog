@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Mem.java (Mem(int)): Delete.
+
 	* Exe.java (get(ProcessIdentifier)): New.
 	(get(int)): Make private.
 

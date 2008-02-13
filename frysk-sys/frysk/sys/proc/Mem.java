@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,10 +47,7 @@ import frysk.sys.ProcessIdentifier;
  */
 
 public class Mem extends StatelessFile {
-    public Mem(ProcessIdentifier id) {
-	this(id.hashCode());
-    }
-    public Mem(int pid) {
-	super("/proc/" + pid + "/mem");
+    public Mem(ProcessIdentifier pid) {
+	super("/proc/" + pid.intValue() + "/mem");
     }
 }
