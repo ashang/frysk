@@ -1,3 +1,8 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* AuxvBuilder.java (construct(int)): Make private.
+	(construct(ProcessIdentifier)): New.
+
 2008-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcBuilder.java (build(ProcessIdentifier)): Replace

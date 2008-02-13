@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Delete.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* util/.cvsignore: Delete.

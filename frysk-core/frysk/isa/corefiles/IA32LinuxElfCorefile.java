@@ -39,10 +39,10 @@
 
 package frysk.isa.corefiles;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import inua.eio.ArrayByteBuffer;
-
 import java.util.Iterator;
-
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
@@ -62,7 +62,6 @@ import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
-
 
 /**
  * LinuxElfCorefilex86. Extends LinuxCorefile. Fill in
@@ -313,7 +312,8 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	    public void buildAuxiliary(int index, int type, long val) {
 	    }
 	};
-	builder.construct(proc.getPid());
+	ProcessIdentifier pid = ProcessIdentifierFactory.create(proc.getPid());
+	builder.construct(pid);
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
     }
 

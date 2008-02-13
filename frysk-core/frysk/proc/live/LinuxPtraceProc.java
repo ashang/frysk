@@ -109,7 +109,9 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 	    }
 	    BuildAuxv auxv = new BuildAuxv ();
-	    auxv.construct (getPid ());
+	    ProcessIdentifier pid
+		= ProcessIdentifierFactory.create(getPid());
+	    auxv.construct(pid);
 	    this.auxv = auxv.vec;
 	}
 	return auxv;

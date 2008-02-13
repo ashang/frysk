@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java: Update to match AuxvBuilder.
+
 	* LinuxPtraceTask.java (tid): Make package private.
 	* LinuxPtraceTaskState.java: Update to match frysk.sys.Signal.
 	* TestProcStopped.java: Ditto.

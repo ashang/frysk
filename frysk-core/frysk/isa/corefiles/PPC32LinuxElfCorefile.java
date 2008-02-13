@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 // 
 // Copyright 2006, 2007, IBM Corp.
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // Contributed by
 // Jose Flavio Aguilar Paulino (joseflavio@gmail.com)
@@ -43,8 +43,9 @@
 
 package frysk.isa.corefiles;
 
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import java.util.Iterator;
-
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import lib.dwfl.ElfEHeader;
@@ -312,7 +313,8 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	    public void buildAuxiliary(int index, int type, long val) {
 	    }
 	};
-	builder.construct(proc.getPid());
+	ProcessIdentifier pid = ProcessIdentifierFactory.create(proc.getPid());
+	builder.construct(pid);
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
     }
 

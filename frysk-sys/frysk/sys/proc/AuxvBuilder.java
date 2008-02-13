@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,26 +39,30 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+
 /**
  * The build an auxiliary vector using the contents of the file
  * <tt>/proc/PID/auxv</tt>.
  *
  * While this isn't a pure builder pattern, it is close enough.
  */
-public abstract class AuxvBuilder
-{
+
+public abstract class AuxvBuilder {
     /**
      * Create a AuxvBuilder; can only extend.
      */
-    protected AuxvBuilder ()
-    {
+    protected AuxvBuilder() {
     }
 
     /**
      * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
      * building up an auxv.
      */
-    public final native boolean construct (int pid);
+    public boolean construct(ProcessIdentifier pid) {
+	return construct(pid.intValue());
+    }
+    private native boolean construct (int pid);
 
     /**
      * Scan the auxiliary vector found in the AUXV byte array.  Calls
@@ -68,7 +72,7 @@ public abstract class AuxvBuilder
 
     /**
      * Called with the raw byte buffer slurped by {@link
-     * #construct(int)}.
+     * #construct(ProcessIdentifier)}.
      */
     public abstract void buildBuffer (byte[] auxv);
 
