@@ -107,47 +107,37 @@ public final class Wait {
      * Return true if the timeout expired; note that waitpid events
      * may have also been processed.
      */
+    public static boolean waitChild(WaitBuilder waitBuilder,
+				    SignalBuilder signalBuilder,
+				    long millisecondTimeout) {
+	return wait(-1, waitBuilder, signalBuilder, millisecondTimeout, false);
+    }
     public static boolean wait(ProcessIdentifier pid,
 			       WaitBuilder waitBuilder,
 			       SignalBuilder signalBuilder,
-			       long millisecondTimeout,
-			       boolean ignoreECHILD) {
+			       long millisecondTimeout) {
 	return wait(pid.intValue(), waitBuilder, signalBuilder,
-		    millisecondTimeout, ignoreECHILD);
-    }
-    public static boolean wait(int pid,
-			       WaitBuilder waitBuilder,
-			       SignalBuilder signalBuilder,
-			       long millisecondTimeout) {
-	return wait(pid, waitBuilder, signalBuilder,
 		    millisecondTimeout, true);
     }
-    public static boolean wait(ProcessIdentifier pid,
-			       WaitBuilder waitBuilder,
+    public static boolean wait(WaitBuilder waitBuilder,
 			       SignalBuilder signalBuilder,
 			       long millisecondTimeout) {
-	return wait(pid.hashCode(), waitBuilder, signalBuilder,
-		    millisecondTimeout, true);
-    }
-    public static boolean waitAll(long millisecondTimeout,
-				  WaitBuilder waitBuilder,
-				  SignalBuilder signalBuilder) {
 	return wait(-1, waitBuilder, signalBuilder, millisecondTimeout, true);
     }
-    public static native boolean wait(int pid,
-				      WaitBuilder waitBuilder,
-				      SignalBuilder signalBuilder,
-				      long millisecondTimeout,
-				      boolean ignoreECHILD);
+    private static native boolean wait(int pid,
+				       WaitBuilder waitBuilder,
+				       SignalBuilder signalBuilder,
+				       long millisecondTimeout,
+				       boolean ignoreECHILD);
     /**
      * Wait for a single process or task event.  Block if no event is
      * pending (provided that there are still potential events).
      */
-    public static void waitAll(ProcessIdentifier pid,
-			       WaitBuilder builder) {
-	waitAll(pid.intValue(), builder);
+    public static void waitOnce(ProcessIdentifier pid,
+				WaitBuilder builder) {
+	waitOnce(pid.intValue(), builder);
     }
-    public native static void waitAll(int pid, WaitBuilder builder);
+    private static native void waitOnce(int pid, WaitBuilder builder);
 
     /**
      * Non-blocking drain of all pending wait events belonging to pid.
@@ -155,12 +145,12 @@ public final class Wait {
     public static void drainNoHang(ProcessIdentifier pid) {
 	drainNoHang(pid.intValue());
     }
-    public native static void drainNoHang(int pid);
+    private static native void drainNoHang(int pid);
     /**
      * Blocking drain of all pending wait events belonging to pid.
      */
     public static void drain(ProcessIdentifier pid) {
 	drain(pid.intValue());
     }
-    public native static void drain(int pid);
+    private static native void drain(int pid);
 }

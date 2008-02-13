@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TearDownProcess.java: Update to match frysk.sys.Wait.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* ForkFactory.java: Use frysk.sys.ptrace.

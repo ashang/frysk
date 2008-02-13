@@ -187,9 +187,8 @@ public class TearDownProcess {
 	try {
 	    while (!waitTimedOut && ! pidsToKillDuringTearDown.isEmpty()) {
 		fine.log("wait -1 ....");
-		waitTimedOut = Wait.wait
-		    (-1,
-		     new WaitBuilder() {
+		waitTimedOut = Wait.waitChild
+		    (new WaitBuilder() {
 			 public void cloneEvent(ProcessIdentifier pid,
 						ProcessIdentifier clone) {
 			     capturedSendDetachContKill(pid);
@@ -247,9 +246,7 @@ public class TearDownProcess {
 			     // ignore
 			 }
 		     },
-		     TestCase.getTimeoutMilliseconds(),
-		     false // do not ignore ECHILD
-		     );
+		     TestCase.getTimeoutMilliseconds());
 	    }
 	}
 	catch (Errno.Echild e) {

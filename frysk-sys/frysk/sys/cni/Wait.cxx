@@ -289,7 +289,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
 /* Do a blocking wait.  */
 
 void
-frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
+frysk::sys::Wait::waitOnce (jint wpid, frysk::sys::WaitBuilder* builder)
 {
   int status;
   errno = 0;

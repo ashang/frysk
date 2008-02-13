@@ -82,9 +82,8 @@ class WaitEventLoop
 	    }
 	};
 
-    protected void block (long millisecondTimeout)
-    {
+    protected void block(long millisecondTimeout) {
 	logger.log (Level.FINEST, "{0} block\n", this); 
-	Wait.waitAll (millisecondTimeout, waitBuilder, signalBuilder);
+	Wait.wait(waitBuilder, signalBuilder, millisecondTimeout);
     }
 }

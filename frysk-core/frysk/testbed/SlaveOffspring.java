@@ -231,18 +231,20 @@ public class SlaveOffspring
 	kill();
 	try {
 	    while (true) {
-		Wait.waitAll(getPid(), new UnhandledWaitBuilder () {
-			protected void unhandled (String why) {
-			    TestCase.fail ("killing child (" + why + ")");
-			}
-			public void terminated(ProcessIdentifier pid,
-					       Signal signal, int value,
-					       boolean coreDumped) {
-			    // Termination with signal is ok.
-			    TestCase.assertTrue("terminated with signal",
-						signal != null);
-			}
-		    });
+		Wait.waitOnce
+		    (getPid(),
+		     new UnhandledWaitBuilder () {
+			 protected void unhandled (String why) {
+			     TestCase.fail ("killing child (" + why + ")");
+			 }
+			 public void terminated(ProcessIdentifier pid,
+						Signal signal, int value,
+						boolean coreDumped) {
+			     // Termination with signal is ok.
+			     TestCase.assertTrue("terminated with signal",
+						 signal != null);
+			 }
+		     });
 	    }
 	} catch (Errno.Echild e) {
 	    // No more waitpid events.

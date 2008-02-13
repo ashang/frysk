@@ -83,13 +83,13 @@ public abstract class ProcessIdentifier implements Comparable {
      * Only returns when the process has disappeared.
      */
     public void blockingDrain() {
-	Wait.drain(intValue());
+	Wait.drain(this);
     }
 
     /**
      * Perform a blocking wait for a single event from this process.
      */
-    public void blockingWait(WaitBuilder o) {
-	Wait.waitAll(intValue(), o);
+    public void blockingWait(WaitBuilder waitBuilder) {
+	Wait.waitOnce(this, waitBuilder);
     }
 }

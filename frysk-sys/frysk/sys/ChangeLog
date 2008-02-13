@@ -1,5 +1,18 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Wait.java (drain(int)): Make private.
+	(drainNoHang(int)): Make private.
+	(waitOnce(int,WaitBuilder)): Rename waitAll.
+	(waitOnce(ProcessIdentifier,WaitBuilder)): Rename waitAll.
+	(wait(int,WaitBuilder,SignalBuilder,long,boolean)): Make private.
+	(wait(WaitBuilder,SignalBuilder,long)): Rename waitAll.
+	(wait(int,WaitBuilder,SignalBuilder,long)): Delete.
+	(waitChild(WaitBuilder,SignalBuilder,long)):
+	Replace wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long,boolean).
+	* TestWait.java: Update.
+	* ProcessIdentifier.java: Update.
+	* cni/Wait.cxx (Wait::waitOnce): Update.
+
 	* Signal.java-sh (kill(int)): Delete.
 	(tkill(int)): Delete.
 	(tkill(int,int)): Make private.

@@ -1,3 +1,8 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* LegacyOffspring.java: Update to match frysk.sys.Wait.
+	* SlaveOffspring.java: Ditto.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* ExecCommand.java: Update to match frysk.sys.Pid.

@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitEventLoop.java: Update to match frysk.sys.Wait.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: Update to match frysk.sys.Tid.

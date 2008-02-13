@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPtrace.java: Update frysk.sys.Wait.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* AddressSpace.java (peek(ProcessIdentifer,long,byte[],int,int))

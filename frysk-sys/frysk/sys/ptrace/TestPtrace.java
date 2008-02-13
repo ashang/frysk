@@ -73,7 +73,7 @@ public class TestPtrace extends TestCase {
 	TearDownProcess.add(pid);
 	
 	// The initial stop.
-	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+	Wait.waitOnce(pid, new UnhandledWaitBuilder() {
 		private final ProcessIdentifier id = pid;
 		protected void unhandled(String why) {
 		    fail (why);
@@ -85,7 +85,7 @@ public class TestPtrace extends TestCase {
 	    });
 
 	Ptrace.singleStep(pid, Signal.NONE);
-	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+	Wait.waitOnce(pid, new UnhandledWaitBuilder() {
 		private final ProcessIdentifier id = pid;
 		protected void unhandled(String why) {
 		    fail (why);
@@ -97,7 +97,7 @@ public class TestPtrace extends TestCase {
 	    });
 
 	Ptrace.cont(pid, Signal.TERM);
-	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+	Wait.waitOnce(pid, new UnhandledWaitBuilder() {
 		private final ProcessIdentifier id = pid;
 		protected void unhandled(String why) {
 		    fail (why);
@@ -125,7 +125,7 @@ public class TestPtrace extends TestCase {
 	assertTrue ("pid", pid.intValue() > 0);
 
 	Ptrace.attach(pid);
-	Wait.waitAll(pid, new UnhandledWaitBuilder() {
+	Wait.waitOnce(pid, new UnhandledWaitBuilder() {
 		private final ProcessIdentifier id = pid;
 		protected void unhandled(String why) {
 		    fail (why);
@@ -139,7 +139,7 @@ public class TestPtrace extends TestCase {
 	Ptrace.detach(pid, Signal.NONE);
 	Errno errno = null;
 	try {
-	    Wait.waitAll(pid, new UnhandledWaitBuilder() {
+	    Wait.waitOnce(pid, new UnhandledWaitBuilder() {
 		    protected void unhandled(String why) {
 			fail (why);
 		    }

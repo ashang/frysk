@@ -86,27 +86,25 @@ public class TestWait
 	assertTrue("timeout", System.currentTimeMillis() <= endTime);
     }
 
-    public void testZeroTimeout ()
-    {
+    public void testZeroTimeout() {
 	assertFalse("waitAll",
-		    Wait.waitAll (0, unhandledWaitBuilder,
-				  unhandledSignalBuilder));
+		    Wait.wait(unhandledWaitBuilder, unhandledSignalBuilder, 0));
     }
 
     public void testShortTimeout() {
-	assertTrue("waitAll", Wait.waitAll (shortTimeout,
-					    unhandledWaitBuilder,
-					    unhandledSignalBuilder));
-	assertTrue ("some time passed",
-		    System.currentTimeMillis () >= startTime + shortTimeout);
+	assertTrue("waitAll", Wait.wait(unhandledWaitBuilder,
+					unhandledSignalBuilder,
+					shortTimeout));
+	assertTrue("some time passed",
+		   System.currentTimeMillis() >= startTime + shortTimeout);
     }
 
     public void testNoTimeout() {
 	WaitOnChild waitOnChild = new WaitOnChild ();
 	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/false" });
 	assertFalse("timeout",
-		    Wait.waitAll(getTimeoutMilliseconds (), waitOnChild,
-				 unhandledSignalBuilder));
+		    Wait.wait(waitOnChild, unhandledSignalBuilder,
+			      getTimeoutMilliseconds()));
 	assertSame("pid", pid, waitOnChild.pid);
     }
 
@@ -116,8 +114,8 @@ public class TestWait
 	Errno e = null;
 	try {
 	    assertFalse("timeout",
-			Wait.wait (-1, waitOnChild, unhandledSignalBuilder,
-				   shortTimeout, false));
+			Wait.waitChild(waitOnChild, unhandledSignalBuilder,
+				       shortTimeout));
 	} catch (Errno.Echild c) {
 	    e = c;
 	}
@@ -137,8 +135,7 @@ public class TestWait
 	}
 	Signals signals = new Signals ();
 	Signal.USR1.tkill(Tid.get ());
-	Wait.waitAll (getTimeoutMilliseconds (),
-		      unhandledWaitBuilder, signals);
+	Wait.wait(unhandledWaitBuilder, signals, getTimeoutMilliseconds());
 	assertTrue ("signals.received", signals.received);
     }
 
@@ -163,8 +160,8 @@ public class TestWait
     public void testWaitExit0() {
 	WaitOnChild waitOnChild = new WaitOnChild();
 	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/true" });
-	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
-		     unhandledSignalBuilder);
+	Wait.wait(waitOnChild, unhandledSignalBuilder,
+		  getTimeoutMilliseconds());
 	assertSame("pid", pid, waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 0, waitOnChild.status);
@@ -173,15 +170,14 @@ public class TestWait
     public void testWaitExit1() {
 	WaitOnChild waitOnChild = new WaitOnChild();
 	ProcessIdentifier pid = Fork.exec(new String[] { "/bin/false" });
-	Wait.waitAll(getTimeoutMilliseconds(), waitOnChild,
-		     unhandledSignalBuilder);
+	Wait.wait(waitOnChild, unhandledSignalBuilder,
+		  getTimeoutMilliseconds());
 	assertSame("pid", pid, waitOnChild.pid);
 	assertEquals("signal", null, waitOnChild.signal);
 	assertEquals("status", 1, waitOnChild.status);
     }
 
-    public void testNoWaitBuilder ()
-    {
-	Wait.waitAll (0, null, unhandledSignalBuilder);
+    public void testNoWaitBuilder() {
+	Wait.wait(null, unhandledSignalBuilder, 0);
     }
 }
