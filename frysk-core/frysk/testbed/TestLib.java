@@ -117,8 +117,7 @@ public class TestLib extends TestCase {
 	// is sufficient. Would need a very very long running system
 	// for that to not be the case.
 
-	Stat stat = new Stat();
-	stat.refresh(proc.getPid());
+	Stat stat = new Stat().scan(ProcessIdentifierFactory.create(proc.getPid()));
 
 	if (stat.ppid.intValue() == pid) {
 	    fine.log("isChildOf proc is child");

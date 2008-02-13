@@ -53,13 +53,12 @@
 #include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/ProcessIdentifierFactory.h"
 
-jboolean
-frysk::sys::proc::Stat::refresh (jint procPid)
-{
+frysk::sys::proc::Stat*
+frysk::sys::proc::Stat::scan(jint procPid) {
   char buf[BUFSIZ];
   int bufLen = slurp (procPid, "stat", buf, sizeof buf);
   if (bufLen < 0)
-    return false;
+    return NULL;
     
   const char* p = buf;
 
@@ -114,16 +113,15 @@ frysk::sys::proc::Stat::refresh (jint procPid)
   cnswap = scanJlong (&p);
   exitSignal = scanJint (&p);
   processor = scanJint (&p);
-  return true;
+  return this;
 }
 
-jboolean
-frysk::sys::proc::Stat::refreshThread (jint procPid, jint threadTid)
-{
+frysk::sys::proc::Stat*
+frysk::sys::proc::Stat::scan(jint procPid, jint threadTid) {
   char buf[BUFSIZ];
   int bufLen = slurp_thread (procPid, threadTid, "stat", buf, sizeof buf);
   if (bufLen < 0)
-    return false;
+    return NULL;
     
   const char* p = buf;
 
@@ -178,5 +176,5 @@ frysk::sys::proc::Stat::refreshThread (jint procPid, jint threadTid)
   cnswap = scanJlong (&p);
   exitSignal = scanJint (&p);
   processor = scanJint (&p);
-  return true;
+  return this;
 }

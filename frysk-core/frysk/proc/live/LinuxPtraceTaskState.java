@@ -864,11 +864,11 @@ class LinuxPtraceTaskState extends State {
 	LinuxPtraceTaskState handleExecedEvent(LinuxPtraceTask task) {
 	    logger.log(Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
-	    ((LinuxPtraceProc)task.getProc()).retain (task);
-	    ((LinuxPtraceProc)task.getProc()).getStat().refresh();
+	    ((LinuxPtraceProc)task.getProc()).retain(task);
+	    ((LinuxPtraceProc)task.getProc()).getStat().scan(task.tid);
 
-	    // All breakpoints have been erased.  We need to explicitly
-	    // tell those attached to the current Task.
+	    // All breakpoints have been erased.  We need to
+	    // explicitly tell those attached to the current Task.
 	    ((LinuxPtraceProc)task.getProc()).breakpoints.removeAllCodeObservers();
 	    Iterator it = task.codeObservers.iterator();
 	    while (it.hasNext())

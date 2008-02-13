@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcWiseDataModel.java: Update to match Scan.
+
 	* MainWindow.java: Update to match frysk.sys.Signal.
 
 2008-01-25  Andrew Cagney  <cagney@redhat.com>

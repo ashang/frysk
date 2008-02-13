@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 
 package frysk.gui.monitor;
 
+import frysk.sys.ProcessIdentifierFactory;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -324,7 +325,7 @@ public class ProcWiseDataModel
               treeStore.setValue(parent, sensitiveDC, false);
               treeStore.setValue(parent, objectDC, guiProc);
 
-              ProcWiseDataModel.this.stat.refresh(proc.getPid());
+              ProcWiseDataModel.this.stat.scan(ProcessIdentifierFactory.create(proc.getPid()));
               treeStore.setValue(parent, vszDC, "" + (stat.vsize / 1024));
               treeStore.setValue(parent, rssDC, "" + (stat.rss * 4));
               treeStore.setValue(parent, selectedDC, false);

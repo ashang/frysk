@@ -97,9 +97,7 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	int pid = process.getPid();
 
 	ElfPrpsinfo prpsInfo = new ElfPrpsinfo(this.size);
-	Stat processStat = new Stat();
-
-	processStat.refresh(pid);
+	Stat processStat = new Stat().scan(ProcessIdentifierFactory.create(pid));
 
 	// Set state and name.
 	prpsInfo.setPrState(processStat.state);
@@ -168,8 +166,7 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 
         ElfPrstatus prStatus = new ElfPrstatus(this.size);
 
-	Stat processStat = new Stat();
-	processStat.refresh(task.getTid());
+	Stat processStat = new Stat().scan(ProcessIdentifierFactory.create(task.getTid()));
 
 	// Set initial prstatus data
 	prStatus.setPrPid(task.getTid());

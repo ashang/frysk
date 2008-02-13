@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Update to match Scan.
+
 	* LegacyOffspring.java: Update to match frysk.sys.Wait.
 	* SlaveOffspring.java: Ditto.
 

@@ -66,12 +66,9 @@ public class Stat {
      * of scan problem.
      */
     public Stat scan(ProcessIdentifier pid) {
-	if (refresh(pid.intValue()))
-	    return this;
-	else
-	    return null;
+	return scan(pid.intValue());
     }
-    public native boolean refresh(int pid);
+    private native Stat scan(int pid);
     
     /**
      * Refresh Stat from <tt>/proc/PID/task/TID/stat</tt>, return true if the
@@ -80,19 +77,9 @@ public class Stat {
      * of scan problem.
      */
     public Stat scan(ProcessIdentifier pid, ProcessIdentifier tid) {
-	if (refreshThread(pid.intValue(), tid.intValue()))
-	    return this;
-	else
-	    return null;
+	return scan(pid.intValue(), tid.intValue());
     }
-    public native boolean refreshThread (int pid, int tid);
-
-    /**
-     * Refresh stat from <tt>/proc/</tt>{@link #pid}<tt>/stat</tt>.
-     */
-    public final boolean refresh() {
-	return scan(tid) != null;
-    }
+    private native Stat scan(int pid, int tid);
 
     /** The thread id (== pid in main thread)  */
     public ProcessIdentifier tid;

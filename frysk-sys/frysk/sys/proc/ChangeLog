@@ -1,5 +1,10 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Stat.java (scan(int)): Replace refresh(int).
+	(scan(int,int)): Replace refreshThread(int,int).
+	(refresh()): Delete.
+	* cni/Stat.cxx: Update.
+
 	* ProcBuilder.java (construct(int)): Make private.
 
 	* MapsBuilder.java (construct(ProcessIdentifier)): New.
