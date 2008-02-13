@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* fexe.java: Update to match Exe.
+
 2008-02-11  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.java: Support -stack.

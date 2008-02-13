@@ -192,7 +192,9 @@ public class LinuxPtraceProc extends LiveProc {
     private String exe;
     public String getExe() {
 	if (exe == null) {
-	    String exe = Exe.get(getPid());
+	    ProcessIdentifier pid
+		= ProcessIdentifierFactory.create(getPid());
+	    String exe = Exe.get(pid);
 	    // Linux's /proc/$$/exe can get screwed up in several
 	    // ways.  Detect each here and return null.
 	    if (exe.endsWith(" (deleted)"))

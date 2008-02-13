@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+
 /**
  * The contents of <tt>/proc/PID/exe</tt>.
  *
@@ -46,7 +48,9 @@ package frysk.sys.proc;
  * a refresh method that detects that the contents actually changed?
  */
 
-public class Exe
-{
-    public static final native String get (int pid);
+public class Exe {
+    public static String get(ProcessIdentifier pid) {
+	return get(pid.intValue());
+    }
+    private static native String get (int pid);
 }

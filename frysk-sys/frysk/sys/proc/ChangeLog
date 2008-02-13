@@ -1,5 +1,8 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Exe.java (get(ProcessIdentifier)): New.
+	(get(int)): Make private.
+
 	* CmdLineBuilder.java (construct(ProcessIdentifier)): New.
 	(construct(int)): Make private.
 
