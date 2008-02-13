@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestMapGet.java: Update to match MapsBuilder.
+
 	* Proc.java: Update to match frysk.sys.Signal.
 	* TestSyscallSignal.java: Ditto.
 	* TestProcTasksObserver.java: Ditto.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
@@ -118,7 +119,7 @@ public class TestMapGet
 
 
     TestBuildMaps liveMap = new TestBuildMaps();
-    liveMap.construct(ackProc.getPid());
+    liveMap.construct(ProcessIdentifierFactory.create(ackProc.getPid()));
   }
 
 

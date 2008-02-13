@@ -149,7 +149,7 @@ public class LinuxPtraceProc extends LiveProc {
 	}
 	
 	BuildMaps constructedMaps = new BuildMaps();
-	constructedMaps.construct(getPid());
+	constructedMaps.construct(ProcessIdentifierFactory.create(getPid()));
 	MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.mapsList.size()];
 	constructedMaps.mapsList.toArray(arrayMaps);
 	this.maps = arrayMaps;

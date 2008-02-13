@@ -1,3 +1,7 @@
+2008-02-13  Andrew Cagney  <cagney@redhat.com>
+
+	* MemoryMapping.java: Update to match MapsBuilder.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLtrace.java: Update to match frysk.testbed.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,26 +39,29 @@
 
 package frysk.sys.proc;
 
+import frysk.sys.ProcessIdentifier;
+
 /**
  * The build the list of maps from the contents of the file
  * <tt>/proc/PID/maps</tt>.
  *
  * While this isn't a pure builder pattern, it is close enough.
  */
-public abstract class MapsBuilder
-{
+public abstract class MapsBuilder {
     /**
      * Create a MapsBuilder; can only extend.
      */
-    protected MapsBuilder ()
-    {
+    protected MapsBuilder() {
     }
 
     /**
      * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
      * a list of memory maps.  Return true if the scan was successful.
      */
-    public final native boolean construct (int pid);
+    public boolean construct(ProcessIdentifier pid) {
+	return construct(pid.intValue());
+    }
+    private native final boolean construct(int pid);
 
     /**
      * Scan the maps MAPS byte array building corresponding map.  It

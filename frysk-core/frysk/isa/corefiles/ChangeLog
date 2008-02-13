@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxElfCorefile.java: Update to match MapsBuilder.
+
 	* IA32LinuxElfCorefile.java: Update to match CmdLineBuilder.
 	* X8664LinuxElfCorefile.java: Ditto.
 	* PPC64LinuxElfCorefile.java: Ditto.

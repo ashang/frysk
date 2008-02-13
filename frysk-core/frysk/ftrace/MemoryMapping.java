@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.MapsBuilder;
 
 class MemoryMapping
@@ -181,7 +181,7 @@ class MemoryMapping
     }
 
     MyMapsBuilder builder = new MyMapsBuilder();
-    builder.construct(pid);
+    builder.construct(ProcessIdentifierFactory.create(pid));
     return builder.mappings;
   }
 }
