@@ -53,7 +53,10 @@ public abstract class ProcBuilder {
      * notifying ProcBuilder of each "interesting" entry.  Use
      * "finally" to ensure that the directory is always closed.
      */
-    public final boolean construct(int pid) {
+    public final boolean construct(ProcessIdentifier pid) {
+	return construct(pid.hashCode ());
+    }
+    private boolean construct(int pid) {
 	RawData dir = open(pid);
 	if (dir == null)
 	    return false;
@@ -64,9 +67,6 @@ public abstract class ProcBuilder {
 	    close (dir);
 	}
 	return true;
-    }
-    public final boolean construct(ProcessIdentifier pid) {
-	return construct(pid.hashCode ());
     }
     /**
      * Iterate over the <tt>/proc</tt> directory notifying TaskBuilder
@@ -84,7 +84,7 @@ public abstract class ProcBuilder {
      * Private native methods for manipulating the <tt>/proc</tt>
      * directory.  Move to frysk.sys.Dir?
      */
-    native RawData open(int pid);
-    native void scan(RawData dir);
-    native void close(RawData dir);
+    private native RawData open(int pid);
+    private native void scan(RawData dir);
+    private native void close(RawData dir);
 }

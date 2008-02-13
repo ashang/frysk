@@ -262,7 +262,7 @@ public class LinuxPtraceProc extends LiveProc {
 	    }
 	}
 	TidBuilder tasks = new TidBuilder ();
-	tasks.construct (getPid());
+	tasks.construct(ProcessIdentifierFactory.create(getPid()));
 	// Tell each task that no longer exists that it has been
 	// removed.
 	for (Iterator i = tasks.removed.values().iterator(); i.hasNext();) {

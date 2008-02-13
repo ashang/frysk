@@ -1,5 +1,7 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java: Update to match ProcBuilder.
+	
 	* LinuxPtraceProc.java: Update to match MapsBuilder.
 	
 	* LinuxPtraceProc.java: Update to match Exe.
