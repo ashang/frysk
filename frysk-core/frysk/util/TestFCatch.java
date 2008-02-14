@@ -46,7 +46,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.logging.Level;
-import frysk.proc.FindProc;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.isa.signals.Signal;
@@ -76,7 +75,7 @@ public class TestFCatch
     FCatchTester catcher = new FCatchTester();
     Manager.eventLoop.runPending();
 
-    catcher.addTracePid(proc.getPid());
+    catcher.addProc(proc);
     catcher.trace(new String[1], true);
 
     assertRunUntilStop("Adding all observers");
@@ -98,8 +97,6 @@ public class TestFCatch
     private StringBuffer stackTrace = new StringBuffer();
 
     protected int numAdds;
-
-    private Proc proc;
 
     protected SignalObserver signalObserver;
 
@@ -125,27 +122,12 @@ public class TestFCatch
 
       private void init() {
 	  logger.log(Level.FINE, "{0} init", this);
-	  Manager.host.requestProc(this.procID.intValue(), new FindProc() {
-		  public void procFound(Proc p) {
-		      proc = p;
-		      iterateTasks();
-		  }
-		  public void procNotFound(int pid) {
-		      System.err.println("Couldn't find the process: " + pid);
-		      Manager.eventLoop.requestStop();
-		  }
-	      });
+	  Iterator i = proc.getTasks().iterator();
+	  while (i.hasNext()) {
+	      ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
+	  }
 	  logger.log(Level.FINE, "{0} exiting init", this);
       }
-
-    private void iterateTasks ()
-    {
-      Iterator i = proc.getTasks().iterator();
-      while (i.hasNext())
-        {
-          ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
-        }
-    }
 
     /**
      * An observer that sets up things once frysk has set up the requested proc

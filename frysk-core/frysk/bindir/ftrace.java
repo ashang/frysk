@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 package frysk.bindir;
 
 import inua.util.PrintWriter;
-
+import frysk.util.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,6 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import frysk.proc.Proc;
 import java.util.logging.*;
 import java.util.regex.*;
 
@@ -57,8 +58,6 @@ import java.io.FileOutputStream;
 
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.Syscall;
-
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 
 import frysk.util.CommandlineParser;
@@ -551,11 +550,10 @@ class ftrace
         });
 
 	parser.add(new Option('p', "pid to trace", "PID") {
-            public void parsed(String arg) throws OptionException
-            {
+            public void parsed(String arg) throws OptionException {
                 try {
-		    int pid = Integer.parseInt(arg);
-		    tracer.addTracePid(new ProcId(pid));
+		    Proc proc = Util.getProcFromPid(Integer.parseInt(arg));
+		    tracer.addProc(proc);
 		    requestedPid = true;
                 } catch (NumberFormatException e) {
                     OptionException oe = new OptionException("couldn't parse pid: " + arg);
@@ -629,10 +627,9 @@ class ftrace
             }
 
             //@Override
-            public void parsePids (ProcId[] pids)
-            {
-		for (int i = 0; i < pids.length; ++i)
-		    tracer.addTracePid(pids[i]);
+            public void parsePids(Proc[] procs) {
+		for (int i = 0; i < procs.length; ++i)
+		    tracer.addProc(procs[i]);
 		requestedPid = true;
             }
         };

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,12 +46,9 @@ import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
 
 import frysk.util.CommandlineParser;
 import frysk.util.CoredumpAction;
-import frysk.util.Util;
-
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
@@ -90,18 +87,13 @@ public class fcore
     }
   }
   
-  public static void dumpPid(ProcId procId)
-  {
-    Proc coreProc = Util.getProcFromPid(procId);
-    if (coreProc != null) {
-	stacker = new CoredumpAction(coreProc, filename, 
-				     new AbandonCoreEvent(coreProc),
+    public static void dumpPid(Proc proc) {
+	stacker = new CoredumpAction(proc, filename, 
+				     new AbandonCoreEvent(proc),
 				     writeAllMaps);
-	
-	new ProcBlockAction(coreProc, stacker);
+	new ProcBlockAction(proc, stacker);
 	Manager.eventLoop.run();
     }
-  }
   
   /**
    * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
@@ -112,19 +104,15 @@ public class fcore
   public static void main (String[] args)
   {
 
-    // Parse command line. Check pid provided.
-    parser = new CommandlineParser("fcore")
-    {
-
-      //@Override
-      public void parsePids (ProcId[] pids)
-      {
-        for (int i= 0; i< pids.length; i++)
-          dumpPid(pids[i]);
-        
-        System.exit(0);
-      }
-    };
+      // Parse command line. Check pid provided.
+      parser = new CommandlineParser("fcore") {
+	      //@Override
+	      public void parsePids(Proc[] pids) {
+		  for (int i= 0; i< pids.length; i++)
+		      dumpPid(pids[i]);
+		  System.exit(0);
+	      }
+	  };
 
     addOptions(parser);
 

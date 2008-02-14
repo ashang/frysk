@@ -44,7 +44,6 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.util.CommandlineParser;
 import frysk.util.Util;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.sys.proc.Exe;
 import gnu.classpath.tools.getopt.Option;
 import java.io.File;
@@ -74,14 +73,13 @@ public class fexe {
 		    }
 		    System.exit(0);
 		}
-		public void parsePids (ProcId[] pids) {
-		    for (int i= 0; i< pids.length; i++) {
-			ProcId id = pids[i];
-			Proc proc = Util.getProcFromPid(id);
+		public void parsePids(Proc[] procs) {
+		    for (int i= 0; i< procs.length; i++) {
+			Proc proc = procs[i];
 			ProcessIdentifier pid
-			    = ProcessIdentifierFactory.create(id.hashCode());
+			    = ProcessIdentifierFactory.create(proc.getPid());
 			if (verbose) {
-			    System.out.println(id.hashCode()
+			    System.out.println(proc.getPid()
 					       + " "
 					       + proc.getExe()
 					       + " "

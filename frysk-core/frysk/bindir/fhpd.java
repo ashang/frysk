@@ -50,15 +50,15 @@ import jline.Completor;
 import jline.ConsoleReader;
 import frysk.util.CoreExePair;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.ObservingTerminal;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import frysk.sys.FileDescriptor;
+import frysk.proc.Proc;
 
 public class fhpd {
-    private static int pid;
+    private static Proc[] procs;
     private static File execFile;
     private static File core;
     private static File exeFile;
@@ -86,8 +86,8 @@ public class fhpd {
 	CommandLine() {
 	    // Construct a command to pass in as initialization
 	    try {
-		if (pid > 0)
-		    line = "attach " + pid;
+		if (procs != null)
+		    line = "attach " + procs[0].getPid();
 		else if (execFile != null)
 		    line = "load " + execFile.getCanonicalPath();
 		else if (core != null) {
@@ -154,8 +154,8 @@ public class fhpd {
                     }
                 }
                 //@Override
-                public void parsePids (ProcId[] pids) {
-                    pid = pids[0].id;
+                public void parsePids(Proc[] procs) {
+		    fhpd.procs = procs;
                 }
 
                 public void parseCores(CoreExePair[] corePairs) {

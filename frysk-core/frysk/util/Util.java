@@ -39,11 +39,11 @@
 
 package frysk.util;
 
+import gnu.classpath.tools.getopt.OptionException;
 import java.io.File;
 import frysk.proc.Host;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
 import frysk.proc.dead.LinuxCoreHost;
 import frysk.proc.Proc;
 
@@ -88,7 +88,7 @@ public class Util
      * @param procId The given pid.
      * @return A Proc for the given pid.
      */
-    public static Proc getProcFromPid(ProcId procId) {
+    public static Proc getProcFromPid(int pid) throws OptionException {
 	class ProcFinder implements FindProc {
 	    Proc proc;
 	    public void procFound(Proc p) {
@@ -96,13 +96,15 @@ public class Util
 		Manager.eventLoop.requestStop();
 	    }
 	    public void procNotFound(int pid) { 
-		System.err.println("Could not find the process: " + pid);
-		Manager.eventLoop.requestStop();  
+		proc = null;
+		Manager.eventLoop.requestStop();
 	    } 
 	}
 	ProcFinder finder = new ProcFinder();
-	Manager.host.requestProc(procId.hashCode(), finder);
+	Manager.host.requestProc(pid, finder);
 	Manager.eventLoop.run();
+	if (finder.proc == null)
+	    throw new OptionException("Process " + pid + " not found");
 	return finder.proc;
     }
   

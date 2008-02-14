@@ -40,7 +40,7 @@
 package frysk.bindir;
 
 import java.util.logging.Logger;
-
+import frysk.util.Util;
 import frysk.util.CommandlineParser;
 import frysk.util.FCatch;
 
@@ -91,12 +91,8 @@ public class fcatch {
 	    public void parsed(String arg) throws OptionException {
 		try {
 		    int pid = Integer.parseInt(arg);
-		    // FIXME: we have no good way of giving the user an
-		    // error message if the PID is not available.
-		    //System.out.println("Option pid: " + pid);
-		    catcher.addTracePid(pid);
+		    catcher.addProc(Util.getProcFromPid(pid));
 		    requestedPid = true;
-
 		    if (argString == null)
 			argString = new StringBuffer(pid);
 		    else

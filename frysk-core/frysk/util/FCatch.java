@@ -47,11 +47,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.proc.FindProc;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
@@ -78,13 +76,9 @@ public class FCatch {
 
     private Task sigTask;
 
-    //Set of ProcId objects we trace; if traceChildren is set, we also
-    // look for their children.
-    HashSet tracedParents = new HashSet();
-
     HashSet signaledTasks = new HashSet();
 
-    ProcId procID = null;
+    Proc proc = null;
 
     protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -128,16 +122,7 @@ public class FCatch {
      */
     private void init() {
 	logger.log(Level.FINE, "{0} init", this);
-
-	Manager.host.requestProc(this.procID.hashCode(), new FindProc() {
-	    public void procFound(Proc proc) {
-		iterateTasks(proc);
-	    }
-	    public void procNotFound(int pid) {
-		System.err.println("Couldn't find the process: " + pid);
-		Manager.eventLoop.requestStop();
-	    }
-	});
+	iterateTasks(proc);
 	logger.log(Level.FINE, "{0} exiting init", this);
     }
 
@@ -156,10 +141,9 @@ public class FCatch {
      * 
      * @param id  The PID to be traced
      */
-    public void addTracePid(int id) {
-	logger.log(Level.FINE, "{0} addTracePid", new Integer(id));
-	tracedParents.add(new ProcId(id));
-	this.procID = new ProcId(id);
+    public void addProc(Proc proc) {
+	logger.log(Level.FINE, "{0} addTracePid", proc);
+	this.proc = proc;
     }
 
     /**

@@ -1,3 +1,13 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java (parsePids(Proc[])): Replace
+	parsePids(ProcId[]).
+	* Util.java: Update.
+	* ProcStopUtil.java: Update.
+	* FCatch.java: Update.
+	* TestCommandlineParser.java: Update.
+	* TestCoredumpAction.java: Ditto.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCatch.java: Update to match frysk.sys.Signal.

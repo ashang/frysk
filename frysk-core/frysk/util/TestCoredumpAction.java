@@ -59,7 +59,6 @@ import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
 import frysk.proc.dead.LinuxCoreHost;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
@@ -170,7 +169,7 @@ public class TestCoredumpAction
     assertNotNull("Checking core file Host", lcoreHost);
     
     // Get corefile process
-    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+    Proc coreProc = lcoreHost.getSoleProcFIXME();
     assertNotNull("Checking core file process", coreProc);    
    
     MemoryMap[] coreMaps = coreProc.getMaps();
@@ -217,7 +216,7 @@ public class TestCoredumpAction
       assertNotNull("Checking core file Host", lcoreHost);
       
       // Get corefile process
-      Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid())); 
+      Proc coreProc = lcoreHost.getSoleProcFIXME();
       assertNotNull("Checking core file process", coreProc);
       
       Auxv[] coreAux = coreProc.getAuxv();

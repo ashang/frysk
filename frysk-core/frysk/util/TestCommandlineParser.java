@@ -40,10 +40,10 @@
 package frysk.util;
 
 import java.io.File;
-import frysk.proc.ProcId;
 import frysk.testbed.TestLib;
 import frysk.testbed.CorefileFactory;
 import frysk.Config;
+import frysk.proc.Proc;
 
 public class TestCommandlineParser extends TestLib {
 
@@ -62,7 +62,7 @@ public class TestCommandlineParser extends TestLib {
 		    assertEquals("Exe file is correct",
 				 coreExePairs[0].exeFile, exe);
 		}
-		public void parsePids(ProcId[] pids) {
+		public void parsePids(Proc[] procs) {
 		    fail("Shouldn't have a pid");
 		}
 	    };
@@ -86,7 +86,7 @@ public class TestCommandlineParser extends TestLib {
 		    assertEquals("Core file is correct",
 				 coreExePairs[0].coreFile, core);
 		}
-		public void parsePids(ProcId[] pids) {
+		public void parsePids(Proc[] procs) {
 		    fail("Shouldn't have a pid");
 		}
 	    };

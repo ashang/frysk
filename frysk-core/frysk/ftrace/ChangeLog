@@ -1,3 +1,9 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java (addTracePid(ProcId)): Delete.
+	(tracedParents): Delete.
+	(addProc(Proc)): Make public.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* MemoryMapping.java: Update to match MapsBuilder.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
-import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.CoreExePair;
 import frysk.util.StacktraceAction;
@@ -146,13 +145,11 @@ public final class fstack
     Manager.eventLoop.run();
   }
   
-  private static void stackPid (ProcId procId)
-  {
-    Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
-    new ProcBlockAction(proc, stacker);
-    Manager.eventLoop.run();
-  }
+    private static void stackPid(Proc proc) {
+	stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
+	new ProcBlockAction(proc, stacker);
+	Manager.eventLoop.run();
+    }
   
   public static void main (String[] args)
   {
@@ -166,14 +163,11 @@ public final class fstack
          stackCore(coreExePairs[i]);
       }
 
-      //@Override
-      public void parsePids (ProcId[] pids)
-      {
-
-        for (int i = 0; i < pids.length; i++)
-          stackPid(pids[i]);
-      }
-      
+	//@Override
+	public void parsePids(Proc[] procs) {
+	    for (int i = 0; i < procs.length; i++)
+		stackPid(procs[i]);
+	}
       };
 
       parser.add(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +

@@ -48,7 +48,6 @@ import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.util.CommandlineParser;
@@ -71,19 +70,16 @@ public class ProcStopUtil
     public ProcStopUtil (String utilName, String[] args, 
 	                  final ProcEvent procEvent) {
 	this.args = args;
-	parser = new CommandlineParser (utilName) 
-	{
-	    //@Override
-	    public void parsePids (ProcId[] pids)
-	    { 
-		for (int i= 0; i< pids.length; i++)  {                  
-		    proc = Util.getProcFromPid(pids[i]);
-		    failIfProcNull(proc);
-	            UtilEvent utilEvent = new UtilEvent (proc, procEvent);
-		    new ProcBlockAction(proc, new UtilAction(proc, utilEvent));
-		    Manager.eventLoop.run();
+	parser = new CommandlineParser(utilName) {
+		//@Override
+		public void parsePids(Proc[] procs) { 
+		    for (int i= 0; i < procs.length; i++)  {                  
+			proc = procs[i];
+			UtilEvent utilEvent = new UtilEvent(proc, procEvent);
+			new ProcBlockAction(proc, new UtilAction(proc, utilEvent));
+			Manager.eventLoop.run();
+		    }
 		}
-	    }
 	    
 	    //@Override 
 	    public void parseCores (CoreExePair[] coreExePairs)

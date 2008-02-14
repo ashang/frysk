@@ -1,5 +1,13 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* fcore.java (parsePids(Proc[])): Replace parsePids(ProcId[]).
+	* ftrace.java: Ditto.
+	* fstack.java: Ditto.
+	* fhpd.java: Ditto.
+	* fexe.java: Ditto.
+	* TestFtrace.java (testFtraceHandlesProcessNotFound(): Update
+	error check.
+
 	* fhpd.java: Run the CLI in a sub-thread and the event-loop on the
 	main thread.
 

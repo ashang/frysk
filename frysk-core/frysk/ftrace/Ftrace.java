@@ -41,10 +41,8 @@
 package frysk.ftrace;
 
 import frysk.proc.Action;
-import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
@@ -76,10 +74,6 @@ public class Ftrace
 
     // True if we're tracing mmaps/unmaps.
     boolean traceMmapUnmap = false;
-
-    // Set of ProcId objects we trace; if traceChildren is set, we also
-    // look for their children.
-    HashSet tracedParents = new HashSet();
 
     HashMap syscallCache = new HashMap();
 
@@ -166,43 +160,17 @@ public class Ftrace
 	    throw new AssertionError("FtraceController already assigned.");
     }
 
-    public void addTracePid (ProcId id) {
-	tracedParents.add(id);
-    }
-
     public void setWriter (PrintWriter writer) {
 	this.reporter = new Reporter(writer);
     }
 
-    private void init ()
-    {
+    private void init() {
 	if (reporter == null)
 	    reporter = new Reporter(new PrintWriter(System.out));
-
 	functionObserver = new MyFunctionObserver(reporter, stackTraceSetProvider);
-
-	// this observer should only be used to pick up a proc if we
-	// are tracing a process given a pid
-	// otherwise use forkobserver.
-	Manager.host.observableProcAddedXXX.addObserver(new Observer()
-	    {
-		public void update (Observable observable, Object arg)
-		{
-		    Proc proc = (Proc) arg;
-		    ProcId id = proc.getId();
-		    if (tracedParents.contains(id)){
-			// In case we're tracing a new child, add it.
-			//tracedParents.add(proc.getId()); XXX: why is this needed ?
-			// Weird API... unfortunately we can't fetch the
-			// Proc's main task here, as it will be null. Instead
-			// we have to request it and handle it in a callback.
-			addProc(proc);
-		    }
-		}
-	    });
     }
 
-    private void addProc (Proc proc) {
+    public void addProc(Proc proc) {
 	new ProcTasksObserver(proc, tasksObserver);
     }
 
@@ -214,20 +182,7 @@ public class Ftrace
 
     public void trace () {
 	init();
-	for (Iterator it = tracedParents.iterator(); it.hasNext(); ){
-	    Manager.host.requestProc
-		(((ProcId)it.next()).hashCode(),
-		 new FindProc() {
-		     public void procFound(Proc proc) {}
-		     public void procNotFound(int pid) {
-			 System.err.println("No process with ID "
-					    + pid + " found.");
-			 Manager.eventLoop.requestStop();
-		     }
-		 }
-		 );
-	    Manager.eventLoop.run();
-	}
+	Manager.eventLoop.run();
     }
 
     private HashMap observationCounters = new HashMap();

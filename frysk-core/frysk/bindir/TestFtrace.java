@@ -100,12 +100,12 @@ public class TestFtrace extends TestLib {
 	e.expect("rt_sigsuspend");
     }
 
-    public void testFtraceHandlesPrcoessNotFound() {
+    public void testFtraceHandlesProcessNotFound() {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		"-sys=",
 		"0"
 	    });
-	e.expect("No process with ID 0 found");
+	e.expect("Process 0 not found.");
     }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.EventLogger;
-import frysk.proc.ProcId;
+import frysk.proc.Proc;
 
 /**
  * CommandlineParser extends the getopt {@link Parser} class with common options
@@ -74,7 +74,7 @@ public class CommandlineParser {
      * 
      * @param pids The array of pids passed on the command line.
      */
-    public void parsePids(ProcId[] pids) {
+    public void parsePids(Proc[] pids) {
 	System.err.println("Error: Pids not supported.");
 	printHelp();
 	System.exit(1);
@@ -106,17 +106,18 @@ public class CommandlineParser {
     }
 
     public String[] parse(String[] args) {
-	String[] result = doParse(args);
 	try {
+	    String[] result = doParse(args);
 	    validate();
+	    return result;
 	} catch (OptionException e) {
-	    printHelp();
-	    throw new RuntimeException(e);
+	    System.err.println("Error: " + e.getMessage());
+	    System.exit(1);
+	    return null; // To fool Java
 	}
-	return result;
     }
 
-    private String[] doParse(String[] args) {
+    private String[] doParse(String[] args) throws OptionException {
 	String[] result = parser.parse(args);
 
 	// XXX: Should parseCommand be called with an empty array here?
@@ -127,19 +128,16 @@ public class CommandlineParser {
 
 	// Check if arguments are all pids.
 	try {
-	    ProcId[] pids = new ProcId[result.length];
-	    pids[0] = new ProcId(Integer.parseInt(result[0]));
-
+	    Proc[] procs = new Proc[result.length];
+	    procs[0] = Util.getProcFromPid(Integer.parseInt(result[0]));
 	    for (int i = 1; i < result.length; i++) {
 		try {
-		    pids[i] = new ProcId(Integer.parseInt(result[i]));
+		    procs[i] = Util.getProcFromPid(Integer.parseInt(result[i]));
 		} catch (NumberFormatException e) {
-		    throw new RuntimeException(
-			    "Please don't mix pids with core files or executables");
+		    throw new OptionException("Please don't mix pids with core files or executables");
 		}
 	    }
-
-	    parsePids(pids);
+	    parsePids(procs);
 	    return result;
 	} catch (NumberFormatException e) {
 	    // Not a pid, continue on.
@@ -160,8 +158,7 @@ public class CommandlineParser {
 			file += 1;
 		    }
 		} else {
-		    throw new RuntimeException(
-			    "Please don't mix core files with pids or executables.");
+		    throw new OptionException("Please don't mix core files with pids or executables.");
 		}
 	    }
 	    CoreExePair[] coreExePairs = new CoreExePair[coreExeFiles.size()];
