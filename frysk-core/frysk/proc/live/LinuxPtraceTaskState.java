@@ -181,13 +181,15 @@ class LinuxPtraceTaskState extends State {
 		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		    logger.log(Level.FINE, "{0} handleAttach\n", task); 
 		    task.sendAttach();
+		    Status status = new Status();
+		    status.scan(task.tid);
 		    if (task.getProc().getMainTask() == task
-			&& Status.isStopped(task.tid)) {
+			&& status.stoppedState) {
 			// The attach has been initiated on the main
 			// task of the process; the process state
 			// should transition to (T) TRACED.  If it is
 			// instead (T) STOPPED then the process is
-			// stuck (suspended), send it a SIGSTOP to
+			// stuck (suspended), send it a SIGCONT to
 			// unwedge it.  /proc/status is used as that
 			// differentiates between STOPPED an TRACED.
 			logger.log(Level.FINE,

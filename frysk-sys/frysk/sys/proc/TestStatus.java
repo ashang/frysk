@@ -40,21 +40,19 @@
 package frysk.sys.proc;
 
 import frysk.junit.TestCase;
+import frysk.sys.Pid;
 
 /**
  * Test the Status getUID() and getGID() a predefined set of
  * <tt>/proc$$/status</tt> buffer.
  */
-public class TestStatus
-    extends TestCase
-{
-    public void testParseStatusGetID()
-    {
 
+public class TestStatus extends TestCase {
+    public void testParseStatusGetID() {
 	// Construct valid status buffer
-	String[] status = new String[] {
+	String[] statusBuf = new String[] {
 	    "Name:\tgaim\n",
-	    "State:\tS (sleeping)\n",
+	    "State:\tT (stopped)\n",
 	    "SleepAVG:\t88%\n",
 	    "Tgid:\t2765\n",
 	    "Pid:\t2765\n",
@@ -87,31 +85,20 @@ public class TestStatus
 	    "SigCgt:\t0000000180014407\n",
 	    "CapInh:\t0000000000000000\n",
 	    "CapPrm:\t0000000000000000\n",
-	    "CapEff:\t0000000000000000"};
+	    "CapEff:\t0000000000000000\n"
+	};
 
-	byte[] buf = TestLib.stringsToBytes (status);
+	byte[] buf = TestLib.stringsToBytes(statusBuf);
+	Status status = new Status().scan(buf);
+	assertNotNull("status", status);
 
     	// Test normal-expected results from a valid status buffer
-	assertEquals ("Normal Process UID", 500, Status.getUID(buf));
-	assertEquals ("Normal Process GID", 500, Status.getGID(buf));
+	assertEquals("Process UID", 500, status.uid);
+	assertEquals("Process GID", 500, status.gid);
+	assertEquals("Process Stopped State", true, status.stoppedState);
     }
 
-    public void testParseStatusNullBufferGetID()
-    {
-	// Test abnormal-expected results from invald status buffers
-
-	// Test null buffer
-
-	assertEquals("Null Buffer Process UID", -1,
-		     Status.getUID((byte[])null));
-	assertEquals("Null Buffer Process GID", -1,
-		     Status.getGID((byte[])null));
-
-    }	
-    
-
-    public void testParseStatusInvalidBufferGetID()
-    {
+    public void testParseStatusInvalidBufferGetID() {
 	// Test abnormal-expected results from invald status buffers
 
 	// Test non-null but invalid buffer
@@ -121,10 +108,18 @@ public class TestStatus
 	    "We stuck, nor breath nor motion;\n",
 	    "As idle as a painted ship\n",
 	    "Upon a painted ocean."};
-
 	byte[] buf = TestLib.stringsToBytes(randomText);
+	Status status = new Status();
+	assertNull("scan", status.scan(buf));
 
-	assertEquals("Non null Buffer, invalid text Process UID", -1, Status.getUID(buf));
-	assertEquals("Non null Buffer, invalid text Process GID", -1, Status.getGID(buf));
+	assertEquals("Non null Buffer, invalid text Process UID", -1,
+		     status.uid);
+	assertEquals("Non null Buffer, invalid text Process GID", -1,
+		     status.gid);
+    }
+
+    public void testSelf() {
+	Status status = new Status();
+	assertNotNull("status value", status.scan(Pid.get()));
     }
 }

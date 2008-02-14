@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,17 +37,87 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+
 #include <gcj/cni.h>
 
 #include "frysk/sys/proc/cni/slurp.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/Status.h"
+#include "frysk/rsl/Log.h"
+#include "frysk/rsl/cni/Log.hxx"
 #include "java/lang/String.h"
 
-jbyteArray
-frysk::sys::proc::Status::statusSlurp (jint pid)
-{
-  jbyteArray buf = slurp (pid, "status");
-  return buf;
+static bool
+scan(const char** p, jint* val, const char* prefix) {
+  (*p) = strstr((*p), prefix);
+  if ((*p) == NULL)
+    return false;
+  (*p) += strlen(prefix);
+  char *endp;
+  (*val) = strtol((*p), &endp, 10);
+  if ((*p) == endp)
+    return false;
+  return true;
+}
+
+static frysk::sys::proc::Status*
+scan(const char *p, frysk::sys::proc::Status* const status,
+     frysk::rsl::Log* const fine) {
+  // Clear everything
+  status->state = '\0';
+  status->stoppedState = false;
+  status->uid = -1;
+  status->gid = -1;
+
+  // STATE (SUBSTATE)
+  const char *state = "\nState:";
+  p = strstr(p, state);
+  if (p == NULL)
+    return NULL;
+  p += strlen(state);
+  for (; (*p) != '\r' && (*p) != '\0'; p++) {
+    char c = (*p);
+    if (isspace(c))
+      continue;
+    if (strchr("RSDZTW", c) != NULL) {
+      status->state = c;
+      logf(fine, "state '%c'", c);
+      const char *stopped = " (stopped)";
+      status->stoppedState = strncmp(p + 1, stopped, strlen(stopped)) == 0;
+      logf(fine, "stopped %s", status->stoppedState ? "true" : "false");
+      break;
+    }
+  }
+  if (state == '\0')
+    return NULL;
+
+  // UID
+  if (!scan(&p, &status->uid, "\nUid:"))
+    return NULL;
+  logf(fine, "uid %d", (int) status->uid);
+
+  // GID
+  if (!scan(&p, &status->gid, "\nGid:"))
+    return NULL;
+  logf(fine, "gid %d", (int) status->gid);
+
+  return status;
+}
+
+frysk::sys::proc::Status*
+frysk::sys::proc::Status::scan(jint pid) {
+  char buf[BUFSIZ];
+  int bufLen = slurp(pid, "status", buf, sizeof buf);
+  if (bufLen < 0)
+    return NULL;
+  return ::scan(buf, this, fine);
+}
+
+frysk::sys::proc::Status*
+frysk::sys::proc::Status::scan(jbyteArray buf) {
+  return ::scan((char*)elements(buf), this, fine);
 }
 

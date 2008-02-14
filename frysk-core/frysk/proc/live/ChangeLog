@@ -1,5 +1,8 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java: Update to match Status.
+	* LinuxPtraceTaskState.java: Ditto.
+	
 	* LiveTask.java: Update to match Task.
 	* LinuxPtraceProc.java: Ditto.
 	* LinuxPtraceHost.java: Ditto.

@@ -39,6 +39,7 @@
 
 package frysk.sys.proc;
 
+import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 
 /**
@@ -52,107 +53,56 @@ import frysk.sys.ProcessIdentifier;
  */
 
 public class Status {
+    private static final Log fine = Log.fine(Status.class);
 
-    private native static byte[] statusSlurp (int pid);
-   
-    /**
-     * Converts a byte[] data structure to a 
-     * String[] data structure 
-     * @param byteBuffer[] - source byte byffer
-     * @return String[] - converted String buffer
-     */
-    private static String[] byteBuffertoStringbuffer(byte[] byteBuffer) {
-        String byteString = new String(byteBuffer);
-        return byteString.split("\n");
+    public Status() {
     }
 
-    /**
-     * Given a byte[] buffer from /proc/$$/status
-     * find and return either GID or UID.
-     * @param idType - Type to return. Accepts Gid or Uid 
-     * @param byteidBuffer - buffer to search.
-     * @return int either GID or UID of process, or -1 on error. 
-     */
-    private static int getID(String idType, byte[] byteidBuffer) {
-	// As fetching a GID/UID are very similar we just pass of the
-	// search code to a simple lookup method
-	String[] idBuffer = byteBuffertoStringbuffer(byteidBuffer);
-	int idIndex = 5;
-	int idIndexEnd = 0;
-	for (int i=0; i<idBuffer.length; i++) {
-	    if (idBuffer[i].startsWith(idType)) {
-		idIndexEnd = idIndex;
-		for (int j=idIndex; j<idBuffer[i].length(); j++)
-		    if (idBuffer[i].charAt(j)=='\t')
-			break;
-		    else
-			idIndexEnd++;
-		if (idIndex == idIndexEnd)
-		    return -1;
-		else 
-		    return Integer.parseInt(idBuffer[i].substring(idIndex,idIndexEnd));
-	    }
-	}
-	// if we get here, id not found in status
-	return -1;
-    }
-
-    /**
-     * Return the UID from a given buffer. Buffer
-     * has to follow format of /proc/$$/status.
-     * @param buffer - buffer search.
-     * @return int - UID in buffer.
-     */
-    public static int getUID(byte[] buffer) {
-	if (buffer != null)
-		return getID("Uid", buffer);
+    public String toString() {
+	if (pid != null)
+	    return "/proc/" + pid + "/status";
 	else
-		return -1;
+	    return super.toString();
     }
 
-    /**
-     * Return the UID from the /proc/$$/status
-     * file according to the PID passed.
-     * @param spid - PID of process to search.
-     * @return int - UID of process PID.
-     */
-    public static int getUID(ProcessIdentifier pid) {
-	byte[] buffer = statusSlurp(pid.intValue());
-    	return getUID(buffer);
+    public Status scan(ProcessIdentifier pid) {
+	fine.log(this, "stan", pid);
+	this.pid = pid;
+	return scan(pid.intValue());
     }
+    private native Status scan(int pid);
+    /**
+     * For testing only; package private.
+     */
+    native Status scan(byte[] buffer);
 
     /**
-     * Return the GID from a given buffer. Buffer
-     * has to follow format of /proc/$$/status.
-     * @param buffer - buffer search.
-     * @return int - GID in buffer.
+     * Re-scan /proc/$$/status using the previous pid.
      */
-    public static int getGID(byte[] buffer) {
-    	if (buffer != null)
-    		return getID("Gid", buffer);
-    	else
-    		return -1;
-    }
-    
-    /**
-     * Return the GID from the /proc/$$/status
-     * file according to the PID passed.
-     * @param spid - PID of process to search.
-     * @return int - GID of process PID.
-     */
-    public static int getGID(ProcessIdentifier pid) {
-    	byte[] buffer = statusSlurp(pid.intValue());
-    	return getGID(buffer);
+    public Status rescan() {
+	return scan(pid.intValue());
     }
 
+    public ProcessIdentifier pid;
+
     /**
-     * Returns true if the PID is in a stopped state.
+     * The UID from the /proc/$$/status file.
      */
-    public static boolean isStopped(ProcessIdentifier pid) {
-	byte[] buf = statusSlurp(pid.intValue());
-	if (buf == null)
-	    return false; // lost task?
-	String status = new String(buf);
-	return status.indexOf("T (stopped)") >= 0;
-    }
+    public int uid;
+
+    /**
+     * Return the GID from the /proc/$$/status file according to the
+     * PID passed.
+     */
+    public int gid;
+
+    /**
+     * The state from /proc/$$/status file.
+     */
+    public char state;
+
+    /**
+     * True if the PID is in a stopped state.
+     */
+    public boolean stoppedState;
 }

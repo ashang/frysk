@@ -64,7 +64,6 @@ import frysk.proc.Task;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
-import frysk.sys.proc.Status;
 
 /**
  * PPC64LinuxElfCorefile. Extends LinuxCorefile. Fill in
@@ -124,8 +123,8 @@ public class PPC64LinuxElfCorefile extends LinuxElfCorefile {
 
 	// Set rest of prpsinfo
 	prpsInfo.setPrFlag(processStat.flags);
-	prpsInfo.setPrUid(Status.getUID(ProcessIdentifierFactory.create(pid)));
-	prpsInfo.setPrGid(Status.getGID(ProcessIdentifierFactory.create(pid)));
+	prpsInfo.setPrUid(process.getUID());
+	prpsInfo.setPrGid(process.getGID());
 
 	prpsInfo.setPrPid(pid);
 	prpsInfo.setPrPpid(processStat.ppid.intValue());
