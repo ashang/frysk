@@ -1,5 +1,15 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Stat.java (toString()): New.
+	(fine): New.
+	(Stat(int)): Delete.
+	(scan(byte[])): New.
+	(rescan()): New.
+	(pid): Rename tid.
+	(numThreads): Rename .zero.
+	* TestStat.java: New.
+	* cni/Stat.cxx (Stat::scan): Update.
+
 	* Status.java: Rewrite.
 	* TestStatus.java: Update.
 	* cni/Status.cxx (Status::scan): Update.

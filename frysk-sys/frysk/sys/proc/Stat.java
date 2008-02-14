@@ -40,23 +40,25 @@
 package frysk.sys.proc;
 
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.ProcessIdentifierFactory;
+import frysk.rsl.Log;
 
 /**
  * The contents of <tt>/proc/PID/stat</tt> file.
  */
 public class Stat {
+    private static final Log fine = Log.fine(Stat.class);
+
     /**
      * Create an unbounded Stat object.
      */
     public Stat() {
-	this.tid = null;
     }
-    /**
-     * Create a Stat object for TID.
-     */
-    public Stat(int tid) {
-	this.tid = ProcessIdentifierFactory.create(tid);
+
+    public String toString() {
+	if (pid != null)
+	    return "/proc/" + pid + "/stat";
+	else
+	    return super.toString();
     }
 
     /**
@@ -66,10 +68,22 @@ public class Stat {
      * of scan problem.
      */
     public Stat scan(ProcessIdentifier pid) {
+	fine.log(this, "scan", pid);
 	return scan(pid.intValue());
     }
     private native Stat scan(int pid);
+    /**
+     * For testing; package-private.
+     */
+    native Stat scan(byte[] buf);
     
+    /**
+     * Re-scan using the current pid.
+     */
+    public Stat rescan() {
+	return scan(pid.intValue());
+    }
+
     /**
      * Refresh Stat from <tt>/proc/PID/task/TID/stat</tt>, return true if the
      * scan was successful.  Returns false when the file doesn't
@@ -82,7 +96,7 @@ public class Stat {
     private native Stat scan(int pid, int tid);
 
     /** The thread id (== pid in main thread)  */
-    public ProcessIdentifier tid;
+    public ProcessIdentifier pid;
     /** The filename of the executable.  */
     public String comm;
     /** The state represented by a character from "RSDZTW".  */
@@ -119,8 +133,8 @@ public class Stat {
     public long priority;
     /** The nice value.  */
     public int nice;
-    /** A hard coded zero.  */
-    public int zero;
+    /** The number of threads (since 2.6).  */
+    public int numThreads;
     /** The number of jiffies to the next SIGALRM.  */
     public long irealvalue;
     /** The number of jiffies, after system boot, that process started.  */

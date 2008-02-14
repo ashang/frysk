@@ -50,70 +50,69 @@
 #include "frysk/sys/proc/cni/slurp.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/Stat.h"
+#include "frysk/rsl/Log.h"
+#include "frysk/rsl/cni/Log.hxx"
 #include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/ProcessIdentifierFactory.h"
 
-frysk::sys::proc::Stat*
-frysk::sys::proc::Stat::scan(jint procPid) {
-  char buf[BUFSIZ];
-  int bufLen = slurp (procPid, "stat", buf, sizeof buf);
-  if (bufLen < 0)
-    return NULL;
-    
-  const char* p = buf;
-
-  tid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
-
+static frysk::sys::proc::Stat*
+scan(const char*p, frysk::sys::proc::Stat* const stat, frysk::rsl::Log* fine) {
   // The "comm" needs special treatment, need to scan backwards for
   // ')' as the command itself could contain ')'.
-  char* commStart = ::strchr (buf, '(');
-  char* commEnd = ::strrchr (buf, ')');
+  char* commStart = ::strchr (p, '(');
+  char* commEnd = ::strrchr (p, ')');
   if (commStart == NULL || commEnd == NULL)
     throwRuntimeException ("botched comm field");
-  comm = JvNewStringLatin1 (commStart + 1, commEnd - commStart - 1);
+  stat->comm = JvNewStringLatin1 (commStart + 1, commEnd - commStart - 1);
+
+  stat->pid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
+  log(fine, stat, "pid", stat->pid);
 
   // Messy, its a character, need to first skip any white space.
   p = commEnd + 1;
   p += ::strspn (p, " ");
-  state = *p++;
+  stat->state = *p++;
+  logf(fine, stat, "state %c", (char) stat->state);
 
-  ppid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
-  pgrp = scanJint (&p);
-  session = scanJint (&p);
-  ttyNr = scanJint (&p);
-  tpgid = scanJint (&p);
-  flags = scanJlong (&p);
-  minflt = scanJlong (&p);
-  cminflt = scanJlong (&p);
-  majflt = scanJlong (&p);
-  cmajflt = scanJlong (&p);
-  utime = scanJlong (&p);
-  stime = scanJlong (&p);
-  cutime = scanJlong (&p);
-  cstime = scanJlong (&p);
-  priority = scanJlong (&p);
-  nice = scanJint (&p);
-  zero = scanJint(&p);
-  irealvalue = scanJlong (&p);
-  starttime = scanJlong (&p);
-  vsize = scanJlong (&p);
-  rss = scanJlong (&p);
-  rlim = scanJlong (&p);
-  startcode = scanJlong (&p);
-  endcode = scanJlong (&p);
-  startstack = scanJlong (&p);
-  kstkesp = scanJlong (&p);
-  kstkeip = scanJlong (&p);
-  signal = scanJlong (&p);
-  blocked = scanJlong (&p);
-  sigignore = scanJlong (&p);
-  sigcatch = scanJlong (&p);
-  wchan = scanJlong (&p);
-  nswap = scanJlong (&p);
-  cnswap = scanJlong (&p);
-  exitSignal = scanJint (&p);
-  processor = scanJint (&p);
-  return this;
+  stat->ppid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
+  log(fine, stat, "ppid", stat->ppid);
+
+  stat->pgrp = scanJint (&p);
+  stat->session = scanJint (&p);
+  stat->ttyNr = scanJint (&p);
+  stat->tpgid = scanJint (&p);
+  stat->flags = scanJlong (&p);
+  stat->minflt = scanJlong (&p);
+  stat->cminflt = scanJlong (&p);
+  stat->majflt = scanJlong (&p);
+  stat->cmajflt = scanJlong (&p);
+  stat->utime = scanJlong (&p);
+  stat->stime = scanJlong (&p);
+  stat->cutime = scanJlong (&p);
+  stat->cstime = scanJlong (&p);
+  stat->priority = scanJlong (&p);
+  stat->nice = scanJint (&p);
+  stat->numThreads = scanJint(&p);
+  stat->irealvalue = scanJlong (&p);
+  stat->starttime = scanJlong (&p);
+  stat->vsize = scanJlong (&p);
+  stat->rss = scanJlong (&p);
+  stat->rlim = scanJlong (&p);
+  stat->startcode = scanJlong (&p);
+  stat->endcode = scanJlong (&p);
+  stat->startstack = scanJlong (&p);
+  stat->kstkesp = scanJlong (&p);
+  stat->kstkeip = scanJlong (&p);
+  stat->signal = scanJlong (&p);
+  stat->blocked = scanJlong (&p);
+  stat->sigignore = scanJlong (&p);
+  stat->sigcatch = scanJlong (&p);
+  stat->wchan = scanJlong (&p);
+  stat->nswap = scanJlong (&p);
+  stat->cnswap = scanJlong (&p);
+  stat->exitSignal = scanJint (&p);
+  stat->processor = scanJint (&p);
+  return stat;
 }
 
 frysk::sys::proc::Stat*
@@ -122,59 +121,19 @@ frysk::sys::proc::Stat::scan(jint procPid, jint threadTid) {
   int bufLen = slurp_thread (procPid, threadTid, "stat", buf, sizeof buf);
   if (bufLen < 0)
     return NULL;
-    
-  const char* p = buf;
+  return ::scan(buf, this, fine);
+}
 
-  tid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
+frysk::sys::proc::Stat*
+frysk::sys::proc::Stat::scan(jint procPid) {
+  char buf[BUFSIZ];
+  int bufLen = slurp (procPid, "stat", buf, sizeof buf);
+  if (bufLen < 0)
+    return NULL;
+  return ::scan(buf, this, fine);
+}
 
-  // The "comm" needs special treatment, need to scan backwards for
-  // ')' as the command itself could contain ')'.
-  char* commStart = ::strchr (buf, '(');
-  char* commEnd = ::strrchr (buf, ')');
-  if (commStart == NULL || commEnd == NULL)
-    throwRuntimeException ("botched comm field");
-  comm = JvNewStringLatin1 (commStart + 1, commEnd - commStart - 1);
-
-  // Messy, its a character, need to first skip any white space.
-  p = commEnd + 1;
-  p += ::strspn (p, " ");
-  state = *p++;
-
-  ppid = frysk::sys::ProcessIdentifierFactory::create(scanJint(&p));
-  pgrp = scanJint (&p);
-  session = scanJint (&p);
-  ttyNr = scanJint (&p);
-  tpgid = scanJint (&p);
-  flags = scanJlong (&p);
-  minflt = scanJlong (&p);
-  cminflt = scanJlong (&p);
-  majflt = scanJlong (&p);
-  cmajflt = scanJlong (&p);
-  utime = scanJlong (&p);
-  stime = scanJlong (&p);
-  cutime = scanJlong (&p);
-  cstime = scanJlong (&p);
-  priority = scanJlong (&p);
-  nice = scanJint (&p);
-  zero = scanJint(&p);
-  irealvalue = scanJlong (&p);
-  starttime = scanJlong (&p);
-  vsize = scanJlong (&p);
-  rss = scanJlong (&p);
-  rlim = scanJlong (&p);
-  startcode = scanJlong (&p);
-  endcode = scanJlong (&p);
-  startstack = scanJlong (&p);
-  kstkesp = scanJlong (&p);
-  kstkeip = scanJlong (&p);
-  signal = scanJlong (&p);
-  blocked = scanJlong (&p);
-  sigignore = scanJlong (&p);
-  sigcatch = scanJlong (&p);
-  wchan = scanJlong (&p);
-  nswap = scanJlong (&p);
-  cnswap = scanJlong (&p);
-  exitSignal = scanJint (&p);
-  processor = scanJint (&p);
-  return this;
+frysk::sys::proc::Stat*
+frysk::sys::proc::Stat::scan(jbyteArray buf) {
+  return ::scan((char*)elements(buf), this, fine);
 }

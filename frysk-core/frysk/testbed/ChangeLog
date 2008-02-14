@@ -1,3 +1,7 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* StatState.java: Update to match Stat rewrite.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Update to match Scan.

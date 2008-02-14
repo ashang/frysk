@@ -110,9 +110,8 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	String midStr = null;
 
 	// Transform processStat.zero(int) into char.
-	if ((processStat.zero >= 0) && (processStat.zero < 10)) {
-	    midStr = String.valueOf(processStat.zero);
-
+	if ((processStat.numThreads >= 0) && (processStat.numThreads < 10)) {
+	    midStr = String.valueOf(processStat.numThreads);
 	    prpsInfo.setPrZomb(midStr.charAt(0));
 	}
 

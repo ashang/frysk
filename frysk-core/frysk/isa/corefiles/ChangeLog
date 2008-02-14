@@ -1,5 +1,10 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* IA32LinuxElfCorefile.java: Update to match Stat.numThreads.
+	* X8664LinuxElfCorefile.java: Ditto.
+	* PPC64LinuxElfCorefile.java: Ditto.
+	* PPC32LinuxElfCorefile.java: Ditto.
+	
 	* IA32LinuxElfCorefile.java: Delete use of Status.
 	* PPC64LinuxElfCorefile.java: Ditto.
 	* PPC32LinuxElfCorefile.java: Ditto.

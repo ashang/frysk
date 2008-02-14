@@ -111,7 +111,7 @@ public class StatState {
 	}
 	public void execute() {
 	    stat.scan(pid);
-	    finest.log(state, "assertRunToState tid", stat.tid, "in",
+	    finest.log(state, "assertRunToState tid", stat.pid, "in",
 		       stat.state);
 	    if (state.state == stat.state) {
 		Manager.eventLoop.remove(this);
