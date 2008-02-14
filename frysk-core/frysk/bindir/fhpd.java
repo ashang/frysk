@@ -39,6 +39,7 @@
 
 package frysk.bindir;
 
+import frysk.event.Event;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,19 +52,19 @@ import frysk.util.CoreExePair;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
-//import frysk.util.PtyTerminal;
 import frysk.util.ObservingTerminal;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import frysk.sys.FileDescriptor;
 
 public class fhpd {
-    static int pid;
-    static File execFile;
-    static File core;
-    static File exeFile;
-    static boolean noExe = false;
-    static String sysroot;
+    private static int pid;
+    private static File execFile;
+    private static File core;
+    private static File exeFile;
+    private static boolean noExe = false;
+    private static String sysroot;
+    private static int exitStatus;
 
     final static class FhpdCompletor implements Completor {
         CLI cli;
@@ -75,10 +76,74 @@ public class fhpd {
         }
     }
 
+    // Start the command line in its own thread; but from within
+    // the event-loop.  This ensures that the event-loop is up and
+    // running before the CLI.
+    static class CommandLine extends Thread implements Event {
+	private String line = "";
+	private CLI cli;
+	private ConsoleReader reader;
+	CommandLine() {
+	    // Construct a command to pass in as initialization
+	    try {
+		if (pid > 0)
+		    line = "attach " + pid;
+		else if (execFile != null)
+		    line = "load " + execFile.getCanonicalPath();
+		else if (core != null) {
+		    line = "core " + core.getCanonicalPath();      
+		    if (exeFile != null)
+			line += " " + exeFile.getCanonicalPath();
+		    else if (noExe)
+			line +=" -noexe";
+		}
+		if (sysroot != null)
+		    line = line + " -sysroot " + sysroot;
+	    } catch (IOException e) {
+		System.err.println("Error: " + e);
+		System.exit(1);
+		return;
+	    }
+	    // Construct the HPD.
+	    cli = new CLI("(fhpd) ", System.out);
+	    try {
+		reader = new ConsoleReader
+		    (new FileInputStream(java.io.FileDescriptor.in),
+		     new PrintWriter(System.out),
+		     null,
+		     new ObservingTerminal(FileDescriptor.in));
+	    } catch (IOException ioe) {
+		System.out.println("ERROR: Could not create a command line");
+		System.out.print(ioe.getMessage());
+		System.exit(1);
+		return;
+	    }
+	    Completor fhpdCompletor = new FhpdCompletor(cli);
+	    reader.addCompletor(fhpdCompletor);
+	}
+	public void execute() {
+	    start();
+	}
+	public void run() {
+	    try {
+		cli.execCommand(line);
+		while (line != null && ! (line.equals("quit")
+					  || line.equals("q")
+					  || line.equals("exit"))) {
+		    line = reader.readLine(cli.getPrompt());
+		    cli.execCommand(line);
+		}
+	    } catch (IOException ioe) {
+		System.out.println("ERROR: Could not read from command line");
+		System.out.print(ioe.getMessage());
+		exitStatus = 1;
+	    }
+	    Manager.eventLoop.requestStop();
+	}
+    }
+    
     public static void main (String[] args) {
-        CLI cli;
         CommandlineParser parser = new CommandlineParser ("fhpd") {
-
                 //@Override
                 public void parseCommand (String[] command) {
                     execFile = new File (command[0]);
@@ -88,7 +153,6 @@ public class fhpd {
                                                    + command[0]);
                     }
                 }
-
                 //@Override
                 public void parsePids (ProcId[] pids) {
                     pid = pids[0].id;
@@ -126,53 +190,11 @@ public class fhpd {
     
         parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
         parser.parse(args);
-        Manager.eventLoop.start();
-        String line = "";
-    
-        try {
-            if (pid > 0)
-                line = "attach " + pid;
-            else if (execFile != null)
-                line = "load " + execFile.getCanonicalPath();
-            else if (core != null) {
-                line = "core " + core.getCanonicalPath();      
-                if (exeFile != null)
-                    line += " " + exeFile.getCanonicalPath();
-                else if (noExe)
-                    line +=" -noexe";
-            }
-            if (sysroot != null)
-                line = line + " -sysroot " + sysroot;
-        }
-        catch (IOException ignore) {}
-    
-        cli = new CLI("(fhpd) ", System.out);
-        ConsoleReader reader = null; // the jline reader
 
-        try {
-            reader = new ConsoleReader(new FileInputStream(java.io.FileDescriptor.in),
-                                       new PrintWriter(System.out),
-                                       null,
-                                       new ObservingTerminal(FileDescriptor.in));
-        }
-        catch (IOException ioe) {
-            System.out.println("ERROR: Could not create a command line");
-            System.out.print(ioe.getMessage());
-        }
+	Manager.eventLoop.add(new CommandLine());
 
-        Completor fhpdCompletor = new FhpdCompletor(cli);
-        reader.addCompletor(fhpdCompletor);
-        try {
-            cli.execCommand(line);
-            while (line != null && ! (line.equals("quit") || line.equals("q")
-                                      || line.equals("exit"))) {
-                    line = reader.readLine(cli.getPrompt());
-                    cli.execCommand(line);
-                }
-        }
-        catch (IOException ioe) {
-            System.out.println("ERROR: Could not read from command line");
-            System.out.print(ioe.getMessage());
-        }
+	// Run the event loop then exit when it exits (or crashes).
+	Manager.eventLoop.run();
+	System.exit(exitStatus);
     }
 }

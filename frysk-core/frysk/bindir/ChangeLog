@@ -1,3 +1,8 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* fhpd.java: Run the CLI in a sub-thread and the event-loop on the
+	main thread.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* fexe.java: Update to match Exe.
