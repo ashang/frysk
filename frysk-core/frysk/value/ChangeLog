@@ -1,3 +1,7 @@
+2008-02-14  Sami Wagiaalla  <swagiaal@.redhat.com>
+
+	* CompositeType.java: Removed cast to DynamicMember.
+
 2008-02-04  Teresa Thomas  <tthomas@redhat.com>
 
 	* Variable.java (printValue): Update.

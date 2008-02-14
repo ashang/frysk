@@ -172,8 +172,8 @@ public abstract class CompositeType
     /**
      * Return the composit's members as an array.  PACKAGE PRIVATE.
      */
-    DynamicMember[] members() {
-	DynamicMember[] m = new DynamicMember[members.size()];
+    Member[] members() {
+	Member[] m = new Member[members.size()];
 	members.toArray(m);
 	return m;
     }
@@ -268,7 +268,7 @@ public abstract class CompositeType
 	}
 
 	public String nextName () {
-	    return ((DynamicMember)members.get(idx)).name;
+	    return ((Member)members.get(idx)).name;
 	}
 
 	public Object next () {
@@ -332,11 +332,11 @@ public abstract class CompositeType
 	}
 	// : public PARENT ...
 	boolean first = true;
-	DynamicMember member = null;
+	Member member = null;
 	Iterator i = members.iterator();
 	// Types this inherits come first; print them out.
 	while (i.hasNext()) {
-	    member = (DynamicMember)i.next();
+	    member = (Member)i.next();
 	    if (!member.inheritance)
 		break;
 	    if (first) {
@@ -378,7 +378,7 @@ public abstract class CompositeType
 	    stringBuilder.append(";\n");
 	    // Advance
 	    if (i.hasNext())
-		member = (DynamicMember)i.next();
+		member = (Member)i.next();
 	    else
 		member = null;
 	}
