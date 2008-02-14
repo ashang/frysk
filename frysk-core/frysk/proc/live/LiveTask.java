@@ -42,8 +42,9 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.proc.TaskId;
 import frysk.proc.TaskObserver.Attached;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 /**
  * A live Host/Proc/Task is characterised by its stateful nature;
@@ -52,14 +53,27 @@ import frysk.proc.TaskObserver.Attached;
  */
 
 abstract class LiveTask extends Task {
-    LiveTask(Proc proc, TaskId taskId) {
-	super(proc, taskId);
+    final ProcessIdentifier tid;
+    /**
+     * New un-attached task of Proc.
+     */
+    LiveTask(Proc proc, ProcessIdentifier pid) {
+	super(proc, pid.intValue());
+	tid = pid;
     }
-    LiveTask(Task task, TaskId taskId) {
-	super(task, taskId);
+    /**
+     * New attached clone.
+     */
+    LiveTask(Task task, ProcessIdentifier clone) {
+	super(task, clone.intValue());
+	tid = clone;
     }
+    /**
+     * New attached child.
+     */
     LiveTask(LiveProc proc, Attached attached) {
 	super(proc, attached);
+	tid = ProcessIdentifierFactory.create(proc.getPid());
     }
 
     /**

@@ -52,7 +52,6 @@ import frysk.proc.Manager;
 import frysk.proc.TaskObserver.Terminating;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
-import frysk.proc.TaskId;
 import frysk.proc.Task;
 import java.util.logging.Level;
 import frysk.event.Event;
@@ -60,7 +59,6 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.ptrace.Ptrace;
 import frysk.sys.ptrace.AddressSpace;
 import frysk.sys.Signal;
@@ -75,14 +73,11 @@ import frysk.isa.banks.RegisterBanks;
  */
 
 public class LinuxPtraceTask extends LiveTask {
-    final ProcessIdentifier tid;
-
     /**
      * Create a new unattached Task.
      */
-    public LinuxPtraceTask(Proc proc, TaskId id) {
-	super(proc, id);
-	tid = ProcessIdentifierFactory.create(id.hashCode());
+    public LinuxPtraceTask(Proc proc, ProcessIdentifier pid) {
+	super(proc, pid);
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.detachedState();
     }
@@ -91,8 +86,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public LinuxPtraceTask(Task task, ProcessIdentifier clone) {
 	// XXX: shouldn't need to grub around in the old task's state.
-	super(task, new TaskId(clone.intValue()));
-	tid = clone;
+	super(task, clone);
 	((LinuxPtraceHost)getProc().getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
     }
@@ -102,7 +96,6 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(LinuxPtraceProc proc,
 			   TaskObserver.Attached attached) {
 	super(proc, attached);
-	tid = ProcessIdentifierFactory.create(proc.getPid());
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {

@@ -1,3 +1,10 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadTask.java: Update to match Task.
+	* LinuxCoreTask.java: Ditto.
+	* LinuxExeTask.java: Ditto.
+	* LinuxExeProc.java: Ditto.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxCoreProc.java: Use Log.CALLER.

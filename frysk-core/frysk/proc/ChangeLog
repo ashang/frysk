@@ -1,5 +1,8 @@
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (tid): New.  Replace TaskId with "int tid" in
+	constructors.
+
 	* TestMapGet.java: Update to match MapsBuilder.
 
 	* Proc.java: Update to match frysk.sys.Signal.

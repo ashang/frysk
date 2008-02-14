@@ -254,8 +254,8 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 		else {
 		    // Add the process (it currently isn't attached).
-		    Task newTask = new LinuxPtraceTask(LinuxPtraceProc.this,
-						       new TaskId (tid.intValue()));
+		    Task newTask
+			= new LinuxPtraceTask(LinuxPtraceProc.this, tid);
 		    added.put (newTask.getTaskId(), newTask);
 		}
 	    }

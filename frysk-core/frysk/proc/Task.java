@@ -72,19 +72,20 @@ public abstract class Task {
 	return id;
     }
     private final TaskId id;
+    private final int tid;
 
     /**
      * Return the task's process id.
      */
     public final int getTid() {
-	return id.id;
+	return tid;
     }
 
     /**
      * Return the task's (derived) name
      */
     public final String getName() {
-	return "Task " + getTid();
+	return "Task " + tid;
     }
 
     /**
@@ -120,10 +121,11 @@ public abstract class Task {
     /**
      * Create a new Task skeleton.
      */
-    private Task(TaskId id, Proc proc, Task creator) {
+    private Task(int pid, Proc proc, Task creator) {
 	this.proc = proc;
-	this.id = id;
+	this.tid = pid;
 	this.creator = creator;
+	this.id = new TaskId(pid);
 	proc.add(this);
 	proc.getHost().add(this);
     }
@@ -131,16 +133,16 @@ public abstract class Task {
     /**
      * Create a new unattached Task.
      */
-    protected Task(Proc proc, TaskId id) {
-	this(id, proc, null);
+    protected Task(Proc proc, int pid) {
+	this(pid, proc, null);
 	logger.log(Level.FINEST, "{0} new -- create unattached\n", this);
     }
 
     /**
-     * Create a new attached clone of Task.
+     * Create a new attached CLONE of TASK.
      */
-    protected Task(Task task, TaskId cloneId) {
-	this(cloneId, task.proc, task);
+    protected Task(Task task, int clone) {
+	this(clone, task.proc, task);
 	logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
     }
 
@@ -154,7 +156,7 @@ public abstract class Task {
      * have the containing proc.
      */
     protected Task(Proc proc, TaskObserver.Attached attached) {
-	this(new TaskId(proc.getPid()), proc, proc.creator);
+	this(proc.getPid(), proc, proc.creator);
     }
 
     public class TaskEventObservable extends java.util.Observable {

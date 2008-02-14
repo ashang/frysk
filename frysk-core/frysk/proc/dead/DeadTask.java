@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import java.util.logging.Level;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.proc.TaskId;
 import frysk.proc.TaskObserver;
 import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
@@ -54,9 +53,8 @@ import frysk.isa.banks.RegisterBanks;
  */
 
 abstract class DeadTask extends Task {
-    DeadTask(Proc proc, TaskId taskId, ISA isa,
-	     RegisterBanks registerBanks) {
-	super(proc, taskId);
+    DeadTask(Proc proc, int pid, ISA isa, RegisterBanks registerBanks) {
+	super(proc, pid);
 	this.isa = isa;
 	this.registerBanks = registerBanks;
     }

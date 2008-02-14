@@ -262,7 +262,7 @@ public class LinuxPtraceHost extends LiveHost {
 		    if (myTask == null) {
 			// If not, find this process and add this task to it.
 			Proc myProc = getSelf();
-			myTask = new LinuxPtraceTask(myProc, myTaskId);
+			myTask = new LinuxPtraceTask(myProc, pid);
 		    }
 		    LinuxPtraceProc proc = new LinuxPtraceProc(myTask, pid);
 		    new LinuxPtraceTask(proc, attachedObserver);

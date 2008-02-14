@@ -1,3 +1,9 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* LiveTask.java: Update to match Task.
+	* LinuxPtraceProc.java: Ditto.
+	* LinuxPtraceHost.java: Ditto.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProc.java: Update to match Status.

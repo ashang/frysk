@@ -42,7 +42,6 @@ package frysk.proc.dead;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.isa.banks.RegisterBanks;
-import frysk.proc.TaskId;
 import frysk.isa.ISA;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
@@ -53,8 +52,8 @@ public class LinuxExeTask extends DeadTask {
     private final long pc;
     private final LinuxExeProc proc;
 
-    protected LinuxExeTask(LinuxExeProc proc, TaskId id, ISA isa) {
-	super(proc, id, isa, constructRegisterBanks(isa));
+    LinuxExeTask(LinuxExeProc proc, ISA isa) {
+	super(proc, 0, isa, constructRegisterBanks(isa));
 	this.proc = proc;
 	// Compute a Fake PC.  XXX should be done in Proc instead of
 	// creating Elf object in the Task itself.

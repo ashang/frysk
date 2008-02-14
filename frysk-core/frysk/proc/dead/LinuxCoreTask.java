@@ -45,7 +45,6 @@ import lib.dwfl.ElfPrXFPRegSet;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.proc.TaskId;
 import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.registers.RegistersFactory;
@@ -127,7 +126,7 @@ public class LinuxCoreTask extends DeadTask {
      */
     LinuxCoreTask(LinuxCoreProc proc, ElfPrstatus elfTask, ElfPrFPRegSet
 		  elfFPRegs, ElfPrXFPRegSet elfXFPRegs, ISA isa) {
-	super(proc, new TaskId(elfTask.getPrPid()), isa,
+	super(proc, elfTask.getPrPid(), isa,
 	      simulateRegisterBanks(elfTask, elfFPRegs, elfXFPRegs, isa));
 	this.parent = proc;
     }

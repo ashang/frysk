@@ -49,7 +49,6 @@ import frysk.isa.ElfMap;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.ProcId;
-import frysk.proc.TaskId;
 
 public class LinuxExeProc extends DeadProc {
 
@@ -69,7 +68,7 @@ public class LinuxExeProc extends DeadProc {
 
     public void sendRefresh() {
 	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
-	LinuxExeTask newTask = new LinuxExeTask(this, new TaskId(0), isa);
+	LinuxExeTask newTask = new LinuxExeTask(this, isa);
 	newTask.getClass();
     }
 
