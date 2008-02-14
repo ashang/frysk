@@ -48,20 +48,17 @@ import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
-import frysk.proc.ProcId;
 
 public class LinuxExeProc extends DeadProc {
 
     private ElfData elfData = null;
     ArrayList metaData = new ArrayList();
     LinuxExeHost host = null;
-    ProcId id = null;	
 
-    public LinuxExeProc(ElfData data, LinuxExeHost host, ProcId id) {
-	super(host, null, id);
+    public LinuxExeProc(ElfData data, LinuxExeHost host) {
+	super(host, null, 0);
 	this.host = host;
 	this.elfData = data;
-	this.id = id;
 	sendRefresh();
 	buildMetaData();
     }

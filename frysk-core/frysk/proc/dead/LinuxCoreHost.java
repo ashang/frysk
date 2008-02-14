@@ -179,14 +179,15 @@ public class LinuxCoreHost extends DeadHost {
 	    final ElfPrpsinfo coreProc = ElfPrpsinfo.decode(proc_pid);
 	    final ProcId procId = new ProcId(coreProc.getPrPid());
 	    // Currently there can only be one process per core file.
-	    // What happens when we have two core files denoting the same
-	    // process/pid? Leave the test here for now.
+	    // What happens when we have two core files denoting the
+	    // same process/pid? Leave the test here for now.
 
 	    Proc proc = (Proc) procPool.get(procId);
 	    if (proc == null) {
 		// core file processes have no parents as thy are captured
 		// in isolation, and reconstructed.
-		proc = new LinuxCoreProc(proc_pid, LinuxCoreHost.this, procId);
+		proc = new LinuxCoreProc(proc_pid, LinuxCoreHost.this,
+					 coreProc.getPrPid());
 	    }
 
 	    addedProcs.add(proc);

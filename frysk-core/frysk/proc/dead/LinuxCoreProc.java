@@ -55,7 +55,6 @@ import frysk.sys.proc.AuxvBuilder;
 import java.util.Iterator;
 import java.io.File;
 import java.util.ArrayList;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
@@ -78,12 +77,12 @@ public class LinuxCoreProc extends DeadProc {
     private static final Log fine = Log.fine(LinuxCoreProc.class);
 
 
-    public LinuxCoreProc(ElfData data, LinuxCoreHost host, ProcId procId ) {
-	super(host, null, procId);
-	fine.log(this, "LinuxCoreProc(ElfData, LinuxCoreHost, ProcId)");
+    public LinuxCoreProc(ElfData data, LinuxCoreHost host, int pid) {
+	super(host, null, pid);
 	this.elfData = data;
 	this.elfProc = ElfPrpsinfo.decode(elfData);
 	this.corefileBackEnd = host.coreFile;
+	fine.log(this, "LinuxCoreProc elfData", data, "host", host, "pid", pid);
 
 	// Executable is null (non-specified), find the executable
 	// as it is written in the corefile. 

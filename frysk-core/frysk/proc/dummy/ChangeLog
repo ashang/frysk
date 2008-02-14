@@ -1,5 +1,7 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyProc.java: Update to match Proc.
+
 	* DummyTask.java: Update to match Task.
 
 2008-02-08  Andrew Cagney  <cagney@redhat.com>

@@ -40,13 +40,12 @@
 package frysk.proc.dummy;
 
 import frysk.proc.Auxv;
-import frysk.proc.ProcId;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 
 public class DummyProc extends Proc {
     public DummyProc(DummyHost host, int pid) {
-	super(host, null, new ProcId(pid));
+	super(host, null, pid);
     }
     public DummyProc() {
 	this(new DummyHost(), 42);

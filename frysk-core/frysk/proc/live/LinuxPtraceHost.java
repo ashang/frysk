@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Iterator;
@@ -150,7 +149,7 @@ public class LinuxPtraceHost extends LiveHost {
 		}
 		// .. and then add this process.
 		proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent,
-					   new ProcId(pid.intValue()), stat);
+					   pid, stat);
 		added.add(proc);
 	    } else if (removed.containsKey(pid)) {
 		// Process 1 never gets a [new] parent.

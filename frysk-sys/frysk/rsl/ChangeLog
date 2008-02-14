@@ -1,3 +1,7 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java: Add more log methods.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Node.java (set(Level)): Return the node.

@@ -1,5 +1,9 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveProc.java: Replace ProcId with ProcessIdentifier and int.
+	* LinuxPtraceProc.java: Update.
+	* LinuxPtraceHost.java: Ditto.
+
 	* LinuxPtraceProc.java: Update to match Status.
 	* LinuxPtraceTaskState.java: Ditto.
 	

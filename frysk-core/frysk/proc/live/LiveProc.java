@@ -40,9 +40,9 @@
 package frysk.proc.live;
 
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Host;
 import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * A live Host/Proc/Task is characterised by its stateful nature;
@@ -51,10 +51,14 @@ import frysk.proc.Task;
  */
 
 abstract class LiveProc extends Proc {
-    LiveProc(Host host, Proc parent, ProcId pid) {
-	super(host, parent, pid);
+    final ProcessIdentifier pid;
+
+    LiveProc(Host host, Proc parent, ProcessIdentifier pid) {
+	super(host, parent, pid.intValue());
+	this.pid = pid;
     }
-    LiveProc(Task task, ProcId forkId) {
-	super(task, forkId);
+    LiveProc(Task task, ProcessIdentifier fork) {
+	super(task, fork.intValue());
+	this.pid = fork;
     }
 }

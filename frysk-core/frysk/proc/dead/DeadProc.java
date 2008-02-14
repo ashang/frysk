@@ -41,7 +41,6 @@ package frysk.proc.dead;
 
 import java.util.logging.Level;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.ProcEvent;
@@ -53,8 +52,8 @@ import frysk.proc.ProcEvent;
  */
 
 public abstract class DeadProc extends Proc {
-    DeadProc(Host host, Proc parent, ProcId id) {
-	super(host, parent, id);
+    DeadProc(Host host, Proc parent, int pid) {
+	super(host, parent, pid);
     }
 
     /**

@@ -1,3 +1,7 @@
+2008-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java (pid): New; Pass to constructors.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (tid): New.  Replace TaskId with "int tid" in

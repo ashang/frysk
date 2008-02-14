@@ -1,5 +1,12 @@
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadProc.java: Update to match Proc.
+	* LinuxCoreHost.java: Ditto.
+	* LinuxExeHost.java: Ditto.
+	* LinuxExeProc.java: Ditto.
+
+	* LinuxCoreProc.java: Ditto.
+
 	* DeadTask.java: Update to match Task.
 	* LinuxCoreTask.java: Ditto.
 	* LinuxExeTask.java: Ditto.

@@ -120,7 +120,7 @@ public class LinuxExeHost extends DeadHost {
   	{
   	  // executable file processes have no parents as thy are captured
   	  // in isolation, and reconstructed.
-  	  proc = new LinuxExeProc(proc_pid,LinuxExeHost.this,procId);
+  	  proc = new LinuxExeProc(proc_pid,LinuxExeHost.this);
   	}
 
         addedProcs.add(proc);

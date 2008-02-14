@@ -41,7 +41,6 @@ package frysk.proc.live;
 
 import frysk.proc.Action;
 import frysk.sys.proc.Exe;
-import frysk.proc.ProcId;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.Host;
@@ -75,7 +74,8 @@ public class LinuxPtraceProc extends LiveProc {
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
-    public LinuxPtraceProc(Host host, Proc parent, ProcId pid, Stat stat) {
+    public LinuxPtraceProc(Host host, Proc parent,
+			   ProcessIdentifier pid, Stat stat) {
 	super(host, parent, pid);
 	((LinuxPtraceHost)host).putProc(ProcessIdentifierFactory.create(pid.hashCode()), this);
 	this.newState = LinuxPtraceProcState.initial(false);
@@ -87,7 +87,7 @@ public class LinuxPtraceProc extends LiveProc {
      * Task.
      */
     public LinuxPtraceProc(Task task, ProcessIdentifier fork) {
-	super(task, new ProcId(fork.intValue()));
+	super(task, fork);
 	((LinuxPtraceHost)getHost()).putProc(fork, this);
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);

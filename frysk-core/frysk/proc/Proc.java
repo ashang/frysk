@@ -96,8 +96,9 @@ public abstract class Proc implements Comparable {
     private final Host host;
 
     public int getPid() {
-	return id.hashCode();
+	return pid;
     }
+    private final int pid;
 
     /**
      * Return the basename of the program that this process is
@@ -148,9 +149,10 @@ public abstract class Proc implements Comparable {
      * Create a new Proc skeleton. Since PARENT could be NULL,
      * explicitly specify the HOST.
      */
-    private Proc(ProcId id, Proc parent, Host host, Task creator) {
+    private Proc(int pid, Proc parent, Host host, Task creator) {
 	this.host = host;
-	this.id = id;
+	this.pid = pid;
+	this.id = new ProcId(pid);
 	this.parent = parent;
 	this.creator = creator;
 	// Keep parent informed.
@@ -164,8 +166,8 @@ public abstract class Proc implements Comparable {
      * Create a new, unattached, running, Proc. Since PARENT could be
      * NULL, explicitly specify the HOST.
      */
-    protected Proc(Host host, Proc parent, ProcId id) {
-	this(id, parent, host, null);
+    protected Proc(Host host, Proc parent, int pid) {
+	this(pid, parent, host, null);
 	logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
     }
 
@@ -179,8 +181,8 @@ public abstract class Proc implements Comparable {
      * a Task, while it has the Observable, it doesn't have the
      * containing proc.
      */
-    protected Proc(Task task, ProcId forkId) {
-	this(forkId, task.getProc(), task.getProc().getHost(), task);
+    protected Proc(Task task, int fork) {
+	this(fork, task.getProc(), task.getProc().getHost(), task);
 	logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
     }
 
