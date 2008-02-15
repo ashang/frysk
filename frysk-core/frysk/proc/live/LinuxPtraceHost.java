@@ -48,13 +48,12 @@ import frysk.proc.Proc;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Iterator;
-import frysk.proc.TaskId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver.Attached;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Manager;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.sys.Fork;
 import frysk.sys.Tid;
 import frysk.sys.Pid;
@@ -68,6 +67,8 @@ import java.util.Collection;
  */
 
 public class LinuxPtraceHost extends LiveHost {
+    private static final Log fine = Log.fine(LinuxPtraceHost.class);
+
     /**
      * Construct an instance of the LinuxPtraceHost that uses the
      * specified eventLoop.
@@ -202,7 +203,7 @@ public class LinuxPtraceHost extends LiveHost {
   
     public void requestRefresh(final Collection knownProcesses,
 			       final HostRefreshBuilder updates) {
-	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	fine.log(this, "requestRefresh");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
 		    LinuxPtraceHost.this.executeRefresh(knownProcesses,
@@ -249,15 +250,15 @@ public class LinuxPtraceHost extends LiveHost {
 					  final String stderr,
 					  final String[] args,
 					  final Attached attachedObserver) {
- 	logger.log(Level.FINE, "{0} requestCreateAttachedProc\n", this); 
+	fine.log(this, "requestCreateAttachedProc");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
-		    logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
+		    fine.log(LinuxPtraceHost.this, "executeCreateAttachedProc");
 		    ProcessIdentifier pid
 			= Fork.ptrace(stdin, stdout, stderr, args);
 		    // See if the Host knows about this task.
-		    TaskId myTaskId = new TaskId(Tid.get().intValue());
-		    Task myTask = get(myTaskId);
+		    ProcessIdentifier myTid = Tid.get();
+		    Task myTask = getTask(myTid);
 		    if (myTask == null) {
 			// If not, find this process and add this task to it.
 			Proc myProc = getSelf();

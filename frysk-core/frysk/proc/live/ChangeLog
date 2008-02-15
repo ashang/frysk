@@ -1,3 +1,7 @@
+2008-02-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Replace TaskId with ProcessIdentifier.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LiveProc.java: Replace ProcId with ProcessIdentifier and int.
