@@ -53,7 +53,6 @@ import frysk.proc.TaskObserver.Terminating;
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import java.util.logging.Level;
 import frysk.event.Event;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
@@ -67,12 +66,15 @@ import frysk.isa.ISA;
 import frysk.isa.ElfMap;
 import java.io.File;
 import frysk.isa.banks.RegisterBanks;
+import frysk.rsl.Log;
 
 /**
  * A Linux Task tracked using PTRACE.
  */
 
 public class LinuxPtraceTask extends LiveTask {
+    private static final Log fine = Log.fine(LinuxPtraceTask.class);
+
     /**
      * Create a new unattached Task.
      */
@@ -113,12 +115,12 @@ public class LinuxPtraceTask extends LiveTask {
      * Return the raw memory byte-buffer. This is the TEXT/DATA area.
      */
     ByteBuffer getRawMemory() {
-	logger.log(Level.FINE, "Begin fillMemory\n", this);
+	fine.log(this, "Begin fillMemory");
 	ByteOrder byteOrder = getISA().order();
 	ByteBuffer memory = new AddressSpaceByteBuffer(tid,
 						       AddressSpace.DATA);
 	memory.order(byteOrder);
-	logger.log(Level.FINE, "End fillMemory\n", this); 
+	fine.log(this, "End fillMemory"); 
 	return memory;
     }
 
@@ -127,7 +129,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public ByteBuffer getMemory() {
 	if (memory == null) {
-	    logger.log(Level.FINE, "{0} exiting get memory\n", this);
+	    fine.log(this, "exiting get memory");
 	    ByteOrder byteOrder = getISA().order();
 	    BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
 	    memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
@@ -166,7 +168,7 @@ public class LinuxPtraceTask extends LiveTask {
      * not via a PID should be determining the ISA of the process.
      */
     public Isa getIsaFIXME() {
-	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+	fine.log(this, "sendrecIsa");
 	IsaFactory factory = IsaFactory.getSingleton();
 	return factory.getIsa(tid);
     }
@@ -190,8 +192,7 @@ public class LinuxPtraceTask extends LiveTask {
      * (internal) This task stopped with SIGNAL pending.
      */
     void processStoppedEvent(Signal signal) {
-	logger.log(Level.FINE, "{0} stoppedEvent {1}",
-		   new Object[] { this, signal });
+	fine.log(this, "stoppedEvent", signal);
 	set(oldState().handleStoppedEvent(this, signal));
     }
     /**
@@ -238,9 +239,8 @@ public class LinuxPtraceTask extends LiveTask {
      * receiveDisappearedEvent directly would cause a recursive state
      * transition.
      */
-    protected void postDisappearedEvent (final Throwable arg)
-    {
-	logger.log(Level.FINE, "{0} postDisappearedEvent\n", this);
+    protected void postDisappearedEvent(final Throwable arg) {
+	fine.log(this, "postDisappearedEvent");
 	Manager.eventLoop.add(new Event()
 	    {
 		final Throwable w = arg;
@@ -252,7 +252,7 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     void sendContinue(Signal sig) {
-	logger.log(Level.FINE, "{0} sendContinue\n", this);
+	fine.log(this, "sendContinue");
 	sigSendXXX = sig;
         incrementMod();
 	try {
@@ -262,7 +262,7 @@ public class LinuxPtraceTask extends LiveTask {
 	}
     }
     void sendSyscallContinue(Signal sig) {
-	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
+	fine.log(this, "sendSyscallContinue");
 	sigSendXXX = sig;
         incrementMod();
 	try {
@@ -272,7 +272,7 @@ public class LinuxPtraceTask extends LiveTask {
 	}
     }
     void sendStepInstruction(Signal sig) {
-	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
+	fine.log(this, "sendStepInstruction");
 	sigSendXXX = sig;
         incrementMod();
 	syscallSigretXXX = getIsaFIXME().isAtSyscallSigReturn(this);
@@ -283,16 +283,14 @@ public class LinuxPtraceTask extends LiveTask {
 	}
     }
 
-    public void sendStop ()
-    {
-	logger.log(Level.FINE, "{0} sendStop\n", this);
+    public void sendStop () {
+	fine.log(this, "sendStop");
 	Signal.STOP.tkill(tid);
     }
 
 
-    public void sendAttach ()
-    {
-	logger.log(Level.FINE, "{0} sendAttach\n", this);
+    public void sendAttach () {
+	fine.log(this, "sendAttach");
 	try
 	    {
 		Ptrace.attach(tid);
@@ -312,24 +310,19 @@ public class LinuxPtraceTask extends LiveTask {
 		 * stopped process. Bug 3316.
 		 */
 		Signal.CHLD.tkill(frysk.sys.Tid.get());
-	    }
-	catch (Errno.Eperm e)
-	    {
-		logger.log(Level.FINE, "{" + e.toString()
-			   + "} Cannot attach to process\n");
-	    }
-	catch (Errno.Esrch e)
-	    {
+	    } catch (Errno.Eperm e) {
+	    fine.log(this, "cannot attach to process", e);
+	    } catch (Errno.Esrch e) {
 		postDisappearedEvent(e);
 	    }
     }
 
     void sendDetach(Signal sig) {
-	logger.log(Level.FINE, "{0} sendDetach\n", this);
+	fine.log(this, "sendDetach");
 	clearIsa();
 	try {
 	    if (sig == Signal.STOP) {
-		logger.log(Level.FINE, "{0} sendDetach/signal STOP\n", this);
+		fine.log(this, "sendDetach/signal STOP");
 		Signal.STOP.tkill(tid);
 		Ptrace.detach(tid, Signal.NONE);
 	    } else {
@@ -348,19 +341,19 @@ public class LinuxPtraceTask extends LiveTask {
 				  | Ptrace.OPTION_EXIT
 				  | Ptrace.OPTION_EXEC);
     void initializeAttachedState() {
-	logger.log(Level.FINE, "{0} initializeAttachedState\n", this);
+	fine.log(this, "initializeAttachedState");
 	Ptrace.setOptions(tid, ptraceOptions);
 	// FIXME: This should use task.proc.getExe().  Only that
 	// causes wierd failures; take a rain-check :-(
 	currentISA = ElfMap.getISA(new File("/proc/" + tid + "/exe"));
     }
     void startTracingSyscalls() {
-	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
+	fine.log(this, "startTracingSyscalls");
 	ptraceOptions |= Ptrace.OPTION_SYSGOOD;
 	Ptrace.setOptions(tid, ptraceOptions);
     }
     void stopTracingSyscalls() {
-	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
+	fine.log(this, "stopTracingSyscalls");
 	ptraceOptions &= ~Ptrace.OPTION_SYSGOOD;
 	Ptrace.setOptions(tid, ptraceOptions);
     }
@@ -474,7 +467,7 @@ public class LinuxPtraceTask extends LiveTask {
      * resumes.
      */
     public void requestUnblock(final TaskObserver observerArg) {
-	logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
+	fine.log(this, "requestUnblock -- observer");
 	Manager.eventLoop.add(new TaskEvent(this) {
 		final TaskObserver observer = observerArg;
 		protected void execute(Task task) {
@@ -515,7 +508,7 @@ public class LinuxPtraceTask extends LiveTask {
      * number of blocking observers.
      */
     int notifyClonedOffspring() {
-	logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
+	fine.log(this, "notifyClonedOffspring");
 	LinuxPtraceTask creator = (LinuxPtraceTask)this.getCreator();
 	for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();) {
 	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
@@ -529,14 +522,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add a TaskObserver.Cloned observer.
      */
     public void requestAddClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
+	fine.log(this, "requestAddClonedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, clonedObservers, o);
     }
     /**
      * Delete a TaskObserver.Cloned observer.
      */
     public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
+	fine.log(this, "requestDeleteClonedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, clonedObservers, o);
     }
 
@@ -551,7 +544,7 @@ public class LinuxPtraceTask extends LiveTask {
      * the number of blocking observers.
      */
     int notifyAttached() {
-	logger.log(Level.FINE, "{0} notifyAttached\n", this);
+	fine.log(this, "notifyAttached");
 	//Fill isa on attach.
 	getIsaFIXME();
 	for (Iterator i = attachedObservers.iterator(); i.hasNext();) {
@@ -565,14 +558,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add a TaskObserver.Attached observer.
      */
     public void requestAddAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
+	fine.log(this, "requestAddAttachedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, attachedObservers, o);
     }
     /**
      * Delete a TaskObserver.Attached observer.
      */
     public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
-	logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
+	fine.log(this, "requestDeleteAttachedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, attachedObservers, o);
     }
 
@@ -612,14 +605,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add a TaskObserver.Forked observer.
      */
     public void requestAddForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
+	fine.log(this, "requestAddForkedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, forkedObservers, o);
     }
     /**
      * Delete a TaskObserver.Forked observer.
      */
     public void requestDeleteForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
+	fine.log(this, "requestDeleteForkedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, forkedObservers, o);
     }
 
@@ -635,17 +628,14 @@ public class LinuxPtraceTask extends LiveTask {
     int notifyTerminated(boolean sig, int value) {
 	frysk.isa.signals.Signal signal
 	    = sig ? getSignalTable().get(value) : null;
-	logger.log(Level.FINE, "{0} notifyTerminated {1} {2}",
-		   new Object[] { this, signal, new Integer(value) });
+	fine.log(this, "notifyTerminated signal", signal, "value", value);
 	if (terminatedObservers.numberOfObservers() > 0) {
 	    for (Iterator i = terminatedObservers.iterator(); i.hasNext();) {
 		TaskObserver.Terminated observer
 		    = (TaskObserver.Terminated) i.next();
 		if (observer.updateTerminated(this, signal, value)
 		    == Action.BLOCK) {
-		    logger.log(Level.FINER,
-			       "{0} notifyTerminated adding {1} to blockers\n",
-			       new Object[] { this, observer });
+		    fine.log(this, "notifyTerminated adding", observer, "to blockers");
 		    blockers.add(observer);
 		}
 	    }
@@ -658,14 +648,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add a TaskObserver.Terminated observer.
      */
     public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
+	fine.log(this, "requestAddTerminatedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, terminatedObservers, o);
     }
     /**
      * Delete a TaskObserver.Terminated observer.
      */
     public void requestDeleteTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
+	fine.log(this, "requestDeleteTerminatedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, terminatedObservers, o);
     }
 
@@ -681,17 +671,14 @@ public class LinuxPtraceTask extends LiveTask {
     int notifyTerminating(boolean sig, int value) {
 	frysk.isa.signals.Signal signal
 	    = sig ? getSignalTable().get(value) : null;
-	logger.log(Level.FINE, "{0} notifyTerminating {1} {2}",
-		   new Object[] { this, signal, new Integer(value) });
+	fine.log(this, "notifyTerminating signal", sig, "value", value);
 	if (terminatingObservers.numberOfObservers() > 0) {
 	    for (Iterator i = terminatingObservers.iterator(); i.hasNext();) {
 		TaskObserver.Terminating observer
 		    = (TaskObserver.Terminating) i.next();
 		if (observer.updateTerminating(this, signal, value)
 		    == Action.BLOCK) {
-		    logger.log(Level.FINER,
-			       "{0} notifyTerminating adding {1} to blockers\n",
-			       new Object[] { this, observer });
+		    fine.log(this, "notifyTerminating adding", observer, "to blockers");
 		    blockers.add(observer);
 		}
 	    }
@@ -704,14 +691,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add TaskObserver.Terminating to the TaskObserver pool.
      */
     public void requestAddTerminatingObserver(Terminating o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
+	fine.log(this, "requestAddTerminatingObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, terminatingObservers, o);
     }
     /**
      * Delete TaskObserver.Terminating.
      */
     public void requestDeleteTerminatingObserver(Terminating o) {
-	logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
+	fine.log(this, "requestDeleteTerminatingObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, terminatingObservers, o);
     }
 
@@ -739,7 +726,7 @@ public class LinuxPtraceTask extends LiveTask {
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
     public void requestAddExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
+	fine.log(this, "requestAddExecedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, execedObservers, o);
     }
 
@@ -747,7 +734,7 @@ public class LinuxPtraceTask extends LiveTask {
      * Delete TaskObserver.Execed.
      */
     public void requestDeleteExecedObserver(TaskObserver.Execed o) {
-	logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
+	fine.log(this, "requestDeleteExecedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, execedObservers, o);
     }
 
@@ -763,8 +750,7 @@ public class LinuxPtraceTask extends LiveTask {
      * call.  Return the number of blocking observers.
      */
     int notifySyscallEnter() {
-	logger.log(Level.FINE,
-		   "{0} notifySyscallEnter\n", this);
+	fine.log(this, "notifySyscallEnter");
 	Syscall syscall = getSyscallTable().getSyscall(this);
 	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
 	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
@@ -778,8 +764,7 @@ public class LinuxPtraceTask extends LiveTask {
      * call. Return the number of blocking observers.
      */
     int notifySyscallExit() {
-	logger.log(Level.FINE,
-		   "{0} notifySyscallExit {1}\n", this);
+	fine.log(this, "notifySyscallExit");
 	for (Iterator i = syscallObservers.iterator(); i.hasNext();) {
 	    TaskObserver.Syscalls observer = (TaskObserver.Syscalls) i.next();
 	    if (observer.updateSyscallExit(this) == Action.BLOCK)
@@ -791,14 +776,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add TaskObserver.Syscalls to the TaskObserver pool.
      */
     public void requestAddSyscallsObserver(TaskObserver.Syscalls o) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	fine.log(this, "requestAddSyscallObserver");
 	((LinuxPtraceProc)getProc()).requestAddSyscallObserver(this, syscallObservers, o);
     }
     /**
      * Delete TaskObserver.Syscall.
      */
     public void requestDeleteSyscallsObserver(TaskObserver.Syscalls o) {
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	fine.log(this, "requestDeleteSyscallObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteSyscallObserver(this, syscallObservers, o);
     }
 
@@ -813,16 +798,13 @@ public class LinuxPtraceTask extends LiveTask {
      */
     int notifySignaled(int sig) {
 	frysk.isa.signals.Signal signal = getSignalTable().get(sig);
-	logger.log(Level.FINE, "{0} notifySignaled {1}\n",
-		   new Object[] { this, signal });
+	fine.log(this, "notifySignaled signal", sig);
 	if (signaledObservers.numberOfObservers() > 0) {
 	    for (Iterator i = signaledObservers.iterator(); i.hasNext();) {
 		TaskObserver.Signaled observer
 		    = (TaskObserver.Signaled) i.next();
 		if (observer.updateSignaled(this, signal) == Action.BLOCK) {
-		    logger.log(Level.FINER,
-			       "{0} notifySignaled adding {1} to blockers\n",
-			       new Object[] { this, observer });
+		    fine.log(this, "notifySignaled adding", observer, "to blockers");
 		    blockers.add(observer);
 		}
 	    }
@@ -836,14 +818,14 @@ public class LinuxPtraceTask extends LiveTask {
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */
     public void requestAddSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
+	fine.log(this, "requestAddSignaledObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, signaledObservers, o);
     }
     /**
      * Delete TaskObserver.Signaled.
      */
     public void requestDeleteSignaledObserver(TaskObserver.Signaled o) {
-	logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
+	fine.log(this, "requestDeleteSignaledObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, signaledObservers, o);
     }
 
@@ -861,8 +843,7 @@ public class LinuxPtraceTask extends LiveTask {
      * on this address.
      */
     int notifyCodeBreakpoint(long address) {
-	logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
-		   new Object[] { this, Long.valueOf(address) });
+	fine.log(this, "notifyCodeBreakpoint address", address);
 	Collection observers = ((LinuxPtraceProc)getProc()).breakpoints.getCodeObservers(address);
 	if (observers == null)
 	    return -1;
@@ -879,7 +860,7 @@ public class LinuxPtraceTask extends LiveTask {
      * Add TaskObserver.Code to the TaskObserver pool.
      */
     public void requestAddCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+	fine.log(this, "requestAddCodeObserver");
 	((LinuxPtraceProc)getProc()).requestAddCodeObserver(this, codeObservers, o, a);
     }
 
@@ -887,7 +868,7 @@ public class LinuxPtraceTask extends LiveTask {
      * Delete TaskObserver.Code for the TaskObserver pool.
      */
     public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+	fine.log(this, "requestDeleteCodeObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteCodeObserver(this, codeObservers, o, a);
     }
 
@@ -904,7 +885,7 @@ public class LinuxPtraceTask extends LiveTask {
      * blocking observers.
      */
     int notifyInstruction() {
-	logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
+	fine.log(this, "notifyInstruction");
 	Iterator i = instructionObservers.iterator();
 	while (i.hasNext()) {
 	    TaskObserver.Instruction observer;
@@ -922,14 +903,14 @@ public class LinuxPtraceTask extends LiveTask {
      * the next instruction.
      */
     public void requestAddInstructionObserver(TaskObserver.Instruction o) {
-	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+	fine.log(this, "requestAddInstructionObserver");
 	((LinuxPtraceProc)getProc()).requestAddInstructionObserver(this, instructionObservers, o);
     }
     /**
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
     public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
-	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+	fine.log(this, "requestDeleteInstructionObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteInstructionObserver(this, instructionObservers, o);
     }
   
@@ -947,7 +928,7 @@ public class LinuxPtraceTask extends LiveTask {
      * observations.
      */
     void removeObservers() {
-	logger.log(Level.FINE, "{0} removeObservers", this);	 
+	fine.log(this, "removeObservers");	 
 	attachedObservers.removeAllObservers();
 	clonedObservers.removeAllObservers();
 	forkedObservers.removeAllObservers();
@@ -1012,7 +993,7 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     protected void clearIsa() {
-	logger.log(Level.FINE, "{0} clearIsa\n", this);
+	fine.log(this, "clearIsa");
 	super.clearIsa();
 	pcRegister = null;
 	memory = null;

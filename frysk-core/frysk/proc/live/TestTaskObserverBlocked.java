@@ -37,10 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc.live;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
 import frysk.testbed.StopEventLoopWhenProcRemoved;
@@ -64,9 +63,8 @@ import java.util.HashSet;
  * are blocked.
  */
 
-public class TestTaskObserverBlocked
-    extends TestLib
-{
+public class TestTaskObserverBlocked extends TestLib {
+    private static final Log fine = Log.fine(TestTaskObserverBlocked.class);
 
   /**
    * Check that a blocker appears in the blocker list returned by getBlockers.
@@ -163,8 +161,7 @@ public class TestTaskObserverBlocked
     void nextState (State state)
     {
       currentState = state;
-      logger.log(Level.FINE, "{0} nextState {1}\n",
-                 new Object[] { this, state });
+      fine.log(this, "nextState", state);
     }
 
     /**
@@ -188,7 +185,7 @@ public class TestTaskObserverBlocked
 
     protected Action spawnedParent (Task parent, Task offspring)
     {
-      logger.log(Level.FINE, "{0} spawnedParent\n", this);
+      fine.log(this, "spawnedParent");
       assertInState(OBSERVER_ADDED_TO_PARENT);
       nextState(SPAWN_PARENT);
       this.parent = parent;
@@ -199,7 +196,7 @@ public class TestTaskObserverBlocked
 
     protected Action spawnedOffspring (Task parent, Task offspring)
     {
-      logger.log(Level.FINE, "{0} spawnedOffspring\n", this);
+      fine.log(this, "spawnedOffspring");
       assertInState(SPAWN_PARENT);
       nextState(SPAWN_OFFSPRING);
       this.offspring = offspring;
@@ -225,7 +222,7 @@ public class TestTaskObserverBlocked
      */
     public void assertRunToSpawn ()
     {
-      logger.log(Level.FINE, "{0} assertRunToSpawn\n", this);
+	fine.log(this, "assertRunToSpawn");
       SlaveOffspring proc = SlaveOffspring.createDaemon();
       Task main = proc.findTaskUsingRefresh(true);
 
@@ -244,7 +241,7 @@ public class TestTaskObserverBlocked
      */
     public void assertUnblockOffspring ()
     {
-      logger.log(Level.FINE, "{0} assertUnblockOffspring\n", this);
+	fine.log(this, "assertUnblockOffspring");
 
       offspring.requestAddAttachedObserver(this);
       assertRunUntilStop("add observer to child");
@@ -272,7 +269,7 @@ public class TestTaskObserverBlocked
      */
     public void assertUnblockParent ()
     {
-      logger.log(Level.FINE, "{0} assertUnblockParent\n", this);
+	fine.log(this, "assertUnblockParent");
       SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
 					  SlaveOffspring.PARENT_ACK,
 					  "PARENT_ACK");
@@ -434,8 +431,8 @@ public class TestTaskObserverBlocked
 	// it isn't attached to the process.
 	proc.assertSendDelForkWaitForAcks();
 
-	logger.log(Level.FINE, "{0} parent\n", forkUnblock.parent);
-	logger.log(Level.FINE, "{0} offspring\n", forkUnblock.offspring);
+	fine.log("parent", forkUnblock.parent);
+	fine.log("offspring", forkUnblock.offspring);
 
 	// Finally force a refresh.
 	host.requestRefresh(new HashSet(), new HostRefreshBuilder() {

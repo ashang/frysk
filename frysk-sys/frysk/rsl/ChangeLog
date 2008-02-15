@@ -1,3 +1,7 @@
+2008-02-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java: Add more log methods and boolean support.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Add more log methods.

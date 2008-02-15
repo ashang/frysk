@@ -54,7 +54,7 @@ import frysk.sys.proc.MapsBuilder;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.Status;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Map;
 import java.util.HashMap;
@@ -70,6 +70,8 @@ import frysk.proc.TaskObserver;
  */
 
 public class LinuxPtraceProc extends LiveProc {
+    private static final Log fine = Log.fine(LinuxPtraceProc.class);
+
     /**
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
@@ -318,7 +320,7 @@ public class LinuxPtraceProc extends LiveProc {
      * tables.
      */
     public void requestRefresh() {
-	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	fine.log(this, "requestRefresh");
 	Manager.eventLoop.add(new ProcEvent() {
 		public void execute() {
 		    newState = oldState().handleRefresh(LinuxPtraceProc.this);
@@ -333,7 +335,7 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: This should not be public.
      */
     void performRemoval() {
-	logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
+	fine.log(this, "performRemoval -- no longer in /proc");
 	Manager.eventLoop.add(new ProcEvent() {
 		public void execute() {
 		    newState = oldState().handleRemoval(LinuxPtraceProc.this);
@@ -348,7 +350,7 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: Should not be public.
      */
     void performTaskAttachCompleted (final Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
+	fine.log(this, "performTaskAttachCompleted");
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
 
@@ -365,7 +367,7 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: Should not be public.
      */
     void performTaskDetachCompleted(final Task theTask) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
+	fine.log(this, "performTaskDetachCompleted");
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
 		public void execute() {
@@ -379,7 +381,7 @@ public class LinuxPtraceProc extends LiveProc {
      * completed its detach.
      */
     void performTaskDetachCompleted(final Task theTask, final Task theClone) {
-	logger.log(Level.FINE, "{0} performTaskDetachCompleted/clone\n", this);
+	fine.log(this, "performTaskDetachCompleted/clone");
 	Manager.eventLoop.add(new ProcEvent() {
 		Task task = theTask;
 
@@ -392,7 +394,7 @@ public class LinuxPtraceProc extends LiveProc {
     }
 
     protected void performDetach() {
-	logger.log(Level.FINE, "{0} performDetach\n", this);
+	fine.log(this, "performDetach");
 	Manager.eventLoop.add(new ProcEvent() {
 		public void execute() {
 		    newState = oldState().handleDetach(LinuxPtraceProc.this, true);
@@ -414,7 +416,7 @@ public class LinuxPtraceProc extends LiveProc {
      */
     void requestAddObserver(Task task, TaskObservable observable,
 			    TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddObservation\n", this);
+	fine.log(this, "requestAddObservation");
 	Manager.eventLoop.add(new TaskObservation((LinuxPtraceTask)task,
 						  observable, observer, true) {
 		public void execute() {
@@ -469,7 +471,7 @@ public class LinuxPtraceProc extends LiveProc {
      */
     void requestAddSyscallObserver(final Task task, TaskObservable observable,
 				   TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	fine.log(this, "requestAddSyscallObserver");
 	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, true);
 	TaskObservation to = new TaskObservation((LinuxPtraceTask)task,
 						 observable, observer, sa,
@@ -491,7 +493,7 @@ public class LinuxPtraceProc extends LiveProc {
     void requestDeleteSyscallObserver(final Task task,
 				      TaskObservable observable,
 				      TaskObserver observer) {
-	logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	fine.log(this, "requestDeleteSyscallObserver");
 	SyscallAction sa = new SyscallAction((LinuxPtraceTask)task, false);
 	TaskObservation to = new TaskObservation((LinuxPtraceTask)task,
 						 observable, observer, sa,
@@ -557,7 +559,7 @@ public class LinuxPtraceProc extends LiveProc {
     void requestAddCodeObserver(Task task, TaskObservable observable,
 				TaskObserver.Code observer,
 				final long address) {
-	logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+	fine.log(this, "requestAddCodeObserver");
 	BreakpointAction bpa = new BreakpointAction(observer, task, address, true);
 	TaskObservation to;
 	to = new TaskObservation((LinuxPtraceTask) task, observable, observer,
@@ -579,7 +581,7 @@ public class LinuxPtraceProc extends LiveProc {
     void requestDeleteCodeObserver(Task task, TaskObservable observable,
 				   TaskObserver.Code observer,
 				   final long address)    {
-	logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+	fine.log(this, "requestDeleteCodeObserver");
 	BreakpointAction bpa = new BreakpointAction(observer, task, address, false);
 	TaskObservation to;
 	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, bpa, false) {
@@ -626,7 +628,7 @@ public class LinuxPtraceProc extends LiveProc {
     void requestAddInstructionObserver(final Task task,
 				       TaskObservable observable,
 				       TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+	fine.log(this, "requestAddInstructionObserver");
 	TaskObservation to;
 	InstructionAction ia = new InstructionAction();
 	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, ia, true) {
@@ -660,7 +662,7 @@ public class LinuxPtraceProc extends LiveProc {
     void requestDeleteInstructionObserver(final Task task,
 					  TaskObservable observable,
 					  TaskObserver.Instruction observer) {
-	logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+	fine.log(this, "requestDeleteInstructionObserver");
 	TaskObservation to;
 	InstructionAction ia = new InstructionAction();
 	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, ia, false) {

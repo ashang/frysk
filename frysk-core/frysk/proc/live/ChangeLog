@@ -1,5 +1,14 @@
 2008-02-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java: Use frysk.rsl.
+	* LinuxPtraceTaskState.java: Ditto.
+	* IsaFactory.java: Ditto.
+	* LinuxPtraceTask.java: Ditto.
+	* LinuxWaitBuilder.java: Ditto.
+	* LinuxPtraceProcState.java: Ditto.
+	* State.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+
 	* LinuxPtraceHost.java: Replace TaskId with ProcessIdentifier.
 
 2008-02-14  Andrew Cagney  <cagney@redhat.com>

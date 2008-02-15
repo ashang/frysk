@@ -213,6 +213,8 @@ public final class Log {
 	    out.print("<<null>>");
 	} if (o instanceof char[]) {
 	    dump((char[])o);
+	} if (o instanceof boolean[]) {
+	    dump((boolean[])o);
 	} else if (o instanceof int[]) {
 	    dump((int[])o);
 	} else if (o instanceof long[]) {
@@ -243,6 +245,26 @@ public final class Log {
 	dump(o);
     }
     
+    /**
+     * Booleans are printed as strings.
+     */
+    private void print(boolean b) {
+	out.print(' ');
+	dump(b);
+    }
+    private void dump(boolean b) {
+	out.print(b);
+    }
+    private void dump(boolean[] a) {
+	out.print('[');
+	for (int i = 0; i < a.length; i++) {
+	    if (i > 0)
+		out.print(',');
+	    dump(a[i]);
+	}
+	out.print(']');
+    }
+
     /**
      * Chars are printed in quotes.
      */
@@ -280,7 +302,7 @@ public final class Log {
 	for (int i = 0; i < a.length; i++) {
 	    if (i > 0)
 		out.print(',');
-	    dump(i);
+	    dump(a[i]);
 	}
 	out.print(']');
     }
@@ -344,6 +366,11 @@ public final class Log {
     }
 
     // static 2 parameters
+    public void log(String p1, boolean p2) {
+	if (!logging)
+	    return;
+	prefix(); print(p1); print(p2); suffix();
+    }
     public void log(String p1, char p2) {
 	if (!logging)
 	    return;
@@ -445,6 +472,11 @@ public final class Log {
     }
 
     // dynamic 4 parameters
+    public void log(Object self, String p1, boolean p2, String p3, int p4) {
+	if (!logging)
+	    return;
+	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
+    }
     public void log(Object self, String p1, int p2, String p3, char p4) {
 	if (!logging)
 	    return;

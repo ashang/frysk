@@ -39,8 +39,6 @@
 
 package frysk.proc.live;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Hashtable;
 import java.io.File;
 import lib.dwfl.Elf;
@@ -50,11 +48,12 @@ import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
 import frysk.sys.ProcessIdentifier;
+import frysk.rsl.Log;
 
-public class IsaFactory
-{
+public class IsaFactory {
+    private static final Log fine = Log.fine(IsaFactory.class);
+
   private static IsaFactory factory;
-  static final Logger logger = Logger.getLogger("frysk");
   private Hashtable isaHash;
   private String MESSAGE = "getting task's executable";
     
@@ -88,7 +87,7 @@ public class IsaFactory
      * the processes memory is still readable.
      */
     Isa getIsa(ProcessIdentifier pid) {
-	logger.log (Level.FINE, "{0} getIsa\n", this);
+	fine.log(this, "getIsa", pid);
 	
 	// FIXME: This should use task.proc.getExe().  Only that
 	// causes wierd failures; take a rain-check :-(

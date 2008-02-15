@@ -39,12 +39,11 @@
 
 package frysk.proc.live;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.event.Event;
 
 class State {
-    protected static Logger logger = Logger.getLogger("frysk");
+    private static final Log fine = Log.fine(State.class);
 
     private String name;
     protected State (String name)
@@ -64,8 +63,7 @@ class State {
     }
     protected RuntimeException unhandled (Object what, String event)
     {
-	logger.log (Level.FINE, "{0} {1} -- unhandled\n",
-		    new Object[] { what, event });
+	fine.log("unhandled", what, "event", event);
 	return new RuntimeException (what
 				     + " in state \""
 				     + name
