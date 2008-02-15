@@ -102,20 +102,15 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
 	prpsInfo.setPrState(processStat.state);
 	prpsInfo.setPrSname(processStat.state);
 
-	String midStr = null;
+	// If state = Z then set zombie flag
+	if (processStat.state == 'Z')
+	    prpsInfo.setPrZomb((char)1);
+	else
+	    prpsInfo.setPrZomb((char)0);
 
-	// Transform processStat.zero(int) into char.
-	if ((processStat.numThreads >= 0) && (processStat.numThreads < 10)) {
-	    midStr = String.valueOf(processStat.numThreads);
 
-	    prpsInfo.setPrZomb(midStr.charAt(0));
-	}
-
-	if ((processStat.nice >= 0) && (processStat.nice < 10)) {
-	    midStr = String.valueOf(processStat.nice);
-
-	    prpsInfo.setPrNice(midStr.charAt(0));
-	}
+	String midStr = String.valueOf(processStat.nice);
+	prpsInfo.setPrNice(midStr.charAt(0));
 
 	// Set rest of prpsinfo
 	prpsInfo.setPrFlag(processStat.flags);

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2006, 2007, IBM Corp.
+// Copyright 2006, 2007, 2008, IBM Corp.
 // Copyright 2007, 2008, Red Hat Inc.
 // 
 // Contributed by
@@ -107,19 +107,17 @@ public class PPC32LinuxElfCorefile extends LinuxElfCorefile {
 	prpsInfo.setPrState(processStat.state);
 	prpsInfo.setPrSname(processStat.state);
 
-	String midStr = null;
 
-	// Transform processStat.zero(int) into char.
-	if ((processStat.numThreads >= 0) && (processStat.numThreads < 10)) {
-	    midStr = String.valueOf(processStat.numThreads);
-	    prpsInfo.setPrZomb(midStr.charAt(0));
-	}
+	// If state = Z then set zombie flag
+	if (processStat.state == 'Z')
+	    prpsInfo.setPrZomb((char)1);
+	else
+	    prpsInfo.setPrZomb((char)0);
 
-	if ((processStat.nice >= 0) && (processStat.nice < 10)) {
-	    midStr = String.valueOf(processStat.nice);
 
-	    prpsInfo.setPrNice(midStr.charAt(0));
-	}
+	String midStr = String.valueOf(processStat.nice);
+	prpsInfo.setPrNice(midStr.charAt(0));
+
 
 	// Set rest of prpsinfo
 	prpsInfo.setPrFlag(processStat.flags);

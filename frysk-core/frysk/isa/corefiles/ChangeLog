@@ -1,3 +1,11 @@
+2008-02-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PPC64LinuxElfCorefile.java (writeNotePrpsinfo): Fix
+	zombie field population. Correctly output "nice" values.
+	* PPC32LinuxElfCorefile.java: Ditto.
+	* IA32LinuxElfCorefile.java: Ditto.
+	* X8664LinuxElfCorefie.java: Ditto.
+	
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32LinuxElfCorefile.java: Update to match Stat.numThreads.
