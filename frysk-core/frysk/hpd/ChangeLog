@@ -1,3 +1,9 @@
+2008-02-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CLI.java: Added ArrayStoreException and ClassCastException
+	to nasty exceptions.
+		
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* QuitCommand.java: Update to match frysk.sys.Signal.

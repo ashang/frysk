@@ -298,6 +298,8 @@ public class CLI {
 	}
 	return (cause instanceof NullPointerException
 		|| cause instanceof ArrayIndexOutOfBoundsException
+		|| cause instanceof ArrayStoreException
+		|| cause instanceof ClassCastException
 		|| e.getMessage() == null);
     }
 
