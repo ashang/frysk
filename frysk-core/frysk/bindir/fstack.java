@@ -218,7 +218,7 @@ public final class fstack
 
 
     parser.add(new Option("common", 'c', "print commonly used debug information:" +
-                          "this is equivalent to -p functions,params,fullpath"){
+                          "this is equivalent to fstack -v -p functions,params,fullpath"){
 
                 public void parsed (String argument) throws OptionException
                 {
@@ -226,6 +226,7 @@ public final class fstack
                   printParameters = true;
                   printScopes = false;
                   fullpath = true;
+                  virtualFrames = true;
                 }
     });
               

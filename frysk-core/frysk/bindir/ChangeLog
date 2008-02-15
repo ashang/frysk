@@ -1,3 +1,7 @@
+2008-02-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fstack.java: Added printing of virtual frames to -c.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* fcore.java (parsePids(Proc[])): Replace parsePids(ProcId[]).
