@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY open SYSTEM "utracer_sync_body.sgml">
+]>
+
+<refentry id="utracersync">
+  &sync;
+</refentry>

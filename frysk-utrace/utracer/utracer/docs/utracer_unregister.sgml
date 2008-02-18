@@ -1,7 +1,0 @@
-<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
-<!ENTITY unregister SYSTEM "utracer_unregister_body.sgml">
-]>
-
-<refentry id="utracerunregister">
-  &unregister;
-</refentry>

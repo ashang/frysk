@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY checkpid SYSTEM "utracer_check_pid_body.sgml">
+]>
+
+<refentry id="utracercheckpid">
+  &checkpid;
+</refentry>

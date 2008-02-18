@@ -1,0 +1,11 @@
+#!/bin/sh
+
+stty sane
+
+lsmod | grep -q utracer
+if (( $? != 0 )); then sudo /sbin/insmod ../utracer/module/utracer.ko; fi
+
+./Judb
+
+sudo /sbin/rmmod ../utracer/module/utracer.ko
+

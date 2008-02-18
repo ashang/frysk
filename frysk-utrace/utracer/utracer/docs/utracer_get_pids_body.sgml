@@ -1,0 +1,94 @@
+<refmeta>
+  <refentrytitle>utracer_get_pids</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_get_pids</refname>
+  <refpurpose>returns an array of PIDs attached on behalf of a specified client
+  client</refpurpose> 
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_get_pids</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long * <parameter>nr_pids</parameter></paramdef>
+      <paramdef>long ** <parameter>pids</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+  <para>
+    The <function>utracer_list_pids</function>() function returns, via
+    passed-by-reference parameters, the number of processes attached by utracer
+    on behalf of the client specified by the <parameter>client_pid</parameter>
+    parameter, and an array of the PIDs corresponding to those processes.  The
+    <parameter>nr_pids</parameter> parameter is a pointer to a long value that
+    will, on a successful return from the function, contain the number of
+    process; the <parameter>pids</parameter> parameter points to the PID
+    array.  Space for the PID array is <function>malloc</function>()ed by
+    utracer and should be subsequently <function>free</function>()ed if
+    <parameter>pids</parameter> is non-null on return.
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Return Value</title>
+  <para>
+    If successful, <function>utracer_check_pid</function>() returns zero,
+    indicating that the process specified by <parameter>traced_pid</parameter>
+    exists and is attached to the specified client.  If the call is not
+    successful, it will return a -1 and set <varname>errno</varname>.  The
+    value of <varname>errno</varname> will be either of those appropriate to
+    the <function>open</function>() system call (q.v.) or one of the following
+    (some of which are unique to the utracer module).
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Errors</title>
+  <variablelist>
+      
+    <varlistentry>
+      <term><constant>ENOMEM</constant></term>
+      <listitem>
+	<para>
+	  The kernel was unable to allocate sufficient memory to hold an
+	  internal copy of the PID array.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term><constant>EFAULT</constant></term>
+      <listitem>
+	<para>
+	  The kernel was unable to copy its internal PID array to useerspace
+	  (probably indicates that the passed <parameter>pids</parameter>
+	  pointer is invalid). 
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACING</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>client_pid</parameter>
+          parameter either doesn't exist or isn't registered as a utracer
+          client.
+	</para>
+      </listitem>
+    </varlistentry>
+
+  </variablelist>
+</refsect1>
+
+&xref;
+

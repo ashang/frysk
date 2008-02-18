@@ -1,0 +1,93 @@
+<refmeta>
+  <refentrytitle>utracer_detach</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_detach</refname>
+  <refpurpose>detach a specified process from a specified client</refpurpose> 
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_attach</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long <parameter>traced_pid</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+  <title>Description</title>
+  <para>
+    <function>utracer_detach</function>() is used to detach a process specified
+    by the <parameter>traced_pid</parameter> parameter from the utracer client
+    identified by the <parameter>client_pid</parameter> parameter.
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Return Value</title>
+  <para>
+    If successful, <function>utracer_detach</function>() returns a zero;
+    otherwise a -1 is returned and <varname>errno</varname> is set.
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Errors</title>
+  <variablelist>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACING</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>client_pid</parameter>
+	  parameter either doesn't t exist or isn't registered as a utracer
+	  client. 
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term><constant>UTRACER_ETRACED</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter either doesn't t exist or isn't attached.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term><constant>ESRCH</constant></term>
+      <listitem>
+	<para>
+	  The process specified by the <parameter>traced_pid</parameter>
+	  parameter does not exist.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term>UTRACER_EENGINE</term>
+      <listitem>
+	<para>
+	  The utrace-attach of the process specified by
+	  <parameter>traced_pid</parameter> parameter failed.
+	</para>
+      </listitem>
+    </varlistentry>
+
+  <para>
+    In addition to the foregoing, errors associated with
+    <function>ioctl</function>() may be reported.
+  </para>
+</refsect1>
+
+&xref;
+

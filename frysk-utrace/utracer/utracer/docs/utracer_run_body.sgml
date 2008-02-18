@@ -1,0 +1,81 @@
+<refmeta>
+  <refentrytitle>utracer_run</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_run</refname>
+  <refname>utracer_quiesce</refname>
+  <refpurpose>change the run state of a specified process</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>long <function>utracer_run</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long <parameter>traced_pid</parameter></paramdef>
+    </funcprototype>
+    <funcprototype>
+      <funcdef>long <function>utracer_quiesce</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long <parameter>traced_pid</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+  <para>
+    <function>utracer_run</function>() and
+    <function>utracer_quiesce</function>() are used to respectively start a
+    stopped process or stop a running one.  The
+    <parameter>traced_pid</parameter> parameter specifies the process the state
+    of which is to be changed.  The parameter <parameter>client_pid</parameter>
+    must be the value returned by a successful
+    <function>utracer_open</function>() call and serves to identify the calling
+    process to the module.
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Return Value</title>
+  <para>
+    If successful, these functions return zero.  If unsuccessful, they will
+    return a -1 and set <varname>errno</varname>.  The value of
+    <varname>errno</varname> will be either of those appropriate to the
+    <function>open</function>() system call (q.v.) or one of the following
+    (some of which are unique to the utracer module).
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Errors</title>
+  <variablelist>
+      
+    <varlistentry>
+      <term><constant>ESRCH</constant></term>
+      <listitem>
+	<para>
+	  The calling process no longer exists.
+	</para>
+      </listitem>
+    </varlistentry>
+      
+    <varlistentry>
+      <term><constant>UTRACER_EENGINE</constant></term>
+      <listitem>
+	<para>
+	  An attempt to attach to the calling process via utrace failed.  (The
+	  calling process is attached primarily to detect its unexpected death
+	  so any resources allocated by the utracer module can be cleaned up.)
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</refsect1>
+
+&xref;
+

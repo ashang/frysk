@@ -1,0 +1,7 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
+<!ENTITY detach SYSTEM "utracer_detach_body.sgml">
+]>
+
+<refentry id="utracerdetach">
+  &detach;
+</refentry>

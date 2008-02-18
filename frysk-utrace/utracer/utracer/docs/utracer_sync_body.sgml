@@ -1,0 +1,104 @@
+<refmeta>
+  <refentrytitle>utracer_sync</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_wait</refname>
+  <refname>utracer_sync</refname>
+  <refpurpose>synchronise the application and utracer components</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_wait</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+    </funcprototype>
+    <funcprototype>
+      <funcdef>int <function>utracer_sync</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+      <paramdef>long <parameter>type</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+  <para>
+    <function>utracer_sync</function>() is used to synchronise the three
+    componets of an application using utracer: the application control thread,
+    the application response thread, and the utracer module.  The parameter
+    <parameter>client_pid</parameter> must be the value returned by a
+    successful <function>utracer_open</function>() call and serves to identify
+    the calling process to the module.  The behaviour of the
+    <function>utracer_sync</function>() function is controlled by the
+    <parameter>type</parameter> parameter, which can be any of the following
+    constants:
+    <variablelist>
+
+      <varlistentry>
+        <term><constant>SYNC_INIT</constant></term>
+        <listitem>
+          <para>
+	    The <constant>SYNC_INIT</constant> operation, initiated from the
+	    application control thread and relayed by the utracer module to the
+	    application response thread, indicates that the control thread has
+	    completed its initialisation and that the response thread can begin
+	    any necessary initialisation that may depend on the control thread
+	    being in a specific state.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><constant>SYNC_HALT</constant></term>
+        <listitem>
+          <para>
+	    The <constant>SYNC_HALT</constant> operation, initiated from the
+	    application control thread and relayed by the utracer module to the
+	    application response thread, should cause the response thread to
+	    terminate.  (This operation was provided to accomodate the
+	    depreciation in Java of Thread.stop() methods, but can be used in a
+	    native C environment as well.)
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </para>
+
+  <para>
+    The <function>utracer_wait</function>() is similar to the
+    <function>utracer_sync</function>() function <constant>SYNC_INIT</constant>
+    operation except that, unlike <function>utracer_sync</function>(), it
+    blocks until the utracer module responds.
+    (<function>utracer_sync</function>() does not block--blocking is done by
+    the <function>utracer_read</function>() in the response thread.
+    <function>utracer_wait</function>() should only be called by the control
+    thread and should not be called after the response thread is created.
+    <function>utracer_sync</function>() should not be called until after the
+    response thread is created.)
+  </para>
+
+</refsect1>
+
+<refsect1>
+  <title>Return Value</title>
+  <para>
+    If successful, these functions return zero.
+    If either call is not successful, it will return a -1 and set
+    <varname>errno</varname>.  The value of <varname>errno</varname> will be
+    either of those appropriate to the <function>open</function>() system call
+    (q.v.) or <constant>UTRACER_ETRACING</constant> indicating that the process
+    specified by the <parameter>client_pid</parameter> parameter is not
+    registered with the utracer kernel
+    module. <function>utracer_wait</function>() may also result in an
+    <varname>errno</varname> value of <constant>UTRACER_EWAIT</constant>,
+    indicating that no valid response was received from the module.
+  </para>
+</refsect1>
+
+&xref;
+

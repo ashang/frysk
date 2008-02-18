@@ -1,0 +1,46 @@
+<refmeta>
+  <refentrytitle>utracer_close</refentrytitle>
+  <manvolnum>2</manvolnum>
+</refmeta>
+
+<refnamediv>
+  <refname>utracer_close</refname>
+  <refpurpose>close a connection to the utracer kernel module</refpurpose> 
+</refnamediv>
+
+<refsynopsisdiv>
+  <funcsynopsis>
+    <funcsynopsisinfo>
+      #include &lt;utracer.h&gt;
+    </funcsynopsisinfo>
+    <funcprototype>
+      <funcdef>int <function>utracer_close</function></funcdef>
+      <paramdef>long <parameter>client_pid</parameter></paramdef>
+    </funcprototype>
+  </funcsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+  <title>Description</title>
+  <para>
+    <function>utracer_close</function>() is used to close the connection
+    previously opened by <function>utracer_open</function>() to the utracer
+    kernel module.  The parameter <parameter>client_pid</parameter> must be the
+    value returned by a successful <function>utracer_open</function>() call.
+  </para>
+</refsect1>
+
+<refsect1>
+  <title>Return Value</title>
+  <para>
+    If successful, <function>utracer_close</function>() returns a zero;
+    otherwise a -1 is returned and <varname>errno</varname> is set with a value
+    determined by an <function>ioctl</function>() call (q.v.) or to
+    <errorname>UTRACER_ETRACING</errorname> if either the parameter
+    <parameter>pid</parameter> is invalid or does not refer to a previously
+    established connection.
+  </para>
+</refsect1>
+
+&xref;
+
