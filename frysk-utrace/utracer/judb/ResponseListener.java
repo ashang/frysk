@@ -22,9 +22,9 @@ class ResponseListener implements Runnable {
   public void run() {
     boolean spin = true;
     while (spin) {
-      System.out.println ("Starting pread");
+      //      System.out.println ("Starting pread");
       int type = Utrace.read_response();
-      System.out.println ("Back from pread, type = " + type);
+      //      System.out.println ("Back from pread, type = " + type);
       
       switch (type) {
       case IF_RESP_NULL:
@@ -43,13 +43,20 @@ class ResponseListener implements Runnable {
 	System.out.println ("resp death");
 	break;
       case IF_RESP_SYSCALL_ENTRY_DATA:
-	System.out.println ("resp syscall entry");
+	System.out.println ("resp syscall entry, syscall + " +
+			    Utrace.read_response_syscall_number () +
+			    ", pid = " +
+			    Utrace.read_response_syscall_pid ());
 	break;
       case IF_RESP_SYSCALL_EXIT_DATA:
-	System.out.println ("resp syscall exit");
+	System.out.println ("resp syscall exit, syscall + " +
+			    Utrace.read_response_syscall_number () +
+			    ", pid = " +
+			    Utrace.read_response_syscall_pid ());
 	break;
       case IF_RESP_EXEC_DATA:
-	System.out.println ("resp exec");
+	String exec = Utrace.read_resp_exec();
+	System.out.println ("resp exec, eexec = " + exec);
 	break;
       case IF_RESP_QUIESCE_DATA:
 	System.out.println ("resp quiesce");
