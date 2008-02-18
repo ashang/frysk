@@ -1,3 +1,24 @@
+Mon Nov 26 13:32:02 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer.sgml:
+	* utracer_attach_body.sgml:
+	* utracer_intro_body.sgml:
+	* utracer_open_body.sgml:
+	* utracer_set_syscall_body.sgml:
+	* utracer_check_pid_body.sgml:
+	* utracer_close.sgml:
+	* utracer_close_body.sgml:
+	* utracer_detach.sgml:
+	* utracer_detach_body.sgml:
+	* utracer_get_pids.sgml:
+	* utracer_get_pids_body.sgml:
+	* utracer_run.sgml:
+	* utracer_run_body.sgml:
+	* utracer_sync_body.sgml:
+	* utracer_xref.sgml:
+	* utracer_unregister.sgml:
+	* utracer_unregister_body.sgml:  Lots more documentation.
+
 Sat Oct 20 17:22:44 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer_intro.sgml:
