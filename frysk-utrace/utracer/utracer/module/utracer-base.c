@@ -173,35 +173,40 @@ create_utracing_info_entry (long utracing_pid,
 			    struct proc_dir_entry * de_utracing_resp,
 			    struct utrace_attached_engine * utracing_engine)
 {
+  int rc = 0;
+  
   utracing_info_s * utracing_info_new =
     kmalloc (sizeof(utracing_info_s), GFP_KERNEL);
   if (!utracing_info_new) return -ENOMEM;
 
-  if (utracing_info_top) {
-    utracing_info_top->prev = utracing_info_new;
-    utracing_info_new->next = utracing_info_top;
-  }
-  else utracing_info_new->next = NULL;
-  utracing_info_top = utracing_info_new;
-  utracing_info_new->prev = NULL;
+  if (utracing_info_new) {
+    if (utracing_info_top) {
+      utracing_info_top->prev = utracing_info_new;
+      utracing_info_new->next = utracing_info_top;
+    }
+    else utracing_info_new->next = NULL;
+    utracing_info_top = utracing_info_new;
+    utracing_info_new->prev = NULL;
     
-  utracing_info_new->utracing_pid		= utracing_pid;
-  utracing_info_new->client_pid_dir		= client_pid_dir;
-  utracing_info_new->de_utracing_client		= de_utracing_client;
-  utracing_info_new->de_utracing_cmd		= de_utracing_cmd;
-  utracing_info_new->de_utracing_resp		= de_utracing_resp;
-  utracing_info_new->utracing_engine		= utracing_engine;
-  utracing_info_new->utraced_info		= NULL;
-  init_waitqueue_head (&(utracing_info_new->ifr_wait));
-  init_waitqueue_head (&(utracing_info_new->ifw_wait));
-  init_waitqueue_head (&(utracing_info_new->ifq_wait));
-  init_waitqueue_head (&(utracing_info_new->ifx_wait));
-  utracing_info_new->queued_data		= NULL;
-  utracing_info_new->queued_data_length		= 0;
-  utracing_info_new->response_ready		= 0;
-  utracing_info_new->write_in_progress		= 0;
+    utracing_info_new->utracing_pid		= utracing_pid;
+    utracing_info_new->client_pid_dir		= client_pid_dir;
+    utracing_info_new->de_utracing_client		= de_utracing_client;
+    utracing_info_new->de_utracing_cmd		= de_utracing_cmd;
+    utracing_info_new->de_utracing_resp		= de_utracing_resp;
+    utracing_info_new->utracing_engine		= utracing_engine;
+    utracing_info_new->utraced_info		= NULL;
+    init_waitqueue_head (&(utracing_info_new->ifr_wait));
+    init_waitqueue_head (&(utracing_info_new->ifw_wait));
+    init_waitqueue_head (&(utracing_info_new->ifq_wait));
+    init_waitqueue_head (&(utracing_info_new->ifx_wait));
+    utracing_info_new->queued_data		= NULL;
+    utracing_info_new->queued_data_length	= 0;
+    utracing_info_new->response_ready		= 0;
+    utracing_info_new->write_in_progress	= 0;
+  }
+  else rc = -ENOMEM;
 
-  return 0;
+  return rc;
 }
 
 /*

@@ -454,7 +454,7 @@ handle_listpids (listpids_cmd_s * listpids_cmd)
 
   if (utracing_info_found) {
     utraced_info_s * utraced_info;
-    long * pids;
+    long * pids = NULL;
     int nr_pids;
 
     for (nr_pids = 0,utraced_info = utracing_info_found->utraced_info;
@@ -465,21 +465,26 @@ handle_listpids (listpids_cmd_s * listpids_cmd)
 
       pids = kmalloc (listpids_cmd->nr_pids_alloced * sizeof(long),
 		      GFP_KERNEL);
-      for (i = 0, utraced_info = utracing_info_found->utraced_info;
-	 utraced_info;
-	   i++, utraced_info = utraced_info->next) {
-	pids[i] = utraced_info->utraced_pid;
-      }
+      if (pids) {
+	for (i = 0, utraced_info = utracing_info_found->utraced_info;
+	     utraced_info;
+	     i++, utraced_info = utraced_info->next) {
+	  pids[i] = utraced_info->utraced_pid;
+	}
 
-      if (copy_to_user (listpids_cmd->nr_pids_actual, &nr_pids, sizeof(long)))
-	rc = -EFAULT;
-      else {
-	long len = nr_pids * sizeof(long);
-	if (len > listpids_cmd->nr_pids_alloced * sizeof(long))
-	  len = listpids_cmd->nr_pids_alloced * sizeof(long);
-	if (copy_to_user (listpids_cmd->pids, pids, len))
+	if (copy_to_user (listpids_cmd->nr_pids_actual,
+			  &nr_pids, sizeof(long)))
 	  rc = -EFAULT;
+	else {
+	  long len = nr_pids * sizeof(long);
+	  if (len > listpids_cmd->nr_pids_alloced * sizeof(long))
+	    len = listpids_cmd->nr_pids_alloced * sizeof(long);
+	  if (copy_to_user (listpids_cmd->pids, pids, len))
+	    rc = -EFAULT;
+	}
+	kfree (pids);
       }
+      else rc = -ENOMEM;
     }
   }
   else rc = -UTRACER_ETRACING;
@@ -662,19 +667,25 @@ handle_detach (attach_cmd_s * attach_cmd)
 
 
 static int
-handle_switchpid (switchpid_cmd_s * switchpid_cmd)
+handle_checkpid (checkpid_cmd_s * checkpid_cmd)
 {
   int rc = 0;
   struct task_struct * task;
 
-  task = get_task (switchpid_cmd->utraced_pid);
+  task = get_task (checkpid_cmd->utraced_pid);
   if (task) {
     utracing_info_s * utracing_info_found =
-      lookup_utracing_info (switchpid_cmd->utracing_pid);
+      lookup_utracing_info (checkpid_cmd->utracing_pid);
     if (utracing_info_found) {
       utraced_info_s * utraced_info_found =
-	lookup_utraced_info (utracing_info_found, switchpid_cmd->utraced_pid);
-      if (!utraced_info_found) rc = -UTRACER_ETRACED;
+	lookup_utraced_info (utracing_info_found, checkpid_cmd->utraced_pid);
+      if (utraced_info_found) {
+	struct utrace_attached_engine * engine =
+	  locate_engine (checkpid_cmd->utracing_pid,
+			 checkpid_cmd->utraced_pid);
+	if (!engine) rc = -UTRACER_EENGINE;
+      }
+      else rc = -UTRACER_ETRACED;
     }
     else rc = -UTRACER_ETRACING;
   }
@@ -823,9 +834,9 @@ utracer_ioctl (struct inode * inode,
     DB_PRINTK (KERN_ALERT "IF_CMD_SYSCALL--ioctl\n");
     rc = handle_syscall (&if_cmd.syscall_cmd);
     break;
-  case IF_CMD_SWITCHPID:
-    DB_PRINTK (KERN_ALERT "IF_CMD_SWITCHPID--ioctl\n");
-    rc = handle_switchpid (&if_cmd.switchpid_cmd);
+  case IF_CMD_CHECKPID:
+    DB_PRINTK (KERN_ALERT "IF_CMD_CHECKPID--ioctl\n");
+    rc = handle_checkpid (&if_cmd.checkpid_cmd);
     break;
   case IF_CMD_ATTACH:
     DB_PRINTK (KERN_ALERT "IF_CMD_ATTACH--ioctl\n");

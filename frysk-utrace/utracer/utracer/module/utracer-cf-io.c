@@ -185,28 +185,30 @@ handle_register (register_cmd_s * register_cmd)
 					       &utracing_utrace_ops,
 					       0UL);  //fixme -- maybe use?
 	      if (!IS_ERR (utracing_engine)) {
-	      //fixme -- do something with rc?
 		rc = utrace_set_flags (task,utracing_engine,
 				       UTRACE_EVENT (EXEC)	|
 				       UTRACE_EVENT (EXIT)	|
 				       UTRACE_EVENT (DEATH));
-	  
-		rc = create_utracing_info_entry (client_pid,
-						 client_pid_dir,
-						 de_utracing_client,
-						 de_utracing_cmd,
-						 de_utracing_resp,
-						 utracing_engine);
+
 		if (0 == rc) {
-		  memcpy (&utracing_info_top->proc_dir_operations,
-			  de_utrace_control->proc_fops,
-			  sizeof(struct file_operations));
-		  utracing_info_top->proc_dir_operations.ioctl = utracer_ioctl;
-		  de_utracing_cmd->proc_fops =
-		    &utracing_info_top->proc_dir_operations;
+		  rc = create_utracing_info_entry (client_pid,
+						   client_pid_dir,
+						   de_utracing_client,
+						   de_utracing_cmd,
+						   de_utracing_resp,
+						   utracing_engine);
+		  if (0 == rc) {
+		    memcpy (&utracing_info_top->proc_dir_operations,
+			    de_utrace_control->proc_fops,
+			    sizeof(struct file_operations));
+		    utracing_info_top->proc_dir_operations.ioctl =
+		      utracer_ioctl;
+		    de_utracing_cmd->proc_fops =
+		      &utracing_info_top->proc_dir_operations;
 	    
-		  de_utracing_cmd->data       = utracing_info_top;
-		  de_utracing_resp->data      = utracing_info_top;
+		    de_utracing_cmd->data       = utracing_info_top;
+		    de_utracing_resp->data      = utracing_info_top;
+		  }
 		}
 		else {
 		  remove_proc_entry(UTRACER_RESP_FN, de_utracing_client);
