@@ -2,8 +2,8 @@
 
 stty sane
 
-lsmod | grep -q utracer
-if (( $? != 0 )); then sudo /sbin/insmod utracer/module/utracer.ko; fi
+#lsmod | grep -q utracer
+#if (( $? != 0 )); then sudo /sbin/insmod utracer/module/utracer.ko; fi
 
 #LD_LIBRARY_PATH=./utracer/utracer:$LD_LIBRARY_PATH ./udb -c'sy ex en' -c'sy ex a read' -l ls
 #./udb -c'sy en en' -c'sy en a read' -c'run' -c'quit' -l ls
@@ -13,5 +13,5 @@ if (( $? != 0 )); then sudo /sbin/insmod utracer/module/utracer.ko; fi
 ./udb -c'sy ex en' -c'sy en en' -c'sy ex a write' -c'sy en a write' \
   -l ./aux/ts
 
-sudo /sbin/rmmod utracer/module/utracer.ko
+#sudo /sbin/rmmod utracer/module/utracer.ko
 
