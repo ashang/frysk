@@ -7,17 +7,8 @@ provide a command to req the process tree starting at any point
 in utracer.c, trace registering apps & report death; auto-unregister
 research self-unload of module
 
-change cmd_<pid> to cmd/<pid>, etc
+maybe consolidate all responses through a single /proc entry?  or put a select
+in the userspace response thread for multiple entry fds?
 
-[root@hotbox 31104]# cat maps
-00b6d000-00b86000 r-xp 00000000 fd:00 2359327    /lib/ld-2.5.so
-00b86000-00b88000 rwxp 00018000 fd:00 2359327    /lib/ld-2.5.so
-00fc0000-00fc1000 r-xp 00fc0000 00:00 0          [vdso]
-08048000-08049000 r-xp 00000000 fd:00 15501598   /usr/sandbox/frysk-utrace/utracer/testsyscall
-08049000-0804a000 rw-p 00000000 fd:00 15501598   /usr/sandbox/frysk-utrace/utracer/testsyscall
-bfb3d000-bfb53000 rw-p bfb3d000 00:00 0          [stack]
-[root@hotbox 31104]#
+provide a means of customising responses to report_* events.
 
- read (6, 0xbfb4f2a8, 512)  - stack [ bfb3d000 ] = 122a8
-write (2, 0xbfb4d258, 16)   - stack [ bfb3d000 ] = 10258
- read (6, 0xb7ffc000, 4096) - stack [ bfb3d000 ] = 
