@@ -29,11 +29,11 @@
   <para>
     <function>utracer_set_syscall</function>() is used to specify which
     syscalls should be reported to the calling process.  The parameter
-    <parameter>pid</parameter> must be the value returned by a successful
-    <function>utracer_open</function>() call and serves to identify the calling
-    process to the module.  The <parameter>traced_pid</parameter> parameter
-    specifies the attached process to which this operation applies, that
-    process having been previously attached by a
+    <parameter>client_pid</parameter> must be the value returned by a
+    successful <function>utracer_open</function>() call and serves to identify
+    the calling process to the module.  The <parameter>traced_pid</parameter>
+    parameter specifies the attached process to which this operation applies,
+    that process having been previously attached by a
     <function>utracer_attach</function>() call, q.v. (Utracer supports
     concurrent tracing of multiple attached processes by multiple clients.)
     The <parameter>which</parameter> parameter specifies whether the syscall
@@ -136,6 +136,45 @@
     and the exit from a <quote>close</quote> syscall.  Initially, no reports
     are enabled.
   </para>
+
+  <para>
+    Once syscall reporting is enabled, the occurrence of any of the specified
+    syscalls will result in a report being returned to the response application
+    thread via the <function>utracer_read</function>() function.  ( See
+    <citerefentry><refentrytitle>utracer_read</refentrytitle>
+    <manvolnum>2</manvolnum></citerefentry>.)
+    <function>utracer_read</function>() returns (by passed pointers) a union of
+    structs describing the event being reported upon and, optionally, ancillary
+    data.  The first element of that union is always of type long and is used
+    to determine which of the structs that constitute the union should be
+    used.  In the case of syscall, the value of that long will be either
+    <constant>IF_RESP_SYSCALL_ENTRY_DATA</constant> or
+    <constant>IF_RESP_SYSCALL_EXIT_DATA</constant>, and the applicable struct
+    is:
+      <programlisting>
+	<![CDATA[
+typedef struct {
+  long type;
+  long utraced_pid;
+  long data_length;
+} syscall_resp_s;
+      
+]]>
+</programlisting>
+    of which only the <structfield>utraced_pid</structfield> field, indicating
+    the PID for which the syscall occurred, is of interest.
+  </para>
+
+  <para>
+    The ancillary data returned for a syscall is a copy of the kernel
+    <structname>pt_regs</structname> struct.  The elements of this struct are
+    architecture-dependent and utracer makes no attempt to do so, leaving that
+    to the application. As after every invocation of
+    <function>utracer_read</function>(), if the <parameter>extra</parameter>
+    parameter pointing to the ancillary data is non-null, it points to memory
+    allocated by <function>malloc</function>() and should be freed using the
+    <function>free</function>() function.
+  </para>
 </refsect1>
 
 <refsect1>
@@ -155,7 +194,7 @@
       <listitem>
 	<para>
 	  The process specified by the <parameter>client_pid</parameter>
-	  parameter either doesn't t exist or isn't registered as a utracer
+	  parameter either doesn't exist or isn't registered as a utracer
 	  client. 
 	</para>
       </listitem>
@@ -210,27 +249,4 @@
   </para>
 </refsect1>
 
-<refsect1>
-  <title>See Also</title>
-  <para>
-    <function>utracer_get_mmap</function>(), 
-    <function>utracer_get_pids</function>(), 
-    <function>utracer_get_mem</function>(), 
-    <function>utracer_get_env</function>(), 
-    <function>utracer_get_exe</function>(), 
-    <function>utracer_get_regs</function>(), 
-    <function>utracer_resp_file_id</function>(), 
-    <!--<function>utracer_set_syscall</function>(), -->
-    <function>utracer_set_sync</function>(), 
-    <function>utracer_detach</function>(), 
-    <function>utracer_attach</function>(), 
-    <function>utracer_run</function>(), 
-    <function>utracer_quiesce</function>(), 
-    <function>utracer_switch_pid</function>(), 
-    <function>utracer_open</function>(),
-    <function>utracer_unregister</function>(), 
-    <function>utracer_cleanup</function>(), 
-    <function>utracer_close_ctl_file</function>(), 
-    <function>utracer_shutdown</function>(), 
-  </para>
-</refsect1>
+&xref;
