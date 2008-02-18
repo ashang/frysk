@@ -173,7 +173,7 @@ watch_fcn(char ** saveptr)
     current_pid = pid;
     set_prompt();
   }
-  else uerror ("watch");
+  else utracer_uerror ("watch");
   return 1;
 }
 
@@ -189,7 +189,7 @@ attach_fcn(char ** saveptr)
     current_pid = pid;
     set_prompt();
   }
-  else uerror ("attach");
+  else utracer_uerror ("attach");
   return 1;
 }
 
@@ -206,7 +206,7 @@ detach_fcn(char ** saveptr)
       current_pid = -1;
       set_prompt();
     }
-    else uerror ("detach");
+    else utracer_uerror ("detach");
   }
   else fprintf (stderr, "\tdetach requires a valid PID\n");
 
@@ -223,7 +223,7 @@ run_fcn(char ** saveptr)
   if (-1 != pid) {
     rc = utracer_run (udb_pid, pid);
     if (0 == rc) fprintf (stderr, "%d running\n", pid);
-    else uerror ("run");
+    else utracer_uerror ("run");
   }
   else fprintf (stderr, "\trun requires an argument\n");
   return 1;
@@ -239,7 +239,7 @@ quiesce_fcn(char ** saveptr)
   if (-1 != pid) {
     rc = utracer_quiesce (udb_pid, pid);
     if (0 == rc) fprintf (stderr, "%d quiesced\n", pid);
-    else uerror ("quiesce");
+    else utracer_uerror ("quiesce");
   }
   else fprintf (stderr, "\trun requires an argument\n");
   return 1;
@@ -263,12 +263,12 @@ switchpid_fcn (char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    rc = utracer_switch_pid (udb_pid, pid);
+    rc = utracer_check_pid (udb_pid, pid);
     if (0 == rc) {
       current_pid = pid;
       set_prompt();
     }
-    else uerror ("switchpid");
+    else utracer_uerror ("switchpid");
   }
   else fprintf (stderr, "\tswitchpid requires an argument\n");
   return 1;
@@ -295,7 +295,7 @@ printreg_fcn (char ** saveptr)
     rc = utracer_get_regs (udb_pid, pid, regset, &regsinfo,
 			   &nr_regs, &reg_size);
     if (0 == rc) show_regs (pid, regset, reg, regsinfo, nr_regs, reg_size);
-    else uerror ("printreg");
+    else utracer_uerror ("printreg");
 
     if (regsinfo) free (regsinfo);
   }
@@ -318,7 +318,7 @@ printregall_fcn (char ** saveptr)
   // fixme allow selection of regset
   rc = utracer_get_regs (udb_pid, pid, 0, &regsinfo, &nr_regs, &reg_size);
   if (0 == rc) show_regs (pid, 0, -1, regsinfo, nr_regs, reg_size);
-  else uerror ("printreg");
+  else utracer_uerror ("printreg");
 
   if (regsinfo) free (regsinfo);
 
@@ -401,7 +401,7 @@ printmmap_fcn (char ** saveptr)
 			 &printmmap_resp, &vm_struct_subset, &vm_strings);
   if (0 == rc) 
     handle_printmmap (printmmap_resp, vm_struct_subset, vm_strings);
-  else uerror ("printmmap");
+  else utracer_uerror ("printmmap");
 
   if (printmmap_resp)	free (printmmap_resp);
   if (vm_struct_subset)	free (vm_struct_subset);
@@ -421,7 +421,7 @@ printenv_fcn (char ** saveptr)
   if (tok && ('[' == *tok)) pid = atol (tok+1);
   rc = utracer_get_env (udb_pid, pid, &env);
   if (0 == rc) fprintf (stdout, "%s\n", env);
-  else uerror ("printenv");
+  else utracer_uerror ("printenv");
   return 1;
 }
 
@@ -438,7 +438,7 @@ listpids_fcn(char ** saveptr)
     
     for (i = 0; i < nr_pids; i++) fprintf (stdout, "\t%ld\n", pids[i]);
   }
-  else uerror ("printenv");
+  else utracer_uerror ("printenv");
 
   if (pids) free (pids);
   return 1;
@@ -459,7 +459,7 @@ printexe_fcn (char ** saveptr)
     fprintf (stdout, "\t filename: \"%s\"\n", filename);
     fprintf (stdout, "\t   interp: \"%s\"\n", interp);
   }
-  else uerror ("printexe");
+  else utracer_uerror ("printexe");
 
   if (filename)	free (filename);
   if (interp)	free (interp);
@@ -507,7 +507,7 @@ requested length are invlaid.\n");
       fprintf (stdout, "%02x ", (int)(((char *)bffr)[i]));
     fprintf (stdout, "\n");
   }
-  else uerror ("printmem");
+  else utracer_uerror ("printmem");
 
   if (bffr) free (bffr);
   
@@ -675,8 +675,7 @@ create_cmd_hash_table()
   rc = hcreate_r ((4 * nr_cmds)/3, &cmd_hash_table);
   if (0 == rc) {
     cleanup_udb();
-    utracer_unregister (udb_pid);
-    utracer_close_ctl_file();
+    utracer_close(udb_pid);
     fprintf (stderr, "\tCreating command hash table failed.\n");
     _exit (1);
   }
@@ -685,8 +684,7 @@ create_cmd_hash_table()
     ENTRY * entry;
     if (0 == hsearch_r (cmds[i], ENTER, &entry, &cmd_hash_table)) {
       cleanup_udb();
-      utracer_unregister (udb_pid);
-      utracer_close_ctl_file();
+      utracer_close(udb_pid);
       error (1, errno, "Error building commands hash.");
     }
   }
