@@ -76,8 +76,7 @@ cleanup_udb()
   rc = pthread_join(resp_listener_thread, &rc_ptr);
   if (0 != rc) perror ("pthread_cancel");
 
-  
-  utracer_cleanup();
+  utracer_close(udb_pid);
 
   text_ui_terminate();
   arch_specific_terminate();
@@ -90,8 +89,7 @@ sigterm_handler (int sig)
 #ifdef ENABLE_MODULE_OPS  
   unload_utracer();		// and have utracer unload itsef
 #endif
-  utracer_unregister ((long)udb_pid);
-  utracer_close_ctl_file();
+  utracer_close(udb_pid);
   exit (0);			// when nothing else is registered
 }
 
@@ -154,44 +152,6 @@ append_cmd (char * cmd)
   cl_cmds[cl_cmds_next++] = strdup (cmd);
 }
 
-#ifdef USE_UTRACER_WAIT
-static void
-utracer_wait()
-{
-  int i;
-#define CHECKS_NR	3
-
-  for (i = 0; i < CHECKS_NR; i++) {
-    if_resp_u if_resp;
-    ssize_t sz;
-      
-    utracer_sync (udb_pid, SYNC_INIT);
-
-    LOGIT ("starting utracer_wait pread pass %d fd %d\n",
-	   i, utracer_resp_file_fd());
-    sz = pread (utracer_resp_file_fd(), &if_resp,
-		  sizeof(if_resp), 0);
-    LOGIT ("got utracer_wait pread, sz = %d\n", sz);
-    if (-1 == sz) {
-      uerror ("Response pread");
-      // fixme -- close things
-      _exit (4);
-    }
-
-    if (IF_RESP_SYNC_DATA == if_resp.type) {
-      fprintf (stdout, "\tsync response received.\n");
-      break;
-    }
-  }
-
-  if (CHECKS_NR == i) {
-      // fixme -- close things
-    fprintf (stderr, "Synchronisation with the utracer module failed.\n");
-    _exit (1);
-  }
-}
-#endif
-
 static void
 start_runnables ()
 {
@@ -241,7 +201,7 @@ start_runnables ()
 	  if (-1 == rc)
 	    perror ("Error in spawner execlp");
 	}
-	else uerror ("start_runnables");
+	else utracer_uerror ("start_runnables");
       }
       break;
     default:      // parent
@@ -338,7 +298,12 @@ main (int ac, char * av[])
   
 #ifdef USE_UTRACER_WAIT
   LOGIT ("calling utracer_wait()\n");
-  utracer_wait();
+  if (-1 == utracer_wait(udb_pid)) {
+    // fixme -- close things
+    utracer_uerror ("Response pread");
+    _exit (1);
+  }
+  else fprintf (stdout, "\tsync response received.\n");
 #endif
       
 
@@ -353,7 +318,7 @@ main (int ac, char * av[])
 	current_pid = pids_to_attach[i].pid;
 	set_prompt();
       }
-      else uerror ("attaching cl pids");
+      else utracer_uerror ("attaching cl pids");
     }
     free (pids_to_attach);
     LOGIT ("done attaching pids()\n");
@@ -370,7 +335,7 @@ main (int ac, char * av[])
 			     resp_listener,
 			     NULL);
     if (rc) {
-      utracer_shutdown((long)udb_pid);
+      utracer_close(udb_pid);
       error (1, errno, "pthread_create() failed");
     }
   }
@@ -380,6 +345,7 @@ main (int ac, char * av[])
     int resp;
 
     LOGIT ("calling utracer_sync()\n");
+// fixme -- should this wait?
     utracer_sync (udb_pid, SYNC_INIT);
     LOGIT ("returning from utracer_sync()\n");
   }
@@ -388,10 +354,7 @@ main (int ac, char * av[])
   text_ui();
 
   cleanup_udb();
-  utracer_unregister ((long)udb_pid);
-  utracer_close_ctl_file();
-  
-
+  utracer_close(udb_pid);
 #ifdef ENABLE_MODULE_OPS  
   if (unload_module) unload_utracer();
 #endif
