@@ -49,6 +49,9 @@ public class Utrace {
   public static native int  sync    (long clien_pid, long type);
   public static native long[] get_gprs (long clien_pid, long pid);
   public static native int  read_response ();
-  public static native long  read_response_sync_type ();
+  public static native long    read_response_sync_type ();
+  public static native String read_resp_exec();
+  public static native long    read_response_syscall_pid ();
+  public static native long    read_response_syscall_number ();
 }
 
