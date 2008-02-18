@@ -48,6 +48,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <utracer.h>
 #include <utracer-errmsgs.h>
@@ -57,8 +58,86 @@ int cmd_file_fd;
 int resp_file_fd;
 int ctl_file_fd;
 
+static int
+utracer_unregister (long pid)
+{
+  int irc;
+  register_cmd_s register_cmd = {CTL_CMD_UNREGISTER, pid};
+
+  irc = ioctl (ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
+
+  return irc;
+}
+
+
+ssize_t
+utracer_read (if_resp_u * if_resp, void ** extra)
+{
+  ssize_t sz;
+
+  sz = pread (resp_file_fd, if_resp, sizeof(if_resp_u), 0);
+
+  if (extra) {
+    switch (if_resp->type) {
+    case IF_RESP_EXEC_DATA:
+      {
+	exec_resp_s exec_resp = if_resp->exec_resp;
+	long bytes_to_get = exec_resp.data_length;
+	long bytes_gotten = 0;
+	char * cstr = malloc (bytes_to_get + 2);
+
+	if (sz > sizeof(exec_resp)) {
+	  long bytes_avail =  sz - sizeof(exec_resp);
+	  memcpy ((void *)cstr, (void *)(if_resp) + sizeof (exec_resp),
+		  bytes_avail);
+	  bytes_to_get -= bytes_avail;
+	  bytes_gotten = bytes_avail;
+	}
+
+	if (0 < bytes_to_get) {
+	  sz = pread (resp_file_fd,
+		      (void *)cstr + bytes_gotten,
+		      bytes_to_get, sz);
+	  bytes_gotten += sz;
+	}
+	if (extra) *extra = cstr;
+	else free (cstr);
+      }
+      break;
+    case IF_RESP_SYSCALL_ENTRY_DATA:
+    case IF_RESP_SYSCALL_EXIT_DATA:
+      {
+	// fixme -- handle /proc/<pid>/mem to access ptr args
+	syscall_resp_s syscall_resp = if_resp->syscall_resp;
+	long bytes_to_get = syscall_resp.data_length;
+	long bytes_gotten = 0;
+	struct pt_regs * regs = malloc (bytes_to_get);
+
+	if (sz > sizeof(syscall_resp)) {
+	  long bytes_avail =  sz - sizeof(syscall_resp);
+	  memcpy ((void *)regs, (void *)(if_resp) + sizeof (syscall_resp),
+		  bytes_avail);
+	  bytes_to_get -= bytes_avail;
+	  bytes_gotten = bytes_avail;
+	}
+
+	if (0 < bytes_to_get) {
+	  sz = pread (resp_file_fd,
+		      (void *)regs + bytes_gotten,
+		      bytes_to_get, sz);
+	}
+	if (extra) *extra = regs;
+	else free (regs);
+      }
+      break;
+    }
+  }
+
+  return sz;
+}
+
 void
-uerror(const char * s)
+utracer_uerror(const char * s)
 {
   if ((UTRACER_EBASE <= errno) && (errno < UTRACER_EMAX)) {
     fprintf (stderr, "%s: %s\n", s, utrace_emsg[errno - UTRACER_EBASE]);
@@ -66,7 +145,47 @@ uerror(const char * s)
   else perror (s);
 }
 
-void
+int
+utracer_wait(pid_t client_pid)
+{
+  int i;
+  int rc = 0;
+#define CHECKS_NR	3
+
+  for (i = 0; i < CHECKS_NR; i++) {
+    if_resp_u if_resp;
+    ssize_t sz;
+      
+    rc = utracer_sync (client_pid, SYNC_WAIT);
+
+    if (0 == rc) {
+      LOGIT ("starting utracer_wait pread pass %d fd %d\n",
+	     i, resp_file_fd);
+      sz = pread (resp_file_fd, &if_resp,
+		  sizeof(if_resp), 0);
+      LOGIT ("got utracer_wait pread, sz = %d\n", sz);
+      if (-1 != sz) {
+	if (IF_RESP_SYNC_DATA == if_resp.type){
+	  sync_resp_s sync_resp = if_resp.sync_resp;
+	  if (SYNC_WAIT == sync_resp.sync_type) break;
+	}
+      }
+      else {
+	rc = -1;
+	break;
+      }
+    }
+  }
+
+  if ((CHECKS_NR == i) && (0 == rc)) {
+    errno = UTRACER_EWAIT;
+    rc = -1;
+  }
+
+  return rc;
+}
+
+static void
 utracer_close_ctl_file()
 {
   if (-1 != ctl_file_fd) {
@@ -75,7 +194,7 @@ utracer_close_ctl_file()
   }
 }
 
-void
+static void
 utracer_cleanup()
 {
   if (-1 != cmd_file_fd) {
@@ -89,17 +208,13 @@ utracer_cleanup()
 }
 
 void
-utracer_shutdown(long pid)
+utracer_close(long pid)
 {
   utracer_cleanup();
   utracer_unregister (pid);
+#if 0 // probably shouldn't
   utracer_close_ctl_file();
-}
-
-int
-utracer_resp_file_fd()
-{
-  return resp_file_fd;
+#endif
 }
 
 long
@@ -125,7 +240,7 @@ utracer_open (void)
   irc = utracer_register (rc_pid);
   LOGIT ("returning from utracer_register(), irc = %d\n", irc);
   if (0 > irc) {
-    uerror ("Initial registration");
+    utracer_uerror ("Initial registration");
     close (ctl_file_fd);
     return -1;
   }
@@ -139,7 +254,7 @@ utracer_open (void)
   if (-1 == cmd_file_fd) {
     utracer_unregister (rc_pid);
     close (ctl_file_fd);
-    uerror ("Error opening command file");
+    utracer_uerror ("Error opening command file");
     return -1;
   }
     
@@ -153,7 +268,7 @@ utracer_open (void)
     utracer_unregister (rc_pid);
     close (ctl_file_fd);
     close (cmd_file_fd);
-    uerror ("Error opening command file");
+    utracer_uerror ("Error opening command file");
     return -1;
   }
 
@@ -591,33 +706,18 @@ utracer_register (long pid)
 }
 
 
-/************************** unregister  ********************/
-
-
-int
-utracer_unregister (long pid)
-{
-  int irc;
-  register_cmd_s register_cmd = {CTL_CMD_UNREGISTER, pid};
-
-  irc = ioctl (ctl_file_fd, sizeof(register_cmd_s), &register_cmd);
-
-  return irc;
-}
-
-
 /************************** switchpid  ********************/
 
 
 int
-utracer_switch_pid (long client_pid, long pid)
+utracer_check_pid (long client_pid, long pid)
 {
   int irc;
-  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID,
-				   client_pid,
-				   pid};
+  checkpid_cmd_s checkpid_cmd = {IF_CMD_CHECKPID,
+				 client_pid,
+				 pid};
 
-  irc = ioctl (cmd_file_fd, sizeof(switchpid_cmd_s), &switchpid_cmd);
+  irc = ioctl (cmd_file_fd, sizeof(checkpid_cmd_s), &checkpid_cmd);
 
   return irc;
 }
