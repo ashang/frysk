@@ -59,15 +59,15 @@ resp_listener (void * arg)
   if_resp_u if_resp;
   ssize_t sz;
   int run = 1;
+  void * extra = NULL;
 
   LOGIT ("in response thread\n");
 
   while (run) {
     LOGIT ("starting response thread pread\n");
-    sz = pread (utracer_resp_file_fd(), &if_resp,
-		sizeof(if_resp), 0);
+    sz = utracer_read (&if_resp, &extra);
     if (-1 == sz) {
-      uerror ("Response pread");
+      utracer_uerror ("Response pread");
       _exit (4);
     }
     
@@ -77,27 +77,15 @@ resp_listener (void * arg)
     case IF_RESP_EXEC_DATA:
       {
 	exec_resp_s exec_resp = if_resp.exec_resp;
-	long bytes_to_get = exec_resp.data_length;
-	long bytes_gotten = 0;
-	char * cstr = alloca (bytes_to_get + 2);
-
-	if (sz > sizeof(exec_resp)) {
-	  long bytes_avail =  sz - sizeof(exec_resp);
-	  memcpy ((void *)cstr, (void *)(&if_resp) + sizeof (exec_resp),
-		  bytes_avail);
-	  bytes_to_get -= bytes_avail;
-	  bytes_gotten = bytes_avail;
+	if (extra) {
+	  fprintf (stdout, "\tProcess %ld execing %s (%s)\n",
+		   exec_resp.utraced_pid,
+		   (char *)extra,
+		   ((char *)extra + 1 + strlen ((char *)extra)));
 	}
-
-	if (0 < bytes_to_get) {
-	  sz = pread (utracer_resp_file_fd(),
-		      (void *)cstr + bytes_gotten,
-		      bytes_to_get, sz);
-	  bytes_gotten += sz;
-	}
-	
-	fprintf (stdout, "\tProcess %ld execing %s (%s)\n",
-		 exec_resp.utraced_pid, cstr, cstr + 1 + strlen (cstr));
+	else
+	  fprintf (stdout, "\tProcess %ld execing <unknown> (<unknown>)\n",
+		   exec_resp.utraced_pid);
       }
       break;
     case IF_RESP_SYSCALL_ENTRY_DATA:
@@ -105,25 +93,8 @@ resp_listener (void * arg)
       {
 	// fixme -- handle /proc/<pid>/mem to access ptr args
 	syscall_resp_s syscall_resp = if_resp.syscall_resp;
-	long bytes_to_get = syscall_resp.data_length;
-	long bytes_gotten = 0;
-	struct pt_regs * regs = alloca (bytes_to_get);
-
-	if (sz > sizeof(syscall_resp)) {
-	  long bytes_avail =  sz - sizeof(syscall_resp);
-	  memcpy ((void *)regs, (void *)(&if_resp) + sizeof (syscall_resp),
-		  bytes_avail);
-	  bytes_to_get -= bytes_avail;
-	  bytes_gotten = bytes_avail;
-	}
-
-	if (0 < bytes_to_get) {
-	  sz = pread (utracer_resp_file_fd(),
-		      (void *)regs + bytes_gotten,
-		      bytes_to_get, sz);
-	}
-	
-	show_syscall (if_resp.type, syscall_resp.utraced_pid, regs);
+	show_syscall (if_resp.type, syscall_resp.utraced_pid, extra);
+        if (extra) free (extra);
       }
       break;
     case IF_RESP_DEATH_DATA:
