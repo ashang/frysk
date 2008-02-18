@@ -56,6 +56,7 @@ const char * utrace_emsg[] = {
   "Error reading user pages.",		  // UTRACER_EPAGES,     
   "Null mm_struct, task probably died.",  // UTRACER_EMM,        
   "Invalid regset."			  // UTRACER_EREGSET,    
+  "Wait failed."			  // UTRACER_EWAIT,    
 };
 
 #ifdef __cplusplus

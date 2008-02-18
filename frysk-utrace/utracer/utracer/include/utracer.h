@@ -90,7 +90,7 @@ typedef enum {
   IF_CMD_READ_REG,
   IF_CMD_RUN,
   IF_CMD_LIST_PIDS,
-  IF_CMD_SWITCHPID,
+  IF_CMD_CHECKPID,
   IF_CMD_PRINTMMAP,
   IF_CMD_PRINTENV,
   IF_CMD_GETMEM,
@@ -135,8 +135,8 @@ typedef struct {
 typedef enum {
   SYNC_NULL,
   SYNC_INIT,
-  SYNC_RESP,
-  SYNC_HALT
+  SYNC_HALT,
+  SYNC_WAIT
 } sync_cmd_e;
 
 typedef struct {
@@ -149,7 +149,7 @@ typedef struct {
   long cmd;
   long utracing_pid;
   long utraced_pid;
-} switchpid_cmd_s;
+} checkpid_cmd_s;
 
 typedef struct {
   unsigned long vm_start;
@@ -247,7 +247,7 @@ typedef union {
   readreg_cmd_s		readreg_cmd;
   run_cmd_s		run_cmd;
   listpids_cmd_s	listpids_cmd;
-  switchpid_cmd_s	switchpid_cmd;
+  checkpid_cmd_s	checkpid_cmd;
   printmmap_cmd_s	printmmap_cmd;
   syscall_cmd_s		syscall_cmd;
   sync_cmd_s		sync_cmd;
@@ -339,17 +339,40 @@ typedef enum {
   UTRACER_EPAGES,
   UTRACER_EMM,
   UTRACER_EREGSET,
+  UTRACER_EWAIT,
   UTRACER_EMAX,       
 } utracer_errno_e;
 
 /***************** public i/f ****************/
+
+long utracer_open (void);
+void utracer_close (long pid);
+int utracer_wait (pid_t client_pid);
+int utracer_sync (long client_pid, long type);
+
+int utracer_detach (long client_pid, long pid);
+int utracer_attach (long client_pid, long pid, long quiesce,
+		    long exec_quiesce);
+ssize_t utracer_read (if_resp_u * if_resp, void ** extra);
+
+int utracer_check_pid (long client_pid, long pid);
+
+int utracer_set_syscall (long client_pid, short which,
+			 short cmd, long pid, long syscall);
+
+int utracer_run (long client_pid, long pid);
+int utracer_quiesce (long client_pid, long pid);
+
+int utracer_get_pids (long client_pid, long * nr_pids, long ** pids);
+
+
+
 
 int utracer_get_mmap (long client_pid,
 		      long pid,
 		      printmmap_resp_s ** printmmap_resp_p,
 		      vm_struct_subset_s ** vm_struct_subset_p,
 		      char ** vm_strings_p);
-int utracer_get_pids (long client_pid, long * nr_pids, long ** pids);
 int utracer_get_mem (long client_pid,
 		     long pid,
 		     void * addr,
@@ -363,25 +386,12 @@ int utracer_get_regs (long client_pid,
 		      void ** regsinfo,
 		      unsigned int * nr_regs_p,
 		      unsigned int * reg_size_p);
-int utracer_set_syscall (long client_pid, short which,
-			 short cmd, long pid, long syscall);
-int utracer_sync (long client_pid, long type);
-int utracer_detach (long client_pid, long pid);
-int utracer_attach (long client_pid, long pid, long quiesce,
-		    long exec_quiesce);
-int utracer_run (long client_pid, long pid);
-int utracer_quiesce (long client_pid, long pid);
-int utracer_switch_pid (long client_pid, long pid);
 int utracer_get_exe (long client_pid,
 		     long pid,
 		     char ** filename_p,
 		     char ** interp_p);
-int utracer_unregister (long pid);
-long utracer_open(void);
-void utracer_cleanup(void);
-void utracer_close_ctl_file(void);
-void utracer_shutdown(long pid);
-int  utracer_resp_file_fd(void);
+
+void utracer_uerror(const char * s);
 
 #ifdef __cplusplus
 }
