@@ -15,11 +15,13 @@ UDB_OBJECT_FILES = $(UDB_SOURCE_FILES:.c=.o)
 UDB_INCS     = udb.h  udb-i386.h
 UTRACER_INCS = utracer/include/utracer.h  utracer/include/utracer-errmsgs.h
 
+KERNEL_INCLUDES = -I/usr/src/kernels/$(shell uname -r)-$(shell uname -p)/include
+
 #all::lcl_install
 all::$(TARGET)
 
 %.o:%.c
-	$(UDB_CC) $(UDB_CFLAGS) $(UDB_INCLUDES) -c $<
+	$(UDB_CC) $(UDB_CFLAGS) $(KERNEL_INCLUDES) $(UDB_INCLUDES) -c $<
 
 lcl_install: $(TARGET)
 	sudo chown root:root $(TARGET)
