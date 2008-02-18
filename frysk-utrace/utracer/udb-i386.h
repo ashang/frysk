@@ -42,6 +42,7 @@
 #define UDB_I386_H
 
 #include <search.h>
+#include <asm/ptrace.h>
 
 #ifdef DO_UDB_INIT
 #define DECL(v,i) v = i
@@ -143,7 +144,6 @@ typedef struct {
 
 // derived from <kernel_src>/include/asm-i386/elf.h
 // this doesn't match include/asm-i386/user.h
-REG_DECL (reg_data_s debug_data,	REGSET_DEBUG, -1);
 REG_DECL (reg_data_s ebx_data,		REGSET_GPRS,  0);
 REG_DECL (reg_data_s ecx_data,		REGSET_GPRS,  1);
 REG_DECL (reg_data_s edx_data,		REGSET_GPRS,  2);
@@ -154,7 +154,10 @@ REG_DECL (reg_data_s eax_data,		REGSET_GPRS,  6);
 REG_DECL (reg_data_s xds_data,		REGSET_GPRS,  7);
 REG_DECL (reg_data_s xes_data,		REGSET_GPRS,  8);
 REG_DECL (reg_data_s xfs_data,		REGSET_GPRS,  9);
+#if 1		// fixme -- <kernel>/asm/ptrace.h omits this, but utrace
+//		returns 17 regs in gprs; there's a  mismatch somewhere
 REG_DECL (reg_data_s xgs_data,		REGSET_GPRS, 10);
+#endif
 REG_DECL (reg_data_s orig_eax_data,	REGSET_GPRS, 11);
 REG_DECL (reg_data_s eip_data,		REGSET_GPRS, 12);
 REG_DECL (reg_data_s xcs_data,		REGSET_GPRS, 13);
@@ -164,6 +167,7 @@ REG_DECL (reg_data_s xss_data,		REGSET_GPRS, 16);
 REG_DECL (reg_data_s gdtr_data,		REGSET_DESC,  0);
 REG_DECL (reg_data_s ldtr_data,		REGSET_DESC,  1);
 REG_DECL (reg_data_s idtr_data,		REGSET_DESC,  2);
+REG_DECL (reg_data_s debug_data,	REGSET_DEBUG, -1);
 REG_DECL (reg_data_s gprs_data,		REGSET_GPRS,  -1);
 REG_DECL (reg_data_s fprs_data,		REGSET_FPRS,  -1);
 REG_DECL (reg_data_s fprx_data,		REGSET_FPRX,  -1);
@@ -175,11 +179,6 @@ extern
 ENTRY reg_mapping[]
 #ifdef DO_UDB_INIT
 = {
-  {"gprs",	 (void *)&gprs_data},
-  {"fprs",	 (void *)&fprs_data},
-  {"fprx",	 (void *)&fprx_data},
-  {"desc",	 (void *)&desc_data},
-  {"debug",	 (void *)&debug_data},
   {"ebx",	 (void *)&ebx_data},
   {"ecx",	 (void *)&ecx_data},
   {"edx",	 (void *)&edx_data},
@@ -190,7 +189,10 @@ ENTRY reg_mapping[]
   {"xds",	 (void *)&xds_data},
   {"xes",	 (void *)&xes_data},
   {"xfs",	 (void *)&xfs_data},
+#if 1		// fixme -- <kernel>/asm/ptrace.h omits this, but utrace
+//		returns 17 regs in gprs; there's a  mismatch somewhere
   {"xgs",	 (void *)&xgs_data},
+#endif
   {"xcs",	 (void *)&xcs_data},
   {"orig_eax",	 (void *)&orig_eax_data},
   {"eip",	 (void *)&eip_data},
@@ -199,7 +201,12 @@ ENTRY reg_mapping[]
   {"xss",	 (void *)&xss_data},
   {"gdtr",	 (void *)&gdtr_data},
   {"ldtr",	 (void *)&ldtr_data},
-  {"idtr",	 (void *)&idtr_data}
+  {"idtr",	 (void *)&idtr_data},
+  {"gprs",	 (void *)&gprs_data},
+  {"fprs",	 (void *)&fprs_data},
+  {"fprx",	 (void *)&fprx_data},
+  {"desc",	 (void *)&desc_data},
+  {"debug",	 (void *)&debug_data},
 }
 #endif
   ;
@@ -210,28 +217,6 @@ int nr_regs
 #endif
   ;
 
-// fixme -- the struct pt_regs in /usr/include/asm/ptrace.h dosn't match the
-// one in the kernel.. here's the kernel version:
-
-struct pt_regs {
-  long ebx;
-  long ecx;
-  long edx;
-  long esi;
-  long edi;
-  long ebp;
-  long eax;
-  int  xds;
-  int  xes;
-  /* int  xfs; */
-  int  xgs;
-  long orig_eax;
-  long eip;
-  int  xcs;
-  long eflags;
-  long esp;
-  int  xss;
-};
 
 
 // from include/asm-i386/unistd.h

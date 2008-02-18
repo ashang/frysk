@@ -118,8 +118,7 @@ create_sys_hash_table()
   rc = hcreate_r ((4 * nr_syscall_names)/3, &sys_hash_table);
   if (0 == rc) {
     cleanup_udb();
-    utracer_unregister (udb_pid);
-    utracer_close_ctl_file();
+    utracer_close(udb_pid);
     fprintf (stderr, "\tCreating syscall hash table failed.\n");
     _exit (1);
   }
@@ -128,8 +127,7 @@ create_sys_hash_table()
     ENTRY * entry;
     if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table)) {
       cleanup_udb();
-      utracer_unregister (udb_pid);
-      utracer_close_ctl_file();
+      utracer_close(udb_pid);
       error (1, errno, "Error building syscall hash.");
     }
   }
@@ -453,7 +451,7 @@ show_syscall (long type, long pid, struct pt_regs * regs)
     if (0 == rc)
       fprintf (stdout, "\t\tat addr %08x: \"%.*s\"\n",
 	       addr_to_show, SC_BFFR_LEN, (char *)bffr);
-    else uerror ("syscall getmem");
+    else utracer_uerror ("syscall getmem");
   }
 }
 
