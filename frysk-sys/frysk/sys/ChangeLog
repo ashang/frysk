@@ -1,3 +1,10 @@
+2008-02-19  Chris Moller  <cmoller@redhat.com>
+
+	* Fork.java:
+	* cni/Fork.cxx: added a utrace() method similar to ptrace() except
+	that it results in a direct utrace attach rather than a
+	PTRACE_TRACEME. 
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Wait.java (drain(int)): Make private.

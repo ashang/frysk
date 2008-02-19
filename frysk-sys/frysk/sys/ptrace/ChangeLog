@@ -1,3 +1,9 @@
+2008-02-19  Chris Moller  <cmoller@redhat.com>
+
+	* Utrace.java:
+	* Utrace.cxx: Added Java wrapper for the utracer API.
+	* TestUtrace.java: Testcases for the above.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPtrace.java: Update frysk.sys.Wait.
