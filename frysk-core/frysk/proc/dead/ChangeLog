@@ -1,5 +1,10 @@
 2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
+	* SOLibMapBuilder.java (construct(File,long)): Replace
+	construct(File,long,long).
+	* LinuxCoreProc.java: Update.
+	* LinuxExeProc.java: Update.
+
 	* CorefileByteBuffer.java: Update to match lib.dwfl.
 	* SOLibMapBuilder.java: Ditto.
 	* LinuxExeHost.java: Ditto.

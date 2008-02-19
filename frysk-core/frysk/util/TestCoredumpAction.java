@@ -269,14 +269,7 @@ public class TestCoredumpAction
     coreMap = coreMaps[mapNo];
     assertNotNull("Cannot find stack in core process", coreMap);    
 
-    Elf testElf = null;
-    try {
-	testElf = new Elf (coreFileName,
-			       ElfCommand.ELF_C_READ);
-    } catch(Exception e) {
-	fail("Cannot open elf file"+coreFileName);
-    }
-
+    Elf testElf = new Elf(testCore, ElfCommand.ELF_C_READ);
     ElfEHeader header = testElf.getEHeader();
     int count = header.phnum;
     int segCount = 0;
