@@ -1,3 +1,9 @@
+2008-02-19  Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.am (FunitSimpleInterfaceTest): New.
+	* frysk/pkglibdir/FunitSimpleInterface.java: New.
+	* frysk/pkglibdir/FunitSimpleInterfaceTest.java: New.
+
 2008-02-08  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (frysk_pkglibdir_funit_quicksort_LINK): New.

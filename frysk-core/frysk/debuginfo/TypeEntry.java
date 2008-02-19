@@ -52,6 +52,7 @@ import frysk.value.EnumType;
 import frysk.value.FloatingPointType;
 import frysk.value.FunctionType;
 import frysk.value.GccStructOrClassType;
+import frysk.value.InterfaceType;
 import frysk.value.PointerType;
 import frysk.value.ReferenceType;
 import frysk.value.SignedType;
@@ -83,8 +84,10 @@ public class TypeEntry {
     private final HashMap dieHash;
 
     public TypeEntry(ISA isa) {
+	fine.log(this, "Creating TypeEntry, ISA: ", isa);
 	this.byteorder = isa.order();
 	this.dieHash = new HashMap();
+	finest.log(this, "Finished creating TypeEntry");
     }
 
     private int getByteSize(DwarfDie die) {
@@ -235,6 +238,8 @@ public class TypeEntry {
      */
     public CompositeType getGccStructOrClassType(DwarfDie classDie, 
 	    					 String name) {
+	
+	fine.log(this, "Entering getGccStructOrClassType, classDie: ",classDie, " name: ", name);
 	dumpDie("structOrClassDie=", classDie);
 
 	CompositeType type;
@@ -274,7 +279,19 @@ public class TypeEntry {
 	addMembers(classDie, classType);
 	return classType;
     }
+    
+    public InterfaceType getInterfaceType(DwarfDie classDie, String name) {
+	dumpDie("classDie=", classDie);
 
+	InterfaceType interfaceType = new InterfaceType(name,
+		getByteSize(classDie));
+
+	// XXX: may need to cut this method down,
+	// interfaces don't use accessibility.
+	addMembers(classDie, interfaceType);
+	return interfaceType;
+    }
+    
     /**
      * Return true of the given die represents a subprogram or inlined
      * subroutine
@@ -410,7 +427,8 @@ public class TypeEntry {
      * @return a frysk.type for this varDie
      */
     public Type getType(DwarfDie typeDie) {
-
+	fine.log(this,	"Entering getType, DwarfDie: ", typeDie);
+	
 	if (typeDie == null)
 	    return (null);
 
@@ -475,6 +493,12 @@ public class TypeEntry {
 	    returnType = classType;
 	    break;
 	}
+        case DwTag.INTERFACE_TYPE_: {
+           InterfaceType interfaceType = getInterfaceType(type, typeDie.getName());
+           returnType = interfaceType;
+           break;
+        }
+
 	case DwTag.ENUMERATION_TYPE_: {
 	    DwarfDie subrange = type.getChild();
 	    EnumType enumType = new EnumType(typeDie.getName(), byteorder,

@@ -54,5 +54,13 @@ public class CompilerVersion {
     public boolean supportsClassType() {
 	return false;
     }
+    
+    public boolean supportsInterFaceType() {
+	return false;
+    }
+    
+    public String toString() {
+	return "Compiler: " + compilerString;
+    }
 
 }

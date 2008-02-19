@@ -47,12 +47,15 @@ import lib.dwfl.DwflModule;
 import frysk.dwfl.DwflCache;
 import frysk.isa.registers.Register;
 import frysk.proc.Task;
+import frysk.rsl.Log;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.value.ScratchLocation;
 import frysk.value.Value;
 
 public abstract class Frame {
+    
+    private static Log fine = Log.fine(Frame.class);
 
     private final Task task;
     private final Frame inner;
@@ -94,6 +97,7 @@ public abstract class Frame {
      * @return The Task this StackFrame belongs to.
      */
     public final Task getTask() {
+	fine.log("Getting task: ", task);
 	return task;
     }
 

@@ -305,3 +305,8 @@ frysk/pkgdatadir/test-core-x8664:
 frysk/pkgdatadir/test-core-x86:
 	mkdir -p `dirname $@`
 	ln -s -f @abs_top_builddir@/../frysk-sys/$@ $@
+
+#FunitSimpleInterfaceTest
+pkglib_PROGRAMS += frysk/pkglibdir/FunitSimpleInterfaceTest
+frysk/pkglibdir/FunitSimpleInterfaceTest:
+	gcj -o $@ -g --main=FunitSimpleInterfaceTest $(srcdir)/frysk/pkglibdir/FunitSimpleInterfaceTest.java $(srcdir)/frysk/pkglibdir/FunitSimpleInterface.java

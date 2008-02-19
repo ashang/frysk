@@ -1,3 +1,8 @@
+2008-02-19  Nurdin Premji  <npremji@redhat.com>
+
+	* TestCase.java (unresolvedCompilerNoSupportForAT_INTERFACE): Added.
+	(unresolvedCompilerNoSupportForAT_CLASS): Fixed logic.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Results.java: Use frysk.rsl.

@@ -44,24 +44,39 @@ import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.junit.TestCase;
 import frysk.proc.Task;
+import frysk.rsl.Log;
 import frysk.testbed.DaemonBlockedAtSignal;
 
 public class TestClass extends TestCase {
+    
+    private static Log log = Log.fine(TestClass.class);
 
     private CompositeType getType(String program, String variableName) {
 	Task task = (new DaemonBlockedAtSignal(program)).getMainTask();
+	
+	log.log(this, "Got task: ", task);
+	
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(task);
+	
+	log.log(this, "Got debug frame: ", frame);
 
 	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(
 		frame);
+	
+	log.log(this, "Got search engine: ", objectDeclarationSearchEngine);
 
 	Variable variable = (Variable) objectDeclarationSearchEngine
 		.getVariable(variableName);
 
 	assertNotNull("Variable found", variable);
+	
+	log.log(this, "Got variable: ", variable);
 
 	Type type = variable.getType(frame.getTask().getISA());
+	
+	log.log(this, "Got base type: ", type);
+	
 	CompositeType compType = null;
 
 	try {
@@ -69,6 +84,8 @@ public class TestClass extends TestCase {
 	} catch (ClassCastException e) {
 	    fail("Not a composite type");
 	}
+	
+	log.log(this, "Got type: ", compType);
 
 	return compType;
     }

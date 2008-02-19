@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,60 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+public interface FunitSimpleInterface {
 
-import frysk.rsl.Log;
+    void simpleMethod();
 
-public class GNURedHatCompilerVersion extends CompilerVersion implements
-	Comparable {
-    
-    private static Log fine = Log.fine(GNURedHatCompilerVersion.class);
-
-    private int version;
-    private int minorVersion;
-    private int patchLevel;
-    private int RHRelease;
-
-    private static GNURedHatCompilerVersion minSupportingClassType = new GNURedHatCompilerVersion(
-	    "GNURedHatCompilerVersionSupportsClassType", 4, 1, 2, 37);
-
-    private static GNURedHatCompilerVersion minSupportingInterfaceType = new GNURedHatCompilerVersion(
-	    "GNURedhatCompilerVersionSupportsInterfaceType", 4, 3, 0, 7);
-
-    public GNURedHatCompilerVersion(String string, int version,
-	    int minorVersion, int patchLevel, int RHRelease) {
-	super(string);
-
-	fine.log(this, "Setting up GNU compiler");
-	this.version = version;
-	this.minorVersion = minorVersion;
-	this.patchLevel = patchLevel;
-	this.RHRelease = RHRelease;
-    }
-
-    public boolean supportsClassType() {
-	boolean ret = this.compareTo(minSupportingClassType) >= 0;
-	fine.log(this, "Entering supportsClassType, returning: ", Boolean.valueOf(ret));
-	return ret;
-    }
-
-    public boolean supportsInterfaceType() {
-	return this.compareTo(minSupportingInterfaceType) >= 0;
-    }
-
-    public int compareTo(Object arg0) {
-	fine.log("Entering compareTo, arg: ", arg0);
-	GNURedHatCompilerVersion that = (GNURedHatCompilerVersion) arg0;
-
-	if (this.version != that.version) {
-	    return this.version - that.version;
-	} else if (this.minorVersion != that.minorVersion) {
-	    return this.minorVersion - that.minorVersion;
-	} else if (this.patchLevel != that.patchLevel) {
-	    return this.patchLevel - that.patchLevel;
-	} else {
-	    return this.RHRelease - that.RHRelease;
-	}
-    }
-    
 }

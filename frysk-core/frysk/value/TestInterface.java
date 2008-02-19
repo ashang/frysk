@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,60 +37,55 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.value;
 
-import frysk.rsl.Log;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
+import frysk.junit.TestCase;
+import frysk.proc.Task;
+import frysk.testbed.DaemonBlockedAtSignal;
 
-public class GNURedHatCompilerVersion extends CompilerVersion implements
-	Comparable {
-    
-    private static Log fine = Log.fine(GNURedHatCompilerVersion.class);
+public class TestInterface extends TestCase {
 
-    private int version;
-    private int minorVersion;
-    private int patchLevel;
-    private int RHRelease;
+    private CompositeType getType(String program, String variableName) {
+	Task task = (new DaemonBlockedAtSignal(program)).getMainTask();
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(task);
 
-    private static GNURedHatCompilerVersion minSupportingClassType = new GNURedHatCompilerVersion(
-	    "GNURedHatCompilerVersionSupportsClassType", 4, 1, 2, 37);
+	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(
+		frame);
 
-    private static GNURedHatCompilerVersion minSupportingInterfaceType = new GNURedHatCompilerVersion(
-	    "GNURedhatCompilerVersionSupportsInterfaceType", 4, 3, 0, 7);
+	Variable variable = (Variable) objectDeclarationSearchEngine
+		.getVariable(variableName);
 
-    public GNURedHatCompilerVersion(String string, int version,
-	    int minorVersion, int patchLevel, int RHRelease) {
-	super(string);
+	assertNotNull("Variable found", variable);
 
-	fine.log(this, "Setting up GNU compiler");
-	this.version = version;
-	this.minorVersion = minorVersion;
-	this.patchLevel = patchLevel;
-	this.RHRelease = RHRelease;
+	Type type = variable.getType(frame.getTask().getISA());
+	CompositeType compType = null;
+
+	try {
+	    // Java variables are considered PointerTypes, so follow the
+	    // pointer.
+	    compType = (CompositeType) ((PointerType) type).getType();
+	} catch (ClassCastException e) {
+	    fail("Not a composite type" + type);
+	}
+
+	return compType;
     }
 
-    public boolean supportsClassType() {
-	boolean ret = this.compareTo(minSupportingClassType) >= 0;
-	fine.log(this, "Entering supportsClassType, returning: ", Boolean.valueOf(ret));
-	return ret;
-    }
+    public void testSimpleInterface() {
+	CompositeType type = getType("FunitSimpleInterfaceTest", "inter");
 
-    public boolean supportsInterfaceType() {
-	return this.compareTo(minSupportingInterfaceType) >= 0;
-    }
-
-    public int compareTo(Object arg0) {
-	fine.log("Entering compareTo, arg: ", arg0);
-	GNURedHatCompilerVersion that = (GNURedHatCompilerVersion) arg0;
-
-	if (this.version != that.version) {
-	    return this.version - that.version;
-	} else if (this.minorVersion != that.minorVersion) {
-	    return this.minorVersion - that.minorVersion;
-	} else if (this.patchLevel != that.patchLevel) {
-	    return this.patchLevel - that.patchLevel;
+	if (unresolvedCompilerNoSupportForAT_CLASS()) {
+	    assertEquals("Variable is a struct", "struct", type.getPrefix());
+	} else if (unresolvedCompilerNoSupportForAT_INTERFACE()) {
+	    assertEquals("Variable is a class", "class", type.getPrefix());
 	} else {
-	    return this.RHRelease - that.RHRelease;
+	    assertEquals("Variable is an interface", "interface", type
+		    .getPrefix());
 	}
     }
-    
+
 }

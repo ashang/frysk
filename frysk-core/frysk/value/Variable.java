@@ -51,6 +51,7 @@ import frysk.debuginfo.TypeEntry;
 import frysk.debuginfo.ValueUnavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
+import frysk.rsl.Log;
 import frysk.scopes.SourceLocation;
 
 /**
@@ -60,6 +61,10 @@ import frysk.scopes.SourceLocation;
  */
 
 public class Variable extends ObjectDeclaration{
+    
+    private static Log fine = Log.fine(Variable.class);
+    private static Log finest = Log.finest(Variable.class);
+    
     private Type type;
     private final DwarfDie variableDie;
     private final String name;
@@ -90,10 +95,14 @@ public class Variable extends ObjectDeclaration{
     }
 
     public Type getType(ISA isa) {
+	fine.log(this, "Entering getType, ISA: ", isa);
+	
 	if(this.type == null){
 	    TypeEntry typeEntry = new TypeEntry(isa);
 	    this.type = typeEntry.getType(variableDie);
 	}
+	
+	finest.log(this, "Leaving getType, type: ", type);
 	return type;
     }
      

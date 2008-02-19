@@ -1,6 +1,15 @@
+2008-02-19  Nurdin Premji  <npremji@redhat.com>
+
+	* TypeEntry.java (getInterfaceType): Added.
+	(getType): Added support for interface type.
+	* GNURedHatCompilerVersion.java: Made comparable.
+	(supportsInterfaceType): Added.
+	(compareTo): Added.
+
 2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Update to match lib.dwfl.Elf.
+	
 
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
