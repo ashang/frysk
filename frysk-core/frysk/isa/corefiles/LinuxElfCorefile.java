@@ -71,6 +71,8 @@ public abstract class LinuxElfCorefile {
     Task[] blockedTasks;
 
     boolean writeAllMaps = false;
+   
+    boolean stackOnly = true;
 
     Elf linuxElfCorefileImage = null;
 
@@ -98,6 +100,20 @@ public abstract class LinuxElfCorefile {
      */
     public void setWriteAllMaps(boolean maps) {
 	this.writeAllMaps = maps;
+    }
+
+
+    /**
+     * 
+     * Defines whether to write only the stack segment and elide all others.
+     * 
+     * @param maps - True if attempt to write all maps, false to follow
+     * map writing convention.
+     * 
+     */
+
+    public void setStackOnly(boolean stackOnly) {
+	this.stackOnly = stackOnly;
     }
 
     /**
@@ -540,6 +556,15 @@ public abstract class LinuxElfCorefile {
 				writeMap = true;
 		    }	
 		}
+
+		if (stackOnly) {
+		    if (sfilename.equals("[stack]"))
+			writeMap = true;
+		    else
+			writeMap = false;
+		}
+			
+				
 		// Get empty progam segment header corresponding to this entry.
 		// PT_NOTE's program header entry takes the index: 0. So we should
 		// begin from 1.

@@ -1,3 +1,9 @@
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoredumpAction.java: Add stacjOnly parameter.
+	* TestCoredumpAction.java (testStackOnlyMap): New.
+	
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java (parsePids(Proc[])): Replace

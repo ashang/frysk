@@ -60,6 +60,8 @@ public class fcore
 
   private static boolean writeAllMaps = false;
 
+  private static boolean stackOnly = false;
+
   private static CoredumpAction stacker;
 
   protected static final Logger logger = Logger.getLogger("frysk");
@@ -90,7 +92,8 @@ public class fcore
     public static void dumpPid(Proc proc) {
 	stacker = new CoredumpAction(proc, filename, 
 				     new AbandonCoreEvent(proc),
-				     writeAllMaps);
+				     writeAllMaps,
+				     stackOnly);
 	new ProcBlockAction(proc, stacker);
 	Manager.eventLoop.run();
     }
@@ -116,7 +119,7 @@ public class fcore
 
     addOptions(parser);
 
-    parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
+    parser.setHeader("Usage: fcore [-a] [-stack] [-o filename] [-c level] [-l level] <pids>");
 
     parser.parse(args);
 
@@ -134,6 +137,25 @@ public class fcore
   private static void addOptions (CommandlineParser parser)
   {
 
+    parser.add(new Option("stack", 's',
+                          " Writes only stack segment, and elides all "+
+                          "other maps.")
+    {
+      public void parsed (String mapsValue) throws OptionException
+      {
+        try
+          {
+            stackOnly = true;
+
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid maps parameter " + mapsValue);
+          }
+
+      }
+    });
+
     parser.add(new Option("allmaps", 'a',
                           " Writes all readable maps. Does not elide"
                               + " or omit any readable map. Caution: could"
@@ -145,7 +167,7 @@ public class fcore
         try
           {
             writeAllMaps = true;
-
+	    stackOnly = false;
           }
         catch (IllegalArgumentException e)
           {

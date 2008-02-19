@@ -1,3 +1,9 @@
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.xml: Add -stack option. 
+	* fcore.java (dumpPids): Add stackOnly parameter.
+	(addOptions): Ditto.
+
 2008-02-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstack.java: Added printing of virtual frames to -c.

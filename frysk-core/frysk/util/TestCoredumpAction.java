@@ -51,6 +51,7 @@ import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfException;
 import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfKind;
+import lib.dwfl.ElfPHeader;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.isa.ISA;
@@ -232,7 +233,70 @@ public class TestCoredumpAction
       testCore.delete();
   }
 
-/**
+
+  public void testStackOnlyMap () 
+  {
+    Proc ackProc = giveMeAProc();
+    MemoryMap stackMap = null;
+    MemoryMap coreMap = null;
+    // Create a corefile from process
+    String coreFileName = constructStackOnlyCore(ackProc);
+    File testCore = new File(coreFileName);
+ 
+    assertTrue("Checking core file " + coreFileName + " exists.",
+            testCore.exists());
+
+    // Model the corefile, and get the Process.
+    LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
+		   testCore,new File(ackProc.getExe()));      
+
+    assertNotNull("Checking core file Host", lcoreHost);
+    
+    // Get corefile process
+    Proc coreProc = lcoreHost.getSoleProcFIXME();
+    assertNotNull("Checking core file process", coreProc);    
+   
+    MemoryMap[] coreMaps = coreProc.getMaps();
+    MemoryMap[] liveMaps = ackProc.getMaps();
+    
+    for(int i=0; i<liveMaps.length; i++) {
+	if (liveMaps[i].name.equals("[stack]")) {
+	    stackMap = liveMaps[i];
+	    break;
+	}
+    }
+
+    assertNotNull("Cannot find stack in live process", stackMap);
+    int mapNo = findLowAddress(stackMap.addressLow, coreMaps);
+    coreMap = coreMaps[mapNo];
+    assertNotNull("Cannot find stack in core process", coreMap);    
+
+    Elf testElf = null;
+    try {
+	testElf = new Elf (coreFileName,
+			       ElfCommand.ELF_C_READ);
+    } catch(Exception e) {
+	fail("Cannot open elf file"+coreFileName);
+    }
+
+    ElfEHeader header = testElf.getEHeader();
+    int count = header.phnum;
+    int segCount = 0;
+
+    for (int i = 0; i < count; i++)
+      {
+        ElfPHeader pheader = testElf.getPHeader(i);
+        assertNotNull(pheader);
+	if(pheader.filesz > 0)
+	    segCount++;
+      }
+    testElf.close();
+
+    assertEquals("stack only corefile segCount +stack +notes != 2",segCount,2);
+  }
+
+
+ /**
    * Given a Proc object, generate a core file from that given proc.
    * 
    * @param ackProc - proc object to generate core from.
@@ -254,6 +318,31 @@ public class TestCoredumpAction
     new ProcBlockAction(ackProc, coreDump);
     assertRunUntilStop("Running event loop for core file");
     return coreDump.getConstructedFileName();
+  }
+
+ /**
+   * Given a Proc object, generate a core file from that given proc.
+   * 
+   * @param ackProc - proc object to generate core from.
+   * @return - name of constructed core file.
+   */
+  private String constructStackOnlyCore (final Proc ackProc)
+  {
+
+      CoredumpAction coreDump = null;
+      coreDump = new CoredumpAction(ackProc, "core", 
+				    new Event() {
+					public void execute () {
+					    ackProc.
+						requestAbandonAndRunEvent(
+									  new RequestStopEvent(
+											       Manager.eventLoop));
+					}
+				    }, false, true);
+      
+      new ProcBlockAction(ackProc, coreDump);
+      assertRunUntilStop("Running event loop for core file");
+      return coreDump.getConstructedFileName();
   }
 
  
