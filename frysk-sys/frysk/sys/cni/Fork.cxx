@@ -71,7 +71,8 @@ reopen (jstring file, const char *mode, FILE *stream)
 }
 
 jint
-spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt)
+spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt,
+       bool utraceIt)
 {
   // Convert args into argv, argc.
   int argc = JvGetArrayLength (args);
@@ -110,6 +111,9 @@ spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt)
 	::_exit (errno);
       }
     }
+    else if (utraceIt) {
+      fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
+    }
     ::execvp (argv[0], argv);
     // This should not happen.
     ::perror ("execvp");
@@ -120,14 +124,20 @@ spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt)
 frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::ptrace (jstring in, jstring out,
 			  jstring err, jstringArray args) {
-  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, true));
+  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, true, false));
+}
+
+frysk::sys::ProcessIdentifier*
+frysk::sys::Fork::utrace (jstring in, jstring out,
+			  jstring err, jstringArray args) {
+  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false, true));
 }
 
 frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::exec (jstring in, jstring out,
 			jstring err, jstringArray args)
 {
-  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false));
+  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false, false));
 }
 
 
@@ -144,7 +154,7 @@ frysk::sys::Fork::daemon (jstring in, jstring out,
   // process id ends up in PID.
 
   if (v == 0) {
-    pid = spawn (in, out, err, args, false);
+    pid = spawn (in, out, err, args, false, false);
     _exit (0);
   }
 

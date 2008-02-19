@@ -69,6 +69,15 @@ public final class Fork {
      */
     public static native ProcessIdentifier ptrace(String in, String out,
 						  String err, String[] argv);
+
+    /**
+     * Create a child process running ARGV[0] with arguments
+     * ARGV[1...]; mark the process for utracing.
+     *
+     * Also wire up IN, OUT, and ERR.
+     */
+    public static native ProcessIdentifier utrace(String in, String out,
+						  String err, String[] argv);
     /**
      * Create a child process running ARGV[0] with arguments
      * ARGV[1...]; mark the process for tracing.
