@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ public class DOMCommon {
     ArrayList sourcefiles = new ArrayList();
     if (pathFound(executable)) {
       try {
-        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
+	  Elf elf = new Elf(new File(executable), ElfCommand.ELF_C_READ);
         Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
         String[] files = dw.getSourceFiles();
 
@@ -127,7 +127,7 @@ public class DOMCommon {
     Elf elf = null;
     ArrayList incpaths = new ArrayList();
     try {
-      elf = new Elf(executable, ElfCommand.ELF_C_READ);
+	elf = new Elf(new File(executable), ElfCommand.ELF_C_READ);
     } catch (lib.dwfl.ElfException ee) {
       throw new RuntimeException("Cannot open elf file. Name I was given "
           + "was " + executable, ee);

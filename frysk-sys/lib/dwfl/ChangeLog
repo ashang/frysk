@@ -1,3 +1,37 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* ElfFileException.java (ElfFileException(String)): Delete.
+	(ElfFileException(String,String)): Delete.
+	(ElfFileException(File,String)): New.
+	(ElfFileException(File,Exception)): New.
+	* Elf.java (Elf(String,ElfCommand)): Delete.
+	(updateEHeader(ElfHeader)): Return void.
+	(getLastErrorMsg()): Make static.
+	(getLastErrorNo()): Make static.
+	(getDescriptor(File,ElfCommand)): New.
+	(Elf(FileDescriptor,ElfCommand)): New.
+	(update(ElfCommand)): Return void.
+	(createNewEHeader(int wordSize)): Return ElfEHeader.
+	* ElfException.java: Extend RuntimeException.
+	* cni/Elf.cxx (fillEHeader): Delete.
+	(Elf::elf_getehdr): Throw an exception if there's a problem.
+	(Elf::elf_update): Ditto.
+	(Elf::elf_updatehdr): Ditto.
+	* ElfEHeader.java (EI_CLASS): New.
+	(getWordSize(), setWordSize()): New.
+	(ElfEHeader()): Replace ElfEHeader(Elf).
+	(DATANONE, DATA2LSB, DATA2MSB, DATA): Drop PHEADER_ prefix.
+	(CLASSNONE, CLASS32, CLASS64, CLASS): Drop PHEADER_ prefix.
+	(getByteOrder(), setByteOrder(ByteOrder)): New.
+	* TestElf.java: Update.
+	(testSetWordSize()): New.
+	(testSetByteOrder()): New.
+	* ElfPrXFPRegSet.java: Update.
+	* ElfPrAuxv.java: Update.
+	* ElfPrFPRegSet.java: Update.
+	* ElfPrpsinfo.java: Update.
+	* ElfPrstatus.java: Update.
+
 2008-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Dwfl.java (Dwfl(ProcessIdentifier,String)): Replace

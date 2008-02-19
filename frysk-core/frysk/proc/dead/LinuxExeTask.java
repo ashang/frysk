@@ -47,6 +47,7 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfException;
+import java.io.File;
 
 public class LinuxExeTask extends DeadTask {
     private final long pc;
@@ -60,7 +61,7 @@ public class LinuxExeTask extends DeadTask {
 	Elf e = null;
 	long pc;
 	try {
-	    e = new Elf(getProc().getExe(), ElfCommand.ELF_C_READ);
+	    e = new Elf(new File(getProc().getExe()), ElfCommand.ELF_C_READ);
 	    ElfEHeader h = e.getEHeader();
 	    pc = h.entry;
 	} catch (ElfException ee) {

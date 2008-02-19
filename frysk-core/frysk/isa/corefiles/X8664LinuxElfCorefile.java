@@ -306,7 +306,7 @@ public class X8664LinuxElfCorefile extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#getElfMachineClass()
      */
     protected byte getElfMachineClass() {
-	return ElfEHeader.PHEADER_ELFCLASS64;
+	return ElfEHeader.CLASS64;
     }
     
 }

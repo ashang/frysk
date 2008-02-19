@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,14 +36,21 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.dwfl;
 
-public class ElfException extends Exception {
+/**
+ * The Elf back-end detected a problem; it might be an invalid
+ * operation; it might also be a corrupt part of an elf file.
+ */
 
-	private static final long serialVersionUID = 400112389738713948L;
+public class ElfException extends RuntimeException {
+    private static final long serialVersionUID = 400112389738713948L;
 
-	public ElfException(String s){
-		super(s);
-	}
-	
+    ElfException(Throwable t) {
+	super(t);
+    }
+    public ElfException(String s){
+	super(s);
+    }
 }

@@ -48,8 +48,6 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfKind;
 import lib.dwfl.ElfPHeader;
 import frysk.event.Event;
@@ -105,10 +103,10 @@ public class TestCoredumpAction
     // level returned from Isa.
     if (order == inua.eio.ByteOrder.BIG_ENDIAN)
       assertEquals("Checking endian is appropriate to platform",
-                   header.ident[5], ElfEHeader.PHEADER_ELFDATA2MSB);
+                   header.ident[5], ElfEHeader.DATA2MSB);
     else
       assertEquals("Checking endian is appropriate to platform",
-                   header.ident[5], ElfEHeader.PHEADER_ELFDATA2LSB);
+                   header.ident[5], ElfEHeader.DATA2LSB);
 
     // Check version written
     assertEquals("Checking elf version and ident core file version",
@@ -127,22 +125,22 @@ public class TestCoredumpAction
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_386);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS32);
+                     ElfEHeader.CLASS32);
     } else if (isa == ISA.PPC64BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC64);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS64);
+                     ElfEHeader.CLASS64);
     } else if (isa == ISA.PPC32BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS32);
+                     ElfEHeader.CLASS32);
     } else if (isa == ISA.X8664) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_X86_64);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS64);
+                     ElfEHeader.CLASS64);
     } else {
 	fail("unknown isa: " + isa);
     }
@@ -384,24 +382,10 @@ public class TestCoredumpAction
 	return proc.getMainTask().getISA();
     }
   
-  private Elf getElf(String coreFileName)
-  {
-      Elf local_elf = null;
-      // Start new elf file
-      try
-        {
-          local_elf = new Elf(coreFileName, ElfCommand.ELF_C_READ);
-        }
-      catch (ElfFileException e)
-        {
-          fail(e.getMessage());
-        }
-      catch (ElfException e)
-        {
-          fail(e.getMessage());
-        }
-      return local_elf;
-  }
+    private Elf getElf(String coreFileName) {
+	// Start new elf file
+	return new Elf(new File(coreFileName), ElfCommand.ELF_C_READ);
+    }
   
   private int findLowAddress(long address, MemoryMap[] maps)
   {

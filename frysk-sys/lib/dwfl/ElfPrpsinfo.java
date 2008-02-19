@@ -42,8 +42,6 @@ package lib.dwfl;
 
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-import lib.dwfl.ElfEHeader;
 
 public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
 {
@@ -83,32 +81,14 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
     this.size = size;
   }
 
-  /** 
-   * 
-   * Extract note information from a section
-   * containing note data
-   *
-   */
-  private ElfPrpsinfo(byte[] rawNoteData, Elf elf)
-  {
-    ByteOrder order = null;
-
-    ByteBuffer noteBuffer = new ArrayByteBuffer(rawNoteData);
-
-    ElfEHeader header = elf.getEHeader();
-    switch (header.ident[5])
-      {
-      case ElfEHeader.PHEADER_ELFDATA2LSB: 
-	order = ByteOrder.LITTLE_ENDIAN;
-	break;
-      case ElfEHeader.PHEADER_ELFDATA2MSB:
-	order = ByteOrder.BIG_ENDIAN;
-	break;
-      default:
-	return;
-      }
-
-    noteBuffer.order(order);
+    /** 
+     * Extract note information from a section
+     * containing note data
+     */
+    private ElfPrpsinfo(byte[] rawNoteData, Elf elf) {
+	ByteBuffer noteBuffer = new ArrayByteBuffer(rawNoteData);
+	ElfEHeader header = elf.getEHeader();
+	noteBuffer.order(header.getByteOrder());
     
     int machine = header.machine;
     switch (machine)

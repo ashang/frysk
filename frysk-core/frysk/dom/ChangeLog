@@ -1,3 +1,7 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* DOMCommon.java: Update to match lib.dwfl.File.
+
 2007-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Moved frysk.rt.Line to frysk.scopes.SourceLocation.

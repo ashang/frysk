@@ -60,6 +60,13 @@
 #include "lib/dwfl/ElfPHeader.h"
 #include "lib/dwfl/ElfArchiveHeader.h"
 #include "lib/dwfl/ElfData.h"
+#include "frysk/sys/cni/Errno.hxx"
+
+
+static void throw_last_elf_error() __attribute__((noreturn));
+static void throw_last_elf_error() {
+  throw new lib::dwfl::ElfException(lib::dwfl::Elf::getLastErrorMsg());
+}
 
 gnu::gcj::RawData*
 lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
@@ -95,10 +102,10 @@ lib::dwfl::Elf::elfEnd(gnu::gcj::RawData* pointer)
 
 
 
-jlong
-lib::dwfl::Elf::elf_update (jint command)
-{
-  return (jlong) ::elf_update((::Elf*) this->pointer, (Elf_Cmd) command);
+void
+lib::dwfl::Elf::elf_update(jint command) {
+  if (::elf_update((::Elf*) this->pointer, (Elf_Cmd) command) < 0)
+    ::throw_last_elf_error();
 }
 
 jint
@@ -134,60 +141,59 @@ lib::dwfl::Elf::elf_get_last_error_no ()
   return elf_errno();
 }
 
-void fillEHeader(lib::dwfl::ElfEHeader *header, GElf_Ehdr *ehdr)
-{
-  header->ident = JvNewByteArray(EI_NIDENT);
+lib::dwfl::ElfEHeader*
+lib::dwfl::Elf::elf_getehdr() {
+  GElf_Ehdr ehdr;
+  if(::gelf_getehdr((::Elf*) this->pointer, &ehdr) == NULL) {
+    throw_last_elf_error();
+  }
+  lib::dwfl::ElfEHeader *header = new lib::dwfl::ElfEHeader();
   jbyte *bytes = elements(header->ident);
   for(int i = 0; i < EI_NIDENT; i++)
-    bytes[i] = (jbyte) ehdr->e_ident[i];
-	
-  header->type = (jint) ehdr->e_type;
-  header->machine = (jint) ehdr->e_machine;
-  header->version = (jint) ehdr->e_version;
-  header->entry = (jlong) ehdr->e_entry;
-  header->phoff = (jlong) ehdr->e_phoff;
-  header->shoff = (jlong) ehdr->e_shoff;
-  header->flags = (jint) ehdr->e_flags;
-  header->ehsize = (jint) ehdr->e_ehsize;
-  header->phentsize = (jint) ehdr->e_phentsize;
-  header->phnum = (jint) ehdr->e_phnum;
-  header->shentsize = (jint) ehdr->e_shentsize;
-  header->shnum = (jint) ehdr->e_shnum;
-  header->shstrndx = (jint) ehdr->e_shstrndx;
-}
-
-lib::dwfl::ElfEHeader*
-lib::dwfl::Elf::elf_getehdr()
-{
-  GElf_Ehdr hdr;
-  if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
-    return NULL;
-	
-  lib::dwfl::ElfEHeader *header = new lib::dwfl::ElfEHeader(this);
-  fillEHeader(header, &hdr);
-	
+    bytes[i] = (jbyte) ehdr.e_ident[i];
+  header->type = (jint) ehdr.e_type;
+  header->machine = (jint) ehdr.e_machine;
+  header->version = (jint) ehdr.e_version;
+  header->entry = (jlong) ehdr.e_entry;
+  header->phoff = (jlong) ehdr.e_phoff;
+  header->shoff = (jlong) ehdr.e_shoff;
+  header->flags = (jint) ehdr.e_flags;
+  header->ehsize = (jint) ehdr.e_ehsize;
+  header->phentsize = (jint) ehdr.e_phentsize;
+  header->phnum = (jint) ehdr.e_phnum;
+  header->shentsize = (jint) ehdr.e_shentsize;
+  header->shnum = (jint) ehdr.e_shnum;
+  header->shstrndx = (jint) ehdr.e_shstrndx;
   return header;
 }
 
-jint
-lib::dwfl::Elf::elf_newehdr (jint word_size)
-{
+void
+lib::dwfl::Elf::elf_newehdr(jint wordSize) {
   ::Elf* elf = (::Elf*) this->pointer;
-  if (word_size == 4)
-    return (jint) ::gelf_newehdr(elf, ELFCLASS32);
-  else
-    // if work_size != 4 chooise 64 bits seems wrong.
-    return (jint) ::gelf_newehdr(elf, ELFCLASS64);
+  int elfClass;
+  switch (wordSize) {
+  case 4:
+    elfClass = ELFCLASS32;
+    break;
+  case 8:
+    elfClass = ELFCLASS64;
+    break;
+  default:
+    // This is a programmer error; and not an Elf file or format error.
+    throwRuntimeException("Bad parameter to elf_newehdr", "word size",
+			  wordSize);
+  }
+  if (::gelf_newehdr(elf, elfClass) < 0)
+    throw_last_elf_error();
 }
 
-jint
-lib::dwfl::Elf::elf_updatehdr(ElfEHeader *phdr)
-{
+void
+lib::dwfl::Elf::elf_updatehdr(ElfEHeader* phdr) {
   ::Elf* elf = (::Elf*) this->pointer;
   GElf_Ehdr hdr;
 
   if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
-    return elf_get_last_error_no();
+    throw_last_elf_error();
 
   jbyte *bytes = elements(phdr->ident);	
   for(int i = 0; i < EI_NIDENT; i++)
@@ -207,7 +213,8 @@ lib::dwfl::Elf::elf_updatehdr(ElfEHeader *phdr)
   hdr.e_shnum = (int) phdr->shnum;
   hdr.e_shstrndx = (int) phdr->shstrndx;
 
-  return gelf_update_ehdr (elf,&hdr);
+  if (gelf_update_ehdr (elf,&hdr) == 0)
+    throw_last_elf_error();
 }
 
 jint

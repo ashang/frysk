@@ -1,3 +1,7 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFstep.java: Update to match lib.dwfl.Elf.
+
 2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fcore.xml: Add -stack option. 

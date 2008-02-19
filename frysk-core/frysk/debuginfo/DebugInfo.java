@@ -54,6 +54,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
+import java.io.File;
 
 public class DebugInfo {
     private Elf elf;
@@ -66,7 +67,7 @@ public class DebugInfo {
     public DebugInfo (DebugInfoFrame frame) {
 	Proc proc = frame.getTask().getProc();
 	try {
-	    elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+	    elf = new Elf(new File(proc.getExe()), ElfCommand.ELF_C_READ);
 	    dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	}
 	catch (lib.dwfl.ElfException ignore) {

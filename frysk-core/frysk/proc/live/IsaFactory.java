@@ -45,8 +45,6 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import frysk.sys.ProcessIdentifier;
 import frysk.rsl.Log;
 
@@ -55,7 +53,6 @@ public class IsaFactory {
 
   private static IsaFactory factory;
   private Hashtable isaHash;
-  private String MESSAGE = "getting task's executable";
     
     IsaFactory() {
 	isaHash = new Hashtable();
@@ -91,22 +88,8 @@ public class IsaFactory {
 	
 	// FIXME: This should use task.proc.getExe().  Only that
 	// causes wierd failures; take a rain-check :-(
-	String exe;
-	try {
-	    exe = new File("/proc/" + pid + "/exe").getCanonicalPath();
-	} catch (java.io.IOException e) {
-	    throw new RuntimeException(MESSAGE, e);
-	}
-	Elf elfFile;
-	try {
-	    elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
-	} catch (ElfFileException e) {
-	    throw new RuntimeException (MESSAGE, e);
-	}
-	catch (ElfException e) {
-	    throw new RuntimeException (MESSAGE, e);
-	}
-	
+	File exe = new File("/proc/" + pid + "/exe");
+	Elf elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
 	try {
 	    ElfEHeader header = elfFile.getEHeader();
 	    Isa isa = (Isa)isaHash.get(Integer.valueOf(header.machine));

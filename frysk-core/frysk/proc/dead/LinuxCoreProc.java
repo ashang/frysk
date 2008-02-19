@@ -793,12 +793,7 @@ public class LinuxCoreProc extends DeadProc {
 
 	if ((name.exists()) && (name.isFile()) && (name.canRead())) {
 	    // Open up corefile corresponding directory.
-	    try {
-		exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
-	    } catch (Exception e) {
-		throw new RuntimeException(e);
-	    }
-	
+	    exeElf = new Elf(name, ElfCommand.ELF_C_READ);
 	    return exeElf;
 	} else
 	    return null;

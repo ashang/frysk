@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,34 +39,29 @@
 
 package frysk.proc.dead;
 
-
 import lib.dwfl.Elf;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfCommand;
 import java.io.File;
-/**
- * Build a list of maps from the contents of the file linkmap
- * table at address specified
- */
-public abstract class SOLibMapBuilder
-{
 
+/**
+ * Build a list of maps from the contents of the file linkmap table at
+ * address specified.
+ */
+
+public abstract class SOLibMapBuilder {
 
   /**
    * Create a LinkmapBuilder; can only extend.
    */
-
-  protected SOLibMapBuilder ()
-  {
+  protected SOLibMapBuilder() {
   }
   
   /**
-   * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
-   * a list of memory maps.  Return true if the scan was successful.
+   * Scan the ELF file building up a list of memory maps.
    */
-  public final void construct (File clientSolib, long base_addr, int wordSize)
-  {
+  public final void construct(File clientSolib, long base_addr, int wordSize) {
 
     Elf solib = openElf(clientSolib);
     ElfEHeader eHeader = solib.getEHeader();
@@ -119,26 +114,10 @@ public abstract class SOLibMapBuilder
 				 boolean permExecute, long offset, 
 				 String name, long align);
 
-  private Elf openElf(File name)
-  {
-
-    if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
-    	throw new RuntimeException(name.getPath() + " is an invalid file");
-    Elf exeElf = null;
-    // Open up corefile corresponding directory.
-    try 
-      {
-	exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
-      }
-    catch (Exception e)
-      {
-	throw new RuntimeException(e);
-      }
-
-    return exeElf;
-  }
-
-
-
+    private Elf openElf(File name) {
+	if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
+	    throw new RuntimeException(name.getPath() + " is an invalid file");
+	// Open up corefile corresponding directory.
+	return new Elf(name, ElfCommand.ELF_C_READ);
+    }
 }
-

@@ -1,8 +1,18 @@
-2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxElfCorefile.java (buildMap): Add stackOnly
 	logic test.
 	(setStackOnly): New.
+
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* IA32LinuxElfCorefile.java: Update to match lib.dwfl.
+	* X8664LinuxElfCorefile.java: Ditto.
+	* PPC64LinuxElfCorefile.java: Ditto.
+	* PPC32LinuxElfCorefile.java: Ditto.
+	* LinuxElfCorefile.java: Ditto.
+	(getElfEndianType()): Delete.
+	(getElfWordSize()): Delete.
 
 2008-02-15  Phil Muldoon  <pmuldoon@redhat.com>
 

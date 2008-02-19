@@ -1,3 +1,13 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* CorefileByteBuffer.java: Update to match lib.dwfl.
+	* SOLibMapBuilder.java: Ditto.
+	* LinuxExeHost.java: Ditto.
+	* LinuxExeTask.java: Ditto.
+	* LinuxCoreTask.java: Ditto.
+	* LinuxCoreHost.java: Ditto.
+	* LinuxCoreProc.java: Ditto.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadProc.java: Update to match Proc.

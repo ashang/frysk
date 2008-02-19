@@ -1,3 +1,7 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* ElfMap.java: Update to match lib.dwfl.
+
 2007-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegisterMap.java: New file.
