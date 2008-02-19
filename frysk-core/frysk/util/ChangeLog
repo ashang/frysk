@@ -1,3 +1,15 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCoredumpAction.java: Fix merge botch.
+	
+	* CommandlineParser.java: Update to match lib.dwfl.
+	* TestCoredumpAction.java: Ditto.
+
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoredumpAction.java: Add stackOnly parameter.
+	* TestCoredumpAction.java (testStackOnlyMap): New.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java (parsePids(Proc[])): Replace

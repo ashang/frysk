@@ -48,9 +48,8 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfKind;
+import lib.dwfl.ElfPHeader;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.isa.ISA;
@@ -104,10 +103,10 @@ public class TestCoredumpAction
     // level returned from Isa.
     if (order == inua.eio.ByteOrder.BIG_ENDIAN)
       assertEquals("Checking endian is appropriate to platform",
-                   header.ident[5], ElfEHeader.PHEADER_ELFDATA2MSB);
+                   header.ident[5], ElfEHeader.DATA2MSB);
     else
       assertEquals("Checking endian is appropriate to platform",
-                   header.ident[5], ElfEHeader.PHEADER_ELFDATA2LSB);
+                   header.ident[5], ElfEHeader.DATA2LSB);
 
     // Check version written
     assertEquals("Checking elf version and ident core file version",
@@ -126,22 +125,22 @@ public class TestCoredumpAction
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_386);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS32);
+                     ElfEHeader.CLASS32);
     } else if (isa == ISA.PPC64BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC64);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS64);
+                     ElfEHeader.CLASS64);
     } else if (isa == ISA.PPC32BE) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_PPC);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS32);
+                     ElfEHeader.CLASS32);
     } else if (isa == ISA.X8664) {
         assertEquals("Checking header machine type", header.machine,
                      ElfEMachine.EM_X86_64);
         assertEquals("Checking elf class", header.ident[4],
-                     ElfEHeader.PHEADER_ELFCLASS64);
+                     ElfEHeader.CLASS64);
     } else {
 	fail("unknown isa: " + isa);
     }
@@ -232,7 +231,63 @@ public class TestCoredumpAction
       testCore.delete();
   }
 
-/**
+
+  public void testStackOnlyMap () 
+  {
+    Proc ackProc = giveMeAProc();
+    MemoryMap stackMap = null;
+    MemoryMap coreMap = null;
+    // Create a corefile from process
+    String coreFileName = constructStackOnlyCore(ackProc);
+    File testCore = new File(coreFileName);
+ 
+    assertTrue("Checking core file " + coreFileName + " exists.",
+            testCore.exists());
+
+    // Model the corefile, and get the Process.
+    LinuxCoreHost lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
+		   testCore,new File(ackProc.getExe()));      
+
+    assertNotNull("Checking core file Host", lcoreHost);
+    
+    // Get corefile process
+    Proc coreProc = lcoreHost.getSoleProcFIXME();
+    assertNotNull("Checking core file process", coreProc);    
+   
+    MemoryMap[] coreMaps = coreProc.getMaps();
+    MemoryMap[] liveMaps = ackProc.getMaps();
+    
+    for(int i=0; i<liveMaps.length; i++) {
+	if (liveMaps[i].name.equals("[stack]")) {
+	    stackMap = liveMaps[i];
+	    break;
+	}
+    }
+
+    assertNotNull("Cannot find stack in live process", stackMap);
+    int mapNo = findLowAddress(stackMap.addressLow, coreMaps);
+    coreMap = coreMaps[mapNo];
+    assertNotNull("Cannot find stack in core process", coreMap);    
+
+    Elf testElf = new Elf(testCore, ElfCommand.ELF_C_READ);
+    ElfEHeader header = testElf.getEHeader();
+    int count = header.phnum;
+    int segCount = 0;
+
+    for (int i = 0; i < count; i++)
+      {
+        ElfPHeader pheader = testElf.getPHeader(i);
+        assertNotNull(pheader);
+	if(pheader.filesz > 0)
+	    segCount++;
+      }
+    testElf.close();
+
+    assertEquals("stack only corefile segCount +stack +notes != 2",segCount,2);
+  }
+
+
+ /**
    * Given a Proc object, generate a core file from that given proc.
    * 
    * @param ackProc - proc object to generate core from.
@@ -254,6 +309,31 @@ public class TestCoredumpAction
     new ProcBlockAction(ackProc, coreDump);
     assertRunUntilStop("Running event loop for core file");
     return coreDump.getConstructedFileName();
+  }
+
+ /**
+   * Given a Proc object, generate a core file from that given proc.
+   * 
+   * @param ackProc - proc object to generate core from.
+   * @return - name of constructed core file.
+   */
+  private String constructStackOnlyCore (final Proc ackProc)
+  {
+
+      CoredumpAction coreDump = null;
+      coreDump = new CoredumpAction(ackProc, "core", 
+				    new Event() {
+					public void execute () {
+					    ackProc.
+						requestAbandonAndRunEvent(
+									  new RequestStopEvent(
+											       Manager.eventLoop));
+					}
+				    }, false, true);
+      
+      new ProcBlockAction(ackProc, coreDump);
+      assertRunUntilStop("Running event loop for core file");
+      return coreDump.getConstructedFileName();
   }
 
  
@@ -295,24 +375,10 @@ public class TestCoredumpAction
 	return proc.getMainTask().getISA();
     }
   
-  private Elf getElf(String coreFileName)
-  {
-      Elf local_elf = null;
-      // Start new elf file
-      try
-        {
-          local_elf = new Elf(coreFileName, ElfCommand.ELF_C_READ);
-        }
-      catch (ElfFileException e)
-        {
-          fail(e.getMessage());
-        }
-      catch (ElfException e)
-        {
-          fail(e.getMessage());
-        }
-      return local_elf;
-  }
+    private Elf getElf(String coreFileName) {
+	// Start new elf file
+	return new Elf(new File(coreFileName), ElfCommand.ELF_C_READ);
+    }
   
   private int findLowAddress(long address, MemoryMap[] maps)
   {

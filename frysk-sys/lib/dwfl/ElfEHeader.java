@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,28 +36,35 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.dwfl;
 
-/**
- * An ElfHeader is a header for and Elf file. This appears at the start of
- * every Elf file.
- */
-public class ElfEHeader {
+import inua.eio.ByteOrder;
 
-	// Data class
-	public static final int PHEADER_ELFDATANONE = 0;
-	public static final int PHEADER_ELFDATA2LSB = 1;
-	public static final int PHEADER_ELFDATA2MSB = 2;
-	public static final int PHEADER_ELFDATANUM = 3;
+/**
+ * An ElfEHeader is a header for and Elf file. This appears at the
+ * start of every Elf file.
+ */
+public final class ElfEHeader {
+
+    public ElfEHeader(){
+    }
 
 	// Version
 	//public static final int PHEADER_EV_VERSION = parent.getElfVersion();
 
-	// Size
-	public static final int PHEADER_ELFCLASSNONE = 0;
-	public static final int PHEADER_ELFCLASS32 = 1;
-	public static final int PHEADER_ELFCLASS64 = 2;
+    // ident[CLASS} contains the word-size
+    public static final int CLASSNONE = 0;
+    public static final int CLASS32 = 1;
+    public static final int CLASS64 = 2;
+    public final static int CLASS = 4;
 
+    // Data class
+    public static final int DATANONE = 0;
+    public static final int DATA2LSB = 1;
+    public static final int DATA2MSB = 2;
+    public static final int DATA = 5;
+    
 	// Type
 	public static final int PHEADER_ET_NONE = 0;
 	public static final int PHEADER_ET_REL = 1;
@@ -70,7 +77,9 @@ public class ElfEHeader {
 	public static final int PHEADER_ET_LOPROC =  0xff00;
 	public static final int PHEADER_ET_HIPROC = 0xffff;
 
-	public byte[] ident;
+    public static final int NIDENT = 16;
+    public byte[] ident = new byte[NIDENT];
+
 	public int type;
 	public int machine;
 	public long version;
@@ -83,15 +92,75 @@ public class ElfEHeader {
 	public int phnum;
 	public int shentsize;
 	public int shnum;
-	public int shstrndx;
+        public int shstrndx;
 	
-	private Elf parent;
-	
-	public ElfEHeader(Elf parent){
-		this.parent = parent;
+    /**
+     * Interpret the IDENT field; extracting the word-size.
+     */
+    public int getWordSize() {
+        switch (ident[CLASS]) {
+	case CLASSNONE:
+	    return 0;
+	case CLASS32:
+	    return 4;
+	case CLASS64:
+	    return 8;
+	default:
+	    // This is a programmer error; not a an Elf file or format error.
+	    throw new RuntimeException("Unknown ELF class " + ident[CLASS]);
 	}
-	
-	protected Elf getParent(){
-		return parent;
+    }
+
+    /**
+     * Encode SIZE into the IDENT field.
+     */
+    public ElfEHeader setWordSize(int size) {
+	switch (size) {
+	case 0:
+	    ident[CLASS] = CLASSNONE;
+	    return this;
+	case 4:
+	    ident[CLASS] = CLASS32;
+	    return this;
+	case 8:
+	    ident[CLASS] = CLASS64;
+	    return this;
+	default:
+	    // This is a programmer error; not an Elf file format error.
+	    throw new RuntimeException("No class for word-size " + size);
 	}
+    }
+	
+    /**
+     * Interpret the IDENT field; extracting the byte order.
+     */
+    public ByteOrder getByteOrder() {
+        switch (ident[DATA]) {
+	case DATANONE:
+	    return null;
+	case DATA2LSB:
+	    return ByteOrder.LITTLE_ENDIAN;
+	case DATA2MSB:
+	    return ByteOrder.BIG_ENDIAN;
+	default:
+	    // This is a programmer error; not a an Elf file or format error.
+	    throw new RuntimeException("Unknown ELF class " + ident[DATA]);
+	}
+    }
+
+    /**
+     * Encode SIZE into the IDENT field.
+     */
+    public ElfEHeader setByteOrder(ByteOrder order) {
+	if (order == null)
+	    ident[DATA] = DATANONE;
+	else if (order == ByteOrder.LITTLE_ENDIAN)
+	    ident[DATA] = DATA2LSB;
+	else if (order == ByteOrder.BIG_ENDIAN)
+	    ident[DATA] = DATA2MSB;
+	else
+	    // This is a programmer error; not an Elf file format error.
+	    throw new RuntimeException("No data for byte-order " + order);
+	return this;
+    }
 }

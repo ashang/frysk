@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,71 +39,64 @@
 
 package frysk.proc.dead;
 
-
 import lib.dwfl.Elf;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfCommand;
 import java.io.File;
-/**
- * Build a list of maps from the contents of the file linkmap
- * table at address specified
- */
-public abstract class SOLibMapBuilder
-{
 
+/**
+ * Build a list of maps from the contents of the file linkmap table at
+ * address specified.
+ */
+
+public abstract class SOLibMapBuilder {
 
   /**
    * Create a LinkmapBuilder; can only extend.
    */
-
-  protected SOLibMapBuilder ()
-  {
+  protected SOLibMapBuilder() {
   }
   
-  /**
-   * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
-   * a list of memory maps.  Return true if the scan was successful.
-   */
-  public final void construct (File clientSolib, long base_addr, int wordSize)
-  {
-
-    Elf solib = openElf(clientSolib);
-    ElfEHeader eHeader = solib.getEHeader();
-    
-    for(int z=0; z<eHeader.phnum; z++)
-      {
+    /**
+     * Scan the ELF file building up a list of memory maps.
+     */
+    public final void construct(File clientSolib, long baseAddr) {
+	Elf solib = openElf(clientSolib);
+	ElfEHeader eHeader = solib.getEHeader();
+	int wordSize = eHeader.getWordSize();
 	
-	ElfPHeader pHeader = solib.getPHeader(z);
-	if ((pHeader.type == ElfPHeader.PTYPE_LOAD) )
-	  {
-	    if (base_addr + pHeader.vaddr != 0) 
-	    {
-		boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
-		boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
-		boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
+	for(int z=0; z<eHeader.phnum; z++) {
+	    ElfPHeader pHeader = solib.getPHeader(z);
+	    if ((pHeader.type == ElfPHeader.PTYPE_LOAD)) {
+		if (baseAddr + pHeader.vaddr != 0) {
+		    boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
+		    boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
+		    boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
 		
-		long mapBegin = base_addr + (pHeader.vaddr &~ (pHeader.align-1));
-		long mapEnd = base_addr + ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
+		    long mapBegin = baseAddr + (pHeader.vaddr &~ (pHeader.align-1));
+		    long mapEnd = baseAddr + ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
 
-		// On 32 bit systems, if a segment has been relocated ie base_addr > 0 and base_addr + vaddr is
-		// more than 0xffffffff then the address overlaps to 0++. As we are using a long, so it can store
-		// 64 bit addresses on 64 bit systems, check wordsize == 4 and if so, limit size of address space
-		//  to 32 bits.
-		if (wordSize == 4)
-		{
-		    mapBegin &= 0x00000000ffffffffl;
-		    mapEnd &= 0x00000000ffffffffl;
+		    // On 32 bit systems, if a segment has been
+		    // relocated ie baseAddr > 0 and baseAddr + vaddr
+		    // is more than 0xffffffff then the address
+		    // overlaps to 0++. As we are using a long, so it
+		    // can store 64 bit addresses on 64 bit systems,
+		    // check wordsize == 4 and if so, limit size of
+		    // address space to 32 bits.
+		    if (wordSize == 4) {
+			mapBegin &= 0x00000000ffffffffL;
+			mapEnd &= 0x00000000ffffffffL;
+		    }
+
+		    long aOffset = (pHeader.offset &- pHeader.align);
+		    buildMap(mapBegin, mapEnd, read, write, execute, 
+			     aOffset, clientSolib.getPath(),pHeader.align);
 		}
-
-		long aOffset = (pHeader.offset &- pHeader.align);
-		buildMap(mapBegin, mapEnd, read, write, execute, 
-			aOffset, clientSolib.getPath(),pHeader.align);
 	    }
-	  }
-      }
-    solib.close();
-  }
+	}
+	solib.close();
+    }
   
   /**
    * Build an address map covering [addressLow,addressHigh) with
@@ -119,26 +112,10 @@ public abstract class SOLibMapBuilder
 				 boolean permExecute, long offset, 
 				 String name, long align);
 
-  private Elf openElf(File name)
-  {
-
-    if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
-    	throw new RuntimeException(name.getPath() + " is an invalid file");
-    Elf exeElf = null;
-    // Open up corefile corresponding directory.
-    try 
-      {
-	exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
-      }
-    catch (Exception e)
-      {
-	throw new RuntimeException(e);
-      }
-
-    return exeElf;
-  }
-
-
-
+    private Elf openElf(File name) {
+	if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
+	    throw new RuntimeException(name.getPath() + " is an invalid file");
+	// Open up corefile corresponding directory.
+	return new Elf(name, ElfCommand.ELF_C_READ);
+    }
 }
-

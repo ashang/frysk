@@ -63,27 +63,8 @@ public class Elf
      * @param file The file to create the object from
      * @param command The appropriate {@see ElfCommand}
      */
-    public Elf (String file, ElfCommand command) throws ElfFileException,
-							ElfException {
-	try {
-	    if ((command == ElfCommand.ELF_C_READ
-		 || command == ElfCommand.ELF_C_READ_MMAP
-		 || command == ElfCommand.ELF_C_READ_MMAP_PRIVATE)) {
-		fd = new FileDescriptor(file, FileDescriptor.RDONLY);
-	    } else if (command == ElfCommand.ELF_C_WRITE
-		       || command == ElfCommand.ELF_C_WRITE_MMAP) {
-		fd = new FileDescriptor(file, FileDescriptor.RDWR, 00644);
-	    } else if (command == ElfCommand.ELF_C_RDWR
-		       || command == ElfCommand.ELF_C_RDWR_MMAP) {
-		fd  = new FileDescriptor(file, FileDescriptor.RDWR);
-	    } else {
-		throw new ElfFileException("Invalid Elf_Command specified in elf_begin");
-	    }
-	} catch (Errno e) {
-	    throw new ElfFileException(e.getMessage());
-	}
-	// Create the corresponding Elf object.
-	pointer = elfBegin(fd, command);
+    public Elf(File file, ElfCommand command) {
+	this (getDescriptor(file, command), command);
     }
 
     /**
@@ -92,9 +73,32 @@ public class Elf
      * @param file The file to create the object from
      * @param command The appropriate {@see ElfCommand}
      */
-    public Elf (File file, ElfCommand command) throws ElfFileException,
-							ElfException {
-	this(file.getAbsolutePath(), command);
+    public Elf(FileDescriptor fd, ElfCommand command) {
+	this.fd = fd;
+	this.pointer = elfBegin(fd, command);
+    }
+
+    private static FileDescriptor getDescriptor(File file, ElfCommand command) {
+	try {
+	    if ((command == ElfCommand.ELF_C_READ
+		 || command == ElfCommand.ELF_C_READ_MMAP
+		 || command == ElfCommand.ELF_C_READ_MMAP_PRIVATE)) {
+		return new FileDescriptor(file, FileDescriptor.RDONLY);
+	    } else if (command == ElfCommand.ELF_C_WRITE
+		       || command == ElfCommand.ELF_C_WRITE_MMAP) {
+		return new FileDescriptor(file, FileDescriptor.RDWR, 00644);
+	    } else if (command == ElfCommand.ELF_C_RDWR
+		       || command == ElfCommand.ELF_C_RDWR_MMAP) {
+		return new FileDescriptor(file, FileDescriptor.RDWR);
+	    } else {
+		// This is a programmer error; not an elf file or
+		// format error.
+		throw new RuntimeException("Unknown ElfCommand: " + command);
+	    }
+	} catch (Errno e) {
+	    // turn errno into an file exception.
+	    throw new ElfFileException(file, e);
+	}
     }
 
     /**
@@ -130,8 +134,8 @@ public class Elf
      * @param command The {@see ElfCommand}
      * @return The amount written
      */
-    public long update (ElfCommand command) {
-	return elf_update(command.getValue());
+    public void update(ElfCommand command) {
+	elf_update(command.getValue());
     }
 
     /**
@@ -168,18 +172,18 @@ public class Elf
      * 
      * @return A new ElfHeader
      */
-    public int createNewEHeader (int wordSize) {
-	return elf_newehdr(wordSize);
+    public ElfEHeader createNewEHeader(int wordSize) {
+	elf_newehdr(wordSize);
+	return getEHeader();
     }
 
     /**
      * Update the ELF header
      * 
      * @param header
-     * @return success/fail
      */
-    public int updateEHeader(ElfEHeader header) {
-	return elf_updatehdr(header);
+    public void updateEHeader(ElfEHeader header) {
+	elf_updatehdr(header);
     }
 
  
@@ -371,14 +375,14 @@ public class Elf
      * 
      * @return The descriptive last error message elf returned.
      */
-    public String getLastErrorMsg() {
+    public static String getLastErrorMsg() {
 	return elf_get_last_error_msg();
     }
 
     /**
      * @return The descriptive last error message elf returned.
      */
-    public int getLastErrorNo() {
+    public static int getLastErrorNo() {
 	return elf_get_last_error_no();
     }
 
@@ -407,7 +411,7 @@ public class Elf
 
     protected native int elf_get_version ();
 
-    protected native long elf_update (int __cmd);
+    private native void elf_update(int cmd);
 
     protected native int elf_kind ();
 
@@ -417,9 +421,9 @@ public class Elf
 
     protected native ElfEHeader elf_getehdr ();
 
-    protected native int elf_newehdr (int word_size);
+    private native void elf_newehdr(int wordSize);
 
-    protected native int elf_updatehdr(ElfEHeader header);
+    private native void elf_updatehdr(ElfEHeader header);
 	
     protected native ElfPHeader elf_getphdr (int index);
 
@@ -459,9 +463,8 @@ public class Elf
 
     protected native String elf_rawfile (long __ptr);
 
-    protected native String elf_get_last_error_msg();
-
-    protected native int elf_get_last_error_no();
+    private static native String elf_get_last_error_msg();
+    private static native int elf_get_last_error_no();
 
     protected native ElfData elf_get_raw_data(long offset, long size);
 

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -52,17 +52,16 @@ public class TestElf
     extends TestCase
 {
 
-  public void testCore_x8664 () throws ElfException, ElfFileException
-  {
-
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
-			   .getAbsolutePath (),
-			   ElfCommand.ELF_C_READ);
+    public void testCore_x8664() {
+	Elf testElf = new Elf (Config.getPkgDataFile("test-core-x8664"),
+			       ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
     ElfEHeader header = testElf.getEHeader();
+    assertEquals("word-size", 8, header.getWordSize());
+    assertEquals("byte-order", ByteOrder.LITTLE_ENDIAN, header.getByteOrder());
     assertEquals(62, header.machine);
     assertEquals(64, header.ehsize);
     assertEquals(0, header.entry);
@@ -139,16 +138,16 @@ public class TestElf
 
   }
 
-  public void testCore_x86 () throws ElfException, ElfFileException
-  {
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
-			   .getAbsolutePath (),
-			   ElfCommand.ELF_C_READ);
+  public void testCore_x86() {
+      Elf testElf = new Elf(Config.getPkgDataFile ("test-core-x86"),
+			    ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
     ElfEHeader header = testElf.getEHeader();
+    assertEquals("word size", 4, header.getWordSize());
+    assertEquals("byte-order", ByteOrder.LITTLE_ENDIAN, header.getByteOrder());
     assertEquals(3, header.machine);
     assertEquals(52, header.ehsize);
     assertEquals(0, header.entry);
@@ -216,15 +215,13 @@ public class TestElf
     
   }
 
-  /**
-   * Test x8664 Prpsinfo note info. Read the note data segment, pass it to
-   * ElfPrpsinfo to find the relative pstatus data, and parse. 
-   *
-   */
-  public void testElfCorePrpsNotes_x8664 () throws ElfException, ElfFileException
-  {
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    /**
+     * Test x8664 Prpsinfo note info. Read the note data segment, pass
+     * it to ElfPrpsinfo to find the relative pstatus data, and parse.
+     */
+    public void testElfCorePrpsNotes_x8664() {
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -252,11 +249,9 @@ public class TestElf
    * ElfPrpsinfo to find the relative pstatus data, and parse. 
    *
    */
-  public void testElfCorePrpsNotes_x86 () throws ElfException, ElfFileException
-  {
-    
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    public void testElfCorePrpsNotes_x86() {
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -279,17 +274,13 @@ public class TestElf
 
   }
 
-  /**
-   * Test i386 Prstatus  note info. Read the note data segment, pass it to
-   * ElfPrstatus to find the relative pstatus data, and parse. 
-   *
-   */
-
-  public void testElfCorePrstatusNotes_x86 () throws ElfException,  ElfFileException
-  {
-
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    /**
+     * Test i386 Prstatus note info. Read the note data segment, pass
+     * it to ElfPrstatus to find the relative pstatus data, and parse.
+     */
+    public void testElfCorePrstatusNotes_x86() {
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -391,18 +382,14 @@ public class TestElf
       }
   }
 
-  /**
-   * Test x8664 Prstatus  note info. Read the note data segment, pass it to
-   * ElfPrstatus to find the relative pstatus data, and parse. 
-   *
-   */
-
-  public void testElfCorePrstatusNotes_x8664 () throws ElfException,  ElfFileException
-  {
-
-    ByteOrder order = ByteOrder.LITTLE_ENDIAN;
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    /**
+     * Test x8664 Prstatus note info. Read the note data segment, pass
+     * it to ElfPrstatus to find the relative pstatus data, and parse.
+     */
+    public void testElfCorePrstatusNotes_x8664() {
+	ByteOrder order = ByteOrder.LITTLE_ENDIAN;
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -535,17 +522,13 @@ public class TestElf
       }
   }
 
-  /**
-   * Test 64 bit PrAuxv  note info. Read the note data segment, pass it to
-   * ElfPrAuxv to find the relative pstatus data, and parse. 
-   *
-   */
-  public void testElfCorePrAuxvNotes_x8664 () throws ElfException,
-    ElfFileException 
-  {
-
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    /**
+     * Test 64 bit PrAuxv note info. Read the note data segment, pass
+     * it to ElfPrAuxv to find the relative pstatus data, and parse.
+     */
+    public void testElfCorePrAuxvNotes_x8664() {
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -601,17 +584,14 @@ public class TestElf
     builder.construct(prAuxv.getAuxvBuffer());
 
   }
-  /**
-   * Test 32 bit PrAuxv  note info. Read the note data segment, pass it to
-   * ElfPrAuxv to find the relative pstatus data, and parse. 
-   *
-   */
-  public void testElfCorePrAuxvNotes_x86 () throws ElfException,
-    ElfFileException 
-  {
 
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    /**
+     * Test 32 bit PrAuxv note info. Read the note data segment, pass
+     * it to ElfPrAuxv to find the relative pstatus data, and parse.
+     */
+    public void testElfCorePrAuxvNotes_x86() {
+	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -733,8 +713,8 @@ public class TestElf
 			 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 
 			 00, 00, 00, 00, 00, 00} ;
 
-    Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86")
-			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
+    Elf testElf = new Elf(Config.getPkgDataFile ("test-core-x86"),
+			  ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
 
@@ -752,11 +732,10 @@ public class TestElf
       }
 
   }
-  public void testObjectFile () throws ElfException, ElfFileException
-  {
-      Elf testElf = new Elf (Config.getPkgDataFile ("helloworld.o")
-			     .getAbsolutePath (),
-			     ElfCommand.ELF_C_READ);
+
+    public void testObjectFile() {
+	Elf testElf = new Elf(Config.getPkgDataFile ("helloworld.o"),
+			      ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -831,11 +810,9 @@ public class TestElf
       }
   }
 
-  public void testObjectFileTables () throws ElfException, ElfFileException
-  {
-    Elf testElf = new Elf (Config.getPkgDataFile ("helloworld.o")
-			   .getAbsolutePath (),
-			   ElfCommand.ELF_C_READ);
+    public void testObjectFileTables() {
+	Elf testElf = new Elf(Config.getPkgDataFile ("helloworld.o"),
+			      ElfCommand.ELF_C_READ);
 
     ElfEHeader header = testElf.getEHeader();
     for (int i = 0; i < header.shnum; i++)
@@ -879,10 +856,9 @@ public class TestElf
     return null;
   }
 
-  public void testLibraryVersions() throws ElfException, ElfFileException
-  {
-    final Elf elfFile = new Elf(Config.getPkgDataFile ("libtest.so").getAbsolutePath (),
-				ElfCommand.ELF_C_READ);
+    public void testLibraryVersions() {
+	final Elf elfFile = new Elf(Config.getPkgDataFile("libtest.so"),
+				    ElfCommand.ELF_C_READ);
     final ElfEHeader eh = elfFile.getEHeader();
 
     boolean haveDynamic = false;
@@ -896,8 +872,9 @@ public class TestElf
 	    offDynamic = ph.offset;
 	  }
       }
-    if (!haveDynamic)
-      throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
+
+    assertTrue("DYNAMIC section found in ELF file", haveDynamic);
+
     haveDynamic = false;
 
     class Locals
@@ -980,22 +957,20 @@ public class TestElf
 	  }
       }
 
-    if (!haveDynamic)
-      throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
-    if (locals.dynamicSymtab == null)
-      throw new lib.dwfl.ElfFileException("Couldn't get SYMTAB from DYNAMIC section.");
-    if (locals.dynamicStrtab == null)
-      throw new lib.dwfl.ElfFileException("Couldn't get STRTAB from DYNAMIC section.");
-    if ((locals.dynamicVerneed != null || locals.dynamicVerdef != null) && locals.dynamicVersym == null)
-      throw new lib.dwfl.ElfFileException("Versym section missing when verdef or verneed present.");
-    if (locals.dynamicVerneed == null && locals.dynamicVerdef == null && locals.dynamicVersym != null)
-      throw new lib.dwfl.ElfFileException("Versym section present when neither verdef nor verneed present.");
-    if (locals.dynamicVerdefCount != 0 && locals.dynamicVerdef == null)
-      throw new lib.dwfl.ElfFileException("Strange: VERDEFNUM tag present, but not VERDEF.");
-    if (locals.dynamicVerneedCount != 0 && locals.dynamicVerneed == null)
-      throw new lib.dwfl.ElfFileException("Strange: VERNEEDNUM tag present, but not VERNEED.");
-    if (locals.dynamicSonameIdx == -1)
-      throw new lib.dwfl.ElfFileException("Soname not found.");
+    assertTrue("DYNAMIC section found in ELF file", haveDynamic);
+    assertNotNull("Couldn't get SYMTAB from DYNAMIC section",
+		  locals.dynamicSymtab);
+    assertNotNull("Couldn't get STRTAB from DYNAMIC section",
+		  locals.dynamicStrtab);
+    assertTrue("Versym section present when verdef or verneed present",
+	       ((locals.dynamicVerneed != null || locals.dynamicVerdef != null)
+		&& locals.dynamicVersym != null));
+    assertTrue("VERDEFNUM tag present with VERDEF",
+	       locals.dynamicVerdefCount != 0 && locals.dynamicVerdef != null);
+    assertTrue("VERNEEDNUM tag present with VERNEED",
+	       locals.dynamicVerneedCount != 0
+	       && locals.dynamicVerneed != null);
+    assertTrue("Soname found", locals.dynamicSonameIdx != -1);
 
     // Check SONAME.
     {
@@ -1226,4 +1201,37 @@ public class TestElf
     }
   }
   private SymbolChecker symbolChecker = new SymbolChecker();
+
+    /**
+     * Verify write/read of word-size is sane; that 32- and 64-bit
+     * word sizes are correct decoded is checked in the core-file
+     * tests above.
+     */
+    public void testSetWordSize() {
+	ElfEHeader header = new ElfEHeader();
+	assertEquals("word size", 0, header.getWordSize());
+	header.setWordSize(4);
+	assertEquals("word size", 4, header.getWordSize());
+	header.setWordSize(8);
+	assertEquals("word size", 8, header.getWordSize());
+	header.setWordSize(0);
+	assertEquals("word size", 0, header.getWordSize());
+    }
+
+    /**
+     * Verify write/read of word-size is sane; that 32- and 64-bit
+     * word sizes are correct decoded is checked in the core-file
+     * tests above.
+     */
+    public void testSetByteOrder() {
+	ElfEHeader header = new ElfEHeader();
+	assertEquals("word size", null, header.getByteOrder());
+	header.setByteOrder(ByteOrder.BIG_ENDIAN);
+	assertEquals("word size", ByteOrder.BIG_ENDIAN, header.getByteOrder());
+	header.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+	assertEquals("word size", ByteOrder.LITTLE_ENDIAN,
+		     header.getByteOrder());
+	header.setByteOrder(null);
+	assertEquals("word size", null, header.getByteOrder());
+    }
 }

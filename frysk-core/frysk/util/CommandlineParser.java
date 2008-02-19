@@ -181,7 +181,7 @@ public class CommandlineParser {
     private boolean isCoreFile(String fileName) {
 	Elf elf;
 	try {
-	    elf = new Elf(fileName, ElfCommand.ELF_C_READ);
+	    elf = new Elf(new File(fileName), ElfCommand.ELF_C_READ);
 	} catch (Exception e) {
 	    return false;
 	}
@@ -194,7 +194,7 @@ public class CommandlineParser {
     private boolean isExeFile(String fileName) {
 	Elf elf;
 	try {
-	    elf = new Elf(fileName, ElfCommand.ELF_C_READ);
+	    elf = new Elf(new File(fileName), ElfCommand.ELF_C_READ);
 	} catch (Exception e) {
 	    return false;
 	}

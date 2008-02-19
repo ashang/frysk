@@ -41,24 +41,16 @@ package frysk.proc.dead;
 
 import frysk.sys.StatelessFile;
 import java.io.File;
-
 import java.util.ArrayList;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfPHeader;
-
-
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import frysk.rsl.Log;
 
-public class CorefileByteBuffer 
-	extends ByteBuffer
-
-{
+public class CorefileByteBuffer extends ByteBuffer {
 
   MapAddressHeader[] offsetList;
   //ArrayList offsetList = new ArrayList();
@@ -252,23 +244,8 @@ public class CorefileByteBuffer
     return offset;
   }
 
-  private Elf openCoreFileElf(File file)
-  {
-    Elf elf;
-    try
-      {
-	elf =  new Elf (file.getPath(), ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e)
-      {
-	throw new RuntimeException(e);
-      }
-    catch (ElfException e)
-      {
-	throw new RuntimeException(e);
-      }
-
-    return elf;
+  private Elf openCoreFileElf(File file) {
+      return  new Elf(file, ElfCommand.ELF_C_READ);
   }
 
   private void closeCoreFileElf(Elf elf)
@@ -278,21 +255,11 @@ public class CorefileByteBuffer
   }
 
 
-  private void setEndianWordSize(Elf elf)
-  {
- 
-    ElfEHeader elf_header = elf.getEHeader();
-
-    if (elf_header.ident[5] == ElfEHeader.PHEADER_ELFDATA2MSB)
-      order(ByteOrder.BIG_ENDIAN);
-    else
-      order(ByteOrder.LITTLE_ENDIAN);
-
-    if (elf_header.ident[4] == ElfEHeader.PHEADER_ELFCLASS32)
-      wordSize(4);
-    else
-      wordSize(8);
-  }
+    private void setEndianWordSize(Elf elf) {
+	ElfEHeader elfHeader = elf.getEHeader();
+	order(elfHeader.getByteOrder());
+	wordSize(elfHeader.getWordSize());
+    }
 
   /** Build basic meta data for this Buffer. This allows conversion
    *  of offset to address, and also tells the buffer whether a read 

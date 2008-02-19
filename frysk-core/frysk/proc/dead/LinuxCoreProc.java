@@ -471,14 +471,15 @@ public class LinuxCoreProc extends DeadProc {
 	while (mapsIterator.hasNext()) {
 	    Linkmap singleLinkMap = (Linkmap) mapsIterator.next();
 	    if ((!singleLinkMap.name.equals("")) && (!singleLinkMap.name.equals("[vdso]")))
-		SOMaps.construct(new File(singleLinkMap.name),singleLinkMap.l_addr,this.getMainTask().getISA().wordSize());
+		SOMaps.construct(new File(singleLinkMap.name),
+				 singleLinkMap.l_addr);
 	    if (singleLinkMap.name.equals("[vdso]"))
 		SOMaps.buildMap(singleLinkMap.l_addr,0,true,true,true,0,singleLinkMap.name,0x1000);
 	}
 
 
 	// Add in case for executables maps.
-	SOMaps.construct(this.exefileBackEnd,0,this.getMainTask().getISA().wordSize());	    
+	SOMaps.construct(this.exefileBackEnd, 0);
 
 	// Reconcile maps
 	Iterator i = SOMaps.list.iterator();
@@ -793,12 +794,7 @@ public class LinuxCoreProc extends DeadProc {
 
 	if ((name.exists()) && (name.isFile()) && (name.canRead())) {
 	    // Open up corefile corresponding directory.
-	    try {
-		exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
-	    } catch (Exception e) {
-		throw new RuntimeException(e);
-	    }
-	
+	    exeElf = new Elf(name, ElfCommand.ELF_C_READ);
 	    return exeElf;
 	} else
 	    return null;

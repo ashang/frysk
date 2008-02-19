@@ -76,8 +76,7 @@ public class TestMappingGuard
 	public void addFailed (Object observable, Throwable w) {}
     }
 
-    public void performTestAllLibrariesGetDetected()
-    {
+    private void performTestAllLibrariesGetDetected() {
 	class MyMappingObserver extends DummyMappingObserver {
 	    public ArrayList allLibraries = new ArrayList();
 	    public Action updateMappedFile(frysk.proc.Task task, MemoryMapping mapping) {

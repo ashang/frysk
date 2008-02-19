@@ -320,7 +320,7 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
      * @see frysk.util.LinuxElfCorefile#getElfMachineClass()
      */
     protected byte getElfMachineClass() {
-	return ElfEHeader.PHEADER_ELFCLASS32;
+	return ElfEHeader.CLASS32;
     }
 
 }

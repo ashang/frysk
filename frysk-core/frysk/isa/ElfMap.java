@@ -42,9 +42,6 @@ package frysk.isa;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfEHeader;
 import java.io.File;
-import java.io.IOException;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import java.util.Map;
@@ -93,20 +90,11 @@ public final class ElfMap {
 
     public static ISA getISA(File exe) {
 	Elf elfFile;
-	try {
-	    elfFile = new Elf(exe.getCanonicalPath(), ElfCommand.ELF_C_READ);
-	} catch (IOException e) {
-	    throw new RuntimeException("opening " + exe.getPath(), e);
-	} catch (ElfFileException e) {
-	    throw new RuntimeException ("opening " + exe.getPath(), e);
-	} catch (ElfException e) {
-	    throw new RuntimeException ("opening " + exe.getPath(), e);
-	}
+	elfFile = new Elf(exe, ElfCommand.ELF_C_READ);
 	try {
 	    ElfEHeader header = elfFile.getEHeader();
 	    return getISA(header);
-	}
-	finally {
+	} finally {
 	    elfFile.close();
 	}
     }

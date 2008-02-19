@@ -1,3 +1,9 @@
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestMappingGuard.java (performTestAllLibraiesGetDetected()):
+	Make private.
+	* ObjectFile.java: Update to match lib.dwfl.Elf.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java (addTracePid(ProcId)): Delete.

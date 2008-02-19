@@ -63,12 +63,7 @@ public class LinuxExeHost extends DeadHost {
     public LinuxExeHost(EventLoop eventLoop, File exeFile) {
 	this.exeFile = exeFile;
 	this.eventLoop = eventLoop;
-	try {
-	    this.exeFileElf = new Elf (exeFile.getPath(), ElfCommand.ELF_C_READ);
-	} catch (Exception e)	{
-	    throw new RuntimeException("ExeFile " + this.exeFile + " is "+ 
-	    "not a valid ELF file.");
-	}
+	this.exeFileElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
 	// Iterate (build) the /proc tree, passing each found PID to
 	// procChanges where it can update the /proc tree.
 	// Changes individual process.

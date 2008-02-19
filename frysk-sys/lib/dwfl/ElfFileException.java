@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 Red Hat Inc.
+// Copyright 2006, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,47 +36,41 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.dwfl;
+
+import java.io.File;
 
 /**
  * Exception thrown when an Elf file can't be accessed in some way.
  */
-public class ElfFileException extends ElfException 
-{
-  private static final long serialVersionUID = 2006071900L;
-  private String fileName;
+public class ElfFileException extends ElfException {
+    private static final long serialVersionUID = 2006071900L;
+    private final File file;
 
-  /**
-   * Class constructor.
-   *
-   * @param message the message.
-   * @see Exception
-   */
-  public ElfFileException(String message) 
-  {
-    super(message);
-  }
+    /**
+     * Class constructor with file name.
+     *
+     * @param message the message.
+     * @param fileName name of file that caused the problem, if known.
+     * @see Exception
+     */
+    public ElfFileException(File file, String message) {
+	super(message);
+	this.file = file;
+    }
 
-  /**
-   * Class constructor with file name.
-   *
-   * @param message the message.
-   * @param fileName name of file that caused the problem, if known.
-   * @see Exception
-   */
-  public ElfFileException(String message, String fileName) 
-  {
-    super(message);
-    this.fileName = fileName;
-  }
+    ElfFileException(File file, Throwable t) {
+	super(t);
+	this.file = file;
+    }
 
-  /**
-   * Accessor for file name.
-   *
-   * @returns the file name
-   */
-  public String getFileName() 
-  {
-    return fileName;
-  }
+    /**
+     * Accessor for file name.
+     *
+     * @returns the file name
+     */
+    public File getFile() {
+	return file;
+    }
 }

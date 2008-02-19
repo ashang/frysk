@@ -40,7 +40,6 @@
 package frysk.isa.corefiles;
 
 import frysk.sys.ProcessIdentifierFactory;
-import inua.eio.ByteOrder;
 import frysk.isa.ISA;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +48,6 @@ import lib.dwfl.DwflModule;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfException;
-import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfPHeader;
 import frysk.dwfl.DwflCache;
@@ -59,6 +56,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.StatelessFile;
 import frysk.sys.proc.MapsBuilder;
+import java.io.File;
 
 public abstract class LinuxElfCorefile {
 
@@ -71,6 +69,8 @@ public abstract class LinuxElfCorefile {
     Task[] blockedTasks;
 
     boolean writeAllMaps = false;
+   
+    boolean stackOnly = true;
 
     Elf linuxElfCorefileImage = null;
 
@@ -98,6 +98,20 @@ public abstract class LinuxElfCorefile {
      */
     public void setWriteAllMaps(boolean maps) {
 	this.writeAllMaps = maps;
+    }
+
+
+    /**
+     * 
+     * Defines whether to write only the stack segment and elide all others.
+     * 
+     * @param maps - True if attempt to write all maps, false to follow
+     * map writing convention.
+     * 
+     */
+
+    public void setStackOnly(boolean stackOnly) {
+	this.stackOnly = stackOnly;
     }
 
     /**
@@ -164,10 +178,7 @@ public abstract class LinuxElfCorefile {
 	builder.construct(ProcessIdentifierFactory.create(this.process.getMainTask().getTid()));
 
 	// Write elf file
-	final long i = linuxElfCorefileImage.update(ElfCommand.ELF_C_WRITE);
-	if (i < 0)
-	    throw new RuntimeException("LibElf elf_update failed with "
-		    + linuxElfCorefileImage.getLastErrorMsg());
+	linuxElfCorefileImage.update(ElfCommand.ELF_C_WRITE);
 	// Go home.
 	linuxElfCorefileImage.close();
 	
@@ -219,31 +230,6 @@ public abstract class LinuxElfCorefile {
     private void writeNoteData(byte[] data, String name, long offset) {
 	StatelessFile rawCore = new StatelessFile(name);
 	rawCore.pwrite(offset, data, 0, data.length);
-    }
-    /**
-     * Return the endian type as associated by this ISA
-     * 
-     * @return byte - endian type.
-     */
-    protected byte getElfEndianType() {
-	ISA currentArch = process.getMainTask().getISA();
-	ByteOrder order = currentArch.order();
-	if (order == ByteOrder.BIG_ENDIAN)
-	    return ElfEHeader.PHEADER_ELFDATA2MSB;
-	else
-	    return ElfEHeader.PHEADER_ELFDATA2LSB;
-    }
-
-    /**
-     * 
-     * Return the word size as represented by this ISA
-     * 
-     * @return int - size of word
-     * 
-     */
-    protected int getElfWordSize() {
-	ISA currentArch = process.getMainTask().getISA();
-	return currentArch.wordSize();
     }
 
     /**
@@ -435,37 +421,33 @@ public abstract class LinuxElfCorefile {
      * @return int size of the elf header
      */
     protected int populateElfHeader(Elf elfCore) {
+	ISA isa = process.getMainTask().getISA();
 
-	elfCore.createNewEHeader(getElfWordSize());
-	ElfEHeader elf_header = elfCore.getEHeader();
+	ElfEHeader elfHeader = elfCore.createNewEHeader(isa.wordSize());
 
-	elf_header.ident[4] = getElfMachineClass();
-	elf_header.ident[5] = getElfEndianType();
-
+	elfHeader.ident[4] = getElfMachineClass();
+	elfHeader.setByteOrder(isa.order());
 	// Version
-	elf_header.ident[6] = (byte) elfCore.getElfVersion();
+	elfHeader.ident[6] = (byte) elfCore.getElfVersion();
 
 	// EXEC for now, ET_CORE later
-	elf_header.type = ElfEHeader.PHEADER_ET_CORE;
+	elfHeader.type = ElfEHeader.PHEADER_ET_CORE;
 
 	// Version
-	elf_header.version = elfCore.getElfVersion();
+	elfHeader.version = elfCore.getElfVersion();
 
 	// String Index
-	elf_header.shstrndx = 0;
+	elfHeader.shstrndx = 0;
 
-	elf_header.machine = getElfMachineType();
+	elfHeader.machine = getElfMachineType();
 
-	elfCore.updateEHeader(elf_header);
+	elfCore.updateEHeader(elfHeader);
 	//Write elf file. Calculate offsets in elf memory.
-	final long i = elfCore.update(ElfCommand.ELF_C_NULL);
-	if (i < 0)
-	    throw new RuntimeException("LibElf elf_update failed with "
-		    + elfCore.getLastErrorMsg());
+	elfCore.update(ElfCommand.ELF_C_NULL);
 
 	// Get size of written header
-	elf_header = elfCore.getEHeader();
-	return elf_header.ehsize;
+	elfHeader = elfCore.getEHeader();
+	return elfHeader.ehsize;
     }
 
     /**
@@ -540,6 +522,15 @@ public abstract class LinuxElfCorefile {
 				writeMap = true;
 		    }	
 		}
+
+		if (stackOnly) {
+		    if (sfilename.equals("[stack]"))
+			writeMap = true;
+		    else
+			writeMap = false;
+		}
+			
+				
 		// Get empty progam segment header corresponding to this entry.
 		// PT_NOTE's program header entry takes the index: 0. So we should
 		// begin from 1.
@@ -626,10 +617,9 @@ public abstract class LinuxElfCorefile {
      * @throws ElfException
      * 
      */
-    private Elf openElf(String coreName, ElfCommand command)
-	    throws ElfFileException, ElfException {
+    private Elf openElf(String coreName, ElfCommand command) {
 	// Start new elf file
-	return new Elf(coreName, command);
+	return new Elf(new File(coreName), command);
     }
 
     /**

@@ -41,17 +41,21 @@
 package frysk.bindir;
 
 import frysk.Config;
-import lib.dwfl.*;
+import java.io.File;
 import frysk.expunit.Regex;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownExpect;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfEHeader;
+import lib.dwfl.ElfCommand;
 
 public class TestFstep extends TestLib {
-  // Makes sure that fstep at least comes across the entry point of the
-  // stepped program.
-  public void testFirstStep() throws Exception
-  {
-    Elf e = new Elf("/bin/true", ElfCommand.ELF_C_READ);
+    /**
+     * Makes sure that fstep at least comes across the entry point of
+     * the stepped program.
+     */
+    public void testFirstStep() throws Exception {
+	Elf e = new Elf(new File("/bin/true"), ElfCommand.ELF_C_READ);
     try {
 	ElfEHeader h = e.getEHeader();
 	final String entryAddress = "0x" + Long.toHexString(h.entry);

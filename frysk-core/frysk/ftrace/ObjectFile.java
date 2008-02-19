@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@ import lib.dwfl.ElfSymbol;
 import lib.dwfl.ElfSymbolBinding;
 import lib.dwfl.ElfSymbolType;
 import lib.dwfl.ElfSymbolVisibility;
-
+import lib.dwfl.ElfFileException;
+import lib.dwfl.ElfException;
 import lib.stdcpp.Demangler;
 
 /**
@@ -209,9 +210,7 @@ public class ObjectFile
 	    tracePoints.add(tp);
 	}
 
-	public synchronized ArrayList getTracePoints(TracePointOrigin origin)
-	    throws lib.dwfl.ElfException
-	{
+	public synchronized ArrayList getTracePoints(TracePointOrigin origin) {
 	    ArrayList tracePoints = (ArrayList)this.tracePointMap.get(origin);
 	    if (tracePoints != null) {
 		logger.log(Level.FINE, "" + tracePoints.size() + " tracepoints for origin " + origin + " retrieved from cache.");
@@ -308,9 +307,7 @@ public class ObjectFile
     }
     private ObjFBuilder builder;
 
-    protected ObjectFile(File file, final Elf elfFile, ElfEHeader eh)
-	throws lib.dwfl.ElfException
-    {
+    protected ObjectFile(File file, final Elf elfFile, ElfEHeader eh) {
 	this.filename = file;
 	this.entryPoint = eh.entry;
 	this.builder = new ObjFBuilder();
@@ -344,7 +341,7 @@ public class ObjectFile
 
 	if (!haveLoadable) {
 	    logger.log(Level.FINE, "Failed, didn't find any loadable segments.");
-	    throw new lib.dwfl.ElfFileException("Failed, didn't find any loadable segments.");
+	    throw new ElfFileException(file, "Failed, didn't find any loadable segments.");
 	}
 
 	if (eh.type == ElfEHeader.PHEADER_ET_EXEC)
@@ -353,7 +350,7 @@ public class ObjectFile
 	    logger.log(Level.FINER, "This file is DSO or PIE EXECUTABLE.");
 	else {
 	    logger.log(Level.FINE, "Failed, unsupported ELF file type.");
-	    throw new lib.dwfl.ElfFileException("Failed, unsupported ELF file type.");
+	    throw new ElfFileException(file, "Failed, unsupported ELF file type.");
 	}
 
 	boolean foundDynamic = false;
@@ -438,7 +435,7 @@ public class ObjectFile
 	    }
 	    else if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB) {
 		if (this.staticSymtab != null)
-		    throw new lib.dwfl.ElfFileException("Strange: More than one static symbol tables.");
+		    throw new ElfFileException(file, "Strange: More than one static symbol tables.");
 		logger.log(Level.FINER, "Found static symtab section `" + sheader.name + "'.");
 		this.staticSymtab = section;
 	    }
@@ -447,23 +444,23 @@ public class ObjectFile
 	if (builder.haveDynamic) {
 	    // Elf consistency sanity checks.
 	    if (!foundDynamic)
-		throw new lib.dwfl.ElfFileException("DYNAMIC section not found in ELF file.");
+		throw new ElfFileException(file, "DYNAMIC section not found in ELF file.");
 	    if (!havePlt)
-		throw new lib.dwfl.ElfFileException("No (suitable) .plt found in ELF file.");
+		throw new ElfFileException(file, "No (suitable) .plt found in ELF file.");
 	    if (!haveRelPlt)
-		throw new lib.dwfl.ElfFileException("No (suitable) .rel.plt found in ELF file.");
+		throw new ElfFileException(file, "No (suitable) .rel.plt found in ELF file.");
 	    if (this.dynamicSymtab == null)
-		throw new lib.dwfl.ElfFileException("Couldn't get SYMTAB from DYNAMIC section.");
+		throw new ElfFileException(file, "Couldn't get SYMTAB from DYNAMIC section.");
 	    if (this.dynamicStrtab == null)
-		throw new lib.dwfl.ElfFileException("Couldn't get STRTAB from DYNAMIC section.");
+		throw new ElfFileException(file, "Couldn't get STRTAB from DYNAMIC section.");
 	    if ((this.dynamicVerneed != null || this.dynamicVerdef != null) && this.dynamicVersym == null)
-		throw new lib.dwfl.ElfFileException("Versym section missing when verdef or verneed present.");
+		throw new ElfFileException(file, "Versym section missing when verdef or verneed present.");
 	    if (this.dynamicVerneed == null && this.dynamicVerdef == null && this.dynamicVersym != null)
-		throw new lib.dwfl.ElfFileException("Versym section present when neither verdef nor verneed present.");
+		throw new ElfFileException(file, "Versym section present when neither verdef nor verneed present.");
 	    if (this.dynamicVerdefCount != 0 && this.dynamicVerdef == null)
-		throw new lib.dwfl.ElfFileException("Strange: VERDEFNUM tag present, but not VERDEF.");
+		throw new ElfFileException(file, "Strange: VERDEFNUM tag present, but not VERDEF.");
 	    if (this.dynamicVerneedCount != 0 && this.dynamicVerneed == null)
-		throw new lib.dwfl.ElfFileException("Strange: VERNEEDNUM tag present, but not VERNEED.");
+		throw new ElfFileException(file, "Strange: VERNEEDNUM tag present, but not VERNEED.");
 	}
 
 	// Read SONAME, if there was one.
@@ -483,9 +480,7 @@ public class ObjectFile
 	logger.log(Level.FINE, "Loading finished successfully.");
     }
 
-    public void eachTracePoint(TracePointIterator client, TracePointOrigin origin)
-	throws lib.dwfl.ElfException
-    {
+    public void eachTracePoint(TracePointIterator client, TracePointOrigin origin) {
 	logger.log(Level.FINE, "Loading tracepoints for origin " + origin + ".");
 	List tracePoints = builder.getTracePoints(origin);
 
@@ -500,9 +495,7 @@ public class ObjectFile
 	logger.log(Level.FINE, "Done processing tracepoints for origin " + origin + ".");
     }
 
-    public TracePoint lookupTracePoint(String name, TracePointOrigin origin)
-	throws lib.dwfl.ElfException
-    {
+    public TracePoint lookupTracePoint(String name, TracePointOrigin origin) {
 	logger.log(Level.FINE, "Looking up tracepoint for `" + name + "' in " + origin + ".");
 	List tracePoints = builder.getTracePoints(origin);
 	for (Iterator it = tracePoints.iterator(); it.hasNext();) {
@@ -513,9 +506,7 @@ public class ObjectFile
 	return null;
     }
 
-    public void eachTracePoint(TracePointIterator client)
-	throws lib.dwfl.ElfException
-    {
+    public void eachTracePoint(TracePointIterator client) {
 	logger.log(Level.FINE, "Load ALL tracepoints.");
 	eachTracePoint(client, TracePointOrigin.PLT);
 	eachTracePoint(client, TracePointOrigin.DYNAMIC);
@@ -608,28 +599,26 @@ public class ObjectFile
 	    return objFile;
 	}
 
+	Elf elfFile;
 	try {
-	    Elf elfFile = new Elf(filename, ElfCommand.ELF_C_READ);
-	    ElfEHeader eh = elfFile.getEHeader();
-	    if (eh == null) {
-		logger.log(Level.FINE, "Failed, couldn't get an ELF header.");
-		return null;
-	    }
-
-	    objFile = new ObjectFile(filename, elfFile, eh);
-	    cachedFiles.put(filename, objFile);
-	    logger.log(Level.FINE, "Done.");
-	    return objFile;
-	}
-	catch (lib.dwfl.ElfFileException efe) {
-	    efe.printStackTrace();
-	    System.err.println("load error: " + efe);
-	}
-	catch (lib.dwfl.ElfException eexp) {
+	    elfFile = new Elf(filename, ElfCommand.ELF_C_READ);
+	} catch (ElfException eexp) {
 	    eexp.printStackTrace();
 	    System.err.println("load error: " + eexp);
+	    return null;
 	}
 
-	return null;
+	ElfEHeader eh;
+	try {
+	    eh = elfFile.getEHeader();
+	} catch (ElfException e) {
+	    logger.log(Level.FINE, "Failed, couldn't get an ELF header.");
+	    return null;
+	}
+
+	objFile = new ObjectFile(filename, elfFile, eh);
+	cachedFiles.put(filename, objFile);
+	logger.log(Level.FINE, "Done.");
+	return objFile;
     }
 }

@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 
 /**
  * Java Representation of the the Floating point notes secion
@@ -61,28 +60,12 @@ public class ElfPrFPRegSet extends ElfNhdr.ElfNoteSectionEntry
   {  
   }
 
-  private ElfPrFPRegSet(byte[] singleNoteData, Elf elf)
-  {
-
-    ByteOrder order = null;
-    if (singleNoteData.length <=0)
-      return;
-    ByteBuffer noteBuffer = new ArrayByteBuffer(singleNoteData);
-
-    ElfEHeader header = elf.getEHeader();
-    switch (header.ident[5])
-      {
-      case ElfEHeader.PHEADER_ELFDATA2LSB: 
-	order = ByteOrder.LITTLE_ENDIAN;
-	break;
-      case ElfEHeader.PHEADER_ELFDATA2MSB:
-	order = ByteOrder.BIG_ENDIAN;
-	break;
-      default:
-	return;
-      }
-
-    noteBuffer.order(order);
+    private ElfPrFPRegSet(byte[] singleNoteData, Elf elf) {
+	if (singleNoteData.length <=0)
+	    return;
+	ByteBuffer noteBuffer = new ArrayByteBuffer(singleNoteData);
+	ElfEHeader header = elf.getEHeader();
+	noteBuffer.order(header.getByteOrder());
     
     switch (header.machine)
       {

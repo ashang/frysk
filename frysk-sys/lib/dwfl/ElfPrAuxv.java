@@ -39,7 +39,6 @@
 
 package lib.dwfl;
 
-import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 
@@ -57,26 +56,10 @@ public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
   {
   }
 
-  private ElfPrAuxv(byte[] noteData, Elf elf)
-  {
-    ByteOrder order = null;
-
-    ByteBuffer noteBuffer = new ArrayByteBuffer(noteData);
-
-    ElfEHeader header = elf.getEHeader();
-    switch (header.ident[5])
-      {
-      case ElfEHeader.PHEADER_ELFDATA2LSB: 
-	order = ByteOrder.LITTLE_ENDIAN;
-	break;
-      case ElfEHeader.PHEADER_ELFDATA2MSB:
-	order = ByteOrder.BIG_ENDIAN;
-	break;
-      default:
-	return;
-      }
-
-    noteBuffer.order(order);
+    private ElfPrAuxv(byte[] noteData, Elf elf) {
+	ByteBuffer noteBuffer = new ArrayByteBuffer(noteData);
+	ElfEHeader header = elf.getEHeader();
+	noteBuffer.order(header.getByteOrder());
     
     switch (header.machine)
       {
