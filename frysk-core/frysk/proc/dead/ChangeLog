@@ -1,3 +1,7 @@
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CorefileByteBuffer.java (peek): Delete log calls.
+
 2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* SOLibMapBuilder.java (construct(File,long)): Replace

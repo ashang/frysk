@@ -100,7 +100,6 @@ public class CorefileByteBuffer extends ByteBuffer {
   {
 
 
-    finest.log(this,"peek() address 0x" + Long.toHexString(address));
     byte[] buffer = new byte[1];
     MapAddressHeader metaLine = findMetaData(address);
 
@@ -117,10 +116,6 @@ public class CorefileByteBuffer extends ByteBuffer {
 	      StatelessFile temp = new StatelessFile(new File(metaLine.name));
 	      long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
 	      temp.pread(offset, buffer,0,1);
-	      finest.log(this,"peek'ed() 0x"+Integer.toHexString(buffer[0] & 0xff) +
-			 " from address 0x"+Long.toHexString(address) +  
-			 " offset 0x"+Long.toHexString(offset) +
-			 " from file: " +metaLine.name);
 	    }
 	}
 	
