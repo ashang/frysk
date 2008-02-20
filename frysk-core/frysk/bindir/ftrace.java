@@ -73,6 +73,88 @@ import lib.dwfl.ElfSymbolVersion;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
+class Glob
+{
+    private static int matchCharacterClass(String glob, int from)
+	throws PatternSyntaxException
+    {
+	int i = from + 2;
+	while (glob.charAt(++i) != ':' && i < glob.length())
+	    continue;
+	if (i >= glob.length() || glob.charAt(++i) != ']')
+	    throw new PatternSyntaxException
+		("Unmatched '['.", glob, from);
+	return i;
+    }
+
+    private static int matchBrack(String glob, int from)
+	throws PatternSyntaxException
+    {
+	// On first character, both [ and ] are legal.  But when [ is
+	// foolowed with :, it's character class.
+	int i = from + 1;
+	if (glob.charAt(i) == '[' && glob.charAt(i + 1) == ':')
+	    i = matchCharacterClass(glob, i) + 1;
+	else
+	    ++i; // skip any character, including [ or ]
+	boolean escape = false;
+	for (; i < glob.length(); ++i) {
+	    char c = glob.charAt(i);
+	    if (escape) {
+		++i;
+		escape = false;
+	    }
+	    else if (c == '[' && glob.charAt(i + 1) == ':')
+		i = matchCharacterClass(glob, i);
+	    else if (c == ']')
+		return i;
+	}
+	throw new PatternSyntaxException
+	    ("Unmatched '" + glob.charAt(from) + "'.", glob, from);
+    }
+
+    private static String toRegex(String glob) {
+	StringBuffer buf = new StringBuffer();
+	boolean escape = false;
+	for(int i = 0; i < glob.length(); ++i) {
+	    char c = glob.charAt(i);
+	    if (escape) {
+		if (c == '\\')
+		    buf.append("\\\\");
+		else if (c == '*')
+		    buf.append("\\*");
+		else if (c == '?')
+		    buf.append('?');
+		else
+		    buf.append('\\').append(c);
+		escape = false;
+	    }
+	    else {
+		if (c == '\\')
+		    escape = true;
+		else if (c == '[') {
+		    int j = matchBrack(glob, i);
+		    buf.append(glob.substring(i, j+1));
+		    i = j;
+		}
+		else if (c == '*')
+		    buf.append(".*");
+		else if (c == '?')
+		    buf.append('.');
+		else if (c == '.')
+		    buf.append("\\.");
+		else
+		    buf.append(c);
+	    }
+	}
+	return buf.toString();
+    }
+
+    public static Pattern compile(String glob) {
+	return Pattern.compile(toRegex(glob));
+    }
+}
+
 abstract class Rule
 {
     final public boolean addition;
@@ -141,9 +223,9 @@ class SymbolRule
     public SymbolRule(boolean addition, boolean stackTrace,
 		      String nameRe, String sonameRe, String versionRe) {
 	super (addition, stackTrace);
-	this.sonamePattern = Pattern.compile((sonameRe != null) ? sonameRe : ".*");
-	this.versionPattern = Pattern.compile((versionRe != null) ? versionRe : ".*");
-	this.namePattern = Pattern.compile((nameRe != null) ? nameRe : ".*");
+	this.sonamePattern = Glob.compile((sonameRe != null) ? sonameRe : "*");
+	this.versionPattern = Glob.compile((versionRe != null) ? versionRe : "*");
+	this.namePattern = Glob.compile((nameRe != null) ? nameRe : "*");
     }
 
     public String toString() {
@@ -232,7 +314,7 @@ class ByRegexpSyscallRule
     Pattern pattern;
     public ByRegexpSyscallRule(boolean addition, boolean stackTrace, String regexp) {
 	super (addition, stackTrace);
-	this.pattern = Pattern.compile(regexp);
+	this.pattern = Glob.compile(regexp);
     }
 
     public boolean matches(Object traceable) {
