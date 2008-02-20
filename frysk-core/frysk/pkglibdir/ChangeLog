@@ -1,3 +1,7 @@
+2008-02-19  Stan Cox  <scox@redhat.com>
+
+	* funit-type-class.cxx (class_accessibility): New.
+
 2008-02-08  Stan Cox  <scox@redhat.com>
 
 	* funit-quicksort.c (main): Add bubblesort for cross frame/file testing.

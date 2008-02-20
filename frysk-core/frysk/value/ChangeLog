@@ -1,3 +1,7 @@
+2008-02-19  Stan Cox  <scox@redhat.com>
+
+	* CompositeType.java (toPrint): Allow for struct/class access defaults.
+	
 2008-02-19  Nurdin Premji  <npremji@redhat.com>
 
 	* TestInterface.java: New.

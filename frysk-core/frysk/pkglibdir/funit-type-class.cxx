@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,6 +44,32 @@ static void crash (){
   char* a = 0;
   a[0] = 0;
 }
+
+class class_accessibility {
+ private:
+  long int long_var;
+  int int_var;
+ public:
+  short int short_var;
+ protected:
+  float float_var;
+ public:
+  void set_int_var (int int_var);
+} class_accessibility;
+
+// Test: Class
+// Name: class_accessibility
+// Type: class class_accessibility {
+// Type:  private:
+// Type:   long int long_var;
+// Type:   int int_var;
+// Type:  public:
+// Type:   short int short_var;
+// Type:  protected:
+// Type:   float float_var;
+// Type:  public:
+// Type:   void set_int_var (int);
+// Type: }
 
 class Base1
 {
@@ -108,10 +134,8 @@ private:
   }
 };
 
-// Test: Class
-// Name: mb
+// Name: class_inherited
 // Type: class Type {
-// Type:  public:
 // Type:   struct Base1 {
 // Type:     const char *msg;
 // Type:     void Base1 (const char *);
@@ -124,15 +148,15 @@ private:
 // Type:   } ;
 // Type:  private:
 // Type:   const char *note;
+// Type:  public:
 // Type:   void Type (const char *,const char *,const char *);
 // Type:   void ~Type ();
 // Type: }
 
-Type mb("static", "main", "mb");
+Type class_inherited("static", "main", "mb");
 
-// Name: new_base
+// Name: class_inherited_new
 // Type: class Type {
-// Type:  public:
 // Type:   struct Base1 {
 // Type:     const char *msg;
 // Type:     void Base1 (const char *);
@@ -145,15 +169,15 @@ Type mb("static", "main", "mb");
 // Type:   } ;
 // Type:  private:
 // Type:   const char *note;
+// Type:  public:
 // Type:   void Type (const char *,const char *,const char *);
 // Type:   void ~Type ();
 // Type: }
 
-Type new_base = Type ("new base", "main", "new_base");
+Type class_inherited_new = Type ("new base", "main", "new_base");
 
-// Name: xyz
+// Name: class_template
 // Type: class Derived {
-// Type:  public:
 // Type:   struct Base3 {
 // Type:     int (**_vptr.Base3) ();
 // Type:     void Base3 (void * const &);
@@ -178,17 +202,17 @@ Type new_base = Type ("new base", "main", "new_base");
 // Type:   float do_this_impl<float> (float);
 // Type: }
 
-Derived xyz;
+Derived class_template;
 
 static void func () __attribute__ ((noinline));
 void
 func ()
 {
-  xyz.do_this ((char)'1');
-  xyz.do_this ((short)2);
-  xyz.do_this ((int)3);
-  xyz.do_this ((float) 4.1);
-  xyz.do_this ((int)1);
+  class_template.do_this ((char)'1');
+  class_template.do_this ((short)2);
+  class_template.do_this ((int)3);
+  class_template.do_this ((float) 4.1);
+  class_template.do_this ((int)1);
   crash();
 }
 

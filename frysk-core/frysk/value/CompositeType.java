@@ -353,18 +353,25 @@ public abstract class CompositeType
 	    member = null;
 	}
 	// { content ... }
-	Access previousAccess = null;
+	Access previousAccess;
+	Access currentAccess;
+	Access defaultAccess;
+	if (this instanceof ClassType)
+	    defaultAccess = Access.PRIVATE;
+	else 
+	    defaultAccess = Access.PUBLIC;
+	previousAccess = defaultAccess;
+	   
 	stringBuilder.append(" {\n");
 
 	StringBuilder memberStringBuilder = new StringBuilder();
 	while (member != null) {
-	    if (member.access != previousAccess) {
-		previousAccess = member.access;
-		if (member.access != null) {
-		    stringBuilder.append(" ");
-		    stringBuilder.append(member.access.toPrint());
-		    stringBuilder.append(":\n");
-		}
+	    currentAccess = (member.access != null) ? member.access : defaultAccess;
+	    if (currentAccess != previousAccess) {
+		previousAccess = currentAccess;
+		stringBuilder.append(" ");
+		stringBuilder.append(currentAccess.toPrint());
+		stringBuilder.append(":\n");
 	    }
 	    memberStringBuilder.delete(0, memberStringBuilder.length());
 	    memberStringBuilder.append(" " + member.name);
