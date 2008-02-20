@@ -597,6 +597,30 @@ public class LinuxPtraceProc extends LiveProc {
 	Manager.eventLoop.add(to);
     }
 
+    
+
+    /**
+     * (Internal) Tell the process to add the specified Code
+     * Observation, attaching to the process if necessary. Adds a
+     * TaskCodeObservation to the eventloop which instructs the task
+     * to install the breakpoint if necessary.
+     */
+    void requestAddWatchObserver(Task task, TaskObservable observable,
+				TaskObserver.Watch observer,
+				final long address,
+				final int length) {
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Code
+     * Observation, detaching from the process if necessary.
+     */
+    void requestDeleteWatchObserver(Task task, TaskObservable observable,
+				   TaskObserver.Watch observer,
+				   final long address,
+				   final int length)    {
+    }
+
     /**
      * Class describing the action to take on the suspended Task
      * before adding or deleting an Instruction observer. No
@@ -680,7 +704,7 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: Should not be public.
      */
     public final BreakpointAddresses breakpoints;
-
+    
     // List of available addresses for out of line stepping.
     // Used a lock in getOutOfLineAddress() and doneOutOfLine().
     private final ArrayList outOfLineAddresses = new ArrayList();

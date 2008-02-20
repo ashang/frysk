@@ -82,6 +82,7 @@ public class LinuxPtraceTask extends LiveTask {
 	super(proc, pid);
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.detachedState();
+	this.watchpoints = new WatchpointAddresses(this);
     }
     /**
      * Create a new attached clone of Task.
@@ -91,6 +92,7 @@ public class LinuxPtraceTask extends LiveTask {
 	super(task, clone);
 	((LinuxPtraceHost)getProc().getHost()).putTask(tid, this);
 	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
+	this.watchpoints = new WatchpointAddresses(this);
     }
     /**
      * Create a new attached main Task of Proc.
@@ -109,6 +111,8 @@ public class LinuxPtraceTask extends LiveTask {
 		};
 	    proc.handleAddObservation(ob);
 	}
+	this.watchpoints = new WatchpointAddresses(this);
+
     }
 
     /**
@@ -519,6 +523,23 @@ public class LinuxPtraceTask extends LiveTask {
 	return blockers.size();
     }
     /**
+     * Add a TaskObserver.Watch observer
+     * (hardware only)
+     */
+    public void requestAddWatchObserver(TaskObserver.Watch o, long address, int length) {
+	fine.log(this,"requestAddWatchObserver");
+	requestAddWatchObserver(this, codeObservers, o, address, length);
+    }
+
+    /**
+     * Delete TaskObserver.Code for the TaskObserver pool.
+     */
+    public void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length) {
+	fine.log(this, "requestDeleteWatcheObserver");
+	requestDeleteWatchObserver(this, codeObservers, o, address, length);
+    }
+
+    /**
      * Add a TaskObserver.Cloned observer.
      */
     public void requestAddClonedObserver(TaskObserver.Cloned o) {
@@ -856,6 +877,101 @@ public class LinuxPtraceTask extends LiveTask {
 	}
 	return blockers.size();
     }
+    
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Watchpoint observer.
+     */
+    final class WatchpointAction implements Runnable {
+	private final TaskObserver.Watch watch;
+
+	private final Task task;
+
+	private final long address;
+	
+	private final int length;
+
+	private final boolean addition;
+
+	WatchpointAction(TaskObserver.Watch watch, Task task, long address, int length,
+			 boolean addition) {
+	    this.watch = watch;
+	    this.task = task;
+	    this.address = address;
+	    this.addition = addition;
+	    this.length = length;
+	}
+
+	public void run() {
+	    if (addition) {
+		boolean mustInstall = watchpoints.addBreakpoint(watch, address, length);
+		if (mustInstall) {
+		    Watchpoint watchpoint;
+		    watchpoint = Watchpoint.create(address, length, LinuxPtraceTask.this);
+		    watchpoint.install(task);
+		}
+	    } else {
+		boolean mustRemove = watchpoints.removeBreakpoint(watch, address, length);
+		if (mustRemove) {
+		    Watchpoint watchpoint;
+		    watchpoint = Watchpoint.create(address, length, LinuxPtraceTask.this);
+		    watchpoint.remove(task);
+		}
+	    }
+	}
+    }
+
+    public final WatchpointAddresses watchpoints;
+
+    /**
+     * (Internal) Tell the task to add the specified Watchpoint
+     * observation, attaching to the task if necessary. Adds a
+     * TaskCodeObservation to the eventloop which instructs the task
+     * to install the breakpoint if necessary.
+     */
+    void requestAddWatchObserver(Task task, TaskObservable observable,
+				TaskObserver.Watch observer,
+				final long address,
+				final int length) {
+	WatchpointAction watchAction = new WatchpointAction(observer, task, address, length, true);
+	TaskObservation to;
+	to = new TaskObservation((LinuxPtraceTask) task, observable, observer,
+				 watchAction, true) {
+		public void execute() {
+		    handleAddObservation(this);
+		}
+		public boolean needsSuspendedAction() {
+		    return watchpoints.getCodeObservers(address, length) == null;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified Watchpoint
+     * observation, detaching from the process if necessary.
+     */
+    void requestDeleteWatchObserver(Task task, TaskObservable observable,
+				   TaskObserver.Watch observer,
+				   final long address,
+				   final int length)    {
+	WatchpointAction watchAction = new WatchpointAction(observer, task, address, length, false);
+	TaskObservation to;
+	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, 
+				 watchAction, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceTask.this, this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return watchpoints.getCodeObservers(address, length).size() == 1;
+		}
+	    };
+
+	Manager.eventLoop.add(to);
+    }
+
+    
     /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */

@@ -212,6 +212,18 @@ public interface TaskObserver
       Action updateHit (Task task, long address);
     }
 
+    public interface Watch
+	extends TaskObserver
+    {
+	/**
+	 * The task has hit the breakpoint.  Return Action.BLOCK to
+	 * block the task's further execution.  Note that all Tasks of
+	 * a Proc share their breakpoints, so this method needs to
+	 * check the actual Task that got hit.
+	 */ 
+      Action updateHit (Task task, long address);
+    }
+
     /**
      * Interface used to notify of a Task that has has been attached,
      * and is about to resume execution in that state.  Only after a

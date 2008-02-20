@@ -1,3 +1,12 @@
+2008-02-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java (requestAddWatchObservers): New.
+	(requestDeleteWatchObserver): New.
+	* LinuxPtraceTask.java (requestAddWatchObservers): New.
+	(requestDeleteWatchObserver): New.
+	* Watchpoint.java: New.
+	* WatchpointAddresses.java: New.
+
 2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaFactory.java: Update to match lib.dwfl.
