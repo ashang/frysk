@@ -41,65 +41,62 @@ package frysk.bindir;
 
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
-import frysk.util.CommandlineParser;
-import frysk.util.Util;
+import frysk.util.ProcStopUtil;
+import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.sys.proc.Exe;
 import gnu.classpath.tools.getopt.Option;
 import java.io.File;
-import frysk.util.CoreExePair;
 
-public class fexe {
+public class fexe 
+{
     static boolean verbose = false;
+    
     public static void main (String[] args) {
-	// Parse command line. Check pid provided.
-	CommandlineParser parser = new CommandlineParser("fexe") {
-		public void parseCores (CoreExePair[] corePairs) {
-		    for (int i = 0; i < corePairs.length; i++) {
-			File coreFile = corePairs[i].coreFile;
-			File exeFile = corePairs[i].exeFile;
-			Proc proc;
-			if (exeFile == null)
-			    proc = Util.getProcFromCoreFile(coreFile);
-			else
-			    proc = Util.getProcFromCoreFile(coreFile, exeFile);
-			if (verbose) {
-			    System.out.println(coreFile.getPath()
-					       + " "
-					       + proc.getExe());
-			} else {
-			    System.out.println(proc.getExe());
-			}
-		    }
-		    System.exit(0);
-		}
-		public void parsePids(Proc[] procs) {
-		    for (int i= 0; i< procs.length; i++) {
-			Proc proc = procs[i];
-			ProcessIdentifier pid
-			    = ProcessIdentifierFactory.create(proc.getPid());
-			if (verbose) {
-			    System.out.println(proc.getPid()
-					       + " "
-					       + proc.getExe()
-					       + " "
-					       + Exe.get(pid));
-			} else {
-			    System.out.println(proc.getExe());
-			}
-		    }
-		    System.exit(0);
-		}
-	    };
-	parser.add(new Option('v', "More verbose output") {
+	
+	PrintExeEvent printExe = new PrintExeEvent();
+	ProcStopUtil fexe = new ProcStopUtil("fexe", args, printExe);
+	fexe.setUsage("Usage: fexe <PID> || fexe <EXEFILE> " +
+                      "|| fexe <COREFILE> [<EXEFILE>]"); 
+	fexe.addOption(new Option('v', "More verbose output") {
 		public void parsed (String val) {
 		    verbose = true;
 		}
 	    });
-	parser.parse(args);
-	//If we got here, we didn't find a pid.
-	System.err.println("Error: No PID or COREFILE.");
-	parser.printHelp();
-	System.exit(1);
+	fexe.execute();
+    }
+    
+    private static class PrintExeEvent implements ProcEvent
+    {	
+	private File coreFile;
+	
+	public void setProcData (File coreFile) {
+	    this.coreFile = coreFile;
+	}
+	
+	public void execute(Proc proc) {
+
+	    if (verbose) {
+		// Corefiles		
+		if (coreFile != null) 
+		    System.out.println(coreFile.getPath()
+			               + " "
+			               + proc.getExe());
+		// Processes
+		else if (proc.getPid() != 0) {
+		    ProcessIdentifier pid
+		     = ProcessIdentifierFactory.create(proc.getPid());
+		    System.out.println(proc.getPid()
+			               + " "
+			               + proc.getExe()
+			               + " "
+			               + Exe.get(pid));
+		}
+		// Executables
+		else 
+		    System.out.println(proc.getExe());
+	    } else 
+		System.out.println(proc.getExe());
+	}
     }
 }

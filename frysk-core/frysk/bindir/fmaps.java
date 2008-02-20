@@ -39,6 +39,8 @@
 
 package frysk.bindir;
 
+import java.io.File;
+
 import frysk.util.ProcStopUtil;
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
@@ -60,6 +62,10 @@ public class fmaps {
 	    MemoryMap[] maps = proc.getMaps();
 	    for(int i=0; i<maps.length; i++)
 		System.out.println(maps[i].toString());
-	}	
+	}
+	
+	public void setProcData (File coreFile) {
+	    // Implementation not required here.
+	}
     }
 }

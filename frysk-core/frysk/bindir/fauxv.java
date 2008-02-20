@@ -39,6 +39,8 @@
 
 package frysk.bindir;
 
+import java.io.File;
+
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.util.AuxvStringBuilder;
@@ -75,5 +77,9 @@ public class fauxv {
         	System.out.print(buildAuxv.auxvData.toString());
             }
         }
+        
+	public void setProcData (File coreFile) {
+	    // Implementation not required here.
+	}
     }
 }
