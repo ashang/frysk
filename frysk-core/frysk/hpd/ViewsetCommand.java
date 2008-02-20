@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.List;
+
 import frysk.proc.Task;
 
 class ViewsetCommand extends ParameterizedCommand {
@@ -59,7 +60,6 @@ class ViewsetCommand extends ParameterizedCommand {
 
     public void interpret(CLI cli, Input input, Object options) {
 	PTSet tempset = null;
-	TaskData temptd = null;
 	String setname = "";
 	String displayedName;
 
@@ -80,21 +80,45 @@ class ViewsetCommand extends ParameterizedCommand {
 	default:
 	    throw new InvalidCommandException("too many arguments");
 	}
-
+	printLoop(tempset, cli, displayedName, false);
+    }
+    
+    /**
+     * printLoop goes through the specified set of procs/tasks and prints them out
+     * 
+     * @param tempset is the target set to use in printing
+     * @param cli is the current command line interface object
+     */
+    
+    static void printLoop(PTSet tempset, CLI cli, String displayedName, boolean loadedOnly) {
+	TaskData temptd = null;
+	int parent = -1;
 	cli.outWriter.print(displayedName);
-	cli.outWriter.println("\tpid\tid");
+	cli.outWriter.println("\tpid\tid\tpath-to-executable");
 	for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
 	    temptd = (TaskData) iter.next();
-	    cli.outWriter.print("[");
-	    cli.outWriter.print(temptd.getParentID());
-	    cli.outWriter.print(".");
-	    cli.outWriter.print(temptd.getID());
-	    cli.outWriter.print("]");
-	    Task task = temptd.getTask();
-	    cli.outWriter.print("\t\t");
-	    cli.outWriter.print(task.getProc().getPid());
-	    cli.outWriter.print("\t");
-	    cli.outWriter.println(task.getTid());
+	    if (loadedOnly && cli.loadedProcs.containsKey(temptd.getTask().getProc())
+		    || !loadedOnly) {
+		cli.outWriter.print("[");
+		cli.outWriter.print(temptd.getParentID());
+		cli.outWriter.print(".");
+		cli.outWriter.print(temptd.getID());
+		cli.outWriter.print("]");
+		Task task = temptd.getTask();
+		cli.outWriter.print("\t\t");
+		cli.outWriter.print(task.getProc().getPid());
+		cli.outWriter.print("\t");
+		cli.outWriter.print(task.getTid());
+		cli.outWriter.print("\t");
+		if (parent != temptd.getParentID()) {
+		    cli.outWriter.println(temptd.getTask().getProc().getExe());
+		    parent = temptd.getParentID();
+		}
+		else {
+		    cli.outWriter.println("(same)");
+		}
+	    }
 	}
+	cli.outWriter.flush();
     }
 }

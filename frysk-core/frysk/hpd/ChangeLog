@@ -1,3 +1,9 @@
+2008-02-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* ViewsetCommand.java: Add executable path to listing; 
+	add new printLoop method so other classes can call it.
+	* TestRunCommand.java: Update for above change.
+
 2008-02-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CLI.java: Added ArrayStoreException and ClassCastException
