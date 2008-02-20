@@ -1,3 +1,8 @@
+2008-02-20  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreFactory.java: New file. Code from LinuxCoreHost,
+	LinuxCoreProc, and LinuxCoreTask.
+	
 2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CorefileByteBuffer.java (peek): Delete log calls.
