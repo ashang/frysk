@@ -47,9 +47,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import frysk.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
+import frysk.util.FlowControlWriter;
 import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
 import frysk.util.ObservingTerminal;
@@ -74,6 +78,21 @@ public class fhpd {
             return cli.complete (buffer, cursor, candidates);
         }
     }
+    static class TerminalObserver implements Observer {
+	private FlowControlWriter writer;
+	
+	public TerminalObserver(FlowControlWriter writer) {
+	    this.writer = writer;
+	}
+	public void update(Observable observable, Object arg) {
+	    ObservingTerminal.Observable obs = (ObservingTerminal.Observable)observable;
+	    if (obs.getTerminal().getInputEntered()) {
+		writer.pause();
+	    } else {
+		writer.unpause();
+	    }
+	}
+    }
 
     // Start the command line in its own thread; but from within
     // the event-loop.  This ensures that the event-loop is up and
@@ -84,14 +103,18 @@ public class fhpd {
 	private ConsoleReader reader;
 	CommandLine() {
 	    // Construct the HPD.
-	    cli = new CLI("(fhpd) ", System.out);
-
 	    try {
+                ObservingTerminal terminal = new ObservingTerminal(FileDescriptor.in);
+                PrintWriter printWriter = new PrintWriter(System.out);
+                FlowControlWriter writer = new FlowControlWriter(printWriter);
+                terminal.getObservable()
+                    .addObserver(new TerminalObserver(writer));
+                cli = new CLI("(fhpd) ", writer);
 		reader = new ConsoleReader
-		    (new FileInputStream(java.io.FileDescriptor.in),
-		     new PrintWriter(System.out),
+                    (new FileInputStream(java.io.FileDescriptor.in),
+		     printWriter,
 		     null,
-		     new ObservingTerminal(FileDescriptor.in));
+		     terminal);
 	    } catch (IOException ioe) {
 		System.out.println("ERROR: Could not create a command line");
 		System.out.print(ioe.getMessage());
@@ -164,7 +187,6 @@ public class fhpd {
     
         parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
         parser.parse(args);
-
 	Manager.eventLoop.add(new CommandLine());
 
 	// Run the event loop then exit when it exits (or crashes).

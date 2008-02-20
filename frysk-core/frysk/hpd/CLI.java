@@ -40,8 +40,8 @@
 package frysk.hpd;
 
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
-import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -218,12 +218,12 @@ public class CLI {
     /**
      * Constructor
      * @param prompt String initially to be used as the prompt
-     * @param out Stream for output. This really should be a PrintWriter
+     * @param out PrintWriter for output
      * @param steppingEngine existing SteppingEngine
      */
-    public CLI(String prompt, PrintStream out, SteppingEngine steppingEngine) {
+    public CLI(String prompt, Writer outWriter, SteppingEngine steppingEngine) {
         this.prompt = prompt;
-        outWriter = new PrintWriter(out, true);
+        this.outWriter = new PrintWriter(outWriter);
         this.steppingEngine = steppingEngine;
         idManager = ProcTaskIDManager.getSingleton();
 
@@ -254,10 +254,10 @@ public class CLI {
     /**
      * Constructor that creates a new steppingEngine
      * @param prompt String initially to be used as the prompt
-     * @param out Stream for output. This really should be a PrintWriter
+     * @param out PrintWriter for output.
      */
-    public CLI(String prompt, PrintStream out) {
-        this(prompt, out, new SteppingEngine());
+    public CLI(String prompt, Writer outWriter) {
+        this(prompt, outWriter, new SteppingEngine());
     }
    
     public String getPrompt() {

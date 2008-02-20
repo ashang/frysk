@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,79 +39,117 @@
 
 package frysk.util;
 
-import java.io.*;
-import jline.ConsoleReader;
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.Writer;
 
-import frysk.sys.FileDescriptor;
+/**
+ * Extension of Writer that allows output to be paused.
+ */
+public class FlowControlWriter extends FilterWriter {
+    private Writer outStream;
+    private boolean paused = false;
 
-
-public class ObservingTerminal
-    extends PtyTerminal {
-    public class Observable extends java.util.Observable {
-        private final ObservingTerminal terminal;
-        Observable(ObservingTerminal terminal) {
-            this.terminal = terminal;
-        }
-        public void setChanged() {
-            super.setChanged();
-        }
-        
-        public ObservingTerminal getTerminal() {
-            return terminal;
-        }
+    /**
+     * @param out
+     */
+    public FlowControlWriter(Writer outStream) {
+	super(outStream);
+	this.outStream = outStream;
     }
 
-    final Observable observable;
-    
-    boolean inputEntered = false;
-    
-    public boolean getInputEntered() {
-	return inputEntered;
+    public synchronized boolean isPaused() {
+	return paused;
     }
     
-    public ObservingTerminal(FileDescriptor fd) {
-        super(fd);
-        observable = new Observable(this);
-    }
-
-    public ObservingTerminal(File file) {
-        super(file);
-        observable = new Observable(this);
-    }
-
-    public ObservingTerminal(String string) {
-        super(string);
-        observable = new Observable(this);
+    public synchronized void pause() {
+	paused = true;
     }
     
-    public void beforeReadLine(ConsoleReader reader, String prompt,
-                               Character mask) {
-        inputEntered = false;
-        observable.setChanged();
-        observable.notifyObservers();
-        super.beforeReadLine(reader, prompt, mask);
+    public synchronized void unpause() {
+	paused = false;
+	notifyAll();
     }
-
-    public int readVirtualKey(InputStream in)
-        throws IOException {
-        int result = super.readVirtualKey(in);
-        inputEntered = true;
-        observable.setChanged();
-        observable.notifyObservers();
-        return result;
-    }
-
     
-    public void afterReadLine(ConsoleReader reader, String prompt,
-	    Character mask) {
-	inputEntered = false;
-	observable.setChanged();
-	observable.notifyObservers();
-	super.afterReadLine(reader, prompt, mask);
+    public synchronized void flush () {
+	while (paused) {
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException e) {
+		
+	    }
+	}
+	try {
+	    outStream.flush();
+	}
+	catch (IOException e) {
+	}
     }
 
-    public Observable getObservable() {
-        return observable;
+    public synchronized void close() throws IOException {
+	while (paused) {
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException e) {
+		
+	    }
+	}
+	outStream.close();
+	super.close();
     }
-               
+
+    public synchronized void write(char[] buf, int offset, int len) throws IOException {
+	while (paused) {
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException e) {
+		
+	    }
+	}
+	outStream.write(buf, offset, len);
+	try {
+	    outStream.flush();
+	}
+	catch (IOException e) {
+	}
+    }
+
+    public synchronized void write(int b) throws IOException {
+	while (paused) {
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException e) {
+		
+	    }
+	}
+	outStream.write(b);
+	try {
+	    outStream.flush();
+	}
+	catch (IOException e) {
+	}
+    }
+
+    public synchronized void write(String str, int offset, int len) throws IOException {
+	while (paused) {
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException e) {
+		
+	    }
+	}
+	outStream.write(str, offset, len);
+	try {
+	    outStream.flush();
+	}
+	catch (IOException e) {
+	    
+	}
+    }
+    
 }

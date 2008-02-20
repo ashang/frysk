@@ -1,3 +1,10 @@
+2008-02-28  Tim Moore  <timoore@redhat.com>
+
+	* FlowControlWriter.java: New class.
+	* ObservingTerminal.java: Rename ObservingTerminalObserver to
+	Observable.
+	(afterReadLine, getObservable): New methods.
+	
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestStackTraceAction.java: Use PrintStackOptions instead of boolean list.

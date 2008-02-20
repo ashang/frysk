@@ -1,3 +1,8 @@
+2008-02-28  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (constructors): Take a Writer argument instead of a
+	PrintStream.
+	
 2008-02-27  Rick Moseley  <rmoseley@redhat.com>
 
 	* ViewsetCommand.java: Fix error when duplicate executables are
