@@ -47,7 +47,15 @@ import java.io.File;
 public class TestFexe extends TestLib {
     public void testExeOfPid() {
 	File fexe = Config.getBinFile("fexe");
-	TearDownExpect e = new TearDownExpect(fexe.getAbsolutePath () + " $$");
-	e.expect(fexe + "\r\n");
+	// XXX: Some versions of bash (e.g., bash-3.2-20.fc8.x86_64)
+	// will exec, instead of fork, a program if it is the only
+	// command.  This leads to $$ pointing at the fexe process.
+	// Work around it by forcing bash to execute two commands.
+	TearDownExpect e = new TearDownExpect(new String[] {
+		"/bin/bash",
+		"-c",
+		fexe.getAbsolutePath() + " $$ ; echo \"\""
+	    });
+	e.expect("/bin/bash" + "\r\n");
     }
 }

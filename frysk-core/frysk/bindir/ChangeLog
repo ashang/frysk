@@ -1,3 +1,7 @@
+2008-02-20  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFexe.java: Prevent bash execing fexe.
+
 2008-02-20  Teresa Thomas  <tthomas@redhat.com>
 
 	* fexe.java: Refactor to use ProcStopUtil.

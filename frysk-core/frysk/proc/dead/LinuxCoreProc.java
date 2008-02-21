@@ -55,7 +55,6 @@ import frysk.sys.proc.AuxvBuilder;
 import java.util.Iterator;
 import java.io.File;
 import java.util.ArrayList;
-import frysk.proc.Task;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.isa.ISA;
@@ -64,7 +63,6 @@ import frysk.rsl.Log;
 
 public class LinuxCoreProc extends DeadProc {
   
-    private ElfData elfData = null;
     private ElfPrpsinfo elfProc = null;
     private CorefileByteBuffer memory = null;
     private File corefileBackEnd = null;
@@ -77,12 +75,12 @@ public class LinuxCoreProc extends DeadProc {
     private static final Log fine = Log.fine(LinuxCoreProc.class);
 
 
-    public LinuxCoreProc(ElfData data, LinuxCoreHost host, int pid) {
+    public LinuxCoreProc(ElfData noteSection, LinuxCoreHost host, int pid) {
 	super(host, null, pid);
-	this.elfData = data;
-	this.elfProc = ElfPrpsinfo.decode(elfData);
+	this.elfProc = ElfPrpsinfo.decode(noteSection);
 	this.corefileBackEnd = host.coreFile;
-	fine.log(this, "LinuxCoreProc elfData", data, "host", host, "pid", pid);
+	fine.log(this, "LinuxCoreProc noteSection", noteSection,
+		 "host", host, "pid", pid);
 
 	// Executable is null (non-specified), find the executable
 	// as it is written in the corefile. 
@@ -93,7 +91,74 @@ public class LinuxCoreProc extends DeadProc {
 	
 	}
 	this.exefileBackEnd = host.exeFile;
+	this.auxv = constructAuxv(noteSection);
+	constructTasks(noteSection);
     }	
+
+    public void sendRefresh() {
+	// Do nothing; already done.
+    }
+
+    /**
+     * Find and create the core tasks.
+     */
+    private void constructTasks(ElfData noteSection) {
+ 	ISA isa = ElfMap.getISA(noteSection.getParent().getEHeader());
+	ElfPrstatus elfTasks[] = null;
+	ElfPrFPRegSet elfFPRegs[] = null;
+	ElfPrXFPRegSet elfXFPRegs[] = null;
+	int fpCount = 0;
+
+	// Decode both task and floating point registers
+	elfTasks = ElfPrstatus.decode(noteSection);
+	elfFPRegs = ElfPrFPRegSet.decode(noteSection);
+	elfXFPRegs = ElfPrXFPRegSet.decode(noteSection);
+    
+	// Two methods of whether Floating Point note data exists.
+	// In userland generated core-dumps there is no way to test
+	// if floating point data operations have actually occurred, so
+	// programs like fcore/gcore will always write NT_FPREGSET note data
+	// per thread regardless. On kernel generated corefiles, the
+	// kernel micro-optimizes whether NT_FPREGSET note data is written
+	// per thread by analyzing to see if that thread has performed
+	// Floating Point operations. If it has, it will write
+	// NT_FPREGSET, and if it hasn't it won't.
+
+	// Account for both these scenarios, here.
+    
+	if (elfFPRegs.length == elfTasks.length) {
+	    // The number of NT_FPREGSET note objects is equal to the
+	    // the number of NT_PRSTATUS note objects, then no do not
+	    // account for mismatch.
+	    for (int i=0; i<elfTasks.length; i++) {
+		// xfpregsets accompany fp registers on a 1:1 basis
+		// but only on some architectures.
+		ElfPrXFPRegSet xregSet = null;
+		if (elfXFPRegs.length > 0)
+		    xregSet = elfXFPRegs[i];
+		new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[i],
+				  xregSet, isa);
+	    }
+	} else {
+	    // Otherwise add only NT_FPREGSET data if pr_fpvalid is >
+	    // 0. This value is not reliable on userland kernels (gdb
+	    // always sets it to 0) so if we are here, this is a
+	    // micro-optimized kernel where that flag is set
+	    // correctly.
+	    for (int i=0; i<elfTasks.length; i++) {
+		if (elfTasks[i].getPrFPValid() > 0) {
+		    // xfpregsets accompany fp registers on a 1:1
+		    // basis but only on some architectures.
+		    ElfPrXFPRegSet xregSet = null;
+		    if (elfXFPRegs.length > 0)
+			xregSet = elfXFPRegs[fpCount];
+		    new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[fpCount], xregSet, isa);
+		    fpCount++;
+		} else
+		    new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i],  null, null, isa);
+	    }
+	}
+    }
 
     public String getCommand() {
 	fine.log(this,"getCommand()", elfProc.getPrFname());
@@ -160,73 +225,6 @@ public class LinuxCoreProc extends DeadProc {
 	return memory;
     }
 
-    public void sendRefresh() {
-	// Find tasks. Refresh is a misnomer here as 
-	// Corefiles will never spawn new tasks beyond the
-	// original refresh, or will lose them. 
-
-	ElfPrstatus elfTasks[] = null;
-	ElfPrFPRegSet elfFPRegs[] = null;
-	ElfPrXFPRegSet elfXFPRegs[] = null;
-	int fpCount = 0;
-
-	// Decode both task and floating point registers
-	elfTasks = ElfPrstatus.decode(elfData);
-	elfFPRegs = ElfPrFPRegSet.decode(elfData);
-	elfXFPRegs = ElfPrXFPRegSet.decode(elfData);
-    
-	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
-
-	// Two methods of whether Floating Point note data exists.
-	// In userland generated core-dumps there is no way to test
-	// if floating point data operations have actually occurred, so
-	// programs like fcore/gcore will always write NT_FPREGSET note data
-	// per thread regardless. On kernel generated corefiles, the
-	// kernel micro-optimizes whether NT_FPREGSET note data is written
-	// per thread by analyzing to see if that thread has performed
-	// Floating Point operations. If it has, it will write
-	// NT_FPREGSET, and if it hasn't it won't.
-
-	// Account for both these scenarios, here.
-    
-	Task newTask = null;
-    
-	// If the number of NT_FPREGSET note objects is equal to the
-	// the number of NT_PRSTATUS note objects, then no do not account
-	// for mismatch. 
-	if (elfFPRegs.length == elfTasks.length)
-	    for (int i=0; i<elfTasks.length; i++) {
-		// xfpregsets accompany fp registers on a 1:1  basis
-		// but only on some architectures.
-		ElfPrXFPRegSet xregSet = null;
-		if (elfXFPRegs.length > 0)
-		    xregSet = elfXFPRegs[i];
-		newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[i], xregSet, isa);
-	    } else {
-	    // Otherwise add only NT_FPREGSET data if pr_fpvalid is > 0. This
-	    // value is not reliable on userland kernels (gdb always sets it
-	    // to 0) so if we are here, this is a micro-optimized kernel where
-	    // that flag is set correctly.
-	    for (int i=0; i<elfTasks.length; i++) {
-	    
-		if (elfTasks[i].getPrFPValid() > 0) {
-
-		    // xfpregsets accompany fp registers on a 1:1  basis
-		    // but only on some architectures.
-		    ElfPrXFPRegSet xregSet = null;
-		    if (elfXFPRegs.length > 0)
-			xregSet = elfXFPRegs[fpCount];
-		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i], elfFPRegs[fpCount], xregSet, isa);
-		    fpCount++;
-		} else
-		    newTask = new LinuxCoreTask(LinuxCoreProc.this, elfTasks[i],  null, null, isa);
-	    
-	    }
-	}
-	newTask.getClass();
-    }
-
-
     private MemoryMap[] memoryMaps;
     public MemoryMap[] getMaps () {
 	fine.log(this,"getMaps()");
@@ -267,31 +265,29 @@ public class LinuxCoreProc extends DeadProc {
 	return memoryMaps;
     }
 
-    private Auxv[] auxv;
     public Auxv[] getAuxv() {
-
-	fine.log(this,"getAuxv()", Log.CALLER);
-
-	if (auxv == null) {
-	    fine.log(this,"Auxv is null, building");
-	    final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
-	    class BuildAuxv extends AuxvBuilder {
-		Auxv[] vec;
-		public void buildBuffer (byte[] auxv) {
-		}
-		public void buildDimensions (int wordSize, boolean bigEndian,
-					     int length) {
-		    vec = new Auxv[length];
-		}
-		public void buildAuxiliary (int index, int type, long val) {
-		    vec[index] = new Auxv (type, val);
-		}
-	    }
-	    BuildAuxv auxv = new BuildAuxv ();
-	    auxv.construct (prAuxv.getAuxvBuffer());
-	    this.auxv = auxv.vec;
-	} else {fine.log(this,"Returning cached Auxv");}
 	return auxv;
+    }
+    private Auxv[] auxv;
+
+    private Auxv[] constructAuxv(ElfData noteSection) {
+	fine.log(this,"getAuxv()", Log.CALLER);
+	final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(noteSection);
+	class BuildAuxv extends AuxvBuilder {
+	    Auxv[] vec;
+	    public void buildBuffer (byte[] auxv) {
+	    }
+	    public void buildDimensions (int wordSize, boolean bigEndian,
+					 int length) {
+		vec = new Auxv[length];
+	    }
+	    public void buildAuxiliary (int index, int type, long val) {
+		vec[index] = new Auxv (type, val);
+	    }
+	}
+	BuildAuxv auxv = new BuildAuxv ();
+	auxv.construct (prAuxv.getAuxvBuffer());
+	return auxv.vec;
     }
 
     /**

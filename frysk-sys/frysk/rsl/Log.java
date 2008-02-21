@@ -39,6 +39,8 @@
 
 package frysk.rsl;
 
+import frysk.sys.Tid;
+import frysk.sys.Pid;
 import inua.util.PrintWriter;
 import java.io.PrintStream;
 import java.text.MessageFormat;
@@ -129,7 +131,7 @@ public final class Log {
 
     private static final long startTime = System.currentTimeMillis();
 
-    private void prefixTime() {
+    private void prefixTimeAndPid() {
 	long time = System.currentTimeMillis() - startTime;
 	long millis = time % 1000;
 	time = time / 1000;
@@ -140,8 +142,10 @@ public final class Log {
 	long hrs = time % 24;
 	time = time / 24;
 	long days = time;
-	out.print(days);
-	out.print(' ');
+	if (days > 0) {
+	    out.print(days);
+	    out.print(' ');
+	}
 	out.print(2, '0', hrs);
 	out.print(':');
 	out.print(2, '0', mins);
@@ -150,17 +154,21 @@ public final class Log {
 	out.print('.');
 	out.print(3, '0', millis);
 	out.print(' ');
+	out.print(Pid.get());
+	out.print('.');
+	out.print(Tid.get());
+	out.print(' ');
     }
 
     private void prefix() {
-	prefixTime();
+	prefixTimeAndPid();
 	out.print(path);
 	out.print(":");
     }
 
     private void prefix(Object o) {
-	prefixTime();
-	out.print(" [");
+	prefixTimeAndPid();
+	out.print("[");
 	out.print(o.toString());
 	out.print("]:");
     }

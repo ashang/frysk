@@ -1,5 +1,8 @@
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreProc.java (constructAuxv(ElfData)): New.
+	(constructTasks(ElfData,ISA)): Replace sendRefresh.
+
 	* LinuxCoreFactory.java: New file. Code from LinuxCoreHost,
 	LinuxCoreProc, and LinuxCoreTask.
 	

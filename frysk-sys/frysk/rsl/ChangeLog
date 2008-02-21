@@ -1,3 +1,7 @@
+2008-02-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java: Include the TID.PID in the log message.
+
 2008-02-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Add more log methods and boolean support.
