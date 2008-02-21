@@ -95,10 +95,6 @@ public class LinuxCoreProc extends DeadProc {
 	constructTasks(noteSection);
     }	
 
-    public void sendRefresh() {
-	// Do nothing; already done.
-    }
-
     /**
      * Find and create the core tasks.
      */

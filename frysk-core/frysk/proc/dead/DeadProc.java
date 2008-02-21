@@ -42,8 +42,6 @@ package frysk.proc.dead;
 import java.util.logging.Level;
 import frysk.proc.Proc;
 import frysk.proc.Host;
-import frysk.proc.Manager;
-import frysk.proc.ProcEvent;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -69,11 +67,9 @@ public abstract class DeadProc extends Proc {
      */
     public void requestRefresh() {
 	logger.log(Level.FINE, "{0} requestRefresh\n", this);
-	Manager.eventLoop.add(new ProcEvent(this) {
-		public void execute() {
-		    proc.sendRefresh ();
-		}
-	    });
+    }
+    public void sendRefresh() {
+	logger.log(Level.FINE, "{0} sendRefresh\n", this);
     }
 
     protected void performDetach() {

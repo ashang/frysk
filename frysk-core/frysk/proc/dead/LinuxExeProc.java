@@ -60,13 +60,9 @@ public class LinuxExeProc extends DeadProc {
 	this.host = host;
 	this.elfData = data;
 	sendRefresh();
-	buildMetaData();
-    }
-
-    public void sendRefresh() {
 	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
-	LinuxExeTask newTask = new LinuxExeTask(this, isa);
-	newTask.getClass();
+	new LinuxExeTask(this, isa);
+	buildMetaData();
     }
 
     public Auxv[] getAuxv() {

@@ -1,5 +1,10 @@
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxExeProc.java (sendRefresh()): Delete.
+	* LinuxCoreProc.java (sendRefresh()): Delete.
+	* DeadProc.java (requestRefresh()): Simplify.
+	(sendRefresh()): New.
+
 	* LinuxCoreProc.java (constructAuxv(ElfData)): New.
 	(constructTasks(ElfData,ISA)): Replace sendRefresh.
 
