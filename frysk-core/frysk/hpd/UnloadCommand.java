@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import frysk.proc.Proc;
+//import frysk.proc.Task;
 
 /**
  * UnloadCommand handles the unloading of processes that have been loaded
@@ -56,7 +57,7 @@ public class UnloadCommand extends ParameterizedCommand {
 
     UnloadCommand() {
 	super("unload",
-		"unload [ -t id ]",
+		"unload [ -t id | -all ]",
 		"The unload command allows a user to unload processes that"
 		+ " have been loaded via the 'load' command.  The user can"
 		+ " either specify a 'path-to-executable' as a parameter if"
@@ -70,9 +71,13 @@ public class UnloadCommand extends ParameterizedCommand {
 	
 	if (cmd.size() > 3) {
 	    throw new InvalidCommandException("Too many parameters");
-	} else if (cmd.size() < 1) {
+	} else if (cmd.size() < 1 && !cli.loadedProcs.isEmpty()) {
 	    // List the loaded procs if no parameters entered
-	    LoadCommand.listLoadedProcs(cli);
+	    ViewsetCommand.printLoop(cli.targetset, cli, "Target set", true);
+	    return;
+	} else if (cmd.size() < 1 && cli.loadedProcs.isEmpty()) {
+	    cli.addMessage("No loaded procs currently, must load a proc before unloading", 
+		    Message.TYPE_NORMAL);
 	    return;
 	}
 	
@@ -81,29 +86,63 @@ public class UnloadCommand extends ParameterizedCommand {
 		throw new InvalidCommandException("Not enough parameters");
 	    int id = Integer.parseInt(cmd.parameter(1));
 	    Proc proc = cli.idManager.getProc(id);
+	    if (proc == null) {
+		cli.addMessage("Trying to remove a proc that has not been loaded", Message.TYPE_ERROR);
+		return;
+	    }
 	    removeFromHashMap(proc, cli.getLoadedProcs(), cli);
+	    cli.targetset.removeProc(id);
 	    proc.getHost().remove(proc);
-	    cli.idManager.removeProcID(id);
+	    return;
+	}
+	if (cmd.parameter(0).equals("-all")) {
+	    removeAllProcs(cli.getLoadedProcs(), cli);
+	    cli.addMessage("All loaded procs removed", Message.TYPE_NORMAL);
+	    return;
 	}
     }
     
     /**
      * removeFromHashMap removes the designated process from the designated HashMap.
+     * 
+     * @param proc is the proc object to be removed
+     * @param procMap is the HashMap of the procs to search for removal
+     * @param cli is the current command line interface object
      */
     private void removeFromHashMap(Proc proc, HashMap procMap, CLI cli) {
-	String procCommand = proc.getExe();
 	Set procSet = procMap.entrySet();
 	Iterator foo = procSet.iterator();
 	while (foo.hasNext()) {
 	    Map.Entry me = (Map.Entry) foo.next();
 	    Proc newProc = (Proc) me.getKey();
-	    if (procCommand.equals(newProc.getExe())) {
+	    if (proc.getExe().equals(newProc.getExe())) {
 		synchronized (cli) {
 		    foo.remove();
 		}
 		return;
 	    }
 	}
+    }
+
+    /**
+     * removeAllProcs removes all of the procs loaded via the load command
+     * 
+     * @param procMap is a HashMap of the set of procs to remove
+     * @param cli is the current command line interface object
+     * 
+     */
+    private void removeAllProcs(HashMap procMap, CLI cli) {
+	Set procSet = procMap.entrySet();
+	Iterator foo = procSet.iterator();
+	while (foo.hasNext()) {
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    proc.getHost().remove(proc);
+	}
+	synchronized (cli) {
+	    procMap.clear();
+	}
+	
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

@@ -104,13 +104,6 @@ public class ProcTaskIDManager
         else
             return null;
     }
-    
-    public synchronized boolean removeProcID(int id) {
-	if (id > procList.size() || id < 0)
-	    return false;
-	procList.remove(id);
-	return true;
-    }
 
     public synchronized int getProcID(Proc proc) {
         Integer result = (Integer)procMap.get(proc);
@@ -145,6 +138,16 @@ public class ProcTaskIDManager
         if (entry == null || taskID >= entry.tasks.size())
             return null;
         return (Task)entry.tasks.get(taskID);
+    }
+    
+    /**
+     * removeProc removes a proc and its associated tasks by
+     *   setting this particular procID to null
+     * 
+     * @param procID
+     */
+    public synchronized void removeProc(int procID) {
+	procList.set(procID, null);
     }
 
     // Observer interface

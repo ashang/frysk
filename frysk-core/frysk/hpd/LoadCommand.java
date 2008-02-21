@@ -40,10 +40,10 @@
 package frysk.hpd;
 
 import java.io.File;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+//import java.util.Map;
+//import java.util.Set;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -93,12 +93,14 @@ public class LoadCommand extends ParameterizedCommand {
     public void interpret(CLI cli, Input cmd, Object options) {
 	
 	Options o = (Options)options;
-	
 	if (cmd.size() > 2) {
 	    throw new InvalidCommandException("Too many parameters");
-	} else if (cmd.size() < 1) {
+	} else if (cmd.size() < 1 && !cli.loadedProcs.isEmpty()) {
 	    // List the loaded procs if no parameters entered
-	    listLoadedProcs(cli);
+	    ViewsetCommand.printLoop(cli.targetset, cli, "Target set", true);
+	    return;
+	} else if (cmd.size() < 1 && cli.loadedProcs.isEmpty()) {
+	    cli.addMessage("No loaded procs currently", Message.TYPE_NORMAL);
 	    return;
 	}
 
@@ -140,27 +142,6 @@ public class LoadCommand extends ParameterizedCommand {
 		Message.TYPE_NORMAL);
     }
     
-    /**
-     * listLoadedProcs lists the currently loaded procs
-     * 
-     * @param cli is the current commandline interface object
-     */
-    public static void listLoadedProcs(CLI cli) {
-	HashMap listLoaded = cli.getLoadedProcs();
-	if (listLoaded.isEmpty()) {
-	    cli.addMessage("No loaded procs currently", Message.TYPE_NORMAL);
-	    return;
-	}
-	Set procSet = listLoaded.entrySet();
-	Iterator foo = procSet.iterator();
-	while (foo.hasNext()) {
-	    Map.Entry me = (Map.Entry) foo.next();
-	    Proc proc = (Proc) me.getKey();
-	    Integer taskId = (Integer) me.getValue();
-	    cli.addMessage("Loaded Task Id " + taskId + " = " + proc.getExe(), Message.TYPE_NORMAL);
-	}
-    }
-
     int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,
 		completions);

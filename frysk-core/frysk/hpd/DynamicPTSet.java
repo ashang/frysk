@@ -103,4 +103,11 @@ class DynamicPTSet implements PTSet {
 
 	return result.iterator();
     }
+    
+    /**
+     * Remove a proc from the list
+     */
+    
+    public void removeProc(int procId) {
+    }
 }

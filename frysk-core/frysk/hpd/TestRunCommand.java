@@ -58,7 +58,7 @@ public class TestRunCommand extends TestLib {
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	try { Thread.sleep(1000); } catch (Exception e) {}
 	e.sendCommandExpectPrompt("focus","Target set.*\\[0\\.0\\]\t\t([0-9]+)" +
-		"\t([0-9]+).*" + "\\[0\\.1\\]\t\t([0-9]+)\t([0-9]+).*");
+		"\t([0-9]+).*\\[0\\.1\\]\t\t([0-9]+)\t([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();

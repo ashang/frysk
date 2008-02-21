@@ -43,6 +43,7 @@ import java.util.Iterator;
 interface PTSet
 {
 	boolean containsTask(int procid, int taskid);
+	void removeProc(int procid);
 	Iterator getTasks();
 	Iterator getTaskData();
 }

@@ -53,7 +53,7 @@ public class TestLoadCommand extends TestLib {
 		+ "\n");
 	e.expect("Loaded executable file.*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
 
@@ -63,7 +63,7 @@ public class TestLoadCommand extends TestLib {
 		+ "foo\n");
 	e.expect("File does not exist or is not readable*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
@@ -79,7 +79,7 @@ public class TestLoadCommand extends TestLib {
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\].*\\[1\\.0].*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
@@ -91,7 +91,7 @@ public class TestLoadCommand extends TestLib {
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
@@ -99,7 +99,7 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load", "No loaded procs currently.*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
@@ -109,9 +109,9 @@ public class TestLoadCommand extends TestLib {
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("load", "Loaded Task Id ([0-9]+).*Task Id ([0-9]+).*");
+	e.sendCommandExpectPrompt("load", "Target set.*\\[0\\.0\\].*\\[1\\.0].*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
 }

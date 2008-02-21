@@ -133,4 +133,11 @@ class StaticPTSet implements PTSet
 	      temp.add(ptset2[i]);
 	  return new StaticPTSet((ProcTasks[])temp.toArray(ptset1));
 	}
+	
+	/**
+	 * Remove a proc from the list
+	 */
+	    
+	public void removeProc(int procId) {
+	}
 }

@@ -1,3 +1,16 @@
+2008-02-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* PTSet.java: Add removeProc(int procid) interface.
+	* AllPTSet.java: Implement above interface.
+	* DynamicPTSet.java: Ditto.
+	* ExecPTSet.java: Ditto.
+	* StatePTSet.java: Ditto.
+	* StaticPTSet.java: Ditto.
+	* LoadCommand.java: Add listing of info when no params.
+	* UnloadCommand.java: Ditto; fix removing a procid.
+	* TestLoadCommand.java: Fix to accommodate above changes.
+	* TestRunCommand.java: Ditto.
+
 2008-02-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* ViewsetCommand.java: Add executable path to listing; 
