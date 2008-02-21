@@ -44,8 +44,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import frysk.rsl.Log;
 import frysk.proc.Observation;
-import frysk.proc.TaskId;
-import frysk.proc.Manager;
 
 /**
  * A UNIX Process State
@@ -156,7 +154,7 @@ abstract class LinuxPtraceProcState extends State {
 		proc.sendRefresh ();
 	    // Assumes that the main Task's ID == the Proc's ID.
 	    LinuxPtraceTask mainTask
-		= (LinuxPtraceTask)Manager.host.get(new TaskId(proc.getPid()));
+		= ((LinuxPtraceHost)proc.getHost()).getTask(proc.pid);
 	    if (mainTask == null) {
 		// The main task exited and a refresh managed to
 		// update Proc removing it.

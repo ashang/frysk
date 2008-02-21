@@ -1,3 +1,8 @@
+2008-02-20  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProcState.java: Get the task from the
+	LinuxPtraceHost.
+
 2008-02-20  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceProc.java (requestAddWatchObservers): New.
