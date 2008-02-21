@@ -68,34 +68,29 @@ public class fexe
     
     private static class PrintExeEvent implements ProcEvent
     {	
-	private File coreFile;
-	
-	public void setProcData (File coreFile) {
-	    this.coreFile = coreFile;
+	public void executeLive(Proc proc) {
+	    if (verbose) {
+		ProcessIdentifier pid
+		= ProcessIdentifierFactory.create(proc.getPid());
+		System.out.println(  proc.getPid()
+			           + " "
+			           + proc.getExe()
+			           + " "
+			           + Exe.get(pid));
+	    } else 
+		System.out.println(proc.getExe());
 	}
 	
-	public void execute(Proc proc) {
-
-	    if (verbose) {
-		// Corefiles		
-		if (coreFile != null) 
-		    System.out.println(coreFile.getPath()
-			               + " "
-			               + proc.getExe());
-		// Processes
-		else if (proc.getPid() != 0) {
-		    ProcessIdentifier pid
-		     = ProcessIdentifierFactory.create(proc.getPid());
-		    System.out.println(proc.getPid()
-			               + " "
-			               + proc.getExe()
-			               + " "
-			               + Exe.get(pid));
-		}
-		// Executables
-		else 
-		    System.out.println(proc.getExe());
-	    } else 
+	public void executeDead(Proc proc, File coreFile) {
+	    if (coreFile == null) 
+		System.out.println(proc.getExe());
+	    
+	    else if (verbose) {
+		System.out.println(  coreFile
+			           + " "
+			           + proc.getExe());
+	    } 
+	    else 
 		System.out.println(proc.getExe());
 	}
     }

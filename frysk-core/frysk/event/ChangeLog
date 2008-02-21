@@ -1,3 +1,9 @@
+2008-02-21  Teresa Thomas  <tthomas@redhat.com>
+
+	* ProcEvent.java (executeDead): New.
+	(executeLive): New.
+	(exeute): Delete.
+
 2008-02-20  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcEvent.java (setProcData): New.

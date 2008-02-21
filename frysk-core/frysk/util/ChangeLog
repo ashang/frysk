@@ -1,3 +1,8 @@
+2008-02-21  Teresa Thomas  <tthomas@redhat.com>
+
+	* ProcStopUtil.java (.parseCores): Update to match
+	changes to Event.ProcEvent.
+
 2008-02-20  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcStopUtil.java (.parseCores): Call setProcData.

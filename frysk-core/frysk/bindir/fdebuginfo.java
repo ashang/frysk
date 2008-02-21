@@ -65,18 +65,24 @@ public final class fdebuginfo
     
     private static class PrintDebuginfoEvent implements ProcEvent
     {
-	public void execute(Proc proc) {
-	    /* Get and print the debuginfo install paths.
-	     */
+	public void executeLive(Proc proc) {
+	    // Get and print the debuginfo install paths.	     
 	    Task task  = proc.getMainTask();
 	    DebuginfoPaths dbg = new DebuginfoPaths(task);
-	    String dInfo = dbg.getDebuginfo();          
-	    if (dInfo!=null)
-		System.out.print(dInfo); 
+	    String dInfo = dbg.getDebuginfo();    
+	    
+	    if (dInfo!=null) {
+		if (dInfo.length() == 0)
+		    System.out.println("No packages found.");
+		else
+		    System.out.print(dInfo); 
+	    }
+	    else 
+		System.out.println("No packages found.");
 	}	
-	
-	public void setProcData (File coreFile) {
-	    // Implementation not required here.
-	}
+        
+        public void executeDead(Proc proc, File file) {
+            executeLive (proc);
+        }
     }
 }

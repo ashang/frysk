@@ -47,14 +47,6 @@ import java.io.File;
  */
 public interface ProcEvent
 {
-    void execute (Proc proc);
-    
-    /**
-     * Use to set proc specific information. 
-     * 
-     * XXX: Add parameters to this function for 
-     * access to more process specific information 
-     * by the utilities. 
-     */
-    void setProcData (File coreFile);
+    void executeLive(Proc proc);
+    void executeDead(Proc proc, File file);
 }

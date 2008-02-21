@@ -66,7 +66,6 @@ public class ProcStopUtil
     private Proc proc;
     private String[] args;
     private CommandlineParser parser;
-    private File coreFile;
 	
     public ProcStopUtil (String utilName, String[] args, 
 	                  final ProcEvent procEvent) {
@@ -87,11 +86,9 @@ public class ProcStopUtil
 	    {
 		for (int i = 0; i < coreExePairs.length; i++)
 		{       
-		    coreFile = coreExePairs[i].coreFile;
-		    procEvent.setProcData  (coreFile);
 		    proc = Util.getProcFromCoreExePair(coreExePairs[i]);
 		    failIfProcNull(proc);
-		    procEvent.execute(proc);
+		    procEvent.executeDead(proc, coreExePairs[i].coreFile);
 		}  
 	    }
 	    
@@ -108,7 +105,7 @@ public class ProcStopUtil
 		    Host exeHost = new LinuxExeHost(Manager.eventLoop, exeFile);
 		    proc = Util.getProcFromExeFile(exeHost);
 		    failIfProcNull(proc);
-		    procEvent.execute(proc);
+		    procEvent.executeDead(proc, null);
 		}
 	    }
 	};
@@ -190,7 +187,10 @@ public class ProcStopUtil
 	}
 	
 	public void execute() {
-	    event.execute(proc);
+	    event.executeLive(proc);
+	    
+	    // FIXME: Should request eventloop to stop
+	    // instead of exit.
 	    System.exit(0);
 	}
     }

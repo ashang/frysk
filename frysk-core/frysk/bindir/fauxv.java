@@ -39,12 +39,11 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.util.AuxvStringBuilder;
 import frysk.util.ProcStopUtil;
+import java.io.File;
 
 public class fauxv {
 
@@ -60,9 +59,9 @@ public class fauxv {
 
     private static class PrintAuxvEvent implements ProcEvent
     {
-        public void execute(Proc proc) {
+        public void executeLive(Proc proc) {
+            
             class BuildAuxv extends AuxvStringBuilder {
-
         	public StringBuffer auxvData = new StringBuffer();
         	public void buildLine(String type, String desc, String value) {
         	    auxvData.append(type+" (" + desc+") : " + value+"\n");
@@ -78,8 +77,8 @@ public class fauxv {
             }
         }
         
-	public void setProcData (File coreFile) {
-	    // Implementation not required here.
-	}
+        public void executeDead(Proc proc, File file) {
+            executeLive (proc);
+        }
     }
 }

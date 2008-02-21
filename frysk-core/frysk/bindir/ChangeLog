@@ -1,3 +1,11 @@
+2008-02-21  Teresa Thomas  <tthomas@redhat.com>
+
+	* fexe.java (PrintExeEvent): Update for changes 
+	to event.ProcEvent.
+	* fdebuginfo.java (PrintDebuginfoEvent): Ditto.
+	* fmaps.java (PrintMapsEvent): Ditto.
+	* fauxv.java (PrintAuxvEvent): Ditto.
+	
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFexe.java: Prevent bash execing fexe.

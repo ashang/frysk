@@ -58,14 +58,14 @@ public class fmaps {
     
     private static class PrintMapsEvent implements ProcEvent
     {
-	public void execute(Proc proc) {
+	public void executeLive(Proc proc) {
 	    MemoryMap[] maps = proc.getMaps();
 	    for(int i=0; i<maps.length; i++)
 		System.out.println(maps[i].toString());
 	}
-	
-	public void setProcData (File coreFile) {
-	    // Implementation not required here.
-	}
+	        
+        public void executeDead(Proc proc, File file) {
+            executeLive (proc);
+        }
     }
 }
