@@ -44,18 +44,33 @@ import java.util.LinkedList;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
+import frysk.rsl.Log;
 import frysk.scopes.SourceLocation;
 
 public class StepNextCommand extends ParameterizedCommand {
 
+    private static Log fine = Log.fine(StepNextCommand.class);
     StepNextCommand() {
      	super("Step over next function", "next", 
      	      ("The next command defines a 'step-over' operation, " +
-	       "which is used during stepping, when the user wishes " +
-	       "to line step through the current function of interest " +
+	       "which is used when the user wishes " +
+	       "to step through the current function of interest " +
 	       "and avoid descending into any further function calls.  " +
 	       "This operation will skip over any function call, and will " +
-	       "otherwise just perform a line step."));
+	       "otherwise just perform a step. Default line step"));
+     	add(new CommandOption("instruction", 'i', "step by instruction", null) {
+	    void parse(String argument, Object options) {
+		((Options)options).instruction = true;	
+	    }
+	});
+    }
+    
+    private class Options {
+	boolean instruction = false;
+    }
+	
+    Object options() {
+	return new Options();
     }
     
     public void interpret(CLI cli, Input cmd, Object options) {
@@ -67,7 +82,13 @@ public class StepNextCommand extends ParameterizedCommand {
       }
       if (cli.steppingObserver != null)
         {
-          cli.getSteppingEngine().stepOver(taskList);
+	  if (((Options) options).instruction == false) {
+	      fine.log(this, "Stepping next line");
+	      cli.getSteppingEngine().stepOver(taskList);
+	  } else {
+	      fine.log(this, "Stepping next instruction");
+	      cli.getSteppingEngine().stepNextInstruction(taskList);
+	  }
               
           synchronized (cli.steppingObserver.getMonitor())
             {

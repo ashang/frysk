@@ -44,14 +44,32 @@ import java.util.LinkedList;
 import java.util.List;
 import frysk.proc.Task;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.rsl.Log;
 import frysk.scopes.SourceLocation;
 
 public class StepCommand extends ParameterizedCommand {
+    
+    private static Log fine = Log.fine(StepCommand.class);
     StepCommand() {
 	super("Step a process.", "step",
-	      ("Line step a process which has been attached to, and is"
-	       + " currently blocked."));
+	      ("Step a process which has been attached to, and is"
+	       + " currently blocked. Default is line stepping."));
+	
+	add(new CommandOption("instruction", 'i', "step by instruction", null) {
+	    void parse(String argument, Object options) {
+		((Options)options).instruction = true;	
+	    }
+	});
     }
+    
+    private class Options {
+	boolean instruction = false;
+    }
+	
+    Object options() {
+	return new Options();
+    }
+    
 
     void interpret(CLI cli, Input cmd, Object options) {
 	PTSet ptset = cli.getCommandPTSet(cmd);
@@ -61,7 +79,14 @@ public class StepCommand extends ParameterizedCommand {
 	    taskList.add(taskIter.next());
 	}
 	if (cli.steppingObserver != null) {
-	    cli.getSteppingEngine().stepLine(taskList);
+	     
+	    if (((Options) options).instruction == false) {
+		fine.log(this, "Stepping line");
+		cli.getSteppingEngine().stepLine(taskList);
+	    } else {
+		fine.log(this, "Stepping instruction");
+		cli.getSteppingEngine().stepInstruction(taskList);
+	    }
 
 	    synchronized (cli.steppingObserver.getMonitor()) {
 		try {

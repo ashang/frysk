@@ -1,3 +1,17 @@
+2008-02-21  Nurdin Premji  <npremji@redhat.com>
+
+	* StepCommand.java (StepCommand): Added -instruction parameter. 
+	Bugzilla 5593.
+	(Options): Added.
+	(options): Added.
+	(interpret): Check instruction parameter.
+	* StepNextCommand.java: Ditto.
+	* StepInstructionCommand.java: Removed.
+	* StepNextiCommand.java: Removed.
+	* TopLevelCommand.java(TopLevelCommand): Removed references to "stepi"
+	and "nexti".
+	* TestHelp.java: Ditto.
+
 2008-02-21  Rick Moseley  <rmoseley@redhat.com>
 
 	* PTSet.java: Add removeProc(int procid) interface.

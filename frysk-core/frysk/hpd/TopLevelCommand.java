@@ -111,9 +111,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new StartCommand(), "start");
         add(new StepCommand(), "s|tep");
         add(new StepFinishCommand(), "finish");
-        add(new StepInstructionCommand(), "stepi");
         add(new StepNextCommand(), "n|ext");
-        add(new StepNextiCommand(), "nexti");
         add(new UnloadCommand(), "un|load");
         add(new WhatCommand(), "what");
         add(new WhichsetsCommand(), "whichsets");
