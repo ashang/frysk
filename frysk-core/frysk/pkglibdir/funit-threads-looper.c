@@ -66,21 +66,21 @@ static char * myname;
 
 void
 *do_it ()
-{
+{  
   int t = 34543;
   while (t > 0)
     t--;
 
   //fprintf (stderr,"attach %s pid=%d -task tid=%d -cli\n", myname, getpid(), gettid());
 
-  int d = 1;
+  volatile int d = 1;
   int e = 0;
   pid_t f = gettid();
   f++;
 
   while (1)
     {
-      d++;
+      d++;  // _childThreadStart2_
       e++;
       if (d == 3)
         {
@@ -95,8 +95,8 @@ void
 
 void
 bak ()
-{
-  while (1)
+{ // _childThreadStart1_
+  while (1)  
     {
       //fprintf (stderr,"attach %s pid=%d -task tid=%d -cli\n", myname, getpid(), gettid());
       int a = 0;
@@ -104,7 +104,7 @@ bak ()
       int c = 0;
       while (1)
         {
-          a++;
+          a++; 
           b++;
           c++;
           if (a + b > 4)
@@ -147,12 +147,12 @@ int
 main (int argc, char **argv)
 {
   myname = argv[0];
-  pthread_attr_t attr;
+  pthread_attr_t attr;	
   pthread_attr_init (&attr);
   pthread_create (&tester_thread, &attr, do_it, NULL);
 
   /* This is a comment */
-  foo ();
+  foo (); 
   int t = 30;
   t++;
   exit (0);

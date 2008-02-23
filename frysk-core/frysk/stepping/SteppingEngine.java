@@ -1162,8 +1162,12 @@ public class SteppingEngine {
 	    SteppingEngine.this.taskStateMap.put(offspring, new TaskStepEngine(
 		    offspring, SteppingEngine.this));
 	    SteppingEngine.this.threadsList.addLast(offspring);
+
+	    offspring.requestAddInstructionObserver(SteppingEngine.this.steppingObserver);
+
 	    offspring.requestAddClonedObserver(this);
 	    offspring.requestAddTerminatingObserver(this);
+	    offspring.requestAddTerminatedObserver(this);
 	    return Action.CONTINUE;
 	}
 

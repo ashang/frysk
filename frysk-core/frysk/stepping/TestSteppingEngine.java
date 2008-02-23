@@ -44,8 +44,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
+
 import frysk.scopes.SourceLocation;
 import frysk.sys.Signal;
 import frysk.testbed.Offspring;
@@ -109,7 +111,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new AssertLine(endLine, theTask);
 
@@ -153,7 +155,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new AssertLine(endLine, theTask);
 
@@ -199,7 +201,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new AssertLine(endLine, theTask);
 
@@ -243,7 +245,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new AssertLine(endLine, theTask);
 
@@ -324,7 +326,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new StepOverTest(endLine, theTask);
 
@@ -404,7 +406,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new InstructionNextTest(endLine, theTask);
 
@@ -484,7 +486,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new StepOutTest(endLine, theTask);
 
@@ -564,7 +566,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	this.currentTest = new StepAdvanceTest(endLine, theTask);
 
@@ -576,6 +578,66 @@ public class TestSteppingEngine extends TestLib {
 	this.se.stepAdvance(theTask, DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask).getOuterDebugInfoFrame()
 		.getOuterDebugInfoFrame());
+
+	this.testStarted = true;
+
+	/** Run to completion */
+	assertRunUntilStop("Running test");
+	cleanup();
+    }
+
+
+    public void testChildThreadStart() {
+
+	if (unresolvedOnPPC(3277))
+	    return;
+
+	/**
+         * SteppingTest Object definition - tell the stepping test what to look
+         * for at the completion of the test.
+         */
+	class ChildThreadStartTest implements SteppingTest {
+
+	    public void runAssertions() {
+
+			Manager.eventLoop.requestStop();
+	    }
+	}
+
+	/** Variable setup */
+
+	String source = Config.getRootSrcDir()
+		+ "frysk-core/frysk/pkglibdir/funit-threads-looper.c";
+
+	this.scanner = new TestfileTokenScanner(new File(source));
+
+	/* The line number where the test begins */
+	int startLine = this.scanner.findTokenLine("_childThreadStart1_");
+
+	int startLine2 = this.scanner.findTokenLine("_childThreadStart2_");
+
+	/* The line number the test should end up at */
+	int endLine = this.scanner.findTokenLine("_childThreadEnd_");
+
+	/* The test process */
+	dbae = new DaemonBlockedAtEntry(Config
+		.getPkgLibFile("funit-threads-looper"));
+
+	Task theTask = dbae.getMainTask();
+
+	this.testStarted = false;
+
+	initTaskWithTask(theTask, source, startLine, endLine, startLine2);
+
+	this.currentTest = new ChildThreadStartTest();
+
+	DebugInfoFrame frame = DebugInfoStackFactory
+		.createDebugInfoStackTrace(theTask);
+	assertTrue("Line information present", frame.getLine() != SourceLocation.UNKNOWN);
+
+	/** The stepping operation. Step all tasks - if one is not added to the
+	SteppingEngine, it will throw a RuntimeException.  */
+	this.se.stepLine(theTask.getProc().getTasks());
 
 	this.testStarted = true;
 
@@ -609,7 +671,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, endLine);
+	initTaskWithTask(theTask, source, startLine, endLine, 0);
 
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(theTask);
@@ -651,7 +713,7 @@ public class TestSteppingEngine extends TestLib {
 
 	    public void addedTo(Object observable) {
 		ProcessIdentifier pid
-		    = ProcessIdentifierFactory.create(((Task)observable).getProc().getPid());
+			= ProcessIdentifierFactory.create(((Task) observable).getProc().getPid());
 		Signal.KILL.kill(pid);
 	    }
 
@@ -705,7 +767,7 @@ public class TestSteppingEngine extends TestLib {
 
 	this.testStarted = false;
 
-	initTaskWithTask(theTask, source, startLine, 0);
+	initTaskWithTask(theTask, source, startLine, 0, 0);
 
 	this.currentTest = new testMissingThreadStep(0, theTask);
 
@@ -736,14 +798,14 @@ public class TestSteppingEngine extends TestLib {
     public Task initTask(Offspring process, String source, int startLine,
 	    int endLine) {
 	Task myTask = process.findTaskUsingRefresh(true);
-	initTaskWithTask(myTask, source, startLine, endLine);
+	initTaskWithTask(myTask, source, startLine, endLine, 0);
 	return myTask;
     }
 
     DaemonBlockedAtEntry dbae = null;
 
     public void initTaskWithTask(Task myTask, String source, int startLine,
-	    int endLine) {
+	    int endLine, int startLine2) {
 
 	this.lineMap = new HashMap();
 	this.lock = new LockObserver();
@@ -767,6 +829,13 @@ public class TestSteppingEngine extends TestLib {
 	LineBreakpoint lbp = bManager.addLineBreakpoint(source, startLine, 0);
 	lbp.addObserver(new TestSteppingBreakpoint());
 	bManager.enableBreakpoint(lbp, myTask);
+
+	if (startLine2 != 0)
+	{
+	LineBreakpoint lbp2 = bManager.addLineBreakpoint(source, startLine2, 0);
+	lbp2.addObserver(new TestSteppingBreakpoint());
+	bManager.enableBreakpoint(lbp2, myTask);
+	}
 
 	this.se.addObserver(lock);
 	if (dbae != null)
