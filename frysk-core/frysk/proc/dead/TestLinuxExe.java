@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,30 +42,19 @@ package frysk.proc.dead;
 import frysk.Config;
 import inua.eio.ByteBuffer;
 
-import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.proc.Host;
 import frysk.testbed.TestLib;
-import frysk.proc.ProcId;
 import frysk.proc.Manager;
-import frysk.proc.TaskObserver;
 
-public class TestLinuxExe
-    extends TestLib
-	    
-{
-
-  Host exeHost = new LinuxExeHost(Manager.eventLoop, 
-				Config.getPkgDataFile("test-exe-x86"));
-  
-  
-  public void testLinuxTaskMemory ()
-  {
-	assertNotNull("Executable file Host is Null?",exeHost);
-    
-	Proc proc = exeHost.getProc(new ProcId(0));
+public class TestLinuxExe extends TestLib {
+    public void testLinuxTaskMemory() {
+	Proc proc
+	    = LinuxExeFactory.createProc(Manager.eventLoop, 
+					 Config.getPkgDataFile("test-exe-x86"),
+					 new String[0]);
 	assertNotNull("Proc exists in exefile", proc);
+	assertNotNull("Executable file Host is Null?",proc.getHost());
 	Task task = proc.getMainTask();
 	assertNotNull("Task exists in proc",task);
 	
@@ -81,53 +70,5 @@ public class TestLinuxExe
 	buffer.position(0x080497dcL);
 	assertEquals("Peek a byte at 0x080497dc", (byte) 0xFF, buffer.getUByte());
 	assertEquals("Peek a byte at 0x080497dd", (byte) 0xFF, buffer.getUByte());
-  }
-
-  // Helper class for inserting a Code breakpoint observer.
-  static class CodeObserver
-    implements TaskObserver.Code
-  {
-    private final Task task;
-    private final long address;
-
-    boolean hit;
-
-    public CodeObserver(Task task, long address)
-    {
-      this.task = task;
-      this.address = address;
     }
-
-    public Action updateHit (Task task, long address)
-    {
-      if (! task.equals(this.task))
-        throw new IllegalStateException("Wrong Task, given " + task
-                                        + " not equals expected "
-                                        + this.task);
-      if (address != this.address)
-        throw new IllegalStateException("Wrong address, given " + address
-                                        + " not equals expected "
-                                        + this.address);
-
-      hit = true;
-
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-
-    public void addedTo(Object o)
-    {
-      Manager.eventLoop.requestStop();
-    }
-
-    public void deletedFrom(Object o)
-    {
-      Manager.eventLoop.requestStop();
-    }
-
-    public void addFailed (Object o, Throwable w)
-    {
-      fail("add to " + o + " failed, because " + w);
-    }
-  }
 }

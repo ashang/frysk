@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,46 +40,49 @@
 package frysk.proc.dead;
 
 import java.io.File;
-import frysk.sys.StatelessFile;
+import java.util.List;
+import java.util.LinkedList;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
+import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
-import inua.eio.ByteBuffer;
+import frysk.event.EventLoop;
 
-public class ExeByteBuffer extends ByteBuffer {
-
-    private final MemoryMap[] memoryMaps;
-    private final StatelessFile[] statelessFiles;
-    private final byte[] buffer = new byte[1];
-    
-    public ExeByteBuffer(MemoryMap[] memoryMaps) {
-	super(0,-1);
-	this.memoryMaps = memoryMaps;
-	this.statelessFiles = new StatelessFile[memoryMaps.length];
-    }
-    
-    protected int peek(long caret) {
-	long offset = -1;
-	int i;
-	MemoryMap line = null;
-	for (i = 0; i < memoryMaps.length; i++) {
-	    line = memoryMaps[i];
-	    if ((caret >= line.addressLow) && (caret<= line.addressHigh)) {
-		offset = line.offset + (caret - line.addressLow);
-		break;
+public class LinuxExeFactory {
+    public static LinuxExeProc createProc(EventLoop eventLoop,
+					  final File exeFile,
+					  String[] args) {
+	Elf exeElf = null;
+	try {
+	    exeElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
+	    ElfEHeader eHeader = exeElf.getEHeader();
+	    class BuildExeMaps extends SOLibMapBuilder {
+		private final List metaData = new LinkedList();
+		public void buildMap(long addrLow, long addrHigh, boolean permRead,
+				     boolean permWrite, boolean permExecute,
+				     long offset, String name, long align) {
+		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
+					       permWrite, permExecute, false,
+					       offset, -1, -1, -1, -1, -1,
+					       exeFile.getAbsolutePath()));
+		}
+		MemoryMap[] getMemoryMaps() {
+		    MemoryMap[] memoryMaps = new MemoryMap[metaData.size()];
+		    metaData.toArray(memoryMaps);
+		    return memoryMaps;
+		}
 	    }
+	    BuildExeMaps SOMaps = new BuildExeMaps();
+	    // Add in case for executables maps.
+	    SOMaps.construct(exeFile, 0);
+	    
+	    LinuxExeHost host
+		= new LinuxExeHost(exeFile, eHeader, SOMaps.getMemoryMaps(),
+				   args);
+	    return host.getProc();
+	} finally {
+	    if (exeElf != null)
+		exeElf.close();
 	}
-	if (i >= memoryMaps.length)
-	    throw new RuntimeException("Cannot find memory in exe file");
-	StatelessFile temp = statelessFiles[i];
-	if (temp == null) {
-	    temp = new StatelessFile(new File(line.name));
-	    statelessFiles[i] = temp;
-	}
-	temp.pread(offset, buffer,0,1);
-	return buffer[0];
     }
-
-    protected void poke(long caret, int val) {
-	throw new RuntimeException("Cannot poke into Executable. File bug.");
-    }
-
 }

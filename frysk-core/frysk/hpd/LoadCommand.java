@@ -40,16 +40,12 @@
 package frysk.hpd;
 
 import java.io.File;
-//import java.util.HashMap;
 import java.util.Iterator;
-//import java.util.Map;
-//import java.util.Set;
+import frysk.proc.dead.LinuxExeFactory;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Host;
-import frysk.proc.dead.LinuxExeHost;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -112,8 +108,9 @@ public class LoadCommand extends ParameterizedCommand {
 	    	("File does not exist or is not readable or is not a file.");
 	}
 
-	Host exeHost = new LinuxExeHost(Manager.eventLoop, executableFile);
-	Proc exeProc = frysk.util.Util.getProcFromExeFile(exeHost);
+	Proc exeProc = LinuxExeFactory.createProc(Manager.eventLoop,
+						  executableFile,
+						  cmd.stringArrayValue());
 
 	int procID;
 	if (cli.taskID < 0)

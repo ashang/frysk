@@ -1,3 +1,7 @@
+2008-02-25  Andrew Cagney  <cagney@redhat.com>
+
+	* LoadCommand.java: Use LinuxExeFactory.
+
 2008-02-21  Nurdin Premji  <npremji@redhat.com>
 
 	* StepCommand.java (StepCommand): Added -instruction parameter. 

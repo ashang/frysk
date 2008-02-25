@@ -43,8 +43,6 @@ import java.io.File;
 
 import frysk.event.Event;
 import frysk.event.ProcEvent;
-import frysk.proc.dead.LinuxExeHost;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
@@ -53,6 +51,7 @@ import frysk.proc.Task;
 import frysk.util.CommandlineParser;
 import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
+import frysk.proc.dead.LinuxExeFactory;
 
 /**
  * Framework to be used for frysk utilities that,
@@ -102,8 +101,8 @@ public class ProcStopUtil
 		    System.exit(1);
 		} else {
 		    Manager.eventLoop.start();
-		    Host exeHost = new LinuxExeHost(Manager.eventLoop, exeFile);
-		    proc = Util.getProcFromExeFile(exeHost);
+		    proc = LinuxExeFactory.createProc(Manager.eventLoop,
+						      exeFile, command);
 		    failIfProcNull(proc);
 		    procEvent.executeDead(proc, null);
 		}

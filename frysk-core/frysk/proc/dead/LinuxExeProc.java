@@ -39,50 +39,45 @@
 
 package frysk.proc.dead;
 
-import inua.eio.ByteBuffer;
-
-import java.util.ArrayList;
-import lib.dwfl.ElfData;
-
-import frysk.isa.ISA;
-import frysk.isa.ElfMap;
+import lib.dwfl.ElfEHeader;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
+import java.io.File;
 
 public class LinuxExeProc extends DeadProc {
 
-    private ElfData elfData = null;
-    ArrayList metaData = new ArrayList();
-    LinuxExeHost host = null;
+    private final MemoryMap[] memoryMaps;
+    private final String[] argv;
+    private final File exeFile;
 
-    public LinuxExeProc(ElfData data, LinuxExeHost host) {
+    public LinuxExeProc(LinuxExeHost host, File exeFile, ElfEHeader eHeader,
+			MemoryMap[] memoryMaps, String[] argv) {
 	super(host, null, 0);
-	this.host = host;
-	this.elfData = data;
-	sendRefresh();
-	ISA isa = ElfMap.getISA(elfData.getParent().getEHeader());
-	new LinuxExeTask(this, isa);
-	buildMetaData();
+	this.exeFile = exeFile;
+	this.memoryMaps = memoryMaps;
+	this.argv = argv;
+	new LinuxExeTask(this, eHeader, memoryMaps);
     }
 
     public Auxv[] getAuxv() {
-	return null;
+	return auxv;
     }
+    private final Auxv[] auxv = new Auxv[0];
     
     public int getUID() {
 	return 0;
     }
 
     public String[] getCmdLine() {
-	return null;
+	return argv;
     }
 
     public String getCommand() {
-	return this.host.exeFile.getName();
+	return exeFile.getName();
     }
 
     public String getExe() {
-	return host.exeFile.getAbsolutePath();
+	return exeFile.getAbsolutePath();
     }
 
     public int getGID() {
@@ -90,34 +85,6 @@ public class LinuxExeProc extends DeadProc {
     }
     
     public MemoryMap[] getMaps() {
-	return (MemoryMap[]) metaData.toArray(new MemoryMap[metaData.size()]);
+	return memoryMaps;
     }
-
-    ByteBuffer getMemory() {
-	if (memory == null)
-	    memory = new ExeByteBuffer(metaData);
-	return memory;
-    }
-    private ByteBuffer memory;
-    
-    private void buildMetaData()
-    {
-	class BuildExeMaps extends SOLibMapBuilder
-
-	{
-	    public void buildMap(long addrLow, long addrHigh, boolean permRead,
-		    boolean permWrite, boolean permExecute, long offset,
-		    String name, long align) 
-	    {
-		metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
-			permWrite, permExecute, false, offset, -1, -1, -1, -1, -1,
-			host.exeFile.getAbsolutePath()));
-	    }
-	}
-	
-	BuildExeMaps SOMaps = new BuildExeMaps();
-	// Add in case for executables maps.
-	SOMaps.construct(this.host.exeFile, 0);
-    }
-
 }

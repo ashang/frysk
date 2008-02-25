@@ -1,3 +1,14 @@
+2008-02-25  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxExeFactory.java: New.  Merge in LinuxExeHost, LinuxExeProc,
+	and LinuxExeTask.
+	* LinuxExeHost.java: Simplify.
+	* LinuxExeProc.java: Simplify.
+	* LinuxExeTask.java: Simplify.
+	* ExeByteBuffer.java (ExeByteBuffer(MemoryMap[])): Replace
+	ExeByteBuffer(ArrayList).
+	* TestLinuxExe.java: Update.
+
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxExeProc.java (sendRefresh()): Delete.

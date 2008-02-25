@@ -40,100 +40,24 @@
 package frysk.proc.dead;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
-import lib.dwfl.ElfData;
 import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfPHeader;
-
-import frysk.event.EventLoop;
-import frysk.proc.Proc;
-import frysk.proc.ProcId;
+import frysk.proc.MemoryMap;
 
 public class LinuxExeHost extends DeadHost {
-
-    protected File exeFile = null;
-    EventLoop eventLoop = null;
-    Elf exeFileElf = null;
+    private final File exeFile;
+    private final LinuxExeProc proc;
     
-    public LinuxExeHost(EventLoop eventLoop, File exeFile) {
+    LinuxExeHost(File exeFile, ElfEHeader eHeader, MemoryMap[] memoryMaps,
+		 String[] args) {
 	this.exeFile = exeFile;
-	this.eventLoop = eventLoop;
-	this.exeFileElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
-	// Iterate (build) the /proc tree, passing each found PID to
-	// procChanges where it can update the /proc tree.
-	// Changes individual process.
-	new DeconstructExeFile(this.exeFileElf);
-	for (Iterator i = procPool.values().iterator(); i.hasNext();) {
-	    LinuxExeProc proc = (LinuxExeProc) i.next();
-	    proc.sendRefresh();
-	}
-    }
-
-    private class DeconstructExeFile
-    {
-      List addedProcs = new LinkedList();
-      Elf exeFileElf;
-      ElfData noteData = null;
-
-      DeconstructExeFile(Elf exeFileElf)
-      {
-        this.exeFileElf =  exeFileElf;
-        ElfEHeader eHeader = this.exeFileElf.getEHeader();
-        
-        // Get number of program header entries.
-        long phSize = eHeader.phnum;
-        for (int i=0; i<phSize; i++)
-  	{
-  	  // Test if pheader is of types notes..
-  	  ElfPHeader pHeader = exeFileElf.getPHeader(i);
-  	  if (pHeader.type == ElfPHeader.PTYPE_NOTE)
-  	    {
-  	      // if so, copy, break and leave.
-  	      noteData = exeFileElf.getRawData(pHeader.offset,pHeader.filesz);
-  	      break;
-  	    }
-  	}
-
-        if (noteData != null)
-  	update(noteData);
-      }
-
-      Proc update (ElfData proc_pid) 
-      {
-        final ProcId procId = new ProcId(0);
-        // Currently there can only be one process per core file.
-        // What happens when we have two core files denoting the same
-        // process/pid? Leave the test here for now.
-     
-        Proc proc = (Proc) procPool.get(procId);
-        if (proc == null)
-  	{
-  	  // executable file processes have no parents as thy are captured
-  	  // in isolation, and reconstructed.
-  	  proc = new LinuxExeProc(proc_pid,LinuxExeHost.this);
-  	}
-
-        addedProcs.add(proc);
-
-        return proc;
-      }
+	proc = new LinuxExeProc(this, exeFile, eHeader, memoryMaps, args);
     }
 
     public String getName() {
 	return exeFile.getName();
     }
 
-    /**
-     * finalize closes the file descriptor for the executable.
-     */
-    protected void finalize()
-    {
-	this.exeFileElf.close();
+    LinuxExeProc getProc() {
+	return proc;
     }
-
 }

@@ -1,3 +1,7 @@
+2008-02-25  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcStopUtil.java: Use LinuxExeFactory.
+
 2008-02-21  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcStopUtil.java (.parseCores): Update to match

@@ -43,35 +43,20 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.ISA;
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfException;
-import java.io.File;
+import frysk.isa.ElfMap;
+import frysk.proc.MemoryMap;
 
 public class LinuxExeTask extends DeadTask {
     private final long pc;
-    private final LinuxExeProc proc;
+    private final ByteBuffer memory;
 
-    LinuxExeTask(LinuxExeProc proc, ISA isa) {
-	super(proc, 0, isa, constructRegisterBanks(isa));
-	this.proc = proc;
-	// Compute a Fake PC.  XXX should be done in Proc instead of
-	// creating Elf object in the Task itself.
-	Elf e = null;
-	long pc;
-	try {
-	    e = new Elf(new File(getProc().getExe()), ElfCommand.ELF_C_READ);
-	    ElfEHeader h = e.getEHeader();
-	    pc = h.entry;
-	} catch (ElfException ee) {
-	    // Nice try, just give up.
-	    pc = 0;
-	} finally {
-	    if (e != null)
-		e.close();
-	}
-	this.pc = pc;
+    LinuxExeTask(LinuxExeProc proc, ElfEHeader eHeader,
+		 MemoryMap[] memoryMaps) {
+	super(proc, 0, ElfMap.getISA(eHeader),
+	      constructRegisterBanks(ElfMap.getISA(eHeader)));
+	this.memory = new ExeByteBuffer(memoryMaps);
+	this.pc = eHeader.entry; // Compute a Fake PC.
     }
   
     public long getPC() {
@@ -79,7 +64,7 @@ public class LinuxExeTask extends DeadTask {
     }
 
     public ByteBuffer getMemory() {
-	return proc.getMemory();
+	return memory;
     }
   
     private static RegisterBanks constructRegisterBanks(ISA isa) {
