@@ -5,6 +5,7 @@
 	parse the commands, pass straight to the command.
 	* TestRunCommand.java: Test for parameters with "-" at the 
 	beginning.
+	* TestStartCommand.java: Ditto.
 
 2008-02-25  Andrew Cagney  <cagney@redhat.com>
 

@@ -69,10 +69,14 @@ public class TestStartCommand extends TestLib {
      */
     public void testStartCommandParameter() {
 	e = new HpdTestbed();
-	String[] param = { "teststart", "parameter2start"};
+	String[] param = { "teststart", "parameter2start", "-g"};
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
 	"Loaded executable file.*");
-	e.sendCommandExpectPrompt("start " + param[0] + " " + param[1], "Attached to process.*");
+	String parameters = "";
+	for (int i = 0; i < param.length; i++) {
+	    parameters = parameters + param[i] + " ";
+	}
+	e.sendCommandExpectPrompt("start " + parameters, "Attached to process.*");
 	e.sendCommandExpectPrompt("go",
 		"Running process ([0-9]+).*");
 	/*
