@@ -46,7 +46,7 @@ import frysk.Config;
 public class TestFcore extends TestLib {
     public void testNoArguments() {
 	TearDownExpect e = new TearDownExpect(Config.getBinFile("fcore"));
-	e.expect("Error: No pid provided.");      
+	e.expect("ERROR: No argument provided.");    
     }
 
     public void testBadArguments () {
@@ -54,7 +54,7 @@ public class TestFcore extends TestLib {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"this is a bad argument"
 	    });
-	e.expect("Error: Commands not supported.");
+	e.expect("File does not exist or is not readable or is not a file.");
     }
 
     public void testBadConsoleParameter () {

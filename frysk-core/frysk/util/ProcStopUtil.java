@@ -97,7 +97,7 @@ public class ProcStopUtil
 		if (!exeFile.exists() || !exeFile.canRead()
 			|| !exeFile.isFile()) {
 		    System.err.println ("File does not exist or is " +
-		    "not readable or is not a file.");
+		                        "not readable or is not a file.");
 		    System.exit(1);
 		} else {
 		    Manager.eventLoop.start();

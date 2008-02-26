@@ -1,3 +1,8 @@
+2008-02-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* fcore.java: Refactor to use ProcStopUtil.
+	* TestFcore.java: Update.
+
 2008-02-21  Teresa Thomas  <tthomas@redhat.com>
 
 	* fexe.java (PrintExeEvent): Update for changes 

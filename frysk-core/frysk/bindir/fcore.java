@@ -40,162 +40,128 @@
 package frysk.bindir;
 
 import java.util.logging.Logger;
+import java.io.File;
 
-import frysk.event.Event;
+import frysk.event.ProcEvent;
 
-import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
+import frysk.proc.Task;
 
-import frysk.util.CommandlineParser;
-import frysk.util.CoredumpAction;
+import frysk.util.ProcStopUtil;
+import frysk.isa.corefiles.LinuxElfCorefile;
+import frysk.isa.corefiles.LinuxElfCorefileFactory;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
 
 public class fcore
 {
-
-  private static String filename = "core";
-
-  private static boolean writeAllMaps = false;
-
-  private static boolean stackOnly = false;
-
-  private static CoredumpAction stacker;
-
-  protected static final Logger logger = Logger.getLogger("frysk");
-  private static CommandlineParser parser;
-
-  private static class AbandonCoreEvent implements Event
-  {
-    private Proc coreProc;
-
-    AbandonCoreEvent(Proc coreProc)
+    private static String filename = "core";  
+    private static boolean writeAllMaps = false;
+    private static boolean stackOnly = false;
+    protected static final Logger logger = Logger.getLogger("frysk");
+  
+    /**
+     * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
+     * here for now.
+     * 
+     * @param args - pid of the process to core dump
+     */
+    public static void main (String[] args)
     {
-      this.coreProc = coreProc;
+	ProcStopUtil fcore = new ProcStopUtil("fcore", args, 
+		                              new createCoreEvent());
+	fcore.setUsage("Usage: fcore <PID>"); 
+	addOptions (fcore);
+	fcore.execute();
     }
-    
-    public void execute()
+  
+    /**
+     * Add options to fcore.
+     */
+    private static void addOptions (ProcStopUtil fcore)
     {
-      coreProc.requestAbandonAndRunEvent(new Event()
-      {
+	fcore.addOption(new Option("stack", 's',
+		                   " Writes only stack segment, and elides all"
+		                 + " other maps.")
+	{
+	    public void parsed (String mapsValue) throws OptionException {
+		try {
+		    stackOnly = true;
+		} catch (IllegalArgumentException e) {
+		    throw new OptionException( "Invalid maps parameter " 
+			                      + mapsValue);
+		}
 
-        public void execute ()
-        {
-          Manager.eventLoop.requestStop();
-        }
+	    }
+	});
+
+      fcore.addOption(new Option( "allmaps", 'a',
+	                          " Writes all readable maps. Does not elide"
+	                        + " or omit any readable map. Caution: could"
+	                        + " take considerable amount of time to"
+	                        + " construct core file.")
+      {
+	  public void parsed (String mapsValue) throws OptionException {
+	      try {
+		  writeAllMaps = true;
+		  stackOnly = false;
+	      } catch (IllegalArgumentException e) {
+		  throw new OptionException("Invalid maps parameter " + mapsValue);
+	      }
+
+	  }
+      });
+
+      fcore.addOption(new Option( "outputfile", 'o',
+	                          " Sets the name (not extension) of the core"
+	                        + " file. Default is core.{pid}. The extension"
+	                        + " will always be the pid.", "<filename>")
+      {
+	  public void parsed (String filenameValue) throws OptionException
+	  {
+	      try {
+		  filename = filenameValue;
+	      }
+	      catch (IllegalArgumentException e) {
+		  throw new OptionException(  "Invalid output filename: "
+			                    + filenameValue);
+	      }
+	  }
       });
     }
-  }
-  
-    public static void dumpPid(Proc proc) {
-	stacker = new CoredumpAction(proc, filename, 
-				     new AbandonCoreEvent(proc),
-				     writeAllMaps,
-				     stackOnly);
-	new ProcBlockAction(proc, stacker);
-	Manager.eventLoop.run();
+    
+    /**
+     * Implements a ProcEvent for core file creation.
+     */
+    private static class createCoreEvent implements ProcEvent
+    {
+	public void executeLive(Proc proc) {
+	    
+	    Task[] tasks = (Task[]) proc.getTasks().toArray
+	                   (new Task[proc.getTasks().size()]);
+	    LinuxElfCorefile coreFile = LinuxElfCorefileFactory.
+	                                getCorefile(proc, tasks);
+	  
+	    if (coreFile == null) {
+		System.err.println (  "Architecture not supported or "
+			            + "LinuxElfCorefileFactory returned null");
+	    } else {
+		coreFile.setName(filename);
+		coreFile.setWriteAllMaps(writeAllMaps);
+		coreFile.setStackOnly(stackOnly);
+
+		try {
+		    coreFile.constructCorefile();
+		} catch (RuntimeException e) {
+		    System.err.println (  "Architecture not supported or "
+			                + "LinuxElfCorefileFactory returned null");		    
+		}
+	    }
+	}
+	
+	public void executeDead(Proc proc, File coreFile) {
+	    System.err.println ("Cannot create core file from dead process");
+	}
     }
-  
-  /**
-   * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
-   * here for now.
-   * 
-   * @param args - pid of the process to core dump
-   */
-  public static void main (String[] args)
-  {
-
-      // Parse command line. Check pid provided.
-      parser = new CommandlineParser("fcore") {
-	      //@Override
-	      public void parsePids(Proc[] pids) {
-		  for (int i= 0; i< pids.length; i++)
-		      dumpPid(pids[i]);
-		  System.exit(0);
-	      }
-	  };
-
-    addOptions(parser);
-
-    parser.setHeader("Usage: fcore [-a] [-stack] [-o filename] [-c level] [-l level] <pids>");
-
-    parser.parse(args);
-
-    //If we got here, we didn't find a pid.
-    System.err.println("Error: No pid provided.");
-    parser.printHelp();
-    System.exit(1);
-  }
-
-  /**
-   * Add options to the the option parser. Belongs
-   * 
-   * @param parser - the parser that is to be worked on.
-   */
-  private static void addOptions (CommandlineParser parser)
-  {
-
-    parser.add(new Option("stack", 's',
-                          " Writes only stack segment, and elides all "+
-                          "other maps.")
-    {
-      public void parsed (String mapsValue) throws OptionException
-      {
-        try
-          {
-            stackOnly = true;
-
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid maps parameter " + mapsValue);
-          }
-
-      }
-    });
-
-    parser.add(new Option("allmaps", 'a',
-                          " Writes all readable maps. Does not elide"
-                              + " or omit any readable map. Caution: could"
-                              + " take considerable amount of time to"
-                              + " construct core file.")
-    {
-      public void parsed (String mapsValue) throws OptionException
-      {
-        try
-          {
-            writeAllMaps = true;
-	    stackOnly = false;
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid maps parameter " + mapsValue);
-          }
-
-      }
-    });
-
-    parser.add(new Option("outputfile", 'o',
-                          "Sets the name (not extension) of the core"
-                              + " file. Default is core.{pid}. The extension"
-                              + " will always be the pid.", "<filename>")
-    {
-      public void parsed (String filenameValue) throws OptionException
-      {
-        try
-          {
-            filename = filenameValue;
-
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid output filename: "
-                                      + filenameValue);
-          }
-
-      }
-    });
-  }
 }
