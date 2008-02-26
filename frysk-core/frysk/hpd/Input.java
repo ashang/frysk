@@ -294,4 +294,13 @@ class Input {
 	return new Token(fullCommand.substring(token.start, token.end),
 			 token.start, cursor);
     }
+    
+    /**
+     * getFullCommand passes a full copy of the command to the caller
+     * 
+     * @return a String containing the full command line
+     */
+    public String getFullCommand() {
+	return this.fullCommand;
+    }
 }

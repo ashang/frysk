@@ -1,3 +1,11 @@
+2008-02-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* Input.java (getFullCommand): New.
+	* ParmeterizedCommand.java: If a start/run command is issued, do not
+	parse the commands, pass straight to the command.
+	* TestRunCommand.java: Test for parameters with "-" at the 
+	beginning.
+
 2008-02-25  Andrew Cagney  <cagney@redhat.com>
 
 	* LoadCommand.java: Use LinuxExeFactory.

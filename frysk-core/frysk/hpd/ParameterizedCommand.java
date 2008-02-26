@@ -121,6 +121,10 @@ abstract class ParameterizedCommand extends Command {
 		help(cli, input);
 		return;
 	    }
+	    // Don't parse options for start/run command, these are passed on the 
+	    // process that is to be started
+	    if (input.getFullCommand().startsWith("run") ||
+		    input.getFullCommand().startsWith("start")) break;
 	    // Check for <<-option>>; if nothing going give up.
 	    String name = optionName(string);
 	    if (name == null)

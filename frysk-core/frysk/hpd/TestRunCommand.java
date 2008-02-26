@@ -104,16 +104,20 @@ public class TestRunCommand extends TestLib {
     
     public void testRunCommandParameter() {
 	e = new HpdTestbed();
-	String[] param = { "testing", "parameter2"};
+	String[] param = { "-testing", "parameter2", "-g"};
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
 	"Loaded executable file.*");
-	e.sendCommandExpectPrompt("run " + param[0] + " " + param[1],
+	String parameters = "";
+	for (int i = 0; i < param.length; i++) {
+	    parameters = parameters + param[i] + " ";
+	}
+	e.sendCommandExpectPrompt("run " + parameters,
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	/*
 	 * The following wait is added to make the test pass.  It seems on a dual-core
 	 * machine the funit-parameters process gets put into a different CPU and gets behind
 	 * the test case.  funit-parameters creates a file that this test checks and when this
-	 * test gets ahead of it that, the test fails beause it cannot find it.  Delaying
+	 * test gets ahead of it that, the test fails because it cannot find it.  Delaying
 	 * 1 second seems to fix that problem.
 	 */
 	try { Thread.sleep(1000); } catch (Exception e) {}
