@@ -158,8 +158,6 @@ public abstract class Proc implements Comparable {
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add(this);
-	// Keep host informed.
-	host.add(this);
     }
 
     /**

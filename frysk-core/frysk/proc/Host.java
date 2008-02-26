@@ -89,20 +89,11 @@ public abstract class Host implements Comparable {
     }
 
 	
-    // Maintain a Collection of all known (live) PROCes.
-
-    protected Map procPool = new HashMap();
-    void add(Proc proc) {
-	logger.log(Level.FINEST, "{0} add Proc\n", this);
-	observableProcAddedXXX.notify(proc);
-	procPool.put(proc.id, proc);
-    }
     /**
      * XXX: Should not be public.
      */
     public void remove(Proc proc) {
 	logger.log(Level.FINEST, "{0} remove Proc\n", this);
-	procPool.remove(proc.id);
 	observableProcRemovedXXX.notify(proc);
     }
 
@@ -149,8 +140,8 @@ public abstract class Host implements Comparable {
      * XXX: Temporary until .observable's are converted to
      * .requestAddObserver.
      */
-    public class ObservableXXX extends Observable {
-	void notify(Object o) {
+    public static class ObservableXXX extends Observable {
+	public void notify(Object o) {
 	    setChanged();
 	    notifyObservers(o);
 	}

@@ -96,8 +96,15 @@ public class LinuxPtraceHost extends LiveHost {
     LinuxPtraceProc getProc(ProcessIdentifier pid) {
 	return (LinuxPtraceProc) procs.get(pid);
     }
-    void putProc(ProcessIdentifier pid, LinuxPtraceProc proc) {
+    void addProc(ProcessIdentifier pid, LinuxPtraceProc proc) {
 	procs.put(pid, proc);
+	// FIXME: Code looking for procs shouldn't be parked on
+	// observer, rather the code should be using
+	// Host.requestRefresh.
+	observableProcAddedXXX.notify(proc);
+    }
+    void removeProc(ProcessIdentifier pid) {
+	procs.remove(pid);
     }
 
     /**
@@ -216,7 +223,7 @@ public class LinuxPtraceHost extends LiveHost {
 	ProcChanges procChanges = executeRefresh();
 	Collection exitedProcesses = procChanges.removed.values();
 	exitedProcesses.retainAll(knownProcesses);
-	Collection newProcesses = new HashSet(procPool.values());
+	Collection newProcesses = new HashSet(procs.values());
 	newProcesses.removeAll(knownProcesses);
 	builder.construct(newProcesses, exitedProcesses);
     }
