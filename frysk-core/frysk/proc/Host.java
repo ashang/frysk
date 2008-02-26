@@ -109,22 +109,6 @@ public abstract class Host implements Comparable {
 	logger.log(Level.FINE, "{0} getProc ProcId {1} \n", new Object[] {this, id}); 
 	return (Proc) procPool.get(id);
     }
-    /**
-     * Assuming that this host has only one proc; return it; this is
-     * used by the EXE and CORE targets
-     *
-     * FIXME: This should this be replaced by methods to "request a
-     * core" and "request a proc".
-     */
-    public Proc getSoleProcFIXME() {
-	switch (procPool.size()) {
-	case 1:
-	    return (Proc) procPool.values().iterator().next();
-	default:
-	    return null;
-	}
-    }
-
 
     /**
      * Find a specifc process from its Id.

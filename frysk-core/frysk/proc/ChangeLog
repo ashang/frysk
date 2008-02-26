@@ -1,5 +1,7 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (getSoleProcFIXME()): Delete.
+
 	* ProcBlockAction.java: Use LinuxCoreFactory.
 
 2008-02-20  Phil Muldoon  <pmuldoon@redhat.com>

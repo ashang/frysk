@@ -41,7 +41,6 @@ package frysk.util;
 
 import gnu.classpath.tools.getopt.OptionException;
 import java.io.File;
-import frysk.proc.Host;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
 import frysk.proc.dead.LinuxCoreFactory;
@@ -101,17 +100,5 @@ public class Util
 	if (finder.proc == null)
 	    throw new OptionException("Process " + pid + " not found");
 	return finder.proc;
-    }
-  
-    /**
-     * Return the Proc associated with an executable File.
-     * @param exeHost the Host associated with the desired Proc.
-     * @return The Proc for the given executable File.
-     */
-    public static Proc getProcFromExeFile(Host exeHost) {
-	Proc proc = exeHost.getSoleProcFIXME();
-	if (proc == null)
-	    throw new RuntimeException("Cannot find a process in this executable.");
-	return proc;
     }
 }
