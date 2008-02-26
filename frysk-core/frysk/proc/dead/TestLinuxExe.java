@@ -41,8 +41,12 @@ package frysk.proc.dead;
 
 import frysk.Config;
 import inua.eio.ByteBuffer;
-
+import java.util.HashSet;
+import frysk.proc.FindProc;
+import java.util.Collection;
+import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Task;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.testbed.TestLib;
 
@@ -68,5 +72,35 @@ public class TestLinuxExe extends TestLib {
 	buffer.position(0x080497dcL);
 	assertEquals("Peek a byte at 0x080497dc", (byte) 0xFF, buffer.getUByte());
 	assertEquals("Peek a byte at 0x080497dd", (byte) 0xFF, buffer.getUByte());
+    }
+
+    public void testRequestRefresh() {
+	final Proc proc
+	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
+					 new String[0]);
+	proc.getHost().requestRefresh(new HashSet(), new HostRefreshBuilder() {
+		public void construct(Collection added, Collection removed) {
+		    assertTrue("added contains proc", added.contains(proc));
+		    assertFalse("removed contains proc", removed.contains(proc));
+		    Manager.eventLoop.requestStop();
+		}
+	    });
+	assertRunUntilStop("find proc");
+    }
+
+    public void testRequestProc() {
+	final Proc proc
+	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
+					 new String[0]);
+	proc.getHost().requestProc(proc.getPid(), new FindProc() {
+		public void procFound(Proc found) {
+		    assertEquals("found proc", proc, found);
+		    Manager.eventLoop.requestStop();
+		}
+		public void procNotFound(int pid) {
+		    fail("proc not found");
+		}
+	    });
+	assertRunUntilStop("find proc");
     }
 }

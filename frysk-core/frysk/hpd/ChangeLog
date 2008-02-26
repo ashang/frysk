@@ -1,5 +1,7 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* CoreCommand.java: Update to match LinuxCoreFactory.
+
 	* LoadCommand.java: Update to match LinuxExeFactory.
 
 2008-02-25  Rick Moseley  <rmoseley@redhat.com>

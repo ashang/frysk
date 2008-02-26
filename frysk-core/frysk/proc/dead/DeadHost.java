@@ -40,10 +40,10 @@
 package frysk.proc.dead;
 
 import frysk.proc.Host;
+import java.util.HashSet;
 import frysk.proc.TaskObserver.Attached;
 import frysk.proc.Proc;
 import frysk.proc.Manager;
-import frysk.proc.ProcId;
 import frysk.proc.FindProc;
 import frysk.proc.HostRefreshBuilder;
 import frysk.event.Event;
@@ -61,29 +61,44 @@ abstract class DeadHost extends Host {
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
-    public void requestRefresh(Collection knownProcesses,
-			       HostRefreshBuilder builder) {
-	// Ignore for now; should call back with the known processes
-	// (all one of them) for this dead host
+    public void requestRefresh(final Collection theKnownProcesses,
+			       final HostRefreshBuilder theBuilder) {
+	Manager.eventLoop.add(new Event() {
+		private final Collection knownProcesses = theKnownProcesses;
+		private final HostRefreshBuilder builder = theBuilder;
+		public void execute() {
+		    Proc proc = getProc();
+		    if (knownProcesses.contains(proc)) {
+			builder.construct(new HashSet(), new HashSet());
+		    } else {
+			HashSet added = new HashSet();
+			added.add(proc);
+			builder.construct(added, new HashSet());
+		    }
+		}
+	    });
     }
 			       
     public Proc getSelf() {
 	throw new RuntimeException("getSelf");
     }
 
-    // FIXME: Should be able to just return the sole process (after
-    // validating that it is what was requested).
-    public void requestProc(final int theProcId, final FindProc theFinder) {
+    /**
+     * Return the sole process bound to the dead host.
+     */
+    abstract DeadProc getProc();
+
+    public void requestProc(final int thePid, final FindProc theFinder) {
 	Manager.eventLoop.add(new Event() {
 		// Avoid implicit variables; gcj bug.
-		private final int procId = theProcId;
+		private final int pid = thePid;
 		private final FindProc finder = theFinder;
 		public void execute() {
-		    Proc proc = getProc(new ProcId(procId));
-		    if (proc == null) {
-			finder.procNotFound(procId);
-		    } else {
+		    Proc proc = getProc();
+		    if (proc.getPid() == pid) {
 			finder.procFound(proc);
+		    } else {
+			finder.procNotFound(pid);
 		    }
 		}
 	    });

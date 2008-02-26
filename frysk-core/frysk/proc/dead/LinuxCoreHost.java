@@ -54,7 +54,7 @@ public class LinuxCoreHost extends DeadHost {
 	proc = new LinuxCoreProc(this, info);
     }
 
-    LinuxCoreProc getProc() {
+    DeadProc getProc() {
 	return proc;
     }
     public String getName() {

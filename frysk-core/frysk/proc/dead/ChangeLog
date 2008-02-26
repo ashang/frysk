@@ -1,5 +1,15 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLinuxExe.java (testRequestProc()): New.
+	(testRequestProc()): New.
+	* DeadHost.java (getProc()): New; abstract.
+	(requestProc(int,FindProc)): Use.
+	(requestRefresh(Collection,HostRefreshBuilder)): Implement.
+	* LinuxExeHost.java: Update.
+	* LinuxCoreHost.java: Update.
+	* LinuxCoreFactory.java: Update.
+	* LinuxExeFactory.java: Update.
+
 	* LinuxExeFactory.java (createProc(File,String[])): Replace
 	createProc(EventLoop,File,String[]).
 	(createProc(String[])): New.

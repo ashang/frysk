@@ -50,7 +50,7 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.proc.dead.LinuxCoreFactory;
 import java.io.IOException;
-import frysk.proc.dead.LinuxCoreProc;
+import frysk.proc.Proc;
 
 public class CoreCommand extends ParameterizedCommand {
 
@@ -113,9 +113,8 @@ public class CoreCommand extends ParameterizedCommand {
 	}
 
 	// Build Core. Move any exceptions up to cli and print to user.
-	LinuxCoreProc coreProc
-	    = LinuxCoreFactory.createProc(coreFile, exeFile,
-					  options.loadMetaData);
+	Proc coreProc = LinuxCoreFactory.createProc(coreFile, exeFile,
+						    options.loadMetaData);
 
 	// All checks are done. Host is built. Now start reserving
 	// space in the sets.

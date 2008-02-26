@@ -48,7 +48,7 @@ import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
 
 public class LinuxExeFactory {
-    public static LinuxExeProc createProc(final File exeFile,
+    public static DeadProc createProc(final File exeFile,
 					  String[] args) {
 	Elf exeElf = null;
 	try {
@@ -84,7 +84,7 @@ public class LinuxExeFactory {
 	}
     }
 
-    public static LinuxExeProc createProc(String[] args) {
+    public static DeadProc createProc(String[] args) {
 	return createProc(new File(args[0]), args);
     }
 }

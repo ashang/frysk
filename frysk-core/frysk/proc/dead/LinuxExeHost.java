@@ -57,7 +57,7 @@ public class LinuxExeHost extends DeadHost {
 	return exeFile.getName();
     }
 
-    LinuxExeProc getProc() {
+    DeadProc getProc() {
 	return proc;
     }
 }

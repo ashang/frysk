@@ -54,8 +54,8 @@ public class LinuxCoreFactory {
      *
      * All File paths <b>must</b> be canonical.
      */
-    public static LinuxCoreProc createProc(File coreFile, File exeFile,
-					   boolean extendedMetaData) {
+    public static DeadProc createProc(File coreFile, File exeFile,
+				      boolean extendedMetaData) {
 	LinuxCoreInfo core = new LinuxCoreInfo(coreFile, exeFile,
 					       extendedMetaData);
 	LinuxCoreHost host = new LinuxCoreHost(core);
@@ -66,7 +66,7 @@ public class LinuxCoreFactory {
      *
      * All File paths <b>must</b> be canonical.
      */
-    public static LinuxCoreProc createProc(File coreFile) {
+    public static DeadProc createProc(File coreFile) {
 	return createProc(coreFile, null, false);
     }
     /**
@@ -75,7 +75,7 @@ public class LinuxCoreFactory {
      *
      * All File paths <b>must</b> be canonical.
      */
-    public static LinuxCoreProc createProc(File coreFile, File exeFile) {
+    public static DeadProc createProc(File coreFile, File exeFile) {
 	return createProc(coreFile, exeFile, true);
     }
 }
