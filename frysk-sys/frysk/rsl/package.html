@@ -91,6 +91,19 @@ For instance:
 A completer is available for command-lines wanting to provide
 tab-completion of the known set of loggers.
 
+<h2>Implementing a Custom Log</h2>
+
+Sometimes the data that needs to be printed is just too wierd a
+sequence to justify the addition of an additional log method.  For
+those cases, a custom log sequence can be implemented vis:
+
+<pre>
+Log fine = ...;
+...
+if (fine.logging())
+  fine.prefix(this).print("why arg").print(arg).suffix();
+</pre>
+
 <h2>Comparison with Existing Loggers</h2>
 
 The following differences between this logger and <tt>log4j</tt>

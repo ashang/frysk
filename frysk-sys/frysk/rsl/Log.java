@@ -160,24 +160,63 @@ public final class Log {
 	out.print(' ');
     }
 
-    private void prefix() {
+    public Log prefix() {
 	prefixTimeAndPid();
 	out.print(path);
 	out.print(":");
+	return this;
     }
 
-    private void prefix(Object o) {
+    public Log prefix(Object o) {
 	prefixTimeAndPid();
 	out.print("[");
 	out.print(o.toString());
 	out.print("]:");
+	return this;
     }
 
-    private void suffix() {
+    public void suffix() {
 	out.println();
 	out.flush();
     }
   
+    /**
+     * Use poorly implemented reflection to dump Objects.
+     */
+    public Log print(Object o) {
+	out.print(' ');
+	dump(o);
+	return this;
+    }
+    private void dump(Object o) {
+	if (o == null) {
+	    out.print("<<null>>");
+	} if (o instanceof char[]) {
+	    dump((char[])o);
+	} if (o instanceof boolean[]) {
+	    dump((boolean[])o);
+	} else if (o instanceof int[]) {
+	    dump((int[])o);
+	} else if (o instanceof long[]) {
+	    dump((long[])o);
+	} else if (o.getClass().isArray()) {
+	    out.print("[");
+	    for (int i = 0; i < Array.getLength(o); i++) {
+		if (i > 0)
+		    out.print(",");
+		dump(o, i);
+	    }
+	    out.print("]");
+	} else if (o instanceof Throwable)
+	    dump((Throwable) o);
+	else if (o instanceof String)
+	    dump((String)o);
+	else {
+	    out.print("<<");
+	    out.print(o.toString());
+	    out.print(">>");
+	}
+    }
     /**
      * Throwables get their message printed; along with any root
      * causes.
@@ -212,53 +251,14 @@ public final class Log {
 	// for moment assume the array contains Objects; dump recursively.
 	dump(Array.get(o, i));
     }
-    /**
-     * Dump an arbitrary object.
-     * @param o the object to dump
-     */
-    private void dump(Object o) {
-	if (o == null) {
-	    out.print("<<null>>");
-	} if (o instanceof char[]) {
-	    dump((char[])o);
-	} if (o instanceof boolean[]) {
-	    dump((boolean[])o);
-	} else if (o instanceof int[]) {
-	    dump((int[])o);
-	} else if (o instanceof long[]) {
-	    dump((long[])o);
-	} else if (o.getClass().isArray()) {
-	    out.print("[");
-	    for (int i = 0; i < Array.getLength(o); i++) {
-		if (i > 0)
-		    out.print(",");
-		dump(o, i);
-	    }
-	    out.print("]");
-	} else if (o instanceof Throwable)
-	    dump((Throwable) o);
-	else if (o instanceof String)
-	    dump((String)o);
-	else {
-	    out.print("<<");
-	    out.print(o.toString());
-	    out.print(">>");
-	}
-    }
-    /**
-     * Use poorly implemented reflection to dump Objects.
-     */
-    private void print(Object o) {
-	out.print(' ');
-	dump(o);
-    }
     
     /**
      * Booleans are printed as strings.
      */
-    private void print(boolean b) {
+    public Log print(boolean b) {
 	out.print(' ');
 	dump(b);
+	return this;
     }
     private void dump(boolean b) {
 	out.print(b);
@@ -276,9 +276,10 @@ public final class Log {
     /**
      * Chars are printed in quotes.
      */
-    private void print(char c) {
+    public Log print(char c) {
 	out.print(' ');
 	dump(c);
+	return this;
     }
     private void dump(char c) {
 	out.print('\'');
@@ -298,9 +299,10 @@ public final class Log {
     /**
      * Integers are printed in decimal.
      */
-    private void print(int i) {
+    public Log print(int i) {
 	out.print(' ');
 	dump(i);
+	return this;
     }
     private void dump(int i) {
 	out.print(i);
@@ -318,9 +320,10 @@ public final class Log {
     /**
      * Longs are printed in hex.
      */
-    private void print(long l) {
+    public Log print(long l) {
 	out.print(' ');
 	dump(l);
+	return this;
     }
     private void dump(long l) {
 	out.print("0x");
@@ -340,9 +343,10 @@ public final class Log {
     /**
      * Strings are just copied.
      */
-    private void print(String s) {
+    public Log print(String s) {
 	out.print(" ");
 	out.print(s);
+	return this;
     }
     
     /**
@@ -370,34 +374,34 @@ public final class Log {
     public void log(String p1) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); suffix();
+	prefix().print(p1).suffix();
     }
 
     // static 2 parameters
     public void log(String p1, boolean p2) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); suffix();
+	prefix().print(p1).print(p2).suffix();
     }
     public void log(String p1, char p2) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); suffix();
+	prefix().print(p1).print(p2).suffix();
     }
     public void log(String p1, int p2) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); suffix();
+	prefix().print(p1).print(p2).suffix();
     }
     public void log(String p1, long p2) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); suffix();
+	prefix().print(p1).print(p2).suffix();
     }
     public void log(String p1, Object p2) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); suffix();
+	prefix().print(p1).print(p2).suffix();
     }
     public void log(String p1, String p2) {
 	// Needed to disambiguate log(String,String) which could be
@@ -409,41 +413,41 @@ public final class Log {
     public void log(String p1, Object p2, String p3) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); suffix();
+	prefix().print(p1).print(p2).print(p3).suffix();
     }
 
     // static 4 parameters
     public void log(String p1, int p2, String p3, Object p4) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(String p1, long p2, String p3, int p4) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(String p1, Object p2, String p3, long p4) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(String p1, Object p2, String p3, Object p4) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
     }
 
     // static 8 parameters
     public void log(String p1, Object p2, String p3, Object p4, String p5, Object p6, String p7, Object p8) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).suffix();
     }
     public void log(String p1, int p2, String p3, Object p4, String p5, Object p6, String p7, Object p8) {
 	if (!logging)
 	    return;
-	prefix(); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); suffix();
+	prefix().print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).suffix();
     }
     
     // Non-static log methods; first parameter is the object.
@@ -452,96 +456,96 @@ public final class Log {
     public void log(Object self, String p1) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); suffix();
+	prefix(self).print(p1).suffix();
     }
 
     // dynamic 2 parameters
     public void log(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); suffix();
+	prefix(self).print(p1).print(p2).suffix();
     }
     public void log(Object self, String p1, long p2) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); suffix();
+	prefix(self).print(p1).print(p2).suffix();
     }
     public void log(Object self, String p1, Object p2) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); suffix();
+	prefix(self).print(p1).print(p2).suffix();
     }
 
     // dynamic 3 parameters
     public void log(Object self, String p1, Object p2, String p3) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); suffix();
+	prefix(self).print(p1).print(p2).print(p3).suffix();
     }
 
     // dynamic 4 parameters
     public void log(Object self, String p1, boolean p2, String p3, int p4) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(Object self, String p1, int p2, String p3, char p4) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(Object self, String p1, Object p2, String p3, Object p4) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
     }
     public void log(Object self, String p1, Object p2, String p3, int p4) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
     }
 
     // dynamic 5 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).suffix();
     }
 
     // dynamic 6 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
     }
     public void log(Object self, String p1, Object p2, String p3, Object p4, String p5, int p6) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
     }
     public void log(Object self, String p1, Object p2, String p3, Object p4, String p5, Object p6) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
     }
 
     // dynamic 9 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, int p6, String p7, int p8, String p9) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).print(p9).suffix();
     }
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6, String p7, int p8, String p9) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).print(p9).suffix();
     }
 
     // dynamic 11 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, Object p6, String p7, int p8, String p9, int p10, String p11) {
 	if (!logging)
 	    return;
-	prefix(self); print(p1); print(p2); print(p3); print(p4); print(p5); print(p6); print(p7); print(p8); print(p9); print(p10); print(p11); suffix();
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).print(p9).print(p10).print(p11).suffix();
     }
 
 
