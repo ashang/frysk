@@ -1,3 +1,8 @@
+2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CorefileBytebuffer.java (peek): Account for segments
+	that are neither in the corefile, or backing solib/exe.
+
 2008-02-25  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxExeFactory.java: New.  Merge in LinuxExeHost, LinuxExeProc,

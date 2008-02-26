@@ -100,22 +100,29 @@ public class CorefileByteBuffer extends ByteBuffer {
   {
 
 
+    finest.log(this,"peek() at 0x",address);
     byte[] buffer = new byte[1];
     MapAddressHeader metaLine = findMetaData(address);
 
     if (metaLine != null)
-      if (checkCorefileAddress(metaLine))
-	{
+      if (checkCorefileAddress(metaLine)) {
 	  long offset = convertAddressToOffset(address);
 	  this.coreFileRaw.pread(offset, buffer,0,1);
 	}
       else
 	{
-	  if (!metaLine.name.equals(""))
-	    {
-	      StatelessFile temp = new StatelessFile(new File(metaLine.name));
-	      long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
-	      temp.pread(offset, buffer,0,1);
+	  if (!metaLine.name.equals("")) {
+	        finest.log(this,"Attempting to read from non-corefile: ", metaLine.name);
+		File fileCheck = new File(metaLine.name);
+		if (((fileCheck.exists()) && fileCheck.canRead())) {
+		    StatelessFile temp = new StatelessFile(new File(metaLine.name));	      
+		    long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
+		    temp.pread(offset, buffer,0,1);
+		} else {
+		    throw new RuntimeException("CorefileByteBuffer: Cannot peek() at address 0x"+
+					       Long.toHexString(address)+". Offset exists in file: " +
+					       metaLine.name+" but that file cannot be accessed.");
+		}
 	    }
 	}
 	
