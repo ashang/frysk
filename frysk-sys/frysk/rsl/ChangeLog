@@ -1,3 +1,8 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html (Implementing a Custom Log): New.
+	* Log.java (prefix, print): Return Log.  Make public.
+
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Include the TID.PID in the log message.
