@@ -1,11 +1,15 @@
-2008-02-19  Andrew Cagney  <cagney@redhat.com>
+2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LinuxElfCorefile.java (buildMap): Add vdso test.
+	* Changelog: Fix previous error.
+
+2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
 	* LinuxElfCorefile.java (buildMap): Add stackOnly
 	logic test.
 	(setStackOnly): New.
 
-2008-02-19  Phil Muldoon  <pmuldoon@redhat.com>
 
+2008-02-19  Andrew Cagney  <cagney@redhat.com>
 	* IA32LinuxElfCorefile.java: Update to match lib.dwfl.
 	* X8664LinuxElfCorefile.java: Ditto.
 	* PPC64LinuxElfCorefile.java: Ditto.

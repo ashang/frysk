@@ -81,7 +81,7 @@ public class fcore
      */
     private static void addOptions (ProcStopUtil fcore)
     {
-	fcore.addOption(new Option("stack", 's',
+	fcore.addOption(new Option("stackonly", 's',
 		                   " Writes only stack segment, and elides all"
 		                 + " other maps.")
 	{

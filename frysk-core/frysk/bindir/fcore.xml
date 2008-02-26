@@ -107,7 +107,7 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-s, -stack</option></term>
+	<term><option>-s, -stackonly</option></term>
 	<listitem>
           <para> Writes only the stack segment. Elide all other segments. </para>
         </listitem>

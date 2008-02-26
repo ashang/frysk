@@ -524,7 +524,7 @@ public abstract class LinuxElfCorefile {
 		}
 
 		if (stackOnly) {
-		    if (sfilename.equals("[stack]"))
+		    if (sfilename.equals("[stack]") || sfilename.equals("[vdso]"))
 			writeMap = true;
 		    else
 			writeMap = false;

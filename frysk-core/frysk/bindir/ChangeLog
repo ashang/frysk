@@ -1,3 +1,9 @@
+2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.java (addOptions): Rename to 
+	option to stackonly
+	* fcore.xml: Ditto.
+
 2008-02-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* fcore.java: Refactor to use ProcStopUtil.
