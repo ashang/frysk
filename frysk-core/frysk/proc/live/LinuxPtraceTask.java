@@ -887,9 +887,9 @@ public class LinuxPtraceTask extends LiveTask {
 
 	private final Task task;
 
-	private final long address;
+	private final long watchAddress;
 	
-	private final int length;
+	private final int watchLength;
 
 	private final boolean addition;
 
@@ -897,24 +897,24 @@ public class LinuxPtraceTask extends LiveTask {
 			 boolean addition) {
 	    this.watch = watch;
 	    this.task = task;
-	    this.address = address;
+	    this.watchAddress = address;
+	    this.watchLength = length;
 	    this.addition = addition;
-	    this.length = length;
 	}
 
 	public void run() {
 	    if (addition) {
-		boolean mustInstall = watchpoints.addBreakpoint(watch, address, length);
-		if (mustInstall) {
+		boolean shouldInstall = watchpoints.addWatchpoint(watch, watchAddress, watchLength);
+		if (shouldInstall) {
 		    Watchpoint watchpoint;
-		    watchpoint = Watchpoint.create(address, length, LinuxPtraceTask.this);
+		    watchpoint = Watchpoint.create(watchAddress, watchLength, LinuxPtraceTask.this);
 		    watchpoint.install(task);
 		}
 	    } else {
-		boolean mustRemove = watchpoints.removeBreakpoint(watch, address, length);
+		boolean mustRemove = watchpoints.removeWatchpoint(watch, watchAddress, watchLength);
 		if (mustRemove) {
 		    Watchpoint watchpoint;
-		    watchpoint = Watchpoint.create(address, length, LinuxPtraceTask.this);
+		    watchpoint = Watchpoint.create(watchAddress, watchLength, LinuxPtraceTask.this);
 		    watchpoint.remove(task);
 		}
 	    }
@@ -933,15 +933,17 @@ public class LinuxPtraceTask extends LiveTask {
 				TaskObserver.Watch observer,
 				final long address,
 				final int length) {
+
 	WatchpointAction watchAction = new WatchpointAction(observer, task, address, length, true);
 	TaskObservation to;
+
 	to = new TaskObservation((LinuxPtraceTask) task, observable, observer,
 				 watchAction, true) {
 		public void execute() {
 		    handleAddObservation(this);
 		}
 		public boolean needsSuspendedAction() {
-		    return watchpoints.getCodeObservers(address, length) == null;
+		    return watchpoints.getWatchObservers(address, length) == null;
 		}
 	    };
 	Manager.eventLoop.add(to);
@@ -949,26 +951,27 @@ public class LinuxPtraceTask extends LiveTask {
 
     /**
      * (Internal) Tell the process to delete the specified Watchpoint
-     * observation, detaching from the process if necessary.
+     * observation, detaching if  necessary.
      */
     void requestDeleteWatchObserver(Task task, TaskObservable observable,
 				   TaskObserver.Watch observer,
 				   final long address,
 				   final int length)    {
 	WatchpointAction watchAction = new WatchpointAction(observer, task, address, length, false);
-	TaskObservation to;
-	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, 
-				 watchAction, false) {
+	TaskObservation observation;
+
+	observation = new TaskObservation((LinuxPtraceTask)task, observable, observer, 
+					  watchAction, false) {
 		public void execute() {
 		    newState = oldState().handleDeleteObservation(LinuxPtraceTask.this, this);
 		}
-
+		
 		public boolean needsSuspendedAction() {
-		    return watchpoints.getCodeObservers(address, length).size() == 1;
+		    return watchpoints.getWatchObservers(address, length).size() == 1;
 		}
 	    };
 
-	Manager.eventLoop.add(to);
+	Manager.eventLoop.add(observation);
     }
 
     

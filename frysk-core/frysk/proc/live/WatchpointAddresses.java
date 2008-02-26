@@ -49,36 +49,33 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
- * Keeps track of address breakpoints for a Proc (all Tasks of a Proc
- * share the same breakpoints).  Address breakpoints are absolute
- * addresses in the Proc text area.  This class is used to construct
- * higher level breakpoint observers.  The class keeps track of the
- * number of observers interested in an address for the Proc. It adds
- * or deletes the actual breakpoint depending on the number of active
- * observers.  But it does not handle mapping to and from the language
- * model to the actual addresses.  It also doesn't handle tracking of
- * future breakpoints and code module loading.
- * <p>
- * This datastructure isn't multithread safe, it should only be called
- * from the eventloop in response to requests pending for the Proc.
+ * Keeps track of address watchppoints for a Proc (all Tasks of a Proc
+ * share the same breakpoints).  Watchpoints absolute
+ * addresses with a length Proc text/data area.  
+ * 
+ * This class is used to construct
+ * higher level watchpoint observers.  The class keeps track of the
+ * number of observers interested in an address/length for the Proc. It adds
+ * or deletes the actual watchpoints depending on the number of active
+ * observers.  
  */
 public class WatchpointAddresses
 {
   /**
-   * Proc used to set breakpoints and which sents us notifications
-   * when breakpoints are hit.
+   * Proc used to set watchpoints and which sents us notifications
+   * when watchpoints are hit.
    */
   private final Task task;
 
   /**
-   * Maps breakpoint addresses to a list of observers.  We assume the
+   * Maps watchpoints addresses/length to a list of observers.  We assume the
    * number of observers for each address is small, so an ArrayList
    * will do.
    */
   private final HashMap map;
 
   /**
-   * A sorted set (on address) of Breakpoints, used for getBreakpoints().
+   * A sorted set (on address) of Watchpoints, used for getWatchpoints().
    */
   private final TreeSet watchpoints;
 
@@ -93,22 +90,22 @@ public class WatchpointAddresses
   }
 
   /**
-   * Adds a breakpoint observer to an address. If there is not yet a
-   * breakpoint at the given address the given Task is asked to add
+   * Adds a watchpoint observer to an address. If there is not yet a
+   * watchpoint at the given address the given Task is asked to add
    * one (the method will return true). Otherwise the observer is
-   * added to the list of objects to notify when the breakpoint is
+   * added to the list of objects to notify when the watchpoint is
    * hit (and the method returns false).
    */
-  public boolean addBreakpoint(TaskObserver.Watch observer, long address, int length)
+  public boolean addWatchpoint(TaskObserver.Watch observer, long address, int length)
   {
-    Watchpoint breakpoint = Watchpoint.create(address, length, task);
+    Watchpoint watchpoint = Watchpoint.create(address, length, task);
 
-    ArrayList list = (ArrayList) map.get(breakpoint);
+    ArrayList list = (ArrayList) map.get(watchpoint);
     if (list == null)
       {
-	watchpoints.add(breakpoint);
+	  watchpoints.add(watchpoint);
 	list = new ArrayList();
-	map.put(breakpoint, list);
+	map.put(watchpoint, list);
 	list.add(observer);
 	return true;
       }
@@ -120,16 +117,16 @@ public class WatchpointAddresses
   }
 
   /**
-   * Removes an observer from a breakpoint. If this is the last
+   * Removes an observer from a watchpoint. If this is the last
    * observer interested in this particular address then the
-   * breakpoint is really removed by requestion the given task to do
+   * watchpoint is really removed by requestion the given task to do
    * so (the method will return true). Otherwise just this observer
-   * will be removed from the list of observers for the breakpoint
+   * will be removed from the list of observers for the watchpoint
    * address (and the method will return false).
    *
    * @throws IllegalArgumentException if the observer was never added.
    */
-  public boolean removeBreakpoint(TaskObserver.Watch observer, long address, int length)
+  public boolean removeWatchpoint(TaskObserver.Watch observer, long address, int length)
   {
     Watchpoint watchpoint = Watchpoint.create(address, length, task);
     ArrayList list = (ArrayList) map.get(watchpoint);
@@ -148,11 +145,11 @@ public class WatchpointAddresses
   }
 
     /**
-     * Called by the Proc when it has trapped a breakpoint.  Returns a
-     * Collection of TaskObserver.Code observers interested in the given
-     * address or null when no Code observer was installed on this address.
+     * Called by the Proc when it has trapped a watchpoint.  Returns a
+     * Collection of TaskObserver.Watch observers interested in the given
+     * address or null when no Watch observer was installed on this address.
      */
-    public Collection getCodeObservers(long address, int length) {
+    public Collection getWatchObservers(long address, int length) {
 	ArrayList observers;
 	Watchpoint watchpoint = Watchpoint.create(address, length, task);
 	ArrayList list = (ArrayList) map.get(watchpoint);
@@ -165,7 +162,7 @@ public class WatchpointAddresses
 	return observers;
     }
 
-  public Watchpoint getBreakpoint(long address, int length)
+  public Watchpoint getWatchpoint(long address, int length)
   {
     Watchpoint breakpoint = Watchpoint.create(address, length, task);
     Object observer = map.get(breakpoint);
@@ -181,7 +178,7 @@ public class WatchpointAddresses
    *
    * XXX: Should not be public.
    */
-  public void removeAllCodeObservers()
+  public void removeAllWatchObservers()
   {
     map.clear();
     watchpoints.clear();

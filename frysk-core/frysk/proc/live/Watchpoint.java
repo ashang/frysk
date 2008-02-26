@@ -58,8 +58,8 @@ public class Watchpoint implements Comparable
   private final Task task;
 
 
-  // Static cache of installed break points.
-  private static HashMap installed = new HashMap();
+  // Static cache of installed watchpoints.
+  private static HashMap installedWatchpoints = new HashMap();
 
 
 
@@ -88,16 +88,16 @@ public class Watchpoint implements Comparable
    */
   public static Watchpoint create(long address, int length, Task task)
   {
-    Watchpoint breakpoint = new Watchpoint(address, length, task);
+    Watchpoint watchpoint = new Watchpoint(address, length, task);
 
     // If possible return an existing installed breakpoint.
-    synchronized (installed)
+    synchronized (installedWatchpoints)
       {
-	Watchpoint existing = (Watchpoint) installed.get(breakpoint);
+	Watchpoint existing = (Watchpoint) installedWatchpoints.get(watchpoint);
 	if (existing != null)
 	  return existing;
       }
-    return breakpoint;
+    return watchpoint;
   }
 
   public long getAddress()
@@ -113,13 +113,13 @@ public class Watchpoint implements Comparable
    */
   public void install(Task task)
   {
-    synchronized (installed)
+    synchronized (installedWatchpoints)
       {
-	Watchpoint existing = (Watchpoint) installed.get(this);
+	Watchpoint existing = (Watchpoint) installedWatchpoints.get(this);
 	if (existing != null)
-	  throw new IllegalStateException("Already installed: " + this);
+	  throw new IllegalStateException("Watchpoint Already installed: " + this);
 
-	installed.put(this, this);
+	installedWatchpoints.put(this, this);
     
 	set(task);
       }
@@ -148,9 +148,9 @@ public class Watchpoint implements Comparable
    */
   public void remove(Task task)
   {
-    synchronized (installed)
+    synchronized (installedWatchpoints)
       {
-	if (! this.equals(installed.remove(this)))
+	if (! this.equals(installedWatchpoints.remove(this)))
 	  throw new IllegalStateException("Not installed: " + this);
 
 	reset(task);
@@ -190,9 +190,9 @@ public class Watchpoint implements Comparable
    */
   public boolean isInstalled()
   {
-    synchronized(installed)
+    synchronized(installedWatchpoints)
       {
-	return this.equals(installed.get(this));
+	return this.equals(installedWatchpoints.get(this));
       }
   }
 

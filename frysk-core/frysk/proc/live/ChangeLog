@@ -1,3 +1,17 @@
+2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceTask.java: Rename watchpoint variables.
+	* WatchpointAddresses.java: Update Comments.
+	(addBreakpoint): Rename addWatchpoint.
+	(removeBreakpoint): Rename removeWatchpoint.
+	(getCodeObservers): Rename getWatchObservers.
+	(getBreakpoint): Rename getWatchpoint.
+	(removeAllCodeObservers): Rename removeAllWatchObservers.
+	* Watchpoint.java: Rename installed.
+	(install, create, remove, isInstalled): 
+	Rename breakpoint -> watchpoint
+	
+
 2008-02-20  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProcState.java: Get the task from the
