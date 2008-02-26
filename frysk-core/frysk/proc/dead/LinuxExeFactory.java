@@ -46,11 +46,9 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
-import frysk.event.EventLoop;
 
 public class LinuxExeFactory {
-    public static LinuxExeProc createProc(EventLoop eventLoop,
-					  final File exeFile,
+    public static LinuxExeProc createProc(final File exeFile,
 					  String[] args) {
 	Elf exeElf = null;
 	try {
@@ -84,5 +82,9 @@ public class LinuxExeFactory {
 	    if (exeElf != null)
 		exeElf.close();
 	}
+    }
+
+    public static LinuxExeProc createProc(String[] args) {
+	return createProc(new File(args[0]), args);
     }
 }

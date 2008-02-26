@@ -157,8 +157,7 @@ public final class fstack
     parser = new CommandlineParser("fstack")
     {
       //@Override
-      public void parseCores (CoreExePair[] coreExePairs)
-      {
+      public void parseCoresFIXME(CoreExePair[] coreExePairs) {
        for (int i = 0; i < coreExePairs.length; i++)
          stackCore(coreExePairs[i]);
       }

@@ -65,7 +65,7 @@ public class fcatch {
 	    }
 
 	    //@Override
-	    public void parseCommand(String[] command) {
+	    public void parseCommandFIXME(String[] command) {
 		System.err.println("Entered parseCommand");
 		argString = new StringBuffer(command[0]);
 		for (int i = 1; i < command.length; i++)

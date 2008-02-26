@@ -45,13 +45,11 @@ import inua.eio.ByteBuffer;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.testbed.TestLib;
-import frysk.proc.Manager;
 
 public class TestLinuxExe extends TestLib {
     public void testLinuxTaskMemory() {
 	Proc proc
-	    = LinuxExeFactory.createProc(Manager.eventLoop, 
-					 Config.getPkgDataFile("test-exe-x86"),
+	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
 					 new String[0]);
 	assertNotNull("Proc exists in exefile", proc);
 	assertNotNull("Executable file Host is Null?",proc.getHost());

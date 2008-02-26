@@ -1,3 +1,11 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* fcatch.java: Update to match CommandlineParser.
+	* fstack.java: Ditto.
+	* ftrace.java: Ditto.
+	* fstep.java: Ditto.
+	* fhpd.java: Ditto.
+
 2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fcore.java (addOptions): Rename to 

@@ -1,3 +1,13 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java parseCommandFIXME(String[]): Replace
+	parseCommand(String[]).
+	(parseCommand(Proc)): New.
+	(parseCoresFIXME(CoreExePair[])): Replace parseCores(CoreExePair[]).
+	(parseCores(Proc[])): New.
+	* TestCommandlineParser.java: Update.
+	* ProcStopUtil.java: Update to match LinuxExeFactory and above.
+
 2008-02-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestCoredumpAction.java: Move to frysk.testbed.

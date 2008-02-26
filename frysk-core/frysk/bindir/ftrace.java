@@ -700,7 +700,7 @@ class ftrace
             }
 
             //@Override
-            public void parseCommand (String[] command)
+            public void parseCommandFIXME(String[] command)
             {
              commandAndArguments = new ArrayList();
 

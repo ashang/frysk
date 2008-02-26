@@ -81,8 +81,7 @@ public class ProcStopUtil
 		}
 	    
 	    //@Override 
-	    public void parseCores (CoreExePair[] coreExePairs)
-	    {
+	    public void parseCoresFIXME(CoreExePair[] coreExePairs) {
 		for (int i = 0; i < coreExePairs.length; i++)
 		{       
 		    proc = Util.getProcFromCoreExePair(coreExePairs[i]);
@@ -92,7 +91,7 @@ public class ProcStopUtil
 	    }
 	    
 	    //@Override
-	    public void parseCommand(String[] command) {
+	    public void parseCommandFIXME(String[] command) {
 		File exeFile = new File(command[0]);
 		if (!exeFile.exists() || !exeFile.canRead()
 			|| !exeFile.isFile()) {
@@ -101,8 +100,7 @@ public class ProcStopUtil
 		    System.exit(1);
 		} else {
 		    Manager.eventLoop.start();
-		    proc = LinuxExeFactory.createProc(Manager.eventLoop,
-						      exeFile, command);
+		    proc = LinuxExeFactory.createProc(exeFile, command);
 		    failIfProcNull(proc);
 		    procEvent.executeDead(proc, null);
 		}

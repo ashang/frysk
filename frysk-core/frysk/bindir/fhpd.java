@@ -145,7 +145,7 @@ public class fhpd {
     public static void main (String[] args) {
         CommandlineParser parser = new CommandlineParser ("fhpd") {
                 //@Override
-                public void parseCommand (String[] command) {
+                public void parseCommandFIXME(String[] command) {
                     execFile = new File (command[0]);
                     if (execFile.canRead() == false) {
                         printHelp();
@@ -158,7 +158,7 @@ public class fhpd {
 		    fhpd.procs = procs;
                 }
 
-                public void parseCores(CoreExePair[] corePairs) {
+                public void parseCoresFIXME(CoreExePair[] corePairs) {
                     core = corePairs[0].coreFile;
                     exeFile = corePairs[0].exeFile;
                 }

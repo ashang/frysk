@@ -46,7 +46,6 @@ import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -108,8 +107,7 @@ public class LoadCommand extends ParameterizedCommand {
 	    	("File does not exist or is not readable or is not a file.");
 	}
 
-	Proc exeProc = LinuxExeFactory.createProc(Manager.eventLoop,
-						  executableFile,
+	Proc exeProc = LinuxExeFactory.createProc(executableFile,
 						  cmd.stringArrayValue());
 
 	int procID;

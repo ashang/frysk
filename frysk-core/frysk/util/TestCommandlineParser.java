@@ -47,20 +47,30 @@ import frysk.proc.Proc;
 
 public class TestCommandlineParser extends TestLib {
 
+    private File exe;
+    private File core;
+    public void setUp() {
+	super.setUp();
+	exe = Config.getPkgLibFile("funit-hello");
+	core = CorefileFactory.constructCoreAtSignal(exe);
+    }
+    public void tearDown() {
+	exe = null;
+	core = null;
+	super.tearDown();
+    }
+
     public void testCoreExe() {
-	final File exe = Config.getPkgLibFile("funit-hello");
-	final File core = CorefileFactory.constructCoreAtSignal(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
-		public void parseCommand(String[] command) {
+		public void parseCommand(Proc command) {
 		    fail("Shoudn't have a command");
 		}
-		public void parseCores(CoreExePair[] coreExePairs) {
-		    assertEquals("Should have one pair",
-				 coreExePairs.length, 1);
-		    assertEquals("Core file is correct",
-				 coreExePairs[0].coreFile, core);
-		    assertEquals("Exe file is correct",
-				 coreExePairs[0].exeFile, exe);
+		public void parseCores(Proc[] cores) {
+		    assertEquals("Should have one pair", cores.length, 1);
+		    assertEquals("Core file is correct", core.getName(),
+				 cores[0].getHost().getName());
+		    assertEquals("Exe file is correct", exe.getPath(),
+				 cores[0].getExe());
 		}
 		public void parsePids(Proc[] procs) {
 		    fail("Shouldn't have a pid");
@@ -74,17 +84,14 @@ public class TestCommandlineParser extends TestLib {
     }
 
     public void testCore() {
-	final File exe = Config.getPkgLibFile("funit-hello");
-	final File core = CorefileFactory.constructCoreAtSignal(exe);
 	CommandlineParser parser = new CommandlineParser("test") {
-		public void parseCommand(String[] command) {
+		public void parseCommand(Proc command) {
 		    fail("Shoudn't have a command");
 		}
-		public void parseCores(CoreExePair[] coreExePairs) {
-		    assertEquals("Should have one pair",
-				 coreExePairs.length, 1);
-		    assertEquals("Core file is correct",
-				 coreExePairs[0].coreFile, core);
+		public void parseCores(Proc[] cores) {
+		    assertEquals("Should have one pair", cores.length, 1);
+		    assertEquals("Core file is correct", core.getName(),
+				 cores[0].getHost().getName());
 		}
 		public void parsePids(Proc[] procs) {
 		    fail("Shouldn't have a pid");

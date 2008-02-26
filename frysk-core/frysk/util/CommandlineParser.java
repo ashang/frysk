@@ -49,6 +49,8 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.EventLogger;
+import frysk.proc.dead.LinuxCoreFactory;
+import frysk.proc.dead.LinuxExeFactory;
 import frysk.proc.Proc;
 
 /**
@@ -76,7 +78,6 @@ public class CommandlineParser {
      */
     public void parsePids(Proc[] pids) {
 	System.err.println("Error: Pids not supported.");
-	printHelp();
 	System.exit(1);
     }
 
@@ -87,21 +88,47 @@ public class CommandlineParser {
      * @param coreFiles The array of core files passed on the command
      * line.
      */
-    public void parseCores(CoreExePair[] coreExePairs) {
-	System.err.println("Error: Cores not supported.");
-	printHelp();
+    public void parseCoresFIXME(CoreExePair[] coreExePairs) {
+	Proc[] procs = new Proc[coreExePairs.length];
+	for (int i = 0; i < coreExePairs.length; i++) {
+	    CoreExePair pair = coreExePairs[i];
+	    if (pair.exeFile == null)
+		procs[i] = LinuxCoreFactory.createProc(pair.coreFile);
+	    else
+		procs[i] = LinuxCoreFactory.createProc(pair.coreFile,
+						       pair.exeFile);
+	}
+	parseCores(procs);
+    }
+    /**
+     * Callback function. Gives an array of core files if core files
+     * were detected on the command line.
+     * 
+     * @param coreFiles The array of core files passed on the command
+     * line.
+     */
+    public void parseCores(Proc[] cores) {
+	System.err.println("Error: Corefiles not supported.");
 	System.exit(1);
     }
 
     /**
      * Callback function. Gives a string array represented a parsed
-     * command.
+     * command.  Clients should instead accept the parsed and verified
+     * Proc.
      * 
      * @param command The parsed command.
      */
-    public void parseCommand(String[] command) {
+    public void parseCommandFIXME(String[] command) {
+	parseCommand(LinuxExeFactory.createProc(command));
+    }
+    /**
+     * Callback function. Gives a Proc represented a parsed command.
+     * 
+     * @param command The parsed command.
+     */
+    public void parseCommand(Proc command) {
 	System.err.println("Error: Commands not supported.");
-	printHelp();
 	System.exit(1);
     }
 
@@ -163,12 +190,12 @@ public class CommandlineParser {
 	    }
 	    CoreExePair[] coreExePairs = new CoreExePair[coreExeFiles.size()];
 	    coreExeFiles.toArray(coreExePairs);
-	    parseCores(coreExePairs);
+	    parseCoresFIXME(coreExePairs);
 	    return result;
 	}
 
 	// If not above, then this is an executable command.
-	parseCommand(result);
+	parseCommandFIXME(result);
 	return result;
     }
 
