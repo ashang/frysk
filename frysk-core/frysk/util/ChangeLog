@@ -1,3 +1,9 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Util.java: Use LinuxCoreFactory.
+	* TestCoredumpAction.java: Ditto.
+	* TestStackTraceAction.java: Ditto.
+
 2008-02-25  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcStopUtil.java: Use LinuxExeFactory.

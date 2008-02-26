@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,138 +47,98 @@ import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dwfl.DwflCache;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.dead.LinuxCoreHost;
+import frysk.proc.dead.LinuxCoreFactory;
+import java.io.IOException;
+import frysk.proc.dead.LinuxCoreProc;
 
 public class CoreCommand extends ParameterizedCommand {
 
-	File coreFile = null;
+    private static class Options {
+	boolean loadMetaData = true;
+	String sysroot = "/";
+    }
+    Object options() {
+	return new Options();
+    }
 
-	File exeFile = null;
+    CoreCommand() {
+	super("Load a Corefile.",
+	      "core <core-file> [ <executable> ] [ -noexe ]"
+	      + "[ -sysroot Path ]", "Opens, loads and models corefile.");
 
-	boolean noExeOption = false;
-
-	CoreCommand() {
-		super("Load a Corefile.", "core <core-file> [ <executable> ] [ -noexe ]"
-			+ "[ -sysroot Path ]", "Opens, loads and models corefile.");
-
-		add(new CommandOption("noexe", "Do not attempt to load executable ") {
-			void parse(String argument, Object options) {
-				noExeOption = true;
-			}
-		});
-	        add(new CommandOption("sysroot", "pathname to use as a sysroot",
-	        "Pathname") {
-	            void parse(String args, Object options) {
-	        	((Options)options).sysroot = args;
-	            }
-	        });
-	}
-
-	private static class Options {
-	    String sysroot = "/";
-	}
-	Object options() {
-	    return new Options();
-	}
-
-	void interpret(CLI cli, Input cmd, Object options) {
-	        Options o = (Options)options;
-		
-		Proc coreProc;
-		LinuxCoreHost coreHost = null;
-
-		// If > 2 parameter, then too many parameters.
-		if (cmd.size() > 2) {
-			throw new InvalidCommandException(
-					"Too many parameters, a maximum of two should be specified.");
+	add(new CommandOption("noexe", "Do not attempt to load executable ") {
+		void parse(String argument, Object options) {
+		    ((Options)options).loadMetaData = false;
 		}
-
-		// If < 1 parameter, then not enough parameters.
-		if (cmd.size() < 1) {
-			throw new InvalidCommandException(
-					"Please specify a corefile with the core command");
+	    });
+	add(new CommandOption("sysroot", "pathname to use as a sysroot",
+			      "Pathname") {
+		void parse(String args, Object options) {
+		    ((Options)options).sysroot = args;
 		}
+	    });
+    }
 
-		// Command line seems, sane parse.
-		parseCommandLine(cmd);
+    void interpret(CLI cli, Input cmd, Object optionsObject) {
+	Options options = (Options)optionsObject;
+	File coreFile;
+	File exeFile;
 
-		// Does the corefile exist?
-		if ((!coreFile.exists()) || (!coreFile.canRead()
-			|| coreFile.isDirectory()))
-			throw new InvalidCommandException(
-					"No core file found, or cannot read corefile");
-
-		// Build Core. Move any exceptions up to cli and print to user.
-		coreHost = getHost(coreFile, exeFile, noExeOption);
-
-		// Get the core proc.
-		coreProc = coreHost.getSoleProcFIXME();
-
-		// Error out if no exe found, and -noexe option specified
-		if ((noExeOption == false) && (coreHost.getStatus().hasExe == false)) {
-			cli.addMessage(
-					"Could not find executable: '"
-					+ coreProc.getExe()+  "' specified for corefile. "
-					+ "You can specify one with the core command. E.g: core core.file yourexefile. Alternatively "
-					+ "you can tell fhpd to ignore the executable with -noexe. E.g core core.file -noexe. No "
-					+ "corefile has been loaded at this time.",
-					Message.TYPE_ERROR);
-			return;
-		}
-
-		// All checks are done. Host is built. Now start reserving space in the sets
-		int procID = cli.idManager.reserveProcID();
-		cli.idManager.manageProc(coreProc, procID);
-		
-
-		// Build debug info for each task and frame.
-		Iterator foo = cli.targetset.getTasks();
-		while (foo.hasNext()) {
-			Task task = (Task) foo.next();
-			DebugInfoFrame frame = DebugInfoStackFactory
-					.createVirtualStackTrace(task);
-			cli.setTaskFrame(task, frame);
-			cli.setTaskDebugInfo(task, new DebugInfo(frame));
-			DwflCache.setSysroot(task, o.sysroot);
-		}
-
-		// Finally, done.
-		cli.addMessage("Attached to core file: " + cmd.parameter(0),
-				Message.TYPE_NORMAL);
-		// See if there was an executable specified
-		if (coreHost.getStatus().hasExe == false)
-		    return;
-		synchronized (cli) {
-		    cli.getCoreProcs().put(coreProc, new Integer(procID));
-		}
-
+	switch (cmd.size()) {
+	case 0:
+	    throw new InvalidCommandException
+		("Please specify a corefile with the core command");
+	case 1:
+	    // <core>
+	    coreFile = new File(cmd.parameter(0));
+	    exeFile = null;
+	    break;
+	case 2:
+	    coreFile = new File(cmd.parameter(0));
+	    exeFile = new File(cmd.parameter(1));
+	    break;
+	default:
+	    throw new InvalidCommandException
+		("Too many parameters, a maximum of two should be specified.");
 	}
 
-	// Build Correct Host on options.
-	private LinuxCoreHost getHost(File coreFile, File executable, boolean loadExe) {
-		LinuxCoreHost coreHost = null;
-		if (executable == null)
-			if (!loadExe)
-				coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile);
-			else
-				coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile, null);
-		else
-			coreHost = new LinuxCoreHost(Manager.eventLoop, coreFile, executable);
-
-		return coreHost;
+	// Make paths canonical (keeps elfutils working).
+	try {
+	    coreFile = coreFile.getCanonicalFile();
+	    if (exeFile != null)
+		exeFile = exeFile.getCanonicalFile();
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
 	}
 
-	// Parse the option commandline
-	private void parseCommandLine(Input cli) {
-		coreFile = new File(cli.parameter(0));
-		if (cli.size() == 1)
-			return;
-		else
-			exeFile = new File(cli.parameter(1));
+	// Build Core. Move any exceptions up to cli and print to user.
+	LinuxCoreProc coreProc
+	    = LinuxCoreFactory.createProc(coreFile, exeFile,
+					  options.loadMetaData);
+
+	// All checks are done. Host is built. Now start reserving
+	// space in the sets.
+	int procID = cli.idManager.reserveProcID();
+	cli.idManager.manageProc(coreProc, procID);
+
+	// Build debug info for each task and frame.
+	for (Iterator i = cli.targetset.getTasks(); i.hasNext(); ) {
+	    Task task = (Task) i.next();
+	    DebugInfoFrame frame = DebugInfoStackFactory
+		.createVirtualStackTrace(task);
+	    cli.setTaskFrame(task, frame);
+	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
+	    DwflCache.setSysroot(task, options.sysroot);
 	}
+
+	// Finally, done.
+	cli.addMessage("Attached to core file: " + cmd.parameter(0),
+		       Message.TYPE_NORMAL);
+	synchronized (cli) {
+	    cli.getCoreProcs().put(coreProc, new Integer(procID));
+	}
+    }
 
     int completer(CLI cli, Input input, int cursor, List completions) {
 	return CompletionFactory.completeFileName(cli, input, cursor,

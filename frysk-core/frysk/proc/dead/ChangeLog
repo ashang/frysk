@@ -1,3 +1,15 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreInfo.java: New.  Fold in LinuxCoreFactory,
+	LinuxCoreHost, LinuxCoreProc, and LinuxCoreTask.
+	* SOLibMapBuilder.java (construct(Elf,File,long)): New.
+	(openElf(File)): Delete.
+	* TestLinuxCore.java: Update.
+	* LinuxCoreFactory.java: Update.
+	* LinuxCoreHost.java: Update.
+	* LinuxCoreProc.java: Update.
+	* LinuxCoreTask.java: Update.
+
 2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CorefileBytebuffer.java (peek): Account for segments

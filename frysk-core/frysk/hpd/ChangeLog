@@ -9,6 +9,10 @@
 
 2008-02-25  Andrew Cagney  <cagney@redhat.com>
 
+	* CoreCommand.java: Use LinuxCoreFactory.
+	(getHost(File,File.boolean)): Delete; replaced by LinuxCoreFactory.
+	(parseCommandLine(Input)): Fold into interpret.
+
 	* LoadCommand.java: Use LinuxExeFactory.
 
 2008-02-21  Nurdin Premji  <npremji@redhat.com>

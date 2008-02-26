@@ -55,13 +55,11 @@ import frysk.event.RequestStopEvent;
 import frysk.isa.registers.IA32Registers;
 import frysk.proc.Action;
 import frysk.proc.Auxv;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.CorefileFactory;
@@ -72,60 +70,45 @@ import frysk.testbed.TestLib;
 import frysk.util.CoredumpAction;
 import frysk.util.StacktraceAction;
 
-public class TestLinuxCore
-    extends TestLib
+public class TestLinuxCore extends TestLib {
+    private Proc coreProc
+	= LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
+
+    public void testLinuxCoreFileMaps() {
+	// Remove the hasIsa test as on -r test runs the singleton
+	// maintains reference in between runs.
+	Proc ackProc = giveMeAProc();
+	String coreFileName = constructCore(ackProc);
+	File xtestCore = new File(coreFileName);
+	Proc coreProc = LinuxCoreFactory.createProc(xtestCore);
+
+	MemoryMap[] list = ackProc.getMaps();
+
+	int redZoneDiscount = 0;
+	for (int j = 0; j < list.length; j++)
+	    if (list[j].permRead == false)
+		redZoneDiscount++;
+
+	MemoryMap[] clist = coreProc.getMaps();
+	assertEquals("Number of maps match in corefile/live process",
+		     clist.length,list.length - redZoneDiscount);
+
+	for (int i=0; i<list.length; i++) {
 	    
-{
-
-  Host coreHost = new LinuxCoreHost(Manager.eventLoop, 
-				Config.getPkgDataFile("test-core-x86"));
-  
-
-  public void testLinuxCoreFileMaps ()
-  {
-
-    // Remove the hasIsa test as on -r test runs the 
-    // singleton maintains reference in between runs.
-
-    Proc ackProc = giveMeAProc();
-    String coreFileName = constructCore(ackProc);
-    File xtestCore = new File(coreFileName);
-
-    Host lcoreHost = new LinuxCoreHost(Manager.eventLoop, 
-				   xtestCore);
-
-    
-    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
-
-    MemoryMap[] list = ackProc.getMaps();
-  
-
-    int redZoneDiscount = 0;
-    for (int j=0; j<list.length; j++)
-      if (list[j].permRead == false)
-        redZoneDiscount++;
-
-    MemoryMap[] clist = coreProc.getMaps();
-    assertEquals("Number of maps match in corefile/live process",
-		 clist.length,list.length - redZoneDiscount);
-
-    for (int i=0; i<list.length; i++)
-      {
-
-	if (list[i].permRead == false)
-	    continue;
-
-	int cloc = findCoreMap(list[i].addressLow, clist);
-	assertTrue("coreMaps returned -1",cloc >= 0);
-	assertEquals("vaddr",list[i].addressLow, clist[cloc].addressLow);
-	assertEquals("vaddr_end",list[i].addressHigh,clist[cloc].addressHigh);
-	assertEquals("permRead",list[i].permRead,clist[cloc].permRead);
-	assertEquals("permWrite",list[i].permWrite,clist[cloc].permWrite);
-	assertEquals("permExecute",list[i].permExecute,clist[cloc].permExecute);
-      }
-
-    xtestCore.delete();
-  }
+	    if (list[i].permRead == false)
+		continue;
+	    
+	    int cloc = findCoreMap(list[i].addressLow, clist);
+	    assertTrue("coreMaps returned -1",cloc >= 0);
+	    assertEquals("vaddr",list[i].addressLow, clist[cloc].addressLow);
+	    assertEquals("vaddr_end",list[i].addressHigh,clist[cloc].addressHigh);
+	    assertEquals("permRead",list[i].permRead,clist[cloc].permRead);
+	    assertEquals("permWrite",list[i].permWrite,clist[cloc].permWrite);
+	    assertEquals("permExecute",list[i].permExecute,clist[cloc].permExecute);
+	}
+	
+	xtestCore.delete();
+    }
 
 
   private int findCoreMap(long address, MemoryMap[] maps)
@@ -179,10 +162,7 @@ public class TestLinuxCore
     // scope.
     assertTrue("Live stack trace is not  empty", 
 	       liveStackOutput.getBuffer().length() > 0);
-
-    Host coreHost = new LinuxCoreHost(Manager.eventLoop, 
-				  coreFile, exeFile);
-    Proc coreProc = coreHost.getProc(new ProcId(testProc.getPid()));
+    Proc coreProc = LinuxCoreFactory.createProc(coreFile, exeFile);
 
     // Create a stackktrace of a the corefile process
     coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
@@ -225,83 +205,61 @@ public class TestLinuxCore
   public void testLinuxCoreHostPopulation ()
   {
     
-    assertNotNull("Core File Host Is Null?",coreHost);
+    assertNotNull("Core File Host Is Null?", coreProc);
     
-    Proc proc = coreHost.getProc(new ProcId(26799));
-    
-    assertNotNull("PID 26799 populates from core file?", proc);
-    assertEquals("PID  26799 should have one task", 3 ,proc.getTasks().toArray().length);
-    assertEquals("LinuxCoreFileProc PID",26799,proc.getPid());
+    assertEquals("PID  26799 should have one task", 3 ,coreProc.getTasks().toArray().length);
+    assertEquals("LinuxCoreFileProc PID",26799,coreProc.getPid());
   }
   
   
-  public void testLinuxProcPopulation () 
-  {
-    
-    
-    assertNotNull("Core file Host is Null?",coreHost);
-    
-    Proc proc = coreHost.getProc(new ProcId(26799));
-    assertNotNull("Proc exists in corefile", proc);
-    assertEquals("PID",26799,proc.getPid());
-    assertEquals("ProcID",26799,proc.getId().id);
-    assertSame("getHost",coreHost,proc.getHost());
-    assertEquals("getParent",null,proc.getParent());
-    assertEquals("getCommand","segfault",proc.getCommand());
-    assertEquals("getExe","/home/pmuldoon/segfault",proc.getExe());
-    assertEquals("getUID",500,proc.getUID());
-    assertEquals("getGID",500,proc.getGID());
-    assertEquals("getMainTask",26799,proc.getMainTask().getTid());
-  }
+    public void testLinuxProcPopulation() {
+	assertNotNull("Proc exists in corefile", coreProc);
+	assertEquals("PID", 26799, coreProc.getPid());
+	assertEquals("ProcID", 26799, coreProc.getId().id);
+	assertEquals("getParent", null, coreProc.getParent());
+	assertEquals("getCommand", "segfault", coreProc.getCommand());
+	assertEquals("getExe", "/home/pmuldoon/segfault", coreProc.getExe());
+	assertEquals("getUID", 500, coreProc.getUID());
+	assertEquals("getGID", 500, coreProc.getGID());
+	assertEquals("getMainTask", 26799, coreProc.getMainTask().getTid());
+    }
   
   
-  public void testLinuxProcAuxV () 
-  {
-    
-    
-    assertNotNull("Core file Host is Null?",coreHost);
-    
-    Proc proc = coreHost.getProc(new ProcId(26799));
-    assertNotNull("Proc exists in corefile", proc);
-    
-    Auxv[] auxv = proc.getAuxv();
-    final int[] expectedType = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
-    final long[] expectedVal = {0x62a400L,
-				0x62a000L,
-				0xafe9f1bfL,
-				0x1000L,
-				0x64L,
-				0x8048034L,
-				0x20L,
-				0x8L,
-				0x0L,
-				0x0L,
-				0x80483e0L,
-				0x1f4L,
-				0x1f4L,
-				0x1f4L,
-				0x1f4L,
-				0x0L,
-				0xbfcfee4bL,
-				0x0};
-    
-    for(int i=0; i<auxv.length; i++)
-      {
-	assertEquals("Auxv Type", auxv[i].type, 
-		     expectedType[i]);
-	assertEquals("Auxv Value", auxv[i].val,
-		     expectedVal[i]);
-      }
-    
-  }
+    public void testLinuxProcAuxV() {
+	assertNotNull("Proc exists in corefile", coreProc);
+	Auxv[] auxv = coreProc.getAuxv();
+	final int[] expectedType
+	    = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
+	final long[] expectedVal = {
+	    0x62a400L,
+	    0x62a000L,
+	    0xafe9f1bfL,
+	    0x1000L,
+	    0x64L,
+	    0x8048034L,
+	    0x20L,
+	    0x8L,
+	    0x0L,
+	    0x0L,
+	    0x80483e0L,
+	    0x1f4L,
+	    0x1f4L,
+	    0x1f4L,
+	    0x1f4L,
+	    0x0L,
+	    0xbfcfee4bL,
+	    0x0
+	};
+	
+	for(int i=0; i<auxv.length; i++) {
+	    assertEquals("Auxv Type", auxv[i].type, expectedType[i]);
+	    assertEquals("Auxv Value", auxv[i].val, expectedVal[i]);
+	}
+    }
   
-  public void testLinuxTaskMemory ()
-  {
-	assertNotNull("Core file Host is Null?",coreHost);
-    
-	Proc proc = coreHost.getProc(new ProcId(26799));
-	assertNotNull("Proc exists in corefile", proc);
-	Task task = proc.getMainTask();
+    public void testLinuxTaskMemory() {
+	assertNotNull("Proc exists in corefile", coreProc);
+	Task task = coreProc.getMainTask();
 	assertNotNull("Task exists in proc",task);
 	
 	ByteBuffer buffer = task.getMemory();
@@ -341,12 +299,9 @@ public class TestLinuxCore
     long[] fs =     {0x0L,        0x0L,       0x0L};
     long[] gs =     {0x33L,       0x33L,      0x33L};
 
-    assertNotNull("Core file Host is Null?",coreHost);
-
-    Proc proc = coreHost.getProc(new ProcId(26799));
-    assertNotNull("Proc exists in corefile", proc);
+    assertNotNull("Proc exists in corefile", coreProc);
     
-    Task[] tasks = (Task[]) proc.getTasks().toArray(new Task[proc.getTasks().size()]);
+    Task[] tasks = (Task[]) coreProc.getTasks().toArray(new Task[coreProc.getTasks().size()]);
     assertEquals("PID  26799 should have three tasks", 3 ,tasks.length);
     
     // Loop through the expected three threads
@@ -358,7 +313,7 @@ public class TestLinuxCore
 	assertEquals("Task TID",threadPid[i], tasks[i].getTid());
 	assertEquals("Task TID",threadName[i],tasks[i].getName());
 	assertNotNull("Task ISA",tasks[i].getISA());
-	assertSame("Task getParent",proc,tasks[i].getProc());
+	assertSame("Task getParent", coreProc, tasks[i].getProc());
 
 	assertEquals("note: ebx", ebx[i], tasks[i].getRegister(IA32Registers.EBX));
 	assertEquals("note: ecx", ecx[i], tasks[i].getRegister(IA32Registers.ECX));
@@ -409,9 +364,7 @@ public class TestLinuxCore
     
     // Create a teardown file
     TearDownFile xtestCore = new TearDownFile(coreFileName);
-    Host lcoreHost = new LinuxCoreHost(Manager.eventLoop,
-				       xtestCore, new File(ackProc.getExe()));
-    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+    Proc coreProc = LinuxCoreFactory.createProc(xtestCore, new File(ackProc.getExe()));
     Task coreTask = coreProc.getMainTask();
 
     // Check that the breakpoint isn't visible.
@@ -472,17 +425,16 @@ public class TestLinuxCore
     }
   }
 
-  /**
-   * Returns the address of the requested function through query Dwfl
-   * of the main Task of the given Proc.
-   */
-  private static long getFunctionEntryAddress(Proc proc, String func)
-  {
-    Task task = proc.getMainTask();
-    Dwfl dwfl = DwflCache.getDwfl(task);
-    Symbol sym = Symbol.get(dwfl, func);
-    return sym.getAddress();
-  }
+    /**
+     * Returns the address of the requested function through query Dwfl
+     * of the main Task of the given Proc.
+     */
+    private static long getFunctionEntryAddress(Proc proc, String func) {
+	Task task = proc.getMainTask();
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	Symbol sym = Symbol.get(dwfl, func);
+	return sym.getAddress();
+    }
 
   /**
    * Generate a process suitable for attaching to (ie detached when returned).

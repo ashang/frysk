@@ -61,8 +61,20 @@ public abstract class SOLibMapBuilder {
     /**
      * Scan the ELF file building up a list of memory maps.
      */
-    public final void construct(File clientSolib, long baseAddr) {
-	Elf solib = openElf(clientSolib);
+    public final void construct(File solibFile, long baseAddr) {
+	Elf solib = null;
+	try {
+	    solib = new Elf(solibFile, ElfCommand.ELF_C_READ);
+	    construct(solib, solibFile, baseAddr);
+	} finally {
+	    if (solib != null)
+		solib.close();
+	}
+    }
+    /**
+     * Scan the ELF file building up a list of memory maps.
+     */
+    public final void construct(Elf solib, File solibFile, long baseAddr) {
 	ElfEHeader eHeader = solib.getEHeader();
 	int wordSize = eHeader.getWordSize();
 	
@@ -91,7 +103,7 @@ public abstract class SOLibMapBuilder {
 
 		    long aOffset = (pHeader.offset &- pHeader.align);
 		    buildMap(mapBegin, mapEnd, read, write, execute, 
-			     aOffset, clientSolib.getPath(),pHeader.align);
+			     aOffset, solibFile.getPath(),pHeader.align);
 		}
 	    }
 	}
@@ -112,10 +124,4 @@ public abstract class SOLibMapBuilder {
 				 boolean permExecute, long offset, 
 				 String name, long align);
 
-    private Elf openElf(File name) {
-	if ((!name.exists()) && (!name.canRead()) && (!name.isFile()))
-	    throw new RuntimeException(name.getPath() + " is an invalid file");
-	// Open up corefile corresponding directory.
-	return new Elf(name, ElfCommand.ELF_C_READ);
-    }
 }

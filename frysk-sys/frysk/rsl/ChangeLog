@@ -1,5 +1,7 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java: Add more log methods.
+	
 	* package.html (Implementing a Custom Log): New.
 	* Log.java (prefix, print): Return Log.  Make public.
 

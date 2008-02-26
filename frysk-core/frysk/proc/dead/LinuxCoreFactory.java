@@ -40,14 +40,6 @@
 package frysk.proc.dead;
 
 import java.io.File;
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
-import lib.dwfl.ElfData;
-import lib.dwfl.ElfEHeader;
-import lib.dwfl.ElfPHeader;
-import lib.dwfl.ElfPrpsinfo;
-import frysk.proc.Proc;
-import frysk.rsl.Log;
 
 /**
  * Data needed to construct a core file; shared between the core Host,
@@ -55,11 +47,6 @@ import frysk.rsl.Log;
  */
 
 public class LinuxCoreFactory {
-    private static final Log fine = Log.fine(LinuxCoreFactory.class);
-
-    static Elf core;
-    static Elf exe;
-
     /**
      * Construct the core file; if the EXE is non-null use it for
      * meta-data; otherwise use the executable extracted from the
@@ -67,63 +54,28 @@ public class LinuxCoreFactory {
      *
      * All File paths <b>must</b> be canonical.
      */
-    public static Proc create(File coreFile, File exeFile,
-			      boolean includeMetaData) {
-	try {
-	    // Open the core file; validate it.
-	    core = new Elf(coreFile, ElfCommand.ELF_C_READ);
-	    ElfEHeader eHeader = core.getEHeader();
-	    if (eHeader.type != ElfEHeader.PHEADER_ET_CORE) {
-		throw new RuntimeException("'" + coreFile
-					   + "' is not a corefile.");
-	    }
-	
-	    // Find the note section; there is only ever one note
-	    // section and it must be present.
-	    ElfData noteData = null;
-	    for (int i = 0; i < eHeader.phnum; i++) {
-		// Test if pheader is of types notes..
-		ElfPHeader pHeader = core.getPHeader(i);
-		if (pHeader.type == ElfPHeader.PTYPE_NOTE) {
-		    // if so, copy, break an leave.
-		    noteData = core.getRawData(pHeader.offset,
-					       pHeader.filesz);
-		    break;
-		}
-	    }
-	    if (noteData == null)
-		throw new RuntimeException("'" + coreFile
-					   + "' is corrupt; no note section");
-	    
-	    // Extract the pr/ps information from the note.
-	    ElfPrpsinfo prpsInfo = ElfPrpsinfo.decode(noteData);
-	    String[] args = prpsInfo.getPrPsargs().split(" ");
-	    fine.log("args", args);
-
-	    if (exeFile == null) {
-		// Only place to find full path + exe is in the args
-		// list. Remove ./ if present.
-		if (args.length > 0) {
-		    if (args[0].startsWith("./"))
-			exeFile = new File(args[0].substring(2));
-		    else
-			exeFile = new File(args[0]);
-		} else {
-		    exeFile = new File(prpsInfo.getPrFname());
-		}
-		fine.log("exe from core", exeFile);
-	    } else {
-		fine.log("exe for core", exeFile);
-	    }
-	    if (includeMetaData)
-		exe = new Elf(exeFile, ElfCommand.ELF_C_READ);
-
-	    return null;
-	} finally { 
-	    if (core != null)
-		core.close();
-	    if (exe != null)
-		exe.close();
-	}
+    public static LinuxCoreProc createProc(File coreFile, File exeFile,
+					   boolean extendedMetaData) {
+	LinuxCoreInfo core = new LinuxCoreInfo(coreFile, exeFile,
+					       extendedMetaData);
+	LinuxCoreHost host = new LinuxCoreHost(core);
+	return host.getProc();
+    }
+    /**
+     * Construct a core file without extended meta data.
+     *
+     * All File paths <b>must</b> be canonical.
+     */
+    public static LinuxCoreProc createProc(File coreFile) {
+	return createProc(coreFile, null, false);
+    }
+    /**
+     * Construct a core file with extended meta data taken from the
+     * executable.
+     *
+     * All File paths <b>must</b> be canonical.
+     */
+    public static LinuxCoreProc createProc(File coreFile, File exeFile) {
+	return createProc(coreFile, exeFile, true);
     }
 }

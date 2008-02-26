@@ -45,12 +45,11 @@ import java.io.StringWriter;
 import java.util.logging.Level;
 import frysk.Config;
 import frysk.event.RequestStopEvent;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
-import frysk.proc.dead.LinuxCoreHost;
+import frysk.proc.dead.LinuxCoreFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
@@ -129,10 +128,7 @@ public class TestStackTraceAction
 	if (unresolved(4581))
 	    return;
 	StringWriter stringWriter = new StringWriter();
-	Host coreHost = new LinuxCoreHost(Manager.eventLoop,
-					  Config.getPkgDataFile("test-core-x86"));
-	assertNotNull("Core file Host is Null?", coreHost);
-	Proc proc = coreHost.getSoleProcFIXME();
+	Proc proc = LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
 	assertNotNull("core proc", proc);
 	StacktraceAction stacker;
 	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true,true) {

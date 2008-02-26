@@ -44,7 +44,7 @@ import java.io.File;
 import frysk.proc.Host;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
-import frysk.proc.dead.LinuxCoreHost;
+import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.Proc;
 
 public class Util
@@ -60,19 +60,14 @@ public class Util
      * @return The Proc for the given coreFile.
      */
     public static Proc getProcFromCoreFile(File coreFile) {
-	LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
-	Proc proc = core.getSoleProcFIXME();
+	Proc proc = LinuxCoreFactory.createProc(coreFile);
 	if (proc == null)
 	    throw new RuntimeException("Core file contains no proc.");
 	return proc;
     }
   
     public static Proc getProcFromCoreFile(File coreFile, File exeFile) {
-	LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile,
-					       exeFile);
-	Proc proc = core.getSoleProcFIXME();
-	if (proc == null)
-	    throw new RuntimeException("Cannot find a process in this corefile.");
+	Proc proc = LinuxCoreFactory.createProc(coreFile, exeFile);
 	return proc;
     }
   

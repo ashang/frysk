@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.isa.signals.Signal;
 import frysk.event.Event;
-import frysk.proc.dead.LinuxCoreHost;
+import frysk.proc.dead.LinuxCoreFactory;
 
 /**
  * This class blocks all of the threads in a process and performs a
@@ -167,26 +167,17 @@ public class ProcBlockAction
 	    });
     }
   
-  public ProcBlockAction (File coreFile) {
-    LinuxCoreHost core = new LinuxCoreHost(Manager.eventLoop, coreFile);
-
-    Manager.eventLoop.runPending();
-    proc = core.getSoleProcFIXME();
-    if (proc == null)
-        throw new RuntimeException("No proc in this corefile");
-
-    taskList = proc.getTasks();
-    
-    Iterator iterator = taskList.iterator();
-    
-    while (iterator.hasNext())
-      {
-        Task task = (Task) iterator.next();
-        action.existingTask(task);
-      }
-    
-    action.allExistingTasksCompleted();
-  }
+    public ProcBlockAction(File coreFile) {
+	Proc proc = LinuxCoreFactory.createProc(coreFile);
+	if (proc == null)
+	    throw new RuntimeException("No proc in this corefile");
+	taskList = proc.getTasks();
+	for (Iterator i = taskList.iterator(); i.hasNext(); ) {
+	    Task task = (Task) i.next();
+	    action.existingTask(task);
+	}
+	action.allExistingTasksCompleted();
+    }
 
   private void requestAdd ()
   {
