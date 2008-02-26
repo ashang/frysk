@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.util;
+package frysk.testbed;
 
 import inua.eio.ByteOrder;
 

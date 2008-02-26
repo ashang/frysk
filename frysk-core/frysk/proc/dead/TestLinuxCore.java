@@ -67,7 +67,7 @@ import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.LegacyOffspring;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
-import frysk.util.CoredumpAction;
+import frysk.testbed.CoredumpAction;
 import frysk.util.StacktraceAction;
 
 public class TestLinuxCore extends TestLib {

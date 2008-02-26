@@ -1,5 +1,8 @@
 2008-02-26  Teresa Thomas  <tthomas@redhat.com>
 
+	* TestCoredumpAction.java: Move to frysk.testbed.
+	* CoredumpAction.java: Ditto.
+	
 	* ProcStopUtil.java (.parseCommand): Indent.
 	
 2008-02-26  Andrew Cagney  <cagney@redhat.com>

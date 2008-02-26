@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
+package frysk.testbed;
 
 import java.util.LinkedList;
 import java.util.Observable;

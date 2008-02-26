@@ -1,3 +1,9 @@
+2008-02-26  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestCoredumpAction.java: Move from frysk.util.
+	* CoredumpAction.java: Ditto.
+	* CorefileFactory.java: Update imports.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* StatState.java: Update to match Stat rewrite.
