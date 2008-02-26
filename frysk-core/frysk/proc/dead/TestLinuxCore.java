@@ -215,7 +215,6 @@ public class TestLinuxCore extends TestLib {
     public void testLinuxProcPopulation() {
 	assertNotNull("Proc exists in corefile", coreProc);
 	assertEquals("PID", 26799, coreProc.getPid());
-	assertEquals("ProcID", 26799, coreProc.getId().id);
 	assertEquals("getParent", null, coreProc.getParent());
 	assertEquals("getCommand", "segfault", coreProc.getCommand());
 	assertEquals("getExe", "/home/pmuldoon/segfault", coreProc.getExe());

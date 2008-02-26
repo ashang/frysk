@@ -1,5 +1,10 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcId.java: Delete.
+	* TestId.java: Delete.
+	* Proc.java (getId()): Delete.
+	(id): Delete.
+	
 	* Proc.java (Proc): Do not call Host.add(Proc).
 	* Host.java (procPool): Delete.
 	(add(Proc)): Delete.

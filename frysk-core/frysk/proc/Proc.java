@@ -63,14 +63,8 @@ import frysk.sys.Signal;
 public abstract class Proc implements Comparable {
     protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
-    final ProcId id;
-  
     private CountDownLatch quitLatch;
   
-    public ProcId getId() {
-	return id;
-    }
-
     /**
      * If known, due to the tracing of a fork, the Task that created
      * this process.
@@ -152,7 +146,6 @@ public abstract class Proc implements Comparable {
     private Proc(int pid, Proc parent, Host host, Task creator) {
 	this.host = host;
 	this.pid = pid;
-	this.id = new ProcId(pid);
 	this.parent = parent;
 	this.creator = creator;
 	// Keep parent informed.

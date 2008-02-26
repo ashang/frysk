@@ -308,14 +308,14 @@ public class ProcWiseDataModel
           if (!guiProc.isOwned())
             return;
           
-          TreeIter parent = (TreeIter) iterMap.get(proc.getId());
+          TreeIter parent = (TreeIter) iterMap.get(proc);
 
           if (parent == null)
             {
               // new process name
               parent = treeStore.appendRow(null);
               if (parent != null)
-                iterMap.put(proc.getId(), parent);
+                iterMap.put(proc, parent);
             }
           
               treeStore.setValue(parent, nameDC, guiProc.getExecutableName());
@@ -357,11 +357,9 @@ public class ProcWiseDataModel
         {
           TreeIter parent = null;
 
-          if (proc != null)
-            {
-              try
-                {
-                  parent = (TreeIter) iterMap.get(proc.getId());
+          if (proc != null) {
+              try {
+		    parent = (TreeIter) iterMap.get(proc);
                 }
               catch (Exception e)
                 {
@@ -397,7 +395,7 @@ public class ProcWiseDataModel
             }
 
           treeStore.removeRow(parent);
-          iterMap.remove(proc.getId());
+          iterMap.remove(proc);
 
           return;
         }
