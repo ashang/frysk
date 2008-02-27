@@ -91,8 +91,6 @@ public class WindowManager
 
   public SessionManagerDialog sessionManagerDialog;
 
-  public ProgramObserverDialog programObserverDialog;
-  
   public LibGlade processPickerGlade;
   
   /** } */
@@ -107,7 +105,6 @@ public class WindowManager
   // from the massive glade file
   public void initLegacyProcpopWindows (LibGlade glade) throws IOException
   {
-    this.programObserverDialog = new ProgramObserverDialog();
 
     this.splashScreen = new SplashScreenWindow();
     this.mainWindow = new MainWindow(glade);
@@ -147,9 +144,6 @@ public class WindowManager
     summaryWindow.save(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    programObserverDialog.save(Preferences.userRoot().node(
-                                               prefs.absolutePath()
-                                                   + "/programObserverDialog"));
    }
 
   public void load (Preferences prefs)
@@ -160,9 +154,6 @@ public class WindowManager
     summaryWindow.load(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    programObserverDialog.load(Preferences.userRoot().node(
-                                                           prefs.absolutePath()
-                                                               + "/programObserverDialog"));
   }
 
 

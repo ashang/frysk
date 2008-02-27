@@ -11,6 +11,12 @@
 	* test/TestWindowFactorization.java: Ditto.
 	* TestGlade.java: Ditto.
 
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	datamodels/FlatProcObservableLinkedList.java: Deleted
+	ProgramObserverDialog.java: Deleted.
+	* Gui.java: Updated.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Update to match frysk.sys.Signal.

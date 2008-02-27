@@ -50,7 +50,6 @@ import org.jdom.Element;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
@@ -74,7 +73,7 @@ public class DebugProcess
 
   ObservableLinkedList tagsets;
 
-  ObservableLinkedList allProcsList;
+//  ObservableLinkedList allProcsList;
 
   String alternativeDisplayName = "";
 
@@ -100,8 +99,6 @@ public class DebugProcess
 
     watchedVars = new WatchList();
     
-    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
     initListObservers();
   }
 
@@ -128,8 +125,6 @@ public class DebugProcess
 
     watchedVars = new WatchList(other.watchedVars);
     
-    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
     initListObservers();
   }
 
@@ -157,8 +152,6 @@ public class DebugProcess
 
     watchedVars = new WatchList();
     
-    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
     initListObservers();
   }
 

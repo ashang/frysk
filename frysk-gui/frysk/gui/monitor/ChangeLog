@@ -7,6 +7,13 @@
 
 	* ProcWiseDataModel.java: Use proc, not ProcId as key.
 
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* datamodels/FlatProcObservableLinkedList.java: Deleted
+	* ProgramObserverDialog.java: Deleted.
+	* datamodels/DataModelManager.java: Updated
+	* WindowManager.java: Updated.
+	
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcWiseDataModel.java: Update to match Scan.

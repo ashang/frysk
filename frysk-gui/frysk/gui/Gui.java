@@ -39,10 +39,6 @@
 
 package frysk.gui;
 
-import frysk.proc.HostRefreshBuilder;
-import java.util.Collection;
-import java.util.HashSet;
-import frysk.proc.Host;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,6 +46,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -58,8 +56,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-import frysk.sys.ProcessIdentifier;
-import frysk.sys.ProcessIdentifierFactory;
+
 import org.gnu.gdk.Color;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
@@ -75,17 +72,12 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 import frysk.config.Config;
 import frysk.EventLogger;
-import frysk.event.TimerEvent;
 import frysk.event.SignalEvent;
+import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.DialogManager;
 import frysk.gui.dialogs.ErrorDialog;
 import frysk.gui.dialogs.WarnDialog;
-import frysk.gui.prefs.BooleanPreference;
-import frysk.gui.prefs.ColorPreference;
-import frysk.gui.prefs.IntPreference;
-import frysk.gui.prefs.PreferenceGroup;
-import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.CoreDebugLogViewer;
 import frysk.gui.monitor.FryskErrorFileHandler;
@@ -93,14 +85,22 @@ import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.datamodels.CoreDebugHandler;
-import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.prefs.BooleanPreference;
+import frysk.gui.prefs.ColorPreference;
+import frysk.gui.prefs.IntPreference;
+import frysk.gui.prefs.PreferenceGroup;
+import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
+import frysk.proc.Host;
+import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Manager;
-import frysk.sys.Signal;
 import frysk.sys.Pid;
+import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
+import frysk.sys.Signal;
 import frysk.util.CommandlineParser;
 
 
@@ -170,11 +170,6 @@ public class Gui implements LifeCycleListener, Saveable {
     createFryskLockFile(Config.getFryskDir() + "/lock" + Pid.get());
 
     Gtk.init(args);
-
-    // XXX: a hack to make sure the DataModelManager
-    // is initialized early enough. Should probably
-    // have an entitiy that initializes all Managers
-    DataModelManager.theManager.flatProcObservableLinkedList.getClass();
 
     // Setup Icon Manager singleton
     IconManager.loadIcons();
