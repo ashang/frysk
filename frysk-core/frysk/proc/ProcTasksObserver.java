@@ -41,8 +41,7 @@ package frysk.proc;
 
 import frysk.isa.signals.Signal;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.event.Event;
 
 /**
@@ -54,7 +53,7 @@ import frysk.event.Event;
 public final class ProcTasksObserver
     implements TaskObserver.Cloned, TaskObserver.Terminated
 {
-    protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+    private static final Log fine = Log.fine(ProcTasksObserver.class);
     private final Proc proc;
     private final ProcObserver.ProcTasks procTasksObserver;
     private Task mainTask;
@@ -66,23 +65,20 @@ public final class ProcTasksObserver
     public ProcTasksObserver (Proc theProc, 
 			      ProcObserver.ProcTasks theProcTasksObserver)
     {
-	logger.log (Level.FINE, "{0} new\n", this); 
+	fine.log(this, "new");
 	proc = theProc;
 	procTasksObserver = theProcTasksObserver;
 		
 	// The rest of the construction must be done synchronous to
 	// the EventLoop, schedule it.
-	Manager.eventLoop.add (new Event ()
-	    {
-		public void execute ()
-		{
+	Manager.eventLoop.add(new Event() {
+		public void execute() {
 		    // Get a preliminary list of tasks - XXX: hack really.
 		    proc.sendRefresh ();
-				
-		    mainTask = Manager.host.get (new TaskId (proc.getPid ()));
+		    mainTask = proc.getMainTask();
 		    if (mainTask == null) {
-			logger.log (Level.FINE, "Could not get main thread of " +
-				    "this process\n {0}", proc);
+			fine.log(this, "Could not get main thread of "
+				 + "process", proc);
 			procTasksObserver.addFailed (proc,
 						     new RuntimeException ("Process lost: could not " +
 									   "get the main thread of this process.\n" + 
@@ -116,9 +112,8 @@ public final class ProcTasksObserver
 					 Task offspring)
     {
 	procTasksObserver.taskAdded (offspring);
-	logger.log (Level.FINE, "ProcTasksObserver.updateClonedOffspring() " +
-		    "parent: {0} offspring: {1}\n", 
-		    new Object[] { parent, offspring});
+	fine.log(this, "ProcTasksObserver.updateClonedOffspring "
+		 + "parent", parent, "offspring", offspring);
 	requestAddObservers(offspring);
 	// Need to BLOCK and UNBLOCK so that the
 	// request to add an observer has enough time
@@ -139,7 +134,7 @@ public final class ProcTasksObserver
 		Task task = (Task) iterator.next();
 		procTasksObserver.existingTask (task);
 		if (task != mainTask) {
-		    logger.log (Level.FINE, "{0} Inside if not mainTask\n", this);
+		    fine.log(this, "Inside if not mainTask");
 		    requestAddObservers(task);
 		}
 	    }

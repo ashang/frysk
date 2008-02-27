@@ -1,5 +1,7 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcTasksObserver.java: Use Proc.getMainTask.  Use Log.
+
 	* Proc.java (taskPool): Make private.
 
 	* Task.java (getTaskId()): Make package private.
