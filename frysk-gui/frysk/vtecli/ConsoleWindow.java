@@ -74,7 +74,7 @@ public class ConsoleWindow
       try
         {
           cli = new CLI("(frysk) ", 
-                        new PrintStream(new FileOutputStream(new File(fname))));
+                        new PrintWriter(new FileOutputStream(new File(fname))));
         }
       catch (IOException ioe)
         {
