@@ -75,7 +75,7 @@ public class TestFdebuginfo extends TestLib {
 		Config.getBinFile("fdebuginfo").getAbsolutePath (),
 		"this is a bad argument"
 	});
-	e.expect("File does not exist or is not readable or is not a file.");
+	e.expect("Error: ");
     }
 
     public void testInvalidArgument() {

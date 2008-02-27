@@ -39,8 +39,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.util.ProcStopUtil;
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
@@ -64,8 +62,8 @@ public class fmaps {
 		System.out.println(maps[i].toString());
 	}
 	        
-        public void executeDead(Proc proc, File file) {
-            executeLive (proc);
+        public void executeDead(Proc proc) {
+            executeLive(proc);
         }
     }
 }

@@ -54,7 +54,7 @@ public class TestFcore extends TestLib {
 		Config.getBinFile("fcore").getAbsolutePath (),
 		"this is a bad argument"
 	    });
-	e.expect("File does not exist or is not readable or is not a file.");
+	e.expect("Error: ");
     }
 
     public void testBadConsoleParameter () {

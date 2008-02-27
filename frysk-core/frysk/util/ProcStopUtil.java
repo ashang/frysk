@@ -39,8 +39,6 @@
 
 package frysk.util;
 
-import java.io.File;
-
 import frysk.event.Event;
 import frysk.event.ProcEvent;
 import frysk.proc.Manager;
@@ -49,9 +47,7 @@ import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.util.CommandlineParser;
-import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
-import frysk.proc.dead.LinuxExeFactory;
 
 /**
  * Framework to be used for frysk utilities that,
@@ -67,7 +63,7 @@ public class ProcStopUtil
     private CommandlineParser parser;
 	
     public ProcStopUtil (String utilName, String[] args, 
-	                  final ProcEvent procEvent) {
+			 final ProcEvent procEvent) {
 	this.args = args;
 	parser = new CommandlineParser(utilName) {
 		//@Override
@@ -80,32 +76,19 @@ public class ProcStopUtil
 		    }
 		}
 	    
-	    //@Override 
-	    public void parseCoresFIXME(CoreExePair[] coreExePairs) {
-		for (int i = 0; i < coreExePairs.length; i++)
-		{       
-		    proc = Util.getProcFromCoreExePair(coreExePairs[i]);
-		    failIfProcNull(proc);
-		    procEvent.executeDead(proc, coreExePairs[i].coreFile);
+		//@Override 
+		public void parseCores(Proc[] cores) {
+		    for (int i = 0; i < cores.length; i++) {       
+			Proc core = cores[i];
+			procEvent.executeDead(core);
+		    }
 		}  
-	    }
 	    
-	    //@Override
-	    public void parseCommandFIXME(String[] command) {
-		File exeFile = new File(command[0]);
-		if (!exeFile.exists() || !exeFile.canRead()
-			|| !exeFile.isFile()) {
-		    System.err.println ("File does not exist or is " +
-		                        "not readable or is not a file.");
-		    System.exit(1);
-		} else {
-		    Manager.eventLoop.start();
-		    proc = LinuxExeFactory.createProc(exeFile, command);
-		    failIfProcNull(proc);
-		    procEvent.executeDead(proc, null);
+		//@Override
+		public void parseCommand(Proc command) {
+		    procEvent.executeDead(proc);
 		}
-	    }
-	};
+	    };
     }    
     
     /**
@@ -135,14 +118,6 @@ public class ProcStopUtil
 	if (args.length < 1) {
 	    System.err.println("ERROR: No argument provided.");
 	    parser.printHelp();
-	}
-    }
-    
-    private void failIfProcNull (Proc proc) {
-	if (proc == null) {
-	    System.err.println("ERROR: Invalid argument.");
-	    // Exit if no proc found.
-	    System.exit(1);
 	}
     }
     

@@ -43,7 +43,6 @@ import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.util.AuxvStringBuilder;
 import frysk.util.ProcStopUtil;
-import java.io.File;
 
 public class fauxv {
 
@@ -77,8 +76,8 @@ public class fauxv {
             }
         }
         
-        public void executeDead(Proc proc, File file) {
-            executeLive (proc);
+        public void executeDead(Proc proc) {
+            executeLive(proc);
         }
     }
 }

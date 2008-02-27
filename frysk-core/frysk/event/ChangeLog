@@ -1,3 +1,7 @@
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcEvent.java (executeDead(Proc)): Replace executeDead(Proc,File).
+
 2008-02-21  Teresa Thomas  <tthomas@redhat.com>
 
 	* ProcEvent.java (executeDead): New.

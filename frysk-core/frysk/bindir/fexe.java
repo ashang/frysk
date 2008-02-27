@@ -46,7 +46,6 @@ import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.sys.proc.Exe;
 import gnu.classpath.tools.getopt.Option;
-import java.io.File;
 
 public class fexe 
 {
@@ -81,17 +80,14 @@ public class fexe
 		System.out.println(proc.getExe());
 	}
 	
-	public void executeDead(Proc proc, File coreFile) {
-	    if (coreFile == null) 
-		System.out.println(proc.getExe());
-	    
-	    else if (verbose) {
-		System.out.println(  coreFile
+	public void executeDead(Proc proc) {
+	    if (verbose) {
+		System.out.println(proc.getHost().getName()
 			           + " "
 			           + proc.getExe());
-	    } 
-	    else 
+	    } else {
 		System.out.println(proc.getExe());
+	    }
 	}
     }
 }

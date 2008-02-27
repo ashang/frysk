@@ -39,8 +39,6 @@
 
 package frysk.bindir;
 
-import java.io.File;
-
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -81,8 +79,8 @@ public final class fdebuginfo
 		System.out.println("No packages found.");
 	}	
         
-        public void executeDead(Proc proc, File file) {
-            executeLive (proc);
+        public void executeDead(Proc proc) {
+            executeLive(proc);
         }
     }
 }

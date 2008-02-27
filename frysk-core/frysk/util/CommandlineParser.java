@@ -137,7 +137,7 @@ public class CommandlineParser {
 	    String[] result = doParse(args);
 	    validate();
 	    return result;
-	} catch (OptionException e) {
+	} catch (Exception e) {
 	    System.err.println("Error: " + e.getMessage());
 	    System.exit(1);
 	    return null; // To fool Java

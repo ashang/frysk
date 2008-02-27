@@ -40,13 +40,11 @@
 package frysk.event;
 
 import frysk.proc.Proc;
-import java.io.File;
 
 /**
  * The proc event interface. Used by frysk utilities.
  */
-public interface ProcEvent
-{
+public interface ProcEvent {
     void executeLive(Proc proc);
-    void executeDead(Proc proc, File file);
+    void executeDead(Proc proc);
 }

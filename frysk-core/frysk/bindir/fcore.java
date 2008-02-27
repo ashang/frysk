@@ -40,8 +40,6 @@
 package frysk.bindir;
 
 import java.util.logging.Logger;
-import java.io.File;
-
 import frysk.event.ProcEvent;
 
 import frysk.proc.Proc;
@@ -160,7 +158,7 @@ public class fcore
 	    }
 	}
 	
-	public void executeDead(Proc proc, File coreFile) {
+	public void executeDead(Proc proc) {
 	    System.err.println ("Cannot create core file from dead process");
 	}
     }

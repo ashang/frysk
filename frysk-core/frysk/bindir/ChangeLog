@@ -1,5 +1,12 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* fauxv.java: Update to match ProcEvent.
+	* fmaps.java: Ditto.
+	* fexe.java: Ditto.
+	* fcore.java: Ditto.
+	* fdebuginfo.java: Ditto.
+	* TestFcore.java: Match new error messages.
+
 	* fcatch.java: Update to match CommandlineParser.
 	* fstack.java: Ditto.
 	* ftrace.java: Ditto.
