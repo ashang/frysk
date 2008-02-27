@@ -1,5 +1,9 @@
 2008-02-27  Teresa Thomas  <tthomas@redhat.com>
 
+	* ShellCommand.java: New file.
+	* TestShellCommand.java: New file.
+	* TopLevelCommand.java (TopLevelCommand): Add shell command.
+	
 	* NoOptsCommand.java: New file.
 	
 2008-02-26  Andrew Cagney  <cagney@redhat.com>

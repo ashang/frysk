@@ -104,6 +104,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(quit, "quit");
         add(new RegsCommand(), "regs");
         add(new RunCommand(), "r|un");
+        add(new ShellCommand(), "shell");
         add(new StackCommands.Down(), "d|own");
         add(new StackCommands.Frame(), "frame");
         add(new StackCommands.Up(), "u|p");
