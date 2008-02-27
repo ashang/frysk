@@ -150,7 +150,7 @@ abstract class LinuxPtraceProcState extends State {
 		observation.fail(new RuntimeException("not actually added"));
 	    // Grab the main task; only bother with the refresh if the
 	    // Proc has no clue as to its task list.
-	    if (proc.taskPool.size () == 0)
+	    if (proc.getTasks().size() == 0)
 		proc.sendRefresh ();
 	    // Assumes that the main Task's ID == the Proc's ID.
 	    LinuxPtraceTask mainTask

@@ -1,5 +1,7 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (taskPool): Make private.
+
 	* Task.java (getTaskId()): Make package private.
 	* TestTaskSyscallObserver.java: Use Task.getTid().
 

@@ -164,7 +164,7 @@ class LinuxPtraceTaskState extends State {
 	else
 	    task.notifyTerminated(false, status);
 	// A process with no tasks is dead ...?
-	if (task.getProc().taskPool.size() == 0) {
+	if (task.getProc().getTasks().size() == 0) {
 	    task.getProc().parent.remove(task.getProc());
 	    task.getProc().getHost().remove(task.getProc());
 	}

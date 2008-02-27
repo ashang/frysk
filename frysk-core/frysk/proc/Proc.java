@@ -321,7 +321,7 @@ public abstract class Proc implements Comparable {
      *
      * XXX: Should not be public.
      */
-    public Map taskPool = new HashMap();
+    private final Map taskPool = new HashMap();
 
     /**
      * Add the Task to this Proc.

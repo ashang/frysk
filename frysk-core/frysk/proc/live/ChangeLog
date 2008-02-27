@@ -1,5 +1,8 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Do not use Proc.taskPool.
+	* LinuxPtraceTaskState.java: Ditto.
+
 	* LinuxPtraceProc.java (tasks): New.
 	(removeTask(ProcessIdentifier)): New.	
 	(addTask(ProcessIdentifier,LinuxPtraceTask)): New.
