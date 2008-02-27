@@ -56,9 +56,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.Status;
 import frysk.rsl.Log;
 import frysk.sys.proc.ProcBuilder;
-import java.util.Map;
 import java.util.HashMap;
-import frysk.proc.TaskId;
 import java.util.Iterator;
 import java.io.File;
 import frysk.proc.Manager;
@@ -94,6 +92,15 @@ public class LinuxPtraceProc extends LiveProc {
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);
     }
+
+    void addTask(LinuxPtraceTask task) {
+	tasks.put(task.tid, task);
+    }
+    void removeTask(LinuxPtraceTask task) {
+	tasks.remove(task.tid);
+	remove(task);
+    }
+    private final HashMap tasks = new HashMap();
 
     private Auxv[] auxv;
     public Auxv[] getAuxv() {
@@ -242,27 +249,22 @@ public class LinuxPtraceProc extends LiveProc {
     /**
      * Refresh the Proc.
      */
-    public void sendRefresh ()
-    {
-	// Compare this against the existing taskPool.  ADDED
-	// accumulates any tasks added to the taskPool.  REMOVED,
-	// starting with all known tasks has any existing tasks
-	// removed, so that by the end it contains a set of removed
-	// tasks.
+    public void sendRefresh() {
+	// Compare this against the existing TASKS.  ADDED accumulates
+	// any tasks added to the TASKS.  REMOVED, starting with all
+	// known tasks has any existing tasks removed, so that by the
+	// end it contains a set of removed tasks.
 	class TidBuilder extends ProcBuilder {
-	    Map added = new HashMap ();
-	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
-	    TaskId searchId = new TaskId ();
+	    HashMap added = new HashMap();
+	    HashMap removed = (HashMap) tasks.clone();
 	    public void build(ProcessIdentifier tid) {
-		searchId.id = tid.intValue();
-		if (removed.containsKey (searchId)) {
-		    removed.remove (searchId);
-		}
-		else {
+		if (removed.containsKey(tid)) {
+		    removed.remove(tid);
+		} else {
 		    // Add the process (it currently isn't attached).
 		    Task newTask
 			= new LinuxPtraceTask(LinuxPtraceProc.this, tid);
-		    added.put (newTask.getTaskId(), newTask);
+		    added.put(tid, newTask);
 		}
 	    }
 	}
@@ -276,7 +278,7 @@ public class LinuxPtraceProc extends LiveProc {
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?
 	    task.performRemoval ();
-	    remove (task);
+	    removeTask(task);
 	}
     }
 

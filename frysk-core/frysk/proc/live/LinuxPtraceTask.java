@@ -81,6 +81,7 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(Proc proc, ProcessIdentifier pid) {
 	super(proc, pid);
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
+	((LinuxPtraceProc)proc).addTask(this);
 	newState = LinuxPtraceTaskState.detachedState();
 	this.watchpoints = new WatchpointAddresses(this);
     }
@@ -91,6 +92,7 @@ public class LinuxPtraceTask extends LiveTask {
 	// XXX: shouldn't need to grub around in the old task's state.
 	super(task, clone);
 	((LinuxPtraceHost)getProc().getHost()).putTask(tid, this);
+	((LinuxPtraceProc)task.getProc()).addTask(this);
 	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
 	this.watchpoints = new WatchpointAddresses(this);
     }
@@ -101,6 +103,7 @@ public class LinuxPtraceTask extends LiveTask {
 			   TaskObserver.Attached attached) {
 	super(proc, attached);
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
+	((LinuxPtraceProc)proc).addTask(this);
 	newState = LinuxPtraceTaskState.mainState();
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation(this, attachedObservers,

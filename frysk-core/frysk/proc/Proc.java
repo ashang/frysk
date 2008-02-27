@@ -333,10 +333,8 @@ public abstract class Proc implements Comparable {
 
     /**
      * Remove Task from this Proc.
-     *
-     * XXX: Should not be public.
      */
-    public void remove(Task task) {
+    protected void remove(Task task) {
 	logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
 	host.observableTaskRemovedXXX.notify(task);
 	taskPool.remove(task.getTaskId());

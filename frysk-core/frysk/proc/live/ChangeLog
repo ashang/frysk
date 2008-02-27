@@ -1,3 +1,12 @@
+2008-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java (tasks): New.
+	(removeTask(ProcessIdentifier)): New.	
+	(addTask(ProcessIdentifier,LinuxPtraceTask)): New.
+	(sendRefresh()): Use tasks.
+	* LinuxPtraceTask.java: Use.
+	* LinuxPtraceTaskState.java: Use.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java (removeProc(ProcessIdentifier)): New.

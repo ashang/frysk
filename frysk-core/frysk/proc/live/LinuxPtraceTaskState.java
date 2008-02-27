@@ -249,7 +249,7 @@ class LinuxPtraceTaskState extends State {
 	    // it, just abandon this one (but ack the operation
 	    // regardless).
 	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
-	    ((LinuxPtraceProc)task.getProc()).remove(task);
+	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 	    return destroyed;
 	}
 	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
@@ -259,7 +259,7 @@ class LinuxPtraceTaskState extends State {
 	    // just abandon this one (but ack the operation
 	    // regardless).
 	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
-	    ((LinuxPtraceProc)task.getProc()).remove(task);
+	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 	    return destroyed;
 	}
 	LinuxPtraceTaskState handleDetach(LinuxPtraceTask task,
@@ -345,7 +345,7 @@ class LinuxPtraceTaskState extends State {
 						   Signal signal,
 						   int status) {
 	    fine.log("handleTerminatedEvent", task);
-	    ((LinuxPtraceProc)task.getProc()).remove(task);
+	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
@@ -854,7 +854,7 @@ class LinuxPtraceTaskState extends State {
 						   Signal signal,
 						   int status) {
 	    fine.log("handleTerminatedEvent", task); 
-	    ((LinuxPtraceProc)task.getProc()).remove(task);
+	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
@@ -1219,7 +1219,7 @@ class LinuxPtraceTaskState extends State {
 						       Signal signal,
 						       int status) {
 		fine.log("handleTerminatedEvent", task); 
-		((LinuxPtraceProc)task.getProc()).remove(task);
+		((LinuxPtraceProc)task.getProc()).removeTask(task);
 		// Lie, really just need to tell the proc that the
 		// task is no longer lurking.
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
@@ -1230,7 +1230,7 @@ class LinuxPtraceTaskState extends State {
 		// Woops, it disappeared before we were really detached,
 	        // pretend the detached happened anyway.
 		fine.log("handleDisappearedEvent", task); 
-		((LinuxPtraceProc)task.getProc()).remove(task);
+		((LinuxPtraceProc)task.getProc()).removeTask(task);
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		return destroyed;
 	    }
@@ -1345,7 +1345,7 @@ class LinuxPtraceTaskState extends State {
 						   Signal signal,
 						   int status) {
 	    fine.log("handleTerminatedEvent", task); 
-	    ((LinuxPtraceProc)task.getProc()).remove(task);
+	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
@@ -1408,7 +1408,7 @@ class LinuxPtraceTaskState extends State {
 							   Signal signal,
 							   int status) {
 		    fine.log("handleTerminatedEvent", task); 
-		    ((LinuxPtraceProc)task.getProc()).remove(task);
+		    ((LinuxPtraceProc)task.getProc()).removeTask(task);
 		    handleAttachedTerminated(task, signal, status);
 		    return destroyed;
 		}
