@@ -101,12 +101,9 @@ public class PtyTerminal
     throws IOException, InterruptedException
   {
     final Termios initialTermios = new Termios(fd);
-    final Termios termios = new Termios(fd);
-    // set the console to be character-buffered instead of line-buffered
-    termios.set(Local.CANONICAL, false);
-    termios.set(Local.ECHO_INPUT, false);
-    termios.set(Special.NON_CANONICAL_READ_MINIMUM, (char)1);
-    termios.set(fd);
+    // set the console to be character-buffered instead of line-buffered    
+    setToCharBufferedConsole(fd);
+    
     // at exit, restore the original tty configuration
     try
       {
@@ -122,6 +119,33 @@ public class PtyTerminal
       {
 	System.out.println(ame);
       }
+  }
+  
+  /**
+   * Set console to initial terminal settings.
+   */
+  public static void setToInitConsole (FileDescriptor fd) 
+  {
+      final Termios termios = new Termios(fd);
+      // set the console to be line-buffered
+      termios.set(Local.CANONICAL, true);
+      termios.set(Local.ECHO_INPUT, true);
+      termios.set(Special.NON_CANONICAL_READ_MINIMUM, ' ');
+      termios.set(fd);
+  }
+  
+  /**
+   * Set console to character buffered settings. Used
+   * for fhpd.
+   */
+  public static void setToCharBufferedConsole (FileDescriptor fd) 
+  {
+      final Termios termios = new Termios(fd);
+      // set the console to be character-buffered
+      termios.set(Local.CANONICAL, false);
+      termios.set(Local.ECHO_INPUT, false);
+      termios.set(Special.NON_CANONICAL_READ_MINIMUM, (char)1);
+      termios.set(fd);
   }
 
   public int readVirtualKey (InputStream in)
