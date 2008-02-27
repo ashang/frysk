@@ -129,7 +129,7 @@ public final class fstack
   }
   
     private static void stackCore(Proc proc) {
-	stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
+	stacker = new Stacker(printWriter, proc, new PrintEvent(), options);
 	new ProcCoreAction(proc, stacker);
 	Manager.eventLoop.run();
     }
