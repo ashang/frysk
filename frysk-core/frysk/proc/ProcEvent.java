@@ -69,18 +69,6 @@ public abstract class ProcEvent
     {
 	this.taskId = taskId;
     }
-    /**
-     * Find the Proc that owns the task.
-     */
-    protected Proc getProcFromTaskId ()
-    {
-	logger.log (Level.FINE, "", this); 
-	Task task = Manager.host.get (taskId);
-	if (task == null)
-	    return null;
-	proc = task.getProc();
-	return proc;
-    }
     public String toString ()
     {
 	return ("[ProcEvent"

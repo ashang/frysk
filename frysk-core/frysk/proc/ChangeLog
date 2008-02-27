@@ -1,5 +1,9 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcEvent.java (getProcFromTaskId()): Delete.
+	* Host.java (get(TaskId)): Delete.
+	* Proc.java (getMainTask()): Use taskPool, not Host.
+
 	* ProcTasksObserver.java: Use Proc.getMainTask.  Use Log.
 
 	* Proc.java (taskPool): Make private.

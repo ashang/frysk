@@ -120,7 +120,7 @@ public abstract class Proc implements Comparable {
      * @return The main task for this process
      */
     public Task getMainTask() {
-	return this.host.get(new TaskId(this.getPid()));
+	return (Task) taskPool.get(new TaskId(this.getPid()));
     }
   
     /**
