@@ -222,13 +222,13 @@ public final class Log {
      * causes.
      */
     private void dump(Throwable t) {
-	out.print("<<exception");
-	Throwable cause = t;
-	do {
-	    out.print(":");
-	    out.print(t.getMessage());
-	    cause = cause.getCause();
-	} while (cause != null);
+	out.print("<<exception ");
+	out.print(t.toString());
+	for (Throwable cause = t.getCause(); cause != null;
+	     cause = cause.getCause()) {
+	    out.print(" <caused-by> ");
+	    out.print(cause.toString());
+	}
 	out.print(">>");
     }
     private void dump(String s) {

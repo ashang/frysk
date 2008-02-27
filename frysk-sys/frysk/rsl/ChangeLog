@@ -1,5 +1,8 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (dump(Throwable)): Use toString(), not getMessage();
+	print the causes not the excetion.
+	
 	* Log.java: Add more log methods.
 	
 	* package.html (Implementing a Custom Log): New.

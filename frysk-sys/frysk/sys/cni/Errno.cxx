@@ -60,6 +60,7 @@
 #include "frysk/sys/Errno$Echild.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/Errno$Eperm.h"
+#include "frysk/sys/Errno$Enoent.h"
 #include "frysk/sys/Errno$Eio.h"
 #include "frysk/sys/GarbageCollect.h"
 #include "frysk/sys/cni/Errno.hxx"
@@ -133,8 +134,12 @@ throwErrno (int err, jstring jmessage)
   case EIO:
     throw new frysk::sys::Errno$Eio (jmessage);
 #endif
+#ifdef ENOENT
+  case ENOENT:
+    throw new frysk::sys::Errno$Enoent (jmessage);
+#endif
   default:
-    throw new frysk::sys::Errno (jmessage);
+    throw new frysk::sys::Errno(err, jmessage);
   }
 }
 
@@ -155,16 +160,6 @@ void
 throwErrno (int err, const char *prefix)
 {
   throwErrno (err, ajprintf ("%s: %s", prefix, strerror (err)));
-}
-
-void
-frysk::sys::Errno::throwErrno (jint err, jstring prefix)
-{
-  int len = JvGetStringUTFLength(prefix);
-  char string[len + 1];
-  JvGetStringUTFRegion (prefix, 0, prefix->length (), string);
-  string[len] = '\0';
-  ::throwErrno (err, string);
 }
 
 void

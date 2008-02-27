@@ -1,5 +1,8 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* CommandlineParser.java: Add logging; check for null
+	getMessage().
+
 	* CommandlineParser.java (parse(String[])): Catch any exception.
 	* ProcStopUtil.java (parseCores(Proc[])): Replace
 	parseCoresFIXME(CoreExePair[]).

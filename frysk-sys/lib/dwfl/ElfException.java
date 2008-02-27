@@ -48,7 +48,7 @@ public class ElfException extends RuntimeException {
     private static final long serialVersionUID = 400112389738713948L;
 
     ElfException(Throwable t) {
-	super(t);
+	super(t.getMessage(), t);
     }
     public ElfException(String s){
 	super(s);

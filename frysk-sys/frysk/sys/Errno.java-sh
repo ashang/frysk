@@ -1,6 +1,8 @@
+#!/bin/sh
+cat <<EOF
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,122 +38,53 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+EOF
+
+cat <<EOF
 
 package frysk.sys;
 
 /**
- * Host Errors, thrown by this directory.
+ * Unix Host Errors.
+ *
+ * Do not confuse this with target errors and target error numbers.
  */
+public class Errno extends RuntimeException {
+    static final long serialVersionUID = 0;
 
-public class Errno
-    extends RuntimeException
-{
-    private static final long serialVersionUID = 1L;
-
-    protected Errno (String message) {
-	super(message);
+    private final String message;
+    private Errno(String message) {
+        super(message);
+	this.message = message;
+    }
+    /**
+     * Create an error corresponding to errno (use when the more specific
+     * errno hasn't available).
+     */
+    public Errno(int num, String message) {
+        this(message + " (errno " + num + ")");         
     }
 
     /**
-     * Bad file descriptor.
+     * Return the error message (without any decoration).
      */
-    static public class Ebadf
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Ebadf (String message)
-	{
-	    super (message);
-	}
+    public String getMessage() {
+        return message;
     }
-    /**
-     * Not enough space.
-     */
-    static public class Enomem
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
+EOF
 
-	protected Enomem (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Bad address.
-     */
-    static public class Efault
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
+for e in badf nomem fault inval srch child perm io noent
+do cat <<EOF
 
-	protected Efault (String message)
-	{
-	    super (message);
-	}
+    public static class E${e} extends Errno {
+        static final long serialVersionUID = 0;
+        E${e}(String message) {
+            super(message);
+        }
     }
-    /**
-     * Invalid argument.
-     */
-    static public class Einval
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
+EOF
+done
 
-	protected Einval (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No such process.
-     */
-    static public class Esrch
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Esrch (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No child process.
-     */
-    static public class Echild
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Echild (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Operation not permitted
-     */
-    static public class Eperm
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Eperm (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Input/Output Error.
-     */
-    static public class Eio extends Errno {
-        private static final long serialVersionUID = 1L;
-	protected Eio (String message) {
-	    super (message);
-	}
-    }
-
-    static native void throwErrno (int err, String prefix);
+cat <<EOF
 }
+EOF

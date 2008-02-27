@@ -49,20 +49,22 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.EventLogger;
+import frysk.rsl.Log;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.dead.LinuxExeFactory;
 import frysk.proc.Proc;
 
 /**
- * CommandlineParser extends the getopt {@link Parser} class with common options
- * for Frysk command-line applications. It adds the {@link EventLogger} options.
+ * CommandlineParser extends the getopt {@link Parser} class with
+ * common options for Frysk command-line applications. It adds the
+ * {@link EventLogger} options.
  */
 public class CommandlineParser {
-    Parser parser;
+    private final Log fine = Log.fine(CommandlineParser.class);
+    private final Parser parser;
 
     public CommandlineParser(String name, String version) {
 	parser = new Parser(name, version, true);
-
 	EventLogger.addConsoleOptions(parser);
     }
 
@@ -134,11 +136,16 @@ public class CommandlineParser {
 
     public String[] parse(String[] args) {
 	try {
+	    fine.log(this, "parse", args);
 	    String[] result = doParse(args);
 	    validate();
 	    return result;
 	} catch (Exception e) {
-	    System.err.println("Error: " + e.getMessage());
+	    fine.log(this, "parse failed", e);
+	    if (e.getMessage() == null)
+		System.err.println("Error: " + e.toString());
+	    else
+		System.err.println("Error: " + e.getMessage());
 	    System.exit(1);
 	    return null; // To fool Java
 	}
@@ -164,6 +171,7 @@ public class CommandlineParser {
 		    throw new OptionException("Please don't mix pids with core files or executables");
 		}
 	    }
+	    fine.log(this, "parse pids", procs);
 	    parsePids(procs);
 	    return result;
 	} catch (NumberFormatException e) {
@@ -190,11 +198,13 @@ public class CommandlineParser {
 	    }
 	    CoreExePair[] coreExePairs = new CoreExePair[coreExeFiles.size()];
 	    coreExeFiles.toArray(coreExePairs);
+	    fine.log(this, "parse cores", coreExePairs);
 	    parseCoresFIXME(coreExePairs);
 	    return result;
 	}
 
 	// If not above, then this is an executable command.
+	fine.log(this, "parse command", result);
 	parseCommandFIXME(result);
 	return result;
     }
