@@ -1,5 +1,8 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* CommandlineParser.java (parseCoresFIXME(CoreExePair[])): Delete.
+	(-noexe): Add.
+
 	* Util.java (getProcFromCoreExePair(CoreExePair)): Delete.
 
 	* CommandlineParser.java: Add logging; check for null

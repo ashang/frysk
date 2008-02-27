@@ -1,5 +1,9 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* LoadCommand.java (load(Proc,CLI,String)): New.
+	* CoreCommand.java (load(Proc,CLI,String)): New.
+	* AttachCommand.java (attach(Proc,CLI,String)): New.
+	
 	* CoreCommand.java: Update to match LinuxCoreFactory.
 
 	* LoadCommand.java: Update to match LinuxExeFactory.

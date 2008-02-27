@@ -119,7 +119,7 @@ class LinuxCoreInfo {
 	    // have to extract this from the process information).
 	    this.exeFile = getExeFile(exeParam, args, prpsInfo);
 	    if (extendedMetaData)
-		exeElf = new Elf(exeParam, ElfCommand.ELF_C_READ);
+		exeElf = new Elf(this.exeFile, ElfCommand.ELF_C_READ);
 
 	    this.auxv = constructAuxv(noteSection);
 

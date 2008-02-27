@@ -110,6 +110,10 @@ public class LoadCommand extends ParameterizedCommand {
 	Proc exeProc = LinuxExeFactory.createProc(executableFile,
 						  cmd.stringArrayValue());
 
+	load(exeProc, cli, o.sysroot);
+    }
+
+    public static void load(Proc exeProc, CLI cli, String sysroot) {
 	int procID;
 	if (cli.taskID < 0)
 	    procID = cli.idManager.reserveProcID();
@@ -126,15 +130,14 @@ public class LoadCommand extends ParameterizedCommand {
 			.createDebugInfoStackTrace(task);
 		cli.setTaskFrame(task, frame);
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
-		DwflCache.setSysroot(task, o.sysroot);
+		DwflCache.setSysroot(task, sysroot);
 	    }
 	}
 	synchronized (cli) {
 	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
 
-	cli.addMessage("Loaded executable file: " + cmd.parameter(0),
-		Message.TYPE_NORMAL);
+	cli.outWriter.println("Loaded executable file: " + exeProc.getExe());
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

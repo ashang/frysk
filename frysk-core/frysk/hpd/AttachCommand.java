@@ -45,7 +45,7 @@ import frysk.proc.Manager;
 import frysk.proc.FindProc;
 import java.util.List;
 
-class AttachCommand extends ParameterizedCommand {
+public class AttachCommand extends ParameterizedCommand {
 
     private class ProcFinder implements FindProc {
 	Proc proc = null;
@@ -116,9 +116,14 @@ class AttachCommand extends ParameterizedCommand {
 		cli.outWriter.println(pid);
 		continue;
 	    }
-	    DwflCache.setSysroot(findProc.proc.getMainTask(), o.sysroot);
-	    cli.doAttach(findProc.proc, false);
+	    
+	    attach(findProc.proc, cli, o.sysroot);
 	}
+    }
+
+    public static void attach(Proc proc, CLI cli, String sysroot) {
+	DwflCache.setSysroot(proc.getMainTask(), sysroot);
+	cli.doAttach(proc, false);
     }
 
     int completer(CLI cli, Input input, int base, List completions) {

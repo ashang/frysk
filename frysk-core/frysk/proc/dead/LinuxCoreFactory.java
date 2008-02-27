@@ -70,6 +70,14 @@ public class LinuxCoreFactory {
 	return createProc(coreFile, null, false);
     }
     /**
+     * Construct a core file, possibly with extended meta data.
+     *
+     * All File paths <b>must</b> be canonical.
+     */
+    public static DeadProc createProc(File coreFile, boolean extendedMetaData) {
+	return createProc(coreFile, null, extendedMetaData);
+    }
+    /**
      * Construct a core file with extended meta data taken from the
      * executable.
      *

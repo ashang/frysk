@@ -62,10 +62,17 @@ import frysk.proc.Proc;
 public class CommandlineParser {
     private final Log fine = Log.fine(CommandlineParser.class);
     private final Parser parser;
+    private boolean extendedCore = true;
 
     public CommandlineParser(String name, String version) {
 	parser = new Parser(name, version, true);
 	EventLogger.addConsoleOptions(parser);
+	add(new Option("noexe", "Do not attempt to read an"+
+		       " executable for a corefile ") {
+		public void parsed(String exeValue) throws OptionException {
+		    extendedCore = false;
+		}
+	    });
     }
 
     public CommandlineParser(String programName) {
@@ -83,25 +90,6 @@ public class CommandlineParser {
 	System.exit(1);
     }
 
-    /**
-     * Callback function. Gives an array of core files if core files
-     * were detected on the command line.
-     * 
-     * @param coreFiles The array of core files passed on the command
-     * line.
-     */
-    public void parseCoresFIXME(CoreExePair[] coreExePairs) {
-	Proc[] procs = new Proc[coreExePairs.length];
-	for (int i = 0; i < coreExePairs.length; i++) {
-	    CoreExePair pair = coreExePairs[i];
-	    if (pair.exeFile == null)
-		procs[i] = LinuxCoreFactory.createProc(pair.coreFile);
-	    else
-		procs[i] = LinuxCoreFactory.createProc(pair.coreFile,
-						       pair.exeFile);
-	}
-	parseCores(procs);
-    }
     /**
      * Callback function. Gives an array of core files if core files
      * were detected on the command line.
@@ -180,26 +168,31 @@ public class CommandlineParser {
 
 	// Check if arguments are all core file/ exe file pairs..
 	if (isCoreFile(result[0])) {
-	    LinkedList coreExeFiles = new LinkedList();
+	    LinkedList coreList = new LinkedList();
 	    for (int file = 0; file < result.length; /*see below*/) {
 		if (isCoreFile(result[file])) {
+		    Proc proc;
 		    File coreFile = new File(result[file]);
-		    if (file + 1 < result.length && isExeFile(result[file + 1])) {
+		    if (file + 1 < result.length
+			&& isExeFile(result[file + 1])
+			&& extendedCore) {
 			File exeFile = new File(result[file + 1]);
-			coreExeFiles.add(new CoreExePair(coreFile, exeFile));
+			proc = LinuxCoreFactory.createProc(coreFile, exeFile);
 			file += 2;
 		    } else {
-			coreExeFiles.add(new CoreExePair(coreFile, null));
+			proc = LinuxCoreFactory.createProc(coreFile,
+							   extendedCore);
 			file += 1;
 		    }
+		    coreList.add(proc);
 		} else {
 		    throw new OptionException("Please don't mix core files with pids or executables.");
 		}
 	    }
-	    CoreExePair[] coreExePairs = new CoreExePair[coreExeFiles.size()];
-	    coreExeFiles.toArray(coreExePairs);
-	    fine.log(this, "parse cores", coreExePairs);
-	    parseCoresFIXME(coreExePairs);
+	    Proc[] cores = new Proc[coreList.size()];
+	    coreList.toArray(cores);
+	    fine.log(this, "parse cores", cores);
+	    parseCores(cores);
 	    return result;
 	}
 

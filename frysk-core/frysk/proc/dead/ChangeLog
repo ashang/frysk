@@ -1,5 +1,8 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreFactory.java (createProc(File,boolean)): New.
+	* LinuxCoreInfo.java: Use the extracted exeFile.
+
 	* TestLinuxCore.java: Update to match Proc.
 
 	* TestLinuxExe.java (testRequestProc()): New.

@@ -116,6 +116,10 @@ public class CoreCommand extends ParameterizedCommand {
 	Proc coreProc = LinuxCoreFactory.createProc(coreFile, exeFile,
 						    options.loadMetaData);
 
+	load(coreProc, cli, options.sysroot);
+    }
+
+    public static void load(Proc coreProc, CLI cli, String sysroot) {
 	// All checks are done. Host is built. Now start reserving
 	// space in the sets.
 	int procID = cli.idManager.reserveProcID();
@@ -128,15 +132,14 @@ public class CoreCommand extends ParameterizedCommand {
 		.createVirtualStackTrace(task);
 	    cli.setTaskFrame(task, frame);
 	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
-	    DwflCache.setSysroot(task, options.sysroot);
+	    DwflCache.setSysroot(task, sysroot);
 	}
-
 	// Finally, done.
-	cli.addMessage("Attached to core file: " + cmd.parameter(0),
-		       Message.TYPE_NORMAL);
 	synchronized (cli) {
 	    cli.getCoreProcs().put(coreProc, new Integer(procID));
 	}
+	cli.outWriter.println("Attached to core file: "
+			      + coreProc.getHost().getName());
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {

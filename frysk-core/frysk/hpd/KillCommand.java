@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -72,11 +72,12 @@ public class KillCommand extends ParameterizedCommand {
 	    Task task = taskData.getTask();
 	    Proc proc = task.getProc();
 	    if (proc.getPid() != procPID) {
-		cli.addMessage("Killing process " + proc.getPid() +
-			" that was created from " + proc.getExe(),
-			Message.TYPE_NORMAL);
+		cli.outWriter.println("Killing process " + proc.getPid()
+				      + " that was created from "
+				      + proc.getExe());
 		// Save the procs we are killing so we can re-load them later
-		saveProcs.put(new Integer(taskData.getParentID()), proc.getExe());
+		saveProcs.put(new Integer(taskData.getParentID()),
+			      proc.getExe());
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();

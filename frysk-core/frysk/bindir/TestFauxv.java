@@ -47,9 +47,10 @@ import frysk.testbed.TestLib;
 public class TestFauxv extends TestLib {
     
     private TearDownExpect fauxv(File coreFile) {
-	String[] argv = new String[2];
+	String[] argv = new String[3];
 	int argc = 0;
 	argv[argc++] = Config.getBinFile("fauxv").getAbsolutePath();
+	argv[argc++] = "-noexe";
 	argv[argc++] = coreFile.getAbsolutePath();
 	return new TearDownExpect(argv);
     }

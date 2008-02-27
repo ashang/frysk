@@ -1,5 +1,10 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* fhpd.java (parseCommand(Proc)): Replace parseCommandFIXME.
+	(parseCores(Proc[]): Replace parseCoresFIXME.
+	(-noexe): Delete; moved to CommandlineParser.
+	* TestFauxv.java (fauxv(File)): Specify -noexe.
+
 	* fstack.java (parseCores(Proc[])): Replace parseCoresFIXME.
 	(stackCore(Proc)): Replace stackCore(CoreExePair).
 

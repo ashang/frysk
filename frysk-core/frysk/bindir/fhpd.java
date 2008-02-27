@@ -39,8 +39,10 @@
 
 package frysk.bindir;
 
+import frysk.hpd.CoreCommand;
+import frysk.hpd.LoadCommand;
+import frysk.hpd.AttachCommand;
 import frysk.event.Event;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,7 +50,6 @@ import java.util.List;
 import frysk.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
-import frysk.util.CoreExePair;
 import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
 import frysk.util.ObservingTerminal;
@@ -58,11 +59,9 @@ import frysk.sys.FileDescriptor;
 import frysk.proc.Proc;
 
 public class fhpd {
-    private static Proc[] procs;
-    private static File execFile;
-    private static File core;
-    private static File exeFile;
-    private static boolean noExe = false;
+    private static Proc[] pids;
+    private static Proc command;
+    private static Proc[] cores;
     private static String sysroot;
     private static int exitStatus;
 
@@ -84,28 +83,9 @@ public class fhpd {
 	private CLI cli;
 	private ConsoleReader reader;
 	CommandLine() {
-	    // Construct a command to pass in as initialization
-	    try {
-		if (procs != null)
-		    line = "attach " + procs[0].getPid();
-		else if (execFile != null)
-		    line = "load " + execFile.getCanonicalPath();
-		else if (core != null) {
-		    line = "core " + core.getCanonicalPath();      
-		    if (exeFile != null)
-			line += " " + exeFile.getCanonicalPath();
-		    else if (noExe)
-			line +=" -noexe";
-		}
-		if (sysroot != null)
-		    line = line + " -sysroot " + sysroot;
-	    } catch (IOException e) {
-		System.err.println("Error: " + e);
-		System.exit(1);
-		return;
-	    }
 	    // Construct the HPD.
 	    cli = new CLI("(fhpd) ", System.out);
+
 	    try {
 		reader = new ConsoleReader
 		    (new FileInputStream(java.io.FileDescriptor.in),
@@ -125,14 +105,26 @@ public class fhpd {
 	    start();
 	}
 	public void run() {
+	    // Prime the CLI based on the parameters.
+	    if (pids != null) {
+		for (int i = 0; i < pids.length; i++) {
+		    AttachCommand.attach(pids[i], cli, sysroot);
+		}
+	    } else if (cores != null) {
+		for (int i = 0; i < cores.length; i++) {
+		    CoreCommand.load(cores[i], cli, sysroot);
+		}
+	    } else if (command != null) {
+		LoadCommand.load(command, cli, sysroot);
+	    }
+
 	    try {
-		cli.execCommand(line);
-		while (line != null && ! (line.equals("quit")
-					  || line.equals("q")
-					  || line.equals("exit"))) {
+		do {
 		    line = reader.readLine(cli.getPrompt());
 		    cli.execCommand(line);
-		}
+		} while (line != null && ! (line.equals("quit")
+					    || line.equals("q")
+					    || line.equals("exit")));
 	    } catch (IOException ioe) {
 		System.out.println("ERROR: Could not read from command line");
 		System.out.print(ioe.getMessage());
@@ -145,36 +137,18 @@ public class fhpd {
     public static void main (String[] args) {
         CommandlineParser parser = new CommandlineParser ("fhpd") {
                 //@Override
-                public void parseCommandFIXME(String[] command) {
-                    execFile = new File (command[0]);
-                    if (execFile.canRead() == false) {
-                        printHelp();
-                        throw new RuntimeException("command not readable: " 
-                                                   + command[0]);
-                    }
+                public void parseCommand(Proc command) {
+		    fhpd.command = command;
                 }
                 //@Override
-                public void parsePids(Proc[] procs) {
-		    fhpd.procs = procs;
+                public void parsePids(Proc[] pids) {
+		    fhpd.pids = pids;
                 }
-
-                public void parseCoresFIXME(CoreExePair[] corePairs) {
-                    core = corePairs[0].coreFile;
-                    exeFile = corePairs[0].exeFile;
+                //@Override
+                public void parseCores(Proc[] cores) {
+                    fhpd.cores = cores;
                 }
             };
-        parser.add(new Option("noexe", "Do not attempt to read an"+
-                              " executable for a corefile ") {
-                public void parsed(String exeValue) throws OptionException {
-                    try {
-                        noExe = true;
-	    
-                    } catch (IllegalArgumentException e) {
-                        throw new OptionException("Invalid noexe parameter "
-                                                  + exeValue);
-                    }
-                }
-            });
         parser.add(new Option("sysroot", 's',
                               "Assume the executable is from a sysroot build ",
                               "SysRoot-Path") {
