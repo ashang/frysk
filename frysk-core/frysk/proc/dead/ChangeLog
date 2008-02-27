@@ -1,5 +1,7 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLinuxCore.java: Do not use Task.getTaskId.
+
 	* TestCoreRegs.java: Use LinuxCoreFactory.
 
 2008-02-26  Andrew Cagney  <cagney@redhat.com>

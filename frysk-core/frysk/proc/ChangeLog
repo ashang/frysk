@@ -1,5 +1,8 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getTaskId()): Make package private.
+	* TestTaskSyscallObserver.java: Use Task.getTid().
+
 	* Proc.java (remove(Task)): Make protected.
 
 2008-02-26  Andrew Cagney  <cagney@redhat.com>

@@ -308,7 +308,6 @@ public class TestLinuxCore extends TestLib {
       {
 
 	assertNotNull("Task exists in proc",tasks[i]);
-	assertEquals("Task ID",threadPid[i],tasks[i].getTaskId().id);
 	assertEquals("Task TID",threadPid[i], tasks[i].getTid());
 	assertEquals("Task TID",threadName[i],tasks[i].getName());
 	assertNotNull("Task ISA",tasks[i].getISA());

@@ -68,7 +68,7 @@ public abstract class Task {
     /**
      * Return the task's corresponding TaskId.
      */
-    public final TaskId getTaskId() {
+    TaskId getTaskId() {
 	return id;
     }
     private final TaskId id;

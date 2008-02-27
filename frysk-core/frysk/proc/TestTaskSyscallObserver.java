@@ -548,28 +548,28 @@ public class TestTaskSyscallObserver
       }
     }
 
-    TestSyscallInterruptXXX(final int pid) {
-	Manager.host.requestProc(pid, new FindProc() {
-		public void procFound(Proc p) {
-		    List tasks = p.getTasks();
-		    for (Iterator i = tasks.iterator(); i.hasNext();) {
-			Task t = (Task) i.next();
-			if (t.getTaskId().hashCode() == pid) {
-			    syscallObserver = new SyscallInterruptObserver(t);
-			    t.requestAddSyscallsObserver(syscallObserver);
-			    assertRunUntilStop("Add syscallObservers");
-			    t.requestAddSignaledObserver(syscallObserver);
-			    assertRunUntilStop("Add signaledObservers");
-			}
-		    }
-		    Manager.eventLoop.requestStop();
-		}
-		public void procNotFound (int pid) {
-		    fail("proc not found " + pid);
-		}
-	    });
-	Manager.eventLoop.run();
-    }
+      TestSyscallInterruptXXX(final int pid) {
+	  Manager.host.requestProc(pid, new FindProc() {
+		  public void procFound(Proc p) {
+		      List tasks = p.getTasks();
+		      for (Iterator i = tasks.iterator(); i.hasNext();) {
+			  Task t = (Task) i.next();
+			  if (t.getTid() == pid) {
+			      syscallObserver = new SyscallInterruptObserver(t);
+			      t.requestAddSyscallsObserver(syscallObserver);
+			      assertRunUntilStop("Add syscallObservers");
+			      t.requestAddSignaledObserver(syscallObserver);
+			      assertRunUntilStop("Add signaledObservers");
+			  }
+		      }
+		      Manager.eventLoop.requestStop();
+		  }
+		  public void procNotFound (int pid) {
+		      fail("proc not found " + pid);
+		  }
+	      });
+	  Manager.eventLoop.run();
+      }
   }
 
   /**
