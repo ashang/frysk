@@ -699,14 +699,13 @@ class ftrace
                     throw new OptionException("no command or PID specified");
             }
 
-            //@Override
-            public void parseCommandFIXME(String[] command)
-            {
-             commandAndArguments = new ArrayList();
-
-             for (int i = 0; i < command.length; i++)
-               commandAndArguments.add(command[i]);
-            }
+		//@Override
+		public void parseCommand(Proc command) {
+		    String[] line = command.getCmdLine();
+		    commandAndArguments = new ArrayList();
+		    for (int i = 0; i < line.length; i++)
+			commandAndArguments.add(line[i]);
+		}
 
             //@Override
             public void parsePids(Proc[] procs) {

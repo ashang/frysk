@@ -1,3 +1,8 @@
+2008-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* fcatch.java (parseCommand(Proc)): Replace parseCommandFIXME.
+	* fstep.java: Ditto.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* fhpd.java (parseCommand(Proc)): Replace parseCommandFIXME.

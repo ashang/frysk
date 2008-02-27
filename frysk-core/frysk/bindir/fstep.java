@@ -92,8 +92,8 @@ public class fstep
     final CommandlineParser parser = new CommandlineParser("fstep")
     {
 
-      public void parseCommandFIXME(String[] command) {
-	  fstep.command = command;
+      public void parseCommand(Proc command) {
+	  fstep.command = command.getCmdLine();
       }
       
     };

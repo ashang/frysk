@@ -103,16 +103,6 @@ public class CommandlineParser {
     }
 
     /**
-     * Callback function. Gives a string array represented a parsed
-     * command.  Clients should instead accept the parsed and verified
-     * Proc.
-     * 
-     * @param command The parsed command.
-     */
-    public void parseCommandFIXME(String[] command) {
-	parseCommand(LinuxExeFactory.createProc(command));
-    }
-    /**
      * Callback function. Gives a Proc represented a parsed command.
      * 
      * @param command The parsed command.
@@ -197,8 +187,9 @@ public class CommandlineParser {
 	}
 
 	// If not above, then this is an executable command.
-	fine.log(this, "parse command", result);
-	parseCommandFIXME(result);
+	Proc command = LinuxExeFactory.createProc(result);
+	fine.log(this, "parse command", command);
+	parseCommand(command);
 	return result;
     }
 

@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import frysk.util.Util;
 import frysk.util.CommandlineParser;
 import frysk.util.FCatch;
-
+import frysk.proc.Proc;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
@@ -65,11 +65,12 @@ public class fcatch {
 	    }
 
 	    //@Override
-	    public void parseCommandFIXME(String[] command) {
-		System.err.println("Entered parseCommand");
-		argString = new StringBuffer(command[0]);
-		for (int i = 1; i < command.length; i++)
-		    argString.append(" ").append(command[i]);
+	    public void parseCommand(Proc command) {
+		// FIXME: This concatinatin the string is unnecessary.
+		String[] line = command.getCmdLine();
+		argString = new StringBuffer(line[0]);
+		for (int i = 1; i < line.length; i++)
+		    argString.append(" ").append(line[i]);
 	    }
 
 	};

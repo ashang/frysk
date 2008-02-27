@@ -1,3 +1,7 @@
+2008-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java (parseCommandFIXME(String[])): Delete.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java (parseCoresFIXME(CoreExePair[])): Delete.
