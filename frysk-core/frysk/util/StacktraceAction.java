@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -78,13 +79,7 @@ public abstract class StacktraceAction
 
   private Event event;
 
-  boolean elfOnly;
-  private final int numberOfFrames;
-  boolean printParameters;
-  boolean printScopes;
-  private final boolean printSource;
-  boolean fullpath;
-  private boolean virtualFrames;
+  PrintStackOptions options;
   
   protected static Logger logger = Logger.getLogger("frysk"); 
 
@@ -106,18 +101,11 @@ public abstract class StacktraceAction
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, int numberOfFrames, boolean elfOnly, boolean virtualFrames, boolean printParameters, boolean printScopes, boolean printSource, boolean fullpath)
+  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, PrintStackOptions options)
   {
      event = theEvent;
      
-     this.numberOfFrames = numberOfFrames;
-     this.virtualFrames = virtualFrames;
-     this.elfOnly = elfOnly;
-     this.printParameters = printParameters;
-     this.printScopes = printScopes;
-     this.printSource = printSource;
-     this.fullpath = fullpath;
-     
+     this.options = options;
      this.printWriter = printWriter;
      Manager.eventLoop.add(new InterruptEvent(theProc));
   }  
@@ -152,13 +140,13 @@ public abstract class StacktraceAction
       {
 	Task task =  (Task) iter.next();
 	
-	if(elfOnly){
-	    StackFactory.printTaskStackTrace(printWriter,task,printSource, fullpath, numberOfFrames);
+	if(options.elfOnly()){
+	    StackFactory.printTaskStackTrace(printWriter,task,options);
 	}else{
-	    if(virtualFrames){
-		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,numberOfFrames, printParameters,printScopes,fullpath);
+	    if(options.printVirtualFrames()){
+		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,options);
 	    }else{
-		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,numberOfFrames, printParameters,printScopes,fullpath);
+		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,options);
 	    }
 	}
 	printWriter.println();

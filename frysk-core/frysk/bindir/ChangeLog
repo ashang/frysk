@@ -1,3 +1,7 @@
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fstack.java: Use PrintStackOptions instead of boolean list.
+
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* fcatch.java (parseCommand(Proc)): Replace parseCommandFIXME.

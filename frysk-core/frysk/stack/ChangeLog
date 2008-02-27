@@ -1,3 +1,7 @@
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackFactory.java: Use PrintStackOptions instead of boolean list.
+
 2008-02-19  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java: Added some rsl logging.

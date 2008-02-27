@@ -43,6 +43,7 @@ import java.io.PrintWriter;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
@@ -64,22 +65,15 @@ public final class fstack
   
   private static PrintWriter printWriter = new PrintWriter(System.out);
   
-  static int numberOfFrames;
-  static boolean virtualFrames = false;
-  static boolean elfOnly = true;
-  static boolean printParameters = false;
-  static boolean printScopes = false;
-  static boolean fullpath = false;
+  static PrintStackOptions options = new PrintStackOptions();
   
   private static class Stacker extends StacktraceAction
   {
 
     Proc proc;
-    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,int numberOfFrames, boolean elfOnly, boolean virtualFrames,
-                    boolean printParameters, boolean printScopes, 
-                    boolean fullpath)
+    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,PrintStackOptions options)
     {
-      super(printWriter, theProc, theEvent, numberOfFrames, elfOnly,virtualFrames, printParameters, printScopes, false, fullpath);
+      super(printWriter, theProc, theEvent, options);
       this.proc = theProc;
     }
 
@@ -141,7 +135,7 @@ public final class fstack
     }
   
     private static void stackPid(Proc proc) {
-	stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
+	stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), options);
 	new ProcBlockAction(proc, stacker);
 	Manager.eventLoop.run();
     }
@@ -166,9 +160,9 @@ public final class fstack
       		" -n all to print all frames.", "<number of frames>") {
 	  public void parsed(String arg) throws OptionException {
 	      if(arg.equals("all")){
-		  numberOfFrames = 0;
+		  options.setNumberOfFrames(0);
 	      }else{
-		  numberOfFrames = Integer.parseInt(arg);
+		  options.setNumberOfFrames(Integer.parseInt(arg));
 		  return;
 	      }
 	  }
@@ -177,7 +171,7 @@ public final class fstack
       parser.add(new Option("fullpath", 'f', "print full path." +
   		"-f prints full path") {
 	  public void parsed(String arg) throws OptionException {
-	        fullpath = true;
+	        options.setPrintFullpath(true);
 	  }
       });
 
@@ -188,10 +182,10 @@ public final class fstack
 
                 public void parsed (String argument) throws OptionException
                 {
-                  elfOnly = false;
-                  printParameters = true;
-                  printScopes = true;
-                  fullpath = true;
+                  options.setElfOnly(false);
+                  options.setPrintParameters(true);
+                  options.setPrintScopes(true);
+                  options.setPrintFullpath(true);
                 }
               });
     
@@ -203,8 +197,8 @@ public final class fstack
 			" to calls to inlined functions") {
 
 		    public void parsed(String argument) throws OptionException {
-			virtualFrames = true;
-			elfOnly = false;
+			options.setPrintVirtualFrames(true);
+			options.setElfOnly(false);
 		    }
 		});
 
@@ -214,11 +208,11 @@ public final class fstack
 
                 public void parsed (String argument) throws OptionException
                 {
-                  elfOnly = false;
-                  printParameters = true;
-                  printScopes = false;
-                  fullpath = true;
-                  virtualFrames = true;
+                  options.setElfOnly(false);
+                  options.setPrintParameters(true);
+                  options.setPrintScopes(false);
+                  options.setPrintFullpath(true);
+                  options.setPrintVirtualFrames(true);
                 }
     });
               
@@ -231,32 +225,33 @@ public final class fstack
       
       public void parsed(String arg) throws OptionException
       {
-        elfOnly = true;
-        printParameters = false;
-        printScopes = false;
-        fullpath = false;
-        
+        options.setElfOnly(true);
+        options.setPrintParameters(false);
+        options.setPrintScopes(false);
+        options.setPrintFullpath(false);
+        options.setPrintVirtualFrames(false);
+
           StringTokenizer st = new StringTokenizer(arg, ",");
           while (st.hasMoreTokens())
           {
             String name = st.nextToken();
             if(name.equals("functions")){
-              elfOnly = false;
+              options.setElfOnly(false);
             }
             
             if(name.equals("params")){
-              elfOnly = false;
-              printParameters = true;
+              options.setElfOnly(false);
+              options.setPrintParameters(true);
             }
             
             if(name.equals("scopes")){
-              elfOnly = false;
-              printScopes = true;
+              options.setElfOnly(false);
+              options.setPrintScopes(true);
             }
             
             if(name.equals("fullpath")){
-              elfOnly = false;
-              fullpath = true;
+              options.setElfOnly(false);
+              options.setPrintFullpath(true);
             }
             
           }

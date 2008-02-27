@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Level;
 
+import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
@@ -81,6 +82,10 @@ public class StressTestStackTraceAction
     FunitThreadsOffspring ackProc = new FunitThreadsOffspring(threads);
     final Proc proc = ackProc.assertFindProcAndTasks();
 
+    PrintStackOptions options = new PrintStackOptions();
+    options.setNumberOfFrames(20);
+    options.setPrintParameters(true);
+    
     StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
     {
 
@@ -88,7 +93,7 @@ public class StressTestStackTraceAction
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    },0, true,false, false, false,true, true)
+    },options)
     {
 
       public void addFailed (Object observable, Throwable w)

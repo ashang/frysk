@@ -1,3 +1,9 @@
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestStackTraceAction.java: Use PrintStackOptions instead of boolean list.
+	* StressTestStackTraceAction.java: Ditto.
+	* StacktraceAction.java: Ditto.
+
 2008-02-27  Teresa Thomas  <tthomas@redhat.com>
 
 	* PtyTerminal.java (setToInitConsole): New.

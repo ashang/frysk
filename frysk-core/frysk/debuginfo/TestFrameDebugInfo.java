@@ -91,7 +91,12 @@ public class TestFrameDebugInfo
     
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-    DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, 20, true, true, true);
+    PrintStackOptions options = new PrintStackOptions();
+    options.setNumberOfFrames(20);
+    options.setPrintParameters(true);
+    options.setPrintScopes(true);
+    options.setPrintFullpath(true);
+    DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, options);
       
     String string = stringWriter.getBuffer().toString();
     assertTrue("first", string.contains("first"));
@@ -308,7 +313,12 @@ public class TestFrameDebugInfo
       Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
-    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task,0, true, true, true);
+    PrintStackOptions options = new PrintStackOptions();
+    options.setNumberOfFrames(0);
+    options.setPrintParameters(true);
+    options.setPrintScopes(true);
+    options.setPrintFullpath(true);
+    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, options);
     
     assertTrue("contains inline", stringWriter.getBuffer().toString().contains("inline"));
     assertTrue("contains first", stringWriter.getBuffer().toString().contains("first"));

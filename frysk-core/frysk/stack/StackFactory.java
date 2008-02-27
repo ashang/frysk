@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.util.WeakHashMap;
 
 import lib.unwind.Cursor;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.proc.Task;
 
 public class StackFactory
@@ -86,8 +87,7 @@ public class StackFactory
     }
 
     public static final void printTaskStackTrace(PrintWriter writer,
-						 Task task,boolean printSource,
-						 boolean fullpath, int numberOfFrames) {
+						 Task task, PrintStackOptions options) {
 	if (task != null) {
 	    writer.print("Task #");
 	    writer.print(task.getTid());
@@ -95,14 +95,14 @@ public class StackFactory
 	    Frame frame = StackFactory.createFrame(task);
 	    for (int i = 0; frame != null; frame = frame.getOuter(),i++) {
 		
-		if (numberOfFrames > 0 && i >= numberOfFrames) {
+		if (options.numberOfFrames() > 0 && i >= options.numberOfFrames()) {
 		    writer.println("...");
 		    break;
 		}
 		
 		frame.printLevel(writer);
 		writer.print(" ");
-		frame.toPrint(writer, printSource, fullpath);
+		frame.toPrint(writer, options.printLibrary(), options.fullpath());
 		writer.println();
 	    }
 	}

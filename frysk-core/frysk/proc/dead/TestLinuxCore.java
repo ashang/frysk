@@ -49,6 +49,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
 import frysk.Config;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.dwfl.DwflCache;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -138,12 +139,14 @@ public class TestLinuxCore extends TestLib {
     StacktraceAction coreStacktrace;
     StringWriter liveStackOutput = new StringWriter();
     StringWriter coreStackOutput = new StringWriter();
-
+    PrintStackOptions options = new PrintStackOptions();
+    options.setNumberOfFrames(20);
+    options.setElfOnly(true);
+    
     // Create a Stacktrace of the blocked live process
     liveStacktrace = new StacktraceAction(new PrintWriter(liveStackOutput),
 					  testProc, 
-					  new RequestStopEvent(Manager.eventLoop),0, 
-					  true, false, false, false, false,false)
+					  new RequestStopEvent(Manager.eventLoop),options)
 
       {
 	
@@ -167,9 +170,7 @@ public class TestLinuxCore extends TestLib {
     // Create a stackktrace of a the corefile process
     coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
 					  coreProc, 
-					  new PrintEvent(),0,
-					  true, false, false, false ,false, 
-					  false)
+					  new PrintEvent(),options)
     {
 
       public void addFailed (Object observable, Throwable w)

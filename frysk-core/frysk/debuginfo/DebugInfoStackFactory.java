@@ -97,54 +97,51 @@ public class DebugInfoStackFactory {
 	return innermostFrame;
     }
 
-    public static final void printTaskStackTrace (PrintWriter printWriter, Task task, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath)
+    public static final void printTaskStackTrace (PrintWriter printWriter, Task task, PrintStackOptions options)
     {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createDebugInfoStackTrace(task);
-        printStackTrace(printWriter, frame, numberOfFrames, printParameters,printScopes,fullpath);
+        printStackTrace(printWriter, frame, options);
       }
       printWriter.flush();
     }
 
-    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, int numberOfFrames, boolean printParameters, boolean printScopes, boolean fullpath)
+    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, PrintStackOptions options)
     {
       if (task != null){
         printWriter.println("Task #" + task.getTid());
         DebugInfoFrame frame = createVirtualStackTrace(task);
-        printStackTrace(printWriter,frame, numberOfFrames, printParameters,printScopes,fullpath);
+        printStackTrace(printWriter,frame, options);
       }
       printWriter.flush();
     }
 
     public static void printStackTrace(PrintWriter writer,
 				       DebugInfoFrame topFrame,
-				       int numberOfFrames,
-				       boolean printParameters,
-				       boolean printScopes,
-				       boolean fullpath) {
+				      PrintStackOptions options) {
         
 	int count = 0;
         for (DebugInfoFrame frame = topFrame; frame != null;
 	     frame = frame.getOuterDebugInfoFrame()) {
             
 	    // Terminate early?
-	    if (numberOfFrames > 0) {
-		if (count >= numberOfFrames) {
+	    if (options.numberOfFrames() > 0) {
+		if (count >= options.numberOfFrames()) {
 		    writer.println("...");
 		    break;
 		}
-	    } else if (numberOfFrames < 0) {
-		if (count >= -numberOfFrames)
+	    } else if (options.numberOfFrames() < 0) {
+		if (count >= -options.numberOfFrames())
 		    break;
 	    }
 	    count++;
 
 	    frame.printLevel(writer);
 	    writer.print(" ");
-	    frame.toPrint(writer, printParameters, fullpath);
+	    frame.toPrint(writer, options.printParameters(), options.fullpath());
 	    writer.println();
-	    if (printScopes) {
+	    if (options.printScopes()) {
 		frame.printScopes(writer);
 	    }
 	    writer.flush();

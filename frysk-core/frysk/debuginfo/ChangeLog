@@ -1,3 +1,9 @@
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* PrintStackOptions.java: New.
+	* TestFrameDebugInfo.java: Use PrintStackOptions instead of boolean list.
+	* DebugInfoStackFactory.java: Ditto.
+
 2008-02-19  Nurdin Premji  <npremji@redhat.com>
 
 	* TypeEntry.java (getInterfaceType): Added.

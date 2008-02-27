@@ -41,8 +41,10 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.List;
+
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.proc.Task;
 
 abstract class StackCommands extends ParameterizedCommand {
@@ -69,9 +71,14 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static private void printStack(CLI cli, DebugInfoFrame frame,
 				   int stopLevel, Options options) {
+	PrintStackOptions printStackOptions = new PrintStackOptions();
+	printStackOptions.setNumberOfFrames(stopLevel);
+	printStackOptions.setPrintParameters(true);
+	printStackOptions.setPrintScopes(options.printScopes);
+	printStackOptions.setPrintFullpath(true);
+	
 	DebugInfoStackFactory.printStackTrace(cli.outWriter, frame,
-					      stopLevel, true,
-					      options.printScopes, true);
+					      printStackOptions);
     }
     static private void printFrame(CLI cli, DebugInfoFrame frame,
 				   Options options) {

@@ -1,3 +1,7 @@
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackCommands.java: Use PrintStackOptions instead of boolean list.
+
 2008-02-27  Teresa Thomas  <tthomas@redhat.com>
 
 	* ShellCommand.java: New file.

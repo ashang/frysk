@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Level;
 import frysk.Config;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -57,6 +58,15 @@ public class TestStackTraceAction
     extends TestLib
 {
 
+    static PrintStackOptions options = new PrintStackOptions();
+    
+    public void setUp() {
+	options.setNumberOfFrames(20);
+	options.setElfOnly(true);
+	options.setPrintFullpath(true);
+	options.setPrintLibrary(true);
+    }
+    
   public void testSingleThreadedDetached ()
   {
     SlaveOffspring ackProc = SlaveOffspring.createChild();
@@ -100,8 +110,8 @@ public class TestStackTraceAction
     final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceAction stacker;
-
-    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false, true, true)
+    
+    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), options)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -131,7 +141,7 @@ public class TestStackTraceAction
 	Proc proc = LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
 	assertNotNull("core proc", proc);
 	StacktraceAction stacker;
-	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),20, true, false,false, false,true,true) {
+	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),options) {
 		
 		public void addFailed (Object observable, Throwable w) {
 		    fail("Proc add failed: " + w.getMessage());
