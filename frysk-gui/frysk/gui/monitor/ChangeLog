@@ -3,9 +3,11 @@
 	* observers/ObserverManager.java: Use frysk.config.
 	* EventLogger.java: Ditto.
 
-2008-02-26  Andrew Cagney  <cagney@redhat.com>
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com> 
 
-	* ProcWiseDataModel.java: Use proc, not ProcId as key.
+	* PickProcsListView.java: Deleted.
+	* PickProcListView.java: Deleted.
+
 
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
@@ -18,6 +20,10 @@
 	* ProgramObserverDialog.java: Deleted.
 	* datamodels/DataModelManager.java: Updated
 	* WindowManager.java: Updated.
+
+2008-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcWiseDataModel.java: Use proc, not ProcId as key.
 	
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
