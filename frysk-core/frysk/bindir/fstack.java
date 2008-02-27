@@ -50,9 +50,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 import frysk.util.CommandlineParser;
-import frysk.util.CoreExePair;
 import frysk.util.StacktraceAction;
-import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
@@ -136,14 +134,11 @@ public final class fstack
     }
   }
   
-  private static void stackCore(CoreExePair coreExePair)
-  {
-      
-    Proc proc = Util.getProcFromCoreExePair(coreExePair);
-    stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
-    new ProcCoreAction(proc, stacker);
-    Manager.eventLoop.run();
-  }
+    private static void stackCore(Proc proc) {
+	stacker = new Stacker(printWriter, proc, new PrintEvent(), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
+	new ProcCoreAction(proc, stacker);
+	Manager.eventLoop.run();
+    }
   
     private static void stackPid(Proc proc) {
 	stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), numberOfFrames, elfOnly,virtualFrames,printParameters,printScopes, fullpath);
@@ -154,20 +149,18 @@ public final class fstack
   public static void main (String[] args)
   {
 
-    parser = new CommandlineParser("fstack")
-    {
-      //@Override
-      public void parseCoresFIXME(CoreExePair[] coreExePairs) {
-       for (int i = 0; i < coreExePairs.length; i++)
-         stackCore(coreExePairs[i]);
-      }
-
-	//@Override
-	public void parsePids(Proc[] procs) {
-	    for (int i = 0; i < procs.length; i++)
-		stackPid(procs[i]);
-	}
-      };
+      parser = new CommandlineParser("fstack") {
+	      //@Override
+	      public void parseCores(Proc[] cores) {
+		  for (int i = 0; i < cores.length; i++)
+		      stackCore(cores[i]);
+	      }
+	      //@Override
+	      public void parsePids(Proc[] procs) {
+		  for (int i = 0; i < procs.length; i++)
+		      stackPid(procs[i]);
+	      }
+	  };
 
       parser.add(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +
       		" -n all to print all frames.", "<number of frames>") {

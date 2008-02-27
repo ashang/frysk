@@ -70,13 +70,6 @@ public class Util
 	return proc;
     }
   
-  public static Proc getProcFromCoreExePair(CoreExePair coreExePair) {
-      if (coreExePair.exeFile == null)
-	  return getProcFromCoreFile(coreExePair.coreFile);
-      else
-	  return getProcFromCoreFile(coreExePair.coreFile, coreExePair.exeFile);
-  }
-  
     /**
      * Return a Proc associated with the given pid.
      * @param procId The given pid.

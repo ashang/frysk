@@ -1,5 +1,8 @@
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* fstack.java (parseCores(Proc[])): Replace parseCoresFIXME.
+	(stackCore(Proc)): Replace stackCore(CoreExePair).
+
 	* fauxv.java: Update to match ProcEvent.
 	* fmaps.java: Ditto.
 	* fexe.java: Ditto.
