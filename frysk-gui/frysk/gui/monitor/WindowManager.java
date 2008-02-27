@@ -84,9 +84,6 @@ public class WindowManager
 
   public EditObserverDialog editObserverDialog;
 
-  // public PickProcsDialog pickProcsDialog;
-  public PickProcDialog pickProcDialog;
-
   public MainWindowStatusBar mainWindowStatusBar;
 
   public SessionManagerDialog sessionManagerDialog;
@@ -111,11 +108,8 @@ public class WindowManager
     this.aboutWindow = new AboutWindow(glade);
     this.summaryWindow = new SummaryWidget(glade);
     this.prefsWindow = new PreferencesWindow(glade);
-    // this.programAddWindow = new ProgramAddWindow(glade);
     this.editObserverDialog = new EditObserverDialog(glade);
     this.menuBar = new MenuBar(glade);
-    // this.pickProcsDialog = new PickProcsDialog(null);
-    this.pickProcDialog = new PickProcDialog(null);
     this.mainWindowStatusBar = new MainWindowStatusBar(glade);
     
   }

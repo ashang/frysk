@@ -13,6 +13,11 @@
 
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	Deleted PickProcDialog.java.
+	* TestGlade.java (testGladeLoading): Updated.
+
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	datamodels/FlatProcObservableLinkedList.java: Deleted
 	ProgramObserverDialog.java: Deleted.
 	* Gui.java: Updated.

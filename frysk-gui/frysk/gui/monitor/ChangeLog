@@ -9,6 +9,11 @@
 
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* PickProcDialog.java: Deleted. 
+	* WindowManager.java: Updated.
+
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* datamodels/FlatProcObservableLinkedList.java: Deleted
 	* ProgramObserverDialog.java: Deleted.
 	* datamodels/DataModelManager.java: Updated

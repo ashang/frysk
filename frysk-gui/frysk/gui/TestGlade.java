@@ -158,7 +158,6 @@ public class TestGlade
 	assertNotNull("createFryskSessionDruid",WindowManager.theManager.createFryskSessionDruid);
 	assertNotNull("observersDialog",WindowManager.theManager.observersDialog);
 	assertNotNull("editObserverDialog",WindowManager.theManager.editObserverDialog);
-	assertNotNull("pickProcDialog",WindowManager.theManager.pickProcDialog);
 	assertNotNull("mainWindowStatusBar",WindowManager.theManager.mainWindowStatusBar);
 	assertNotNull("sessionManager",WindowManager.theManager.sessionManagerDialog);
     }
