@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,33 +45,53 @@ package frysk.proc;
  * This implements comparable so can be used for searching and the
  * like.  Anything wanting to search for a task should use this.
  */
-
-public class TaskId
-    extends Id
-{
-    public TaskId ()
-    {
-	super ();
+class TaskId implements Comparable {
+    /**
+     * XXX: Should not be public, but some code likes to poke it so
+     * that it has a re-usable ID.
+     */
+    public int id;
+    TaskId() {
+	id = -1;
     }
-    public TaskId (int id)
-    {
-	super (id);
+    TaskId(int id) {
+	this.id = id;
     }
-    public String toString ()
-    {
+    /**
+     * Is the object equals to this one.
+     */
+    public boolean equals(Object o) {
+	if (o instanceof TaskId)
+	    return ((TaskId)o).id == id;
+	else
+	    return false;
+    }
+    /**
+     * Return the hash code for this ID (hash on the underlying ID
+     * value).
+     */
+    public int hashCode() {
+	return id;
+    }
+    /**
+     * Assuming that the two objects are the same, do a relative
+     * comparison.
+     */
+    public int compareTo(Object o) {
+	TaskId rhs = (TaskId)o;
+	return rhs.id - this.id;
+    }
+    /**
+     * Return a string representation of the object.
+     */
+    public String toString() {
 	return ("{TaskId," + super.toString () + "}");
     }
-    protected boolean isCompatible (Object o)
-    {
-	return (o instanceof TaskId);
-    }
-    
     /**
      * Get the TID for this TaskID.
      * @return the TID
      */
-    public int intValue()
-    {
-      return id; // field in superclass
+    public int intValue() {
+	return id; // field in superclass
     }
 }

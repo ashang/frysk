@@ -1,5 +1,8 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Id.java: Delete.
+	* TaskId.java: Update.
+
 	* ProcEvent.java (getProcFromTaskId()): Delete.
 	* Host.java (get(TaskId)): Delete.
 	* Proc.java (getMainTask()): Use taskPool, not Host.
