@@ -1,3 +1,7 @@
+2008-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindowFactory.java: Use LinuxCoreFactory.
+
 2008-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java (attachToPID(int)): Delete.

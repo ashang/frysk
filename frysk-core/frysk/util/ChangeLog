@@ -1,5 +1,8 @@
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Util.java (getProcFromCoreFile(File)): Delete.
+	(getProcFromCoreFile(File,File)): Delete.
+
 	* CommandlineParser.java (parseCommandFIXME(String[])): Delete.
 
 2008-02-26  Andrew Cagney  <cagney@redhat.com>

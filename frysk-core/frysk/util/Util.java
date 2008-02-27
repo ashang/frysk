@@ -40,10 +40,8 @@
 package frysk.util;
 
 import gnu.classpath.tools.getopt.OptionException;
-import java.io.File;
 import frysk.proc.FindProc;
 import frysk.proc.Manager;
-import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.Proc;
 
 public class Util
@@ -52,23 +50,6 @@ public class Util
   private Util ()
   {
   }
-  
-    /**
-     * Return the Proc associated with a coreFile.
-     * @param coreFile the given coreFile.
-     * @return The Proc for the given coreFile.
-     */
-    public static Proc getProcFromCoreFile(File coreFile) {
-	Proc proc = LinuxCoreFactory.createProc(coreFile);
-	if (proc == null)
-	    throw new RuntimeException("Core file contains no proc.");
-	return proc;
-    }
-  
-    public static Proc getProcFromCoreFile(File coreFile, File exeFile) {
-	Proc proc = LinuxCoreFactory.createProc(coreFile, exeFile);
-	return proc;
-    }
   
     /**
      * Return a Proc associated with the given pid.

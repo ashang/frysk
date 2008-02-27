@@ -50,7 +50,7 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
+import frysk.proc.dead.LinuxCoreFactory;
 import frysk.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -166,9 +166,8 @@ public class SourceWindowFactory
     srcWin.grabFocus();
   }
   
-  public static void attachToCore(File coreFile)
-  {
-    Proc proc = frysk.util.Util.getProcFromCoreFile(coreFile);     
+    public static void attachToCore(File coreFile) {
+	Proc proc = LinuxCoreFactory.createProc(coreFile);
 
     LinkedList tasks = proc.getTasks();
     DebugInfoFrame[] framez = new DebugInfoFrame[tasks.size()];

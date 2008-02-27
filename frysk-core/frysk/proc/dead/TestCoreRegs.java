@@ -43,7 +43,6 @@ import frysk.isa.registers.Register;
 import frysk.testbed.RegsCase;
 import frysk.proc.Proc;
 import frysk.testbed.CorefileFactory;
-import frysk.util.Util;
 import java.io.File;
 
 /**
@@ -58,7 +57,7 @@ public class TestCoreRegs extends RegsCase {
 	Proc proc = task().getProc();
 	File exe = new File(proc.getExe());
 	File core = CorefileFactory.constructCore(proc);
-	Proc coreProc = Util.getProcFromCoreFile(core, exe);
+	Proc coreProc = LinuxCoreFactory.createProc(core, exe);
 	setTask(coreProc.getMainTask());
     }
 

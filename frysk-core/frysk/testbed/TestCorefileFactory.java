@@ -42,14 +42,14 @@ package frysk.testbed;
 import java.io.File;
 import frysk.Config;
 import frysk.proc.Proc;
-import frysk.util.Util;
 import frysk.proc.Task;
+import frysk.proc.dead.LinuxCoreFactory;
 
 public class TestCorefileFactory extends TestLib {
     public void testCoreFileAtSignal() {
 	File coreExe = Config.getPkgLibFile("funit-asm");
 	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
-	Proc coreProc = Util.getProcFromCoreFile(coreFile, coreExe);
+	Proc coreProc = LinuxCoreFactory.createProc(coreFile, coreExe);
 	Task coreTask = coreProc.getMainTask();
 	FryskAsm regs = FryskAsm.createFryskAsm(coreTask.getISA());
 	assertEquals("REG0", 1, coreTask.getRegister(regs.REG0));
