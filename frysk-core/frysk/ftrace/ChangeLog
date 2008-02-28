@@ -1,3 +1,10 @@
+2008-02-28  Petr Machata  <pmachata@redhat.com>
+
+	* TracePoint.java (TracePoint.Instance): New class.
+	* Ftrace.java: Use TracePoint.Instance.
+	* Ltrace.java: Likewise.
+	* TestLtrace.java: Likewise.
+
 2008-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestMappingGuard.java (performTestAllLibraiesGetDetected()):

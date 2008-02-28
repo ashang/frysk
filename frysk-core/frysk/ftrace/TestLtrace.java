@@ -105,19 +105,19 @@ public class TestLtrace
 		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
 			    public void tracePoint(TracePoint tp) {
 				if (creator.acceptTracepoint(task, tp))
-				    tps.add(tp);
+				    tps.add(new TracePoint.Instance(tp, tp.address)); // FIXME
 			    }
 			}, TracePointOrigin.PLT);
 		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
 			    public void tracePoint(TracePoint tp) {
 				if (creator.acceptTracepoint(task, tp))
-				    tps.add(tp);
+				    tps.add(new TracePoint.Instance(tp, tp.address)); // FIXME
 			    }
 			}, TracePointOrigin.SYMTAB);
 		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
 			    public void tracePoint(TracePoint tp) {
 				if (creator.acceptTracepoint(task, tp))
-				    tps.add(tp);
+				    tps.add(new TracePoint.Instance(tp, tp.address)); // FIXME
 			    }
 			}, TracePointOrigin.DYNAMIC);
 

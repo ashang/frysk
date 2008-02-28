@@ -41,6 +41,32 @@ package frysk.ftrace;
 
 public class TracePoint
 {
+    static class Instance
+    {
+	public final TracePoint tracePoint;
+
+	/** Final address of a breakpoint when taking into account
+	 * in-memory placement of parental DSO of tracePoint. */
+	public final long address;
+
+	Instance(TracePoint tracePoint, long finalAddress) {
+	    this.tracePoint = tracePoint;
+	    this.address = finalAddress;
+	}
+
+	public int hashCode() {
+	    return (int)address;
+	}
+
+	public boolean equals(Object obj) {
+	    if (!(obj instanceof Instance))
+		return false;
+
+	    Instance i = (Instance)obj;
+	    return i.address == address;
+	}
+    }
+
     /** The address of the tracepoint. */
     public final long address;
 

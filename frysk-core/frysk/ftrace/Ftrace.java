@@ -272,11 +272,12 @@ public class Ftrace
 			       + "part off=0x" + Long.toHexString(part.offset) + ";");
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
+		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
 		    logger.log(Level.CONFIG,
-			       "Will trace `" + tp.symbol.name
-			       + "' at 0x" + Long.toHexString(actualAddress));
+			       "Will trace `" + tpi.tracePoint.symbol.name
+			       + "' at 0x" + Long.toHexString(tpi.address));
 
-		    request.add(tp);
+		    request.add(tpi);
 		}
 	    }
 	    if (!request.isEmpty())
@@ -292,11 +293,12 @@ public class Ftrace
 		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
+		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
 		    logger.log(Level.CONFIG,
-			       "Stopping tracing of `" + tp.symbol.name
-			       + "' at 0x" + Long.toHexString(actualAddress));
+			       "Stopping tracing of `" + tpi.tracePoint.symbol.name
+			       + "' at 0x" + Long.toHexString(tpi.address));
 
-		    request.add(tp);
+		    request.add(tpi);
 		}
 	    }
 	    if (!request.isEmpty())

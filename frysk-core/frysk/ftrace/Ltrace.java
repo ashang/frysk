@@ -62,7 +62,7 @@ public class Ltrace
 
     /**
      * Request that given observer receives enter/leave events of
-     * given set of TracePoints.
+     * given set of TracePoint.Instances.
      */
     public synchronized static
 	void requestAddFunctionObserver(Task task,
@@ -114,18 +114,18 @@ public class Ltrace
 	implements TaskObserver.Code
     {
 	class Node {
-	    final TracePoint tracePoint;
+	    final TracePoint.Instance tpi;
 	    final Collection observers;
 
-	    public Node(TracePoint tp, Collection observers) {
-		this.tracePoint = tp;
+	    public Node(TracePoint.Instance tpi, Collection observers) {
+		this.tpi = tpi;
 		this.observers = observers;
 	    }
 	}
 	private final LinkedList nodeList = new LinkedList();
 
-	public void add(TracePoint tp, Collection observers) {
-	    nodeList.addLast(new Node(tp, observers));
+	public void add(TracePoint.Instance tpi, Collection observers) {
+	    nodeList.addLast(new Node(tpi, observers));
 	}
 
 	public Action updateHit (final Task task, long address)
@@ -148,7 +148,7 @@ public class Ltrace
 	    }
 
 	    logger.log(Level.FINEST, "Fetching retval.");
-	    final Symbol symbol = leave.tracePoint.symbol;
+	    final Symbol symbol = leave.tpi.tracePoint.symbol;
 	    final Object ret = arch.getReturnValue(task, symbol);
 	    eachObserver(leave.observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
@@ -174,7 +174,7 @@ public class Ltrace
     private class TracePointObserver
 	implements TaskObserver.Code
     {
-	final TracePoint tracePoint;
+	final TracePoint.Instance tpi;
 	final ArrayList observers = new ArrayList();
 	final Long address;
 
@@ -186,9 +186,9 @@ public class Ltrace
 	 * breakpoint is removed. */
 	FunctionObserver last = null;
 
-	public TracePointObserver(TracePoint tp) {
-	    this.tracePoint = tp;
-	    this.address = new Long(tp.address);
+	public TracePointObserver(TracePoint.Instance tpi) {
+	    this.tpi = tpi;
+	    this.address = new Long(tpi.address);
 	}
 
 	public void add(FunctionObserver observer) {
@@ -214,9 +214,9 @@ public class Ltrace
 	{
 	    logger.log(Level.FINE, "Enter breakpoint at 0x" + Long.toHexString(address));
 
-	    if (address != tracePoint.symbol.getParent().getEntryPoint()) {
+	    if (address != tpi.tracePoint.symbol.getParent().getEntryPoint()) {
 		// Install breakpoint to return address.
-		long retAddr = arch.getReturnAddress(task, tracePoint.symbol);
+		long retAddr = arch.getReturnAddress(task, tpi.tracePoint.symbol);
 		logger.log(Level.FINER,
 			   "It's enter tracepoint, return address 0x"
 			   + Long.toHexString(retAddr) + ".");
@@ -227,17 +227,17 @@ public class Ltrace
 		    retObserver = new FunctionReturnObserver();
 		    task.requestAddCodeObserver(retObserver, retAddr);
 		}
-		retObserver.add(tracePoint, observers);
+		retObserver.add(tpi, observers);
 	    }
 	    else
 		logger.log(Level.FINEST,
 			   "It's _start, no return breakpoint established...");
 
 	    logger.log(Level.FINEST, "Building arglist.");
-	    final Object[] args = arch.getCallArguments(task, tracePoint.symbol);
+	    final Object[] args = arch.getCallArguments(task, tpi.tracePoint.symbol);
 	    eachObserver(observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
-			return o.funcallEnter(task, tracePoint.symbol, args);
+			return o.funcallEnter(task, tpi.tracePoint.symbol, args);
 		    }
 		});
 
@@ -295,7 +295,7 @@ public class Ltrace
     // Map<Long(address), TracePointObserver>
     private final HashMap tpObserverForAddress = new HashMap();
 
-    // Map<TracePoint, TracePointObserver>
+    // Map<TracePoint.Instance, TracePointObserver>
     private final HashMap tpObserverForTracePoint = new HashMap();
 
     // ----------------------
@@ -317,21 +317,21 @@ public class Ltrace
     /**
      * Have given observer observe given set of tracepoints.
      */
-    private synchronized void addObserver(FunctionObserver observer, Set tracePoints)
+    private synchronized void addObserver(FunctionObserver observer, Set tracePointInstances)
     {
-	for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-	    TracePoint tracePoint = (TracePoint)it.next();
-	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tracePoint);
+	for (Iterator it = tracePointInstances.iterator(); it.hasNext(); ) {
+	    TracePoint.Instance tpi = (TracePoint.Instance)it.next();
+	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tpi);
 	    if (tpo == null) {
-		tpo = new TracePointObserver(tracePoint);
-		tpObserverForTracePoint.put(tracePoint, tpo);
+		tpo = new TracePointObserver(tpi);
+		tpObserverForTracePoint.put(tpi, tpo);
 
 		// When the first observer requests this tracepoint, we
 		// have to setup a breakpoint.
 		if (tpObserverForAddress.put(tpo.address, tpo) != null)
 		    throw new AssertionError("Address already occupied with working set element!");
 
-    		task.requestAddCodeObserver(tpo, tracePoint.address);
+    		task.requestAddCodeObserver(tpo, tpi.address);
     	    }
 
 	    tpo.add(observer);
@@ -349,13 +349,13 @@ public class Ltrace
     /**
      * Request that given observer stops observing tracepoints in given set.
      */
-    private synchronized void removeObserver(FunctionObserver observer, Set tracePoints)
+    private synchronized void removeObserver(FunctionObserver observer, Set tracePointInstances)
     {
-	for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-	    TracePoint tracePoint = (TracePoint)it.next();
-	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tracePoint);
+	for (Iterator it = tracePointInstances.iterator(); it.hasNext(); ) {
+	    TracePoint.Instance tpi = (TracePoint.Instance)it.next();
+	    TracePointObserver tpo = (TracePointObserver)tpObserverForTracePoint.get(tpi);
 	    if (tpo == null)
-		throw new AssertionError("FunctionObserver doesn't observe the trace point " + tracePoint.symbol.name);
+		throw new AssertionError("FunctionObserver doesn't observe the trace point " + tpi.tracePoint.symbol.name);
 
 	    // If this observer doesn't observe given tracepoint
 	    // anymore, remove it from bookkeeping structures.
@@ -372,11 +372,11 @@ public class Ltrace
 		    if (tpObserverForAddress.remove(tpo.address) == null)
 			throw new AssertionError("Couldn't find tracePointObserver in tpObserverForAddress.");
 
-		    if (tpObserverForTracePoint.remove(tracePoint) != tpo) // Not .equals!
+		    if (tpObserverForTracePoint.remove(tpi) != tpo) // Not .equals!
 			throw new AssertionError("Couldn't find tracePointObserver in tpObserverForTracePoint.");
 
 		    // And retract also from the lowlevel breakpoint.
-		    this.task.requestDeleteCodeObserver(tpo, tracePoint.address);
+		    this.task.requestDeleteCodeObserver(tpo, tpi.address);
 
 		    // Skip the deletedFrom call for the last
 		    // observer, it will be called from
