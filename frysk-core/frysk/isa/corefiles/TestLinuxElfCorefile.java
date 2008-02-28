@@ -57,13 +57,15 @@ import frysk.proc.Auxv;
 import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.CoredumpAction;
-
+import frysk.isa.corefiles.LinuxElfCorefile;
+    import frysk.isa.corefiles.LinuxElfCorefileFactory;
 public class TestLinuxElfCorefile
     extends TestLib
 {
@@ -223,20 +225,22 @@ public class TestLinuxElfCorefile
   }
 
 
-  public void testStackOnlyMap () 
+  public void testRegexSelectedMap () 
   {
-    Proc ackProc = giveMeAProc();
-    MemoryMap stackMap = null;
+    Proc ackProc = giveMeABlockedProc();
+    MemoryMap stackMap = null, vdsoMap  = null;
     MemoryMap coreMap = null;
+
     // Create a corefile from process
-    String coreFileName = constructStackOnlyCore(ackProc);
-    File testCore = new File(coreFileName);
- 
-    assertTrue("Checking core file " + coreFileName + " exists.",
-            testCore.exists());
+    LinuxElfCorefile core =
+    LinuxElfCorefileFactory.getCorefile(ackProc, 
+					(Task[])ackProc.getTasks().toArray(new Task[0]));
+
+    core.setPatternMatch("stack|vdso");
+    core.constructCorefile();
 
     // Model the corefile, and get the Process.
-    Proc coreProc = LinuxCoreFactory.createProc(testCore,
+    Proc coreProc = LinuxCoreFactory.createProc(new File(core.getConstructedFileName()),
 						new File(ackProc.getExe()));
     assertNotNull("Checking core file process", coreProc);    
    
@@ -244,18 +248,28 @@ public class TestLinuxElfCorefile
     MemoryMap[] liveMaps = ackProc.getMaps();
     
     for(int i=0; i<liveMaps.length; i++) {
-	if (liveMaps[i].name.equals("[stack]")) {
+	System.out.println(liveMaps[i].name);
+	if (liveMaps[i].name.equals("[stack]"))
 	    stackMap = liveMaps[i];
-	    break;
-	}
+	if (liveMaps[i].name.equals("[vdso]")) 
+	    vdsoMap = liveMaps[i];
     }
+  
 
-    assertNotNull("Cannot find stack in live process", stackMap);
-    int mapNo = findLowAddress(stackMap.addressLow, coreMaps);
+    assertNotNull("Live VDSO segment not null", vdsoMap);
+    assertNotNull("Live STACK segment not null", stackMap);
+
+    int mapNo=0;
+
+    mapNo = findLowAddress(stackMap.addressLow, coreMaps);
     coreMap = coreMaps[mapNo];
     assertNotNull("Cannot find stack in core process", coreMap);    
 
-    Elf testElf = new Elf(testCore, ElfCommand.ELF_C_READ);
+    mapNo = findLowAddress(vdsoMap.addressLow, coreMaps);
+    coreMap = coreMaps[mapNo];
+    assertNotNull("Cannot find vdso in core process", coreMap);    
+
+    Elf testElf = new Elf(new File(core.getConstructedFileName()), ElfCommand.ELF_C_READ);
     ElfEHeader header = testElf.getEHeader();
     int count = header.phnum;
     int segCount = 0;
@@ -269,7 +283,7 @@ public class TestLinuxElfCorefile
       }
     testElf.close();
 
-    assertEquals("stack only corefile segCount +stack +notes != 2",segCount,2);
+    assertEquals("stack only corefile segCount +stack +vdso +notes != 3",3,segCount);
   }
 
 
@@ -297,30 +311,6 @@ public class TestLinuxElfCorefile
     return coreDump.getConstructedFileName();
   }
 
- /**
-   * Given a Proc object, generate a core file from that given proc.
-   * 
-   * @param ackProc - proc object to generate core from.
-   * @return - name of constructed core file.
-   */
-  private String constructStackOnlyCore (final Proc ackProc)
-  {
-
-      CoredumpAction coreDump = null;
-      coreDump = new CoredumpAction(ackProc, "core", 
-				    new Event() {
-					public void execute () {
-					    ackProc.
-						requestAbandonAndRunEvent(
-									  new RequestStopEvent(
-											       Manager.eventLoop));
-					}
-				    }, false, true);
-      
-      new ProcBlockAction(ackProc, coreDump);
-      assertRunUntilStop("Running event loop for core file");
-      return coreDump.getConstructedFileName();
-  }
 
  
   /**
@@ -343,11 +333,7 @@ public class TestLinuxElfCorefile
   {
     String[] nocmds = {};
     DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(nocmds);
-    //SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     assertNotNull(ackProc);
-    ackProc.getMainTask().getProc();
-    //Proc proc = ackProc.assertFindProcAndTasks();
-    //assertNotNull(proc);
     return ackProc.getMainTask().getProc();
   }
   

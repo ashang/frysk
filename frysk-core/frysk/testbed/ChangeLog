@@ -1,3 +1,8 @@
+2008-02-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoredumpAction.java: Remove stack only
+	constructor.
+
 2008-02-28    Teresa Thomas  <tthomas@redhat.com>
 
 	* CorefileFactory.java: Remove redundant import.

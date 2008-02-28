@@ -1,3 +1,10 @@
+2008-02-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.xml: Add --segments option. Delete
+	--stackonly option.
+	* fcore.java (addOptions): Delete stack only option.
+	Add segments option.
+
 2008-02-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* fdebugrpm.sh: Show error message if fdebuginfo install 

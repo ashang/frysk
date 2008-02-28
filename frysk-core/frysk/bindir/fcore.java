@@ -54,9 +54,11 @@ import gnu.classpath.tools.getopt.OptionException;
 
 public class fcore
 {
+    private static String matchingRegEx = "";
     private static String filename = "core";  
     private static boolean writeAllMaps = false;
-    private static boolean stackOnly = false;
+
+    private static int mapOptionCount = 0;
     protected static final Logger logger = Logger.getLogger("frysk");
   
     /**
@@ -79,54 +81,55 @@ public class fcore
      */
     private static void addOptions (ProcStopUtil fcore)
     {
-	fcore.addOption(new Option("stackonly", 's',
-		                   " Writes only stack segment, and elides all"
-		                 + " other maps.")
-	{
-	    public void parsed (String mapsValue) throws OptionException {
-		try {
-		    stackOnly = true;
-		} catch (IllegalArgumentException e) {
-		    throw new OptionException( "Invalid maps parameter " 
-			                      + mapsValue);
-		}
-
-	    }
-	});
 
       fcore.addOption(new Option( "allmaps", 'a',
 	                          " Writes all readable maps. Does not elide"
 	                        + " or omit any readable map. Caution: could"
 	                        + " take considerable amount of time to"
 	                        + " construct core file.")
-      {
-	  public void parsed (String mapsValue) throws OptionException {
-	      try {
-		  writeAllMaps = true;
-		  stackOnly = false;
-	      } catch (IllegalArgumentException e) {
-		  throw new OptionException("Invalid maps parameter " + mapsValue);
+	  {
+	      public void parsed (String mapsValue) throws OptionException {
+		  try {
+		      writeAllMaps = true;
+		      mapOptionCount++;
+		  } catch (IllegalArgumentException e) {
+		      throw new OptionException("Invalid maps parameter " + mapsValue);
+		  }
+		  
 	      }
-
-	  }
-      });
+	  });
+      
+      fcore.addOption(new Option("segments", 's',
+				 "Define what segments to include via regex.",
+				 "RegEx") {
+	      public void parsed(String regEx) throws OptionException {
+		  try {
+		      mapOptionCount++;
+		      matchingRegEx = regEx;
+                    } catch (IllegalArgumentException e) {
+		      throw new OptionException("Invalid match parameter "
+						+ matchingRegEx);
+		  }
+	      }
+	  });
+      
+      
 
       fcore.addOption(new Option( "outputfile", 'o',
 	                          " Sets the name (not extension) of the core"
 	                        + " file. Default is core.{pid}. The extension"
-	                        + " will always be the pid.", "<filename>")
-      {
-	  public void parsed (String filenameValue) throws OptionException
+				  + " will always be the pid.", "<filename>")
 	  {
-	      try {
+	      public void parsed (String filenameValue) throws OptionException {
+		  try {
 		  filename = filenameValue;
+		  }
+		  catch (IllegalArgumentException e) {
+		      throw new OptionException(  "Invalid output filename: "
+						  + filenameValue);
+		  }
 	      }
-	      catch (IllegalArgumentException e) {
-		  throw new OptionException(  "Invalid output filename: "
-			                    + filenameValue);
-	      }
-	  }
-      });
+	  });
     }
     
     /**
@@ -136,24 +139,31 @@ public class fcore
     {
 	public void executeLive(Proc proc) {
 	    
-	    Task[] tasks = (Task[]) proc.getTasks().toArray
-	                   (new Task[proc.getTasks().size()]);
-	    LinuxElfCorefile coreFile = LinuxElfCorefileFactory.
-	                                getCorefile(proc, tasks);
+	    
 	  
-	    if (coreFile == null) {
-		System.err.println (  "Architecture not supported or "
-			            + "LinuxElfCorefileFactory returned null");
-	    } else {
-		coreFile.setName(filename);
-		coreFile.setWriteAllMaps(writeAllMaps);
-		coreFile.setStackOnly(stackOnly);
-
-		try {
-		    coreFile.constructCorefile();
-		} catch (RuntimeException e) {
+	    if (mapOptionCount > 1)
+		System.err.println("Please either speciy -stackonly,"+
+		" -allmaps, or -match <pattern> for map writing.");
+	    else {
+		Task[] tasks = (Task[]) proc.getTasks().toArray
+	                   (new Task[proc.getTasks().size()]);
+		LinuxElfCorefile coreFile = LinuxElfCorefileFactory.
+		    getCorefile(proc, tasks);
+		
+		if (coreFile == null) {
 		    System.err.println (  "Architecture not supported or "
-			                + "LinuxElfCorefileFactory returned null");		    
+					  + "LinuxElfCorefileFactory returned null");
+		} else {
+		    coreFile.setName(filename);
+		    coreFile.setWriteAllMaps(writeAllMaps);
+		    coreFile.setPatternMatch(matchingRegEx);
+		    
+		    try {
+		    coreFile.constructCorefile();
+		    } catch (RuntimeException e) {
+			System.err.println (  "Architecture not supported or "
+					      + "LinuxElfCorefileFactory returned null");		    
+		    }
 		}
 	    }
 	}

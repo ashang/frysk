@@ -57,12 +57,15 @@ import frysk.proc.Task;
 import frysk.sys.StatelessFile;
 import frysk.sys.proc.MapsBuilder;
 import java.io.File;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public abstract class LinuxElfCorefile {
 
     long elfSectionOffset = 0;
 
     String coreName = "core";
+    String regex = "";
 
     Proc process = null;
 
@@ -70,7 +73,7 @@ public abstract class LinuxElfCorefile {
 
     boolean writeAllMaps = false;
    
-    boolean stackOnly = true;
+    boolean regexMatch = false;
 
     Elf linuxElfCorefileImage = null;
 
@@ -101,19 +104,11 @@ public abstract class LinuxElfCorefile {
     }
 
 
-    /**
-     * 
-     * Defines whether to write only the stack segment and elide all others.
-     * 
-     * @param maps - True if attempt to write all maps, false to follow
-     * map writing convention.
-     * 
-     */
-
-    public void setStackOnly(boolean stackOnly) {
-	this.stackOnly = stackOnly;
+    public void setPatternMatch(String regex) {
+	this.regex = regex;
+        if (!this.regex.equals(""))
+	    this.regexMatch = true;
     }
-
     /**
      * 
      * Set the name of the corefile to be constructed. This should be
@@ -466,10 +461,13 @@ public abstract class LinuxElfCorefile {
 	
 	Dwfl dwfl = null;
 	Elf elf;
+	Pattern pattern;
 
 	CoreMapsBuilder()
 	{
 	    dwfl = DwflCache.getDwfl(process.getMainTask());
+	    if (regexMatch)
+		pattern =  Pattern.compile(regex);
 	}
 		
 	public void buildBuffer(final byte[] maps) {
@@ -495,9 +493,19 @@ public abstract class LinuxElfCorefile {
 			pathnameLength);
 		String sfilename = new String(filename);
 
+		
 		if (writeAllMaps) {
 		    writeMap = true;
+		} 
+
+
+		if (regexMatch) {
+		    Matcher match = pattern.matcher(sfilename);
+		    if (match.find()) {
+			writeMap = true;
+		    }
 		} else {
+		    
 		    // Should the map be written?
 		    if (inode == 0)
 			writeMap = true;
@@ -511,25 +519,18 @@ public abstract class LinuxElfCorefile {
 			writeMap = true;
 		    if (shared)
 			writeMap = true;
-		}
+		
 
-		if (!writeMap) {
-		    DwflModule module = null;
-		    if (dwfl != null) {
-			module = dwfl.getModule(addressLow);
-			if (module != null)
-			    if (module.getElf() == null)
-				writeMap = true;
-		    }	
+		    if (!writeMap) {
+			DwflModule module = null;
+			if (dwfl != null) {
+			    module = dwfl.getModule(addressLow);
+			    if (module != null)
+				if (module.getElf() == null)
+				    writeMap = true;
+			}	
+		    }
 		}
-
-		if (stackOnly) {
-		    if (sfilename.equals("[stack]") || sfilename.equals("[vdso]"))
-			writeMap = true;
-		    else
-			writeMap = false;
-		}
-			
 				
 		// Get empty progam segment header corresponding to this entry.
 		// PT_NOTE's program header entry takes the index: 0. So we should

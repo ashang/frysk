@@ -107,9 +107,9 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-s, -stackonly</option></term>
+	<term><option>-s, -segments <replaceable>regex</replaceable></option></term>
 	<listitem>
-          <para> Writes only the stack segment. Elide all other segments. </para>
+          <para> Writes only the segments that match the regex specified. Elide all other segments. </para>
         </listitem>
       </varlistentry>
       <varlistentry>

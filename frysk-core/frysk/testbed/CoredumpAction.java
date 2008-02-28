@@ -72,8 +72,6 @@ public class CoredumpAction implements ProcObserver.ProcAction {
 
     private boolean writeAllMaps = false;
 
-    private boolean stackOnly = false;
-
     private LinuxElfCorefile coreFile;
 
     int taskArraySize = 1;
@@ -101,20 +99,6 @@ public class CoredumpAction implements ProcObserver.ProcAction {
 	Manager.eventLoop.add(new InterruptEvent(proc));
     }
 
-    /**
-     * CoredumpAction - Generate a core file
-     * @param proc - Process extract and  dump core
-     * @parma filename - Name of core file. (ie name.pid)
-     * @param theEvent - Event
-     * @param writeAllMaps - Should all maps be written.
-     */
-    public CoredumpAction(Proc proc, String filename, Event theEvent,
-			  boolean writeAllMaps, boolean stackOnly) {
-	
-	this(proc, theEvent, writeAllMaps);
-	this.filename = filename;
-	this.stackOnly = stackOnly;
-    }
 
     /* (non-Javadoc)
      * @see frysk.proc.ProcObserver#existingTask(frysk.proc.Task)
@@ -157,7 +141,6 @@ public class CoredumpAction implements ProcObserver.ProcAction {
 	} else {
 	    coreFile.setName(this.filename);
 	    coreFile.setWriteAllMaps(this.writeAllMaps);
-	    coreFile.setStackOnly(this.stackOnly);
 
 	    try {
 		coreFile.constructCorefile();
