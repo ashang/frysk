@@ -1,3 +1,8 @@
+2008-02-28  Teresa Thomas  <tthomas@redhat.com>
+
+	* fdebugrpm.sh: Show error message if fdebuginfo install 
+	or arguments missing.
+
 2008-02-28  Tim Moore  <timoore@redhat.com>
 
 	* fhpd.java (TerminalObserver): New class
