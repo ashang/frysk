@@ -1,3 +1,9 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* fcatch.java: Delete unused logger.
+	* fstack.java: Ditto.
+	* fcore.java: Ditto.
+
 2008-02-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fcore.xml: Add --segments option. Delete

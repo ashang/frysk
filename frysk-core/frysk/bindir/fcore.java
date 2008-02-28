@@ -39,7 +39,6 @@
 
 package frysk.bindir;
 
-import java.util.logging.Logger;
 import frysk.event.ProcEvent;
 
 import frysk.proc.Proc;
@@ -52,14 +51,14 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
 
-public class fcore
-{
+public class fcore {
+
     private static String matchingRegEx = "";
+
     private static String filename = "core";  
     private static boolean writeAllMaps = false;
 
     private static int mapOptionCount = 0;
-    protected static final Logger logger = Logger.getLogger("frysk");
   
     /**
      * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But

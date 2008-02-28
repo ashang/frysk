@@ -41,8 +41,6 @@ package frysk.bindir;
 
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
-
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -55,14 +53,12 @@ import frysk.util.StacktraceAction;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
-public final class fstack
-{
+public final class fstack {
+
   private static StacktraceAction stacker;
 
   private static CommandlineParser parser;
 
-  protected static final Logger logger = Logger.getLogger("frysk"); 
-  
   private static PrintWriter printWriter = new PrintWriter(System.out);
   
   static PrintStackOptions options = new PrintStackOptions();
