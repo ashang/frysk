@@ -41,14 +41,13 @@
 package frysk.proc;
 
 import java.util.Observable;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
-public class TestFindProc
-    extends TestLib
-{
+public class TestFindProc extends TestLib {
+    private static final Log fine = Log.fine(TestFindProc.class);
 
   class ProcCounter
       implements Observer
@@ -71,8 +70,7 @@ public class TestFindProc
 	    expectedId = pid;
 	}
 	public void procFound(Proc proc) {
-	    logger.log(Level.FINE, "proc: {0} proc parent: {1} \n",
-		       new Object[] { proc, proc.getParent() });
+	    fine.log("procFound", proc, "parent", proc.getParent());
 	    assertEquals("procId", expectedId, proc.getPid());
 	    Manager.eventLoop.requestStop();
 	}
@@ -133,11 +131,11 @@ public class TestFindProc
     public void testFindAndRefreshFailed() {
 	FindProc finder = new FindProc() {
 		public void procFound(Proc proc) {
-		    logger.log(Level.FINE, "{0} procId\n", proc);
+		    fine.log(this, "procFound", proc);
 		    fail("Found proc 0, should have failed.");
 		}
 		public void procNotFound(int pid) {
-		    logger.log(Level.FINE, "{0} procId\n", new Integer(pid));
+		    fine.log(this, "procNotFound", pid);
 		    assertEquals("pid", 0, pid);
 		    Manager.eventLoop.requestStop();
 		}

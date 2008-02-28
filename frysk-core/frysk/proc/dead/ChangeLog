@@ -1,3 +1,8 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadProc.java: Use frysk.rsl.
+	* DeadTask.java: Ditto.
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestLinuxCore.java: Use PrintStackOptions instead of boolean list.

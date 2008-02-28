@@ -41,7 +41,7 @@ package frysk.proc;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
 import frysk.testbed.TestLib;
@@ -52,9 +52,9 @@ import frysk.testbed.DaemonBlockedAtEntry;
  * Check that the observer TaskObserver.Forked works.
  */
 
-public class StressAttachDetachRapidlyForkingMainTask
-    extends TestLib
-{
+public class StressAttachDetachRapidlyForkingMainTask extends TestLib {
+    private static final Log fine = Log.fine(StressAttachDetachRapidlyForkingMainTask.class);
+
     static int numberOfForks = 450;
     static int numberOfForksResident = 2;
 	
@@ -94,22 +94,19 @@ public class StressAttachDetachRapidlyForkingMainTask
 	    {
 		failedCount++;
 	    }
-	    public Action updateForkedParent (Task parent, Task offspring)
-	    {
+	    public Action updateForkedParent(Task parent, Task offspring) {
 		count++;
-				
-		logger.log(Level.INFO, "updatedForkedParent count of: " + count + " for: " + 
-			   parent.getProc().getCommand());
+		fine.log("updatedForkedParent count of", count, "for",
+			 parent.getProc().getCommand());
 		parent.requestUnblock (this);
 		return Action.BLOCK;
 	    }
 			
 	    public Action updateForkedOffspring(Task parent,
 						final Task offspring) {
-				
-		logger.log(Level.INFO, "updatedForkedOffspring count of: " + count + 
-			   " belonging to parent: " + parent.getProc().getCommand() + 
-			   ". My child ID is: " + offspring.getTid());
+		fine.log("updatedForkedOffspring count of", count,
+			 "belonging to parent", parent.getProc().getCommand(),
+			 "my child ID is", offspring.getTid());
 				
 		offspring.requestAddForkedObserver(ForkObserver.this);
 		offspring.requestUnblock(ForkObserver.this);
@@ -122,34 +119,23 @@ public class StressAttachDetachRapidlyForkingMainTask
 
 	// Add a tasks observer to add observers to fork's children
 	new ProcTasksObserver(child.getMainTask().getProc(), new ProcTasks(){
-		public void deletedFrom(Object observable)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.deleted from fired");
+		public void deletedFrom(Object observable) {
+		    fine.log("ProcTasksObserver.deleted from fired");
 		}
-			
-		public void addFailed(Object observable, Throwable w)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.addFailed failed");
+		public void addFailed(Object observable, Throwable w) {
+		    fine.log("ProcTasksObserver.addFailed failed");
 		}
-			
-		public void addedTo(Object observable)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.addedTo fired");
+		public void addedTo(Object observable) {
+		    fine.log("ProcTasksObserver.addedTo fired");
 		}
-			
-		public void existingTask(Task task)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.existingTask fired");				      
+		public void existingTask(Task task) {
+		    fine.log("ProcTasksObserver.existingTask fired");
 		}
-			
-		public void taskRemoved(final Task task)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.taskRemoved fired");				   
+		public void taskRemoved(final Task task) {
+		    fine.log("ProcTasksObserver.taskRemoved fired");
 		}
-			
-		public void taskAdded(final Task task)
-		{
-		    logger.log(Level.INFO,"ProcTasksObserver.taskAdded fired");				   
+		public void taskAdded(final Task task) {
+		    fine.log("ProcTasksObserver.taskAdded fired");
 		}
 	    }
 			      );

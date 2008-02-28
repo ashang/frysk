@@ -48,20 +48,19 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.util.CountDownLatch;
 import frysk.event.Event;
 import frysk.sys.Signal;
+import frysk.rsl.Log;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
  */
 
 public abstract class Proc implements Comparable {
-    protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+    private static final Log fine = Log.fine(Proc.class);
 
     private CountDownLatch quitLatch;
   
@@ -159,7 +158,7 @@ public abstract class Proc implements Comparable {
      */
     protected Proc(Host host, Proc parent, int pid) {
 	this(pid, parent, host, null);
-	logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
+	fine.log(this, "new - create unattached running proc");
     }
 
     /**
@@ -174,7 +173,7 @@ public abstract class Proc implements Comparable {
      */
     protected Proc(Task task, int fork) {
 	this(fork, task.getProc(), task.getProc().getHost(), task);
-	logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
+	fine.log(this, "new - create attached running proc");
     }
 
     /** XXX: Should not be public.  */
@@ -210,7 +209,7 @@ public abstract class Proc implements Comparable {
      * Request that the Proc be forcefully detached. Quickly.
      */
     public void requestAbandon() {
-	logger.log(Level.FINE, "{0} abandon\n", this);
+	fine.log(this, "abandon");
 	performDetach();
 	observations.clear();
     }
@@ -222,7 +221,7 @@ public abstract class Proc implements Comparable {
      * @param e The event to run upon successful detach.
      */
     public void requestAbandonAndRunEvent(final Event e) {
-	logger.log(Level.FINE, "{0} abandonAndRunEvent\n", this);
+	fine.log(this, "abandonAndRunEvent");
 	requestAbandon();
 	observableDetached.addObserver(new Observer() {
 		public void update(Observable o, Object arg) {
@@ -282,7 +281,7 @@ public abstract class Proc implements Comparable {
      * XXX: This should not be public.
      */
     public void add(Proc child) {
-	logger.log(Level.FINEST, "{0} add(Proc) -- a child process\n", this);
+	fine.log(this, "add(Proc) -- a child process");
 	childPool.add(child);
     }
 
@@ -292,7 +291,7 @@ public abstract class Proc implements Comparable {
      * XXX: This should not be public.
      */
     public void remove(Proc child) {
-	logger.log(Level.FINEST, "{0} remove(Proc) -- a child process\n", this);
+	fine.log(this, "remove(Proc) -- a child process");
 	childPool.remove(child);
     }
 
@@ -310,7 +309,7 @@ public abstract class Proc implements Comparable {
     public class ObservableXXX extends Observable {
 	/** XXX: Should not be public.  */
 	public void notify(Object o) {
-	    logger.log(Level.FINE, "{0} notify -- all observers\n", o);
+	    fine.log(this, "notify -- all observers\n", o);
 	    setChanged();
 	    notifyObservers(o);
 	}
@@ -335,7 +334,7 @@ public abstract class Proc implements Comparable {
      * Remove Task from this Proc.
      */
     protected void remove(Task task) {
-	logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
+	fine.log(this, "remove(Task) -- within this Proc");
 	host.observableTaskRemovedXXX.notify(task);
 	taskPool.remove(task.getTaskId());
 	host.remove(task);
@@ -347,7 +346,7 @@ public abstract class Proc implements Comparable {
      * XXX: Should not be public.
      */
     public void retain(Task task) {
-	logger.log(Level.FINE, "{0} retain(Task) -- remove all but task\n", this);
+	fine.log(this, "retain(Task) -- remove all but task");
 	HashMap new_tasks = new HashMap();
 	new_tasks = (HashMap) ((HashMap) taskPool).clone();
 	new_tasks.values().remove(task);

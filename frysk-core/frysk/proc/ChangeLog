@@ -1,3 +1,17 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Use frysk.rsl.
+	* TestProcTasksObserver.java: Ditto.
+	* StressAttachDetachRapidlyForkingMainTask.java: Ditto.
+	* SyscallExaminer.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestFindProc.java: Ditto.
+	* ProcEvent.java: Ditto.
+	* TestTaskSyscallObserver.java: Ditto.
+	* Host.java: Ditto.
+	* Task.java: Ditto.
+	* ProcBlockAction.java: Ditto.
+
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Id.java: Delete.

@@ -41,7 +41,7 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.isa.syscalls.Syscall;
@@ -50,13 +50,8 @@ import frysk.isa.syscalls.Syscall;
  * Superclass for tests that examine process state at a system call.
  */
 
-public class SyscallExaminer
-  extends TestLib 
-{
-  //  public TestExamineSyscall() 
-  //  {
-  //    super();
-  //  }
+public class SyscallExaminer extends TestLib {
+    private static final Log fine = Log.fine(SyscallExaminer.class);
 
   // Timers, observers, counters, etc.. needed for the test.
   public class Tester
@@ -126,8 +121,7 @@ public class SyscallExaminer
       Task task = (Task) obj;
       if (!isChildOfMine (task.getProc()))
 	return;
-      logger.log(Level.FINEST, "Registering pid {0} for kill", 
-		 new Integer(task.getTid()));
+      fine.log("Registering pid for kill", task);
     }
   }
 }

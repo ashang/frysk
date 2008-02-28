@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.isa.syscalls.Syscall;
@@ -48,7 +49,6 @@ import frysk.Config;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import frysk.testbed.SynchronizedOffspring;
 import frysk.sys.Pid;
 import frysk.sys.Signal;
@@ -66,9 +66,9 @@ import frysk.testbed.IsaTestbed;
  * platform. XXX: For reasons noted below, these tests are currently disabled.
  */
 
-public class TestTaskSyscallObserver
-    extends TestLib
-{
+public class TestTaskSyscallObserver extends TestLib {
+    private static final Log fine = Log.fine(TestTaskSyscallObserver.class);
+
     private static class SyscallObserver extends TaskObserverBase
 	implements TaskObserver.Syscalls
     {
@@ -294,7 +294,7 @@ public class TestTaskSyscallObserver
           };
         }
 
-      logger.log(Level.FINE, "{0} **updateAttached\n", task);
+      fine.log("updateAttached", task);
       task.requestAddSyscallsObserver(syscallObserver1);
       // task.requestUnblock(this);
       return Action.BLOCK;
@@ -490,7 +490,7 @@ public class TestTaskSyscallObserver
 	    // verify that read attempted
 	    if (readsys.equals(syscall)) {
 		long numberOfBytes = syscall.getArguments(task, 3);
-		logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
+		fine.log(this, "updateSyscallEnter READ");
 		if (numberOfBytes != 1)
 		    throw new RuntimeException("bytes to read not 1");
 		if (readEnter == 0)
@@ -505,7 +505,7 @@ public class TestTaskSyscallObserver
 	    SyscallTable syscallTable = getSyscallTable(task);
 	    Syscall syscall = syscallTable.getSyscall(task);
 	    if (readsys.equals(syscall)) {
-		logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
+		fine.log(this, "updateSyscallExit READ");
 		if (readEnter <= readExit)
 		    throw new RuntimeException("Read exit before enter");
 		++readExit;

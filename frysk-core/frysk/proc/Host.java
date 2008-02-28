@@ -43,9 +43,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Observable; // XXX: Temporary.
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import frysk.rsl.Log;
 
 /**
  * A host machine.
@@ -55,12 +53,13 @@ import java.util.logging.Logger;
  */
 
 public abstract class Host implements Comparable {
-    static protected final Logger logger = Logger.getLogger("frysk");//.proc
+    private static final Log fine = Log.fine(Host.class);
+
     /**
      * The host corresponds to a specific system.
      */
     protected Host() {
-	logger.log(Level.FINE, "{0} Host\n", this);
+	fine.log(this, "Host");
     }
   
     // Maintain a collection of all known Tasks.
@@ -72,15 +71,15 @@ public abstract class Host implements Comparable {
 
     Map taskPool = new HashMap();
     void add(Task task) {
-	logger.log(Level.FINEST, "{0} add Task\n", this);
+	fine.log(this, "add Task");
 	taskPool.put(task.getTaskId(), task);
     }
     void remove(Task task) {
-	logger.log(Level.FINEST, "{0} remove Task\n", this);
+	fine.log(this, "remove Task");
 	taskPool.remove(task.getTaskId());
     }
     void removeTasks(Collection c) {
-	logger.log(Level.FINE, "{0} removeTasks Collection\n", this);
+	fine.log(this, "removeTasks Collection");
 	taskPool.values().removeAll(c);
     }
 	
@@ -88,7 +87,7 @@ public abstract class Host implements Comparable {
      * XXX: Should not be public.
      */
     public void remove(Proc proc) {
-	logger.log(Level.FINEST, "{0} remove Proc\n", this);
+	fine.log(this, "remove Proc");
 	observableProcRemovedXXX.notify(proc);
     }
 
@@ -127,7 +126,7 @@ public abstract class Host implements Comparable {
      */
     public final void requestCreateAttachedProc(String[] args,
 						TaskObserver.Attached attachedObserver) {
-	logger.log(Level.FINE, "{0} requestCreateAttachedProc String[] TaskObserver.Attached\n", this); 
+	fine.log(this, "requestCreateAttachedProc String[] TaskObserver.Attached"); 
 	requestCreateAttachedProc(null, null, null, args, attachedObserver);
     }
 

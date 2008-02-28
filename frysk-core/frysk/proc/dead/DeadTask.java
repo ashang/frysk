@@ -39,7 +39,7 @@
 
 package frysk.proc.dead;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.proc.Task;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
@@ -53,6 +53,8 @@ import frysk.isa.banks.RegisterBanks;
  */
 
 abstract class DeadTask extends Task {
+    private static final Log fine = Log.fine(DeadTask.class);
+
     DeadTask(Proc proc, int pid, ISA isa, RegisterBanks registerBanks) {
 	super(proc, pid);
 	this.isa = isa;
@@ -69,7 +71,7 @@ abstract class DeadTask extends Task {
      * resumes.
      */
     public void requestUnblock(final TaskObserver observerArg) {
-	logger.log(Level.FINE, "{0} requestUnblock is bogus\n", this);
+	fine.log(this, "requestUnblock is bogus");
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.
@@ -79,7 +81,7 @@ abstract class DeadTask extends Task {
      * Add a TaskObserver.Cloned observer.
      */
     public void requestAddClonedObserver(TaskObserver.Cloned o) {
-	logger.log(Level.FINE, "{0} requestAddClonedObserver is bogus\n", this);
+	fine.log(this, "requestAddClonedObserver is bogus");
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.
@@ -110,7 +112,7 @@ abstract class DeadTask extends Task {
      * Add a TaskObserver.Forked observer.
      */
     public void requestAddForkedObserver(TaskObserver.Forked o) {
-	logger.log(Level.FINE, "{0} requestAddForkedObserver is bogus\n", this);
+	fine.log(this, "requestAddForkedObserver is bogus");
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.
@@ -127,7 +129,7 @@ abstract class DeadTask extends Task {
      * Add a TaskObserver.Terminated observer.
      */
     public void requestAddTerminatedObserver(TaskObserver.Terminated o) {
-	logger.log(Level.FINE, "{0} requestAddTerminatedObserver is bogus\n", this);
+	fine.log(this, "requestAddTerminatedObserver is bogus");
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.

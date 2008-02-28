@@ -39,7 +39,7 @@
 
 package frysk.proc.dead;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.proc.Proc;
 import frysk.proc.Host;
 
@@ -50,6 +50,8 @@ import frysk.proc.Host;
  */
 
 public abstract class DeadProc extends Proc {
+    private static final Log fine = Log.fine(DeadProc.class);
+
     DeadProc(Host host, Proc parent, int pid) {
 	super(host, parent, pid);
     }
@@ -66,14 +68,14 @@ public abstract class DeadProc extends Proc {
      * tables.
      */
     public void requestRefresh() {
-	logger.log(Level.FINE, "{0} requestRefresh\n", this);
+	fine.log(this, "requestRefresh");
     }
     public void sendRefresh() {
-	logger.log(Level.FINE, "{0} sendRefresh\n", this);
+	fine.log(this, "sendRefresh");
     }
 
     protected void performDetach() {
-	logger.log(Level.FINE, "{0} performDetach\n", this);
+	fine.log(this, "performDetach");
 	// XXX: Fake out for now. What kind of observers would you put
 	// on a core file? Might need a brain dead attached state in
 	// this scenario for compataibility.

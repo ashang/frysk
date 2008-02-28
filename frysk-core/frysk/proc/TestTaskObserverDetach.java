@@ -44,7 +44,7 @@ import frysk.event.RequestStopEvent;
 import frysk.sys.Signal;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
@@ -55,9 +55,9 @@ import frysk.testbed.TaskObserverBase;
  * handled.
  */
 
-public class TestTaskObserverDetach
-    extends TestLib
-{
+public class TestTaskObserverDetach extends TestLib {
+    private static final Log fine = Log.fine(TestTaskObserverDetach.class);
+
     /**
      * Co-ordinates a detach in the middle of some over random event.
      */
@@ -141,7 +141,7 @@ public class TestTaskObserverDetach
 		    }
 		});
 
-	    logger.log (Level.FINE, "{0} waiting for detach\n", this);
+	    fine.log(this, "waiting for detach");
 	    ackHandler.assertRunUntilSignaled ();
 	}
     }

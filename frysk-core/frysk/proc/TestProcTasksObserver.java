@@ -41,7 +41,7 @@ package frysk.proc;
 
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskSet;
@@ -53,6 +53,7 @@ import frysk.testbed.SlaveOffspring;
  */
 
 public class TestProcTasksObserver extends TestLib {
+    private static final Log fine = Log.fine(TestProcTasksObserver.class);
 		
     /**
      * Check that adding ProcObserver.ProcTasks to a running process
@@ -366,23 +367,22 @@ public class TestProcTasksObserver extends TestLib {
 	int tasksAddedCounter;
 	int tasksRemovedCounter;
 		
-	public void taskAdded(Task task)
-	{
-	    logger.log(Level.FINE, "ProcTasksTester.taskAdded() task: {0}\n", task);
+	public void taskAdded(Task task) {
+	    fine.log("ProcTasksTester.taskAdded() task", task);
 	    this.tasksAdded.add(task);
 	    tasksAddedCounter++;
 	}
 		
 	public void taskRemoved(Task task)
 	{
-	    logger.log(Level.FINE, "ProcTasksTester.taskRemoved() task: {0}\n", task);
+	    fine.log("ProcTasksTester.taskRemoved() task", task);
 	    this.tasksRemoved.add(task);
 	    tasksRemovedCounter++;
 	}
 		
 	public void existingTask(Task task)
 	{
-	    logger.log(Level.FINE, "ProcTasksTester.existingTask() task: {0}\n", task);
+	    fine.log("ProcTasksTester.existingTask() task", task);
 	    this.existingTasks.add(task);
 	    existingTaskCounter++;
 	}
@@ -413,20 +413,18 @@ public class TestProcTasksObserver extends TestLib {
 		
 	public void existingTask(Task task) {
 	    super.existingTask(task);
-	    logger.log(Level.FINEST, "in MyTester existingTask, " +
-		       "existingTaskCounter : {0}, count : {1}", new Object[] {new 
-									       Integer(existingTaskCounter), new Integer(c)});
+	    fine.log("in MyTester existingTask, existingTaskCounter",
+		     existingTaskCounter, "count", c);
 	    if (existingTaskCounter == c) {
-		logger.log(Level.FINEST, "inside existingTask if statementpid : {0}", p);
+		fine.log("inside existingTask if statementpid", p);
 		Manager.eventLoop.requestStop();
 	    }
 	}
 		
 	public void taskRemoved(Task task) {
 	    super.taskRemoved(task);
-	    logger.log(Level.FINEST, "in MyTester taskRemoved, " +
-		       "taskRemovedCounter : {0}, count : {1}", new Object[] {new 
-									      Integer(tasksRemovedCounter), new Integer(c)});
+	    fine.log("in MyTester taskRemoved, taskRemovedCounter",
+		     tasksRemovedCounter, "count", c);
 	    Manager.eventLoop.requestStop();
 	}
     }

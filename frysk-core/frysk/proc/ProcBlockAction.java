@@ -43,8 +43,7 @@ package frysk.proc;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.isa.signals.Signal;
 import frysk.event.Event;
 import frysk.proc.dead.LinuxCoreFactory;
@@ -59,8 +58,9 @@ import frysk.proc.dead.LinuxCoreFactory;
  * called on all tasks.
  * 
  */
-public class ProcBlockAction
-{
+public class ProcBlockAction {
+    private static final Log fine = Log.fine(ProcBlockAction.class);
+
   private ProcObserver.ProcAction action;
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
 
@@ -127,33 +127,29 @@ public class ProcBlockAction
 
   }
 
-  protected static final Logger logger = Logger.getLogger("frysk");
-
   protected Proc proc;
 
   private LinkedList tasks = new LinkedList();
 
   private LinkedList taskList;
 
-  /**
-   * Creates a ProcBlockAction which will attach to the given process stopping
-   * all of its tasks, performing the requested action on each task, and then
-   * removing itself.
-   * 
-   * @param theProc a non-null Process.
-   */
-  public ProcBlockAction (Proc theProc, ProcObserver.ProcAction action)
-  {
-    logger.log(Level.FINE, "{0} new\n", this);
-    proc = theProc;
-    this.action = action;
-
-    taskList = proc.getTasks();
-    requestAdd();
-  }
+    /**
+     * Creates a ProcBlockAction which will attach to the given
+     * process stopping all of its tasks, performing the requested
+     * action on each task, and then removing itself.
+     * 
+     * @param theProc a non-null Process.
+     */
+    public ProcBlockAction(Proc theProc, ProcObserver.ProcAction action) {
+	fine.log(this, "new");
+	proc = theProc;
+	this.action = action;
+	taskList = proc.getTasks();
+	requestAdd();
+    }
   
     public ProcBlockAction(int pid) {
-	logger.log(Level.FINE, "{0} new\n", this);
+	fine.log(this, "new");
 	Manager.host.requestProc(pid, new FindProc() {
 		public void procFound(Proc proc) {
 		    ProcBlockAction.this.proc = proc;
@@ -191,10 +187,8 @@ public class ProcBlockAction
       {
         Task mainTask = proc.getMainTask();
 
-        if (mainTask == null)
-          {
-            logger.log(Level.FINE, "Could not get main thread of "
-                                   + "this process\n {0}", proc);
+        if (mainTask == null) {
+            fine.log("Could not get main thread of this process", proc);
             action.addFailed(proc, new RuntimeException("Process lost: could not get "
                                                  + "the main thread of this "
                                                  + "process.\n" + proc));
@@ -241,8 +235,9 @@ public class ProcBlockAction
     if (task != null)
       taskList.remove(task);
 
-    logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
-               new Object[] { taskList, proc.getTasks() });
+    if (fine.logging())
+	fine.log(this, "this taskList", taskList, "proc.taskList",
+		 proc.getTasks());
 
     if (taskList.isEmpty())
       {

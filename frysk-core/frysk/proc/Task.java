@@ -45,16 +45,15 @@ import frysk.isa.syscalls.SyscallTableFactory;
 import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import frysk.isa.registers.Register;
 import frysk.isa.ISA;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.signals.SignalTableFactory;
+import frysk.rsl.Log;
 
 public abstract class Task {
-    protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+    private static final Log fine = Log.fine(Task.class);
 
     /**
      * If known, as a result of tracing clone or fork, the task that
@@ -135,7 +134,7 @@ public abstract class Task {
      */
     protected Task(Proc proc, int pid) {
 	this(pid, proc, null);
-	logger.log(Level.FINEST, "{0} new -- create unattached\n", this);
+	fine.log("new -- create unattached");
     }
 
     /**
@@ -143,7 +142,7 @@ public abstract class Task {
      */
     protected Task(Task task, int clone) {
 	this(clone, task.proc, task);
-	logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
+	fine.log(this, "new -- create attached clone");
     }
 
     /**
