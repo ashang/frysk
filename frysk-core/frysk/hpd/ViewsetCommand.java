@@ -101,6 +101,7 @@ class ViewsetCommand extends ParameterizedCommand {
 	for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
 	    temptd = (TaskData) iter.next();
 	    if (loadedOnly && cli.loadedProcs.containsValue(new Integer(temptd.getID()))
+		    || loadedOnly && cli.loadedProcs.containsKey(temptd.getTask().getProc())
 		    || !loadedOnly) {
 		cli.outWriter.print("[");
 		cli.outWriter.print(temptd.getParentID());

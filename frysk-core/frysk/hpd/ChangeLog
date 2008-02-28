@@ -6,6 +6,8 @@
 
 	* TestKillCommand.java: Fix regular expressions; add wait so 
 	test will successfully finish.
+	
+	* ViewsetCommand.java: Fix another listing bug for load/unload.
 
 2008-02-28  Tim Moore  <timoore@redhat.com>
 
