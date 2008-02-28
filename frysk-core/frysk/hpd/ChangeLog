@@ -1,3 +1,9 @@
+2008-02-27  Rick Moseley  <rmoseley@redhat.com>
+
+	* ViewsetCommand.java: Fix error when duplicate executables are
+	loaded/unloaded(bz 5799).
+
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackCommands.java: Use PrintStackOptions instead of boolean list.

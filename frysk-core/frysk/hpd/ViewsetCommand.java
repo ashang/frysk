@@ -88,6 +88,9 @@ class ViewsetCommand extends ParameterizedCommand {
      * 
      * @param tempset is the target set to use in printing
      * @param cli is the current command line interface object
+     * @param displayedName is the String used for the title of the set
+     * @param loadedOnly is true if the display is to show procs that exist in the 
+     * 		cli.loadeProcs table only, false if not
      */
     
     static void printLoop(PTSet tempset, CLI cli, String displayedName, boolean loadedOnly) {
@@ -97,7 +100,7 @@ class ViewsetCommand extends ParameterizedCommand {
 	cli.outWriter.println("\tpid\tid\tpath-to-executable");
 	for (Iterator iter = tempset.getTaskData(); iter.hasNext();) {
 	    temptd = (TaskData) iter.next();
-	    if (loadedOnly && cli.loadedProcs.containsKey(temptd.getTask().getProc())
+	    if (loadedOnly && cli.loadedProcs.containsValue(new Integer(temptd.getID()))
 		    || !loadedOnly) {
 		cli.outWriter.print("[");
 		cli.outWriter.print(temptd.getParentID());
