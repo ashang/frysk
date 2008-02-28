@@ -45,7 +45,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.isa.signals.Signal;
@@ -57,9 +57,8 @@ import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
-public class TestFCatch
-    extends TestLib
-{
+public class TestFCatch extends TestLib {
+    private static final Log fine = Log.fine(TestFCatch.class);
 
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
@@ -113,7 +112,7 @@ public class TestFCatch
 
     public void trace (String[] command, boolean attach)
     {
-      logger.log(Level.FINE, "{0} trace", this);
+      fine.log("trace");
       if (attach == true)
         init();
       else
@@ -121,12 +120,12 @@ public class TestFCatch
     }
 
       private void init() {
-	  logger.log(Level.FINE, "{0} init", this);
+	  fine.log("init");
 	  Iterator i = proc.getTasks().iterator();
 	  while (i.hasNext()) {
 	      ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
 	  }
-	  logger.log(Level.FINE, "{0} exiting init", this);
+	  fine.log("exiting init");
       }
 
     /**
@@ -139,7 +138,7 @@ public class TestFCatch
     {
       public Action updateAttached (Task task)
       {
-        logger.log(Level.FINE, "{0} updateAttached", task);
+        fine.log("updateAttached", task);
         // System.err.println("CatchObserver.updateAttached on" + task);
         if (signalObserver == null)
           signalObserver = new SignalObserver();
@@ -154,7 +153,7 @@ public class TestFCatch
 
       public Action updateClonedParent (Task parent, Task offspring)
       {
-        logger.log(Level.FINE, "{0} updateClonedParent", parent);
+	  fine.log("updateClonedParent", parent, "offspring", offspring);
         // System.out.println("Cloned.updateParent");
         parent.requestUnblock(this);
         return Action.BLOCK;
@@ -162,7 +161,7 @@ public class TestFCatch
 
       public Action updateClonedOffspring (Task parent, Task offspring)
       {
-        logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
+	  fine.log("updateClonedOffspring", offspring, "parent", parent);
         // System.err.println("CatchObserver.updateClonedOffspring " +
         // offspring);
         numTasks = offspring.getProc().getTasks().size();
@@ -177,14 +176,14 @@ public class TestFCatch
       }
 
       public Action updateTerminating(Task task, Signal signal, int value) {
-	  logger.log(Level.FINE, "{0} updateTerminating", task);
+	  fine.log("updateTerminating", task, "signal", signal);
 	  // System.err.println("CatchObserver.updateTerminating on "
 	  // + task + " " + value + " " + numTasks);
 	  return Action.CONTINUE;
       }
 
       public Action updateTerminated(Task task, Signal signal, int value) {
-	  logger.log(Level.FINE, "{0} updateTerminated", task);
+	  fine.log("updateTerminated", task, "signal", signal);
 	  // System.err.println("CatchObserver.updateTerminated " +
 	  // task); if (--FCatch.this.numTasks <= 0)
 	  // Manager.eventLoop.requestStop();
@@ -193,7 +192,7 @@ public class TestFCatch
 
       public void addedTo (Object observable)
       {
-        logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
+        fine.log("CatchObserver.addedTo", observable);
         // System.out.println("CatchObserver.addedTo " + (Task) observable);
         ++numAdds;
         if (numAdds == ((Task) observable).getProc().getTasks().size() * 4)
@@ -207,13 +206,13 @@ public class TestFCatch
 
       public void deletedFrom (Object observable)
       {
-        logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+        fine.log("deletedFrom", (Task) observable);
       }
     }
 
     class SignalObserver implements TaskObserver.Signaled {
 	public Action updateSignaled (Task task, Signal signal) {
-	    logger.log(Level.FINE, "{0} updateSignaled", task);
+	    fine.log("updateSignaled", task);
 	    sigTask = task;
 	    numTasks = task.getProc().getTasks().size();
 	    // stackTrace.append("fcatch: from PID " +
@@ -235,13 +234,13 @@ public class TestFCatch
 
       public void addedTo (Object observable)
       {
-        logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
+        fine.log("SignalObserver.addedTo", (Task) observable);
         // System.err.println("SignalObserver.addedTo");
       }
 
       public void deletedFrom (Object observable)
       {
-        logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+        fine.log("deletedFrom", (Task) observable);
       }
     }
 
@@ -261,17 +260,17 @@ public class TestFCatch
 
       public void addedTo (Object observable)
       {
-        logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
+        fine.log("SignalObserver.addedTo", (Task) observable);
       }
 
       public void deletedFrom (Object observable)
       {
-        logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+        fine.log("deletedFrom", (Task) observable);
       }
     }
 
       private void generateStackTrace (Task task) {
-	  logger.log(Level.FINE, "{0} generateStackTrace", task);
+	  fine.log("generateStackTrace", task);
 	  --numTasks;
 	  Frame frame = null;
 	  try {
@@ -286,7 +285,7 @@ public class TestFCatch
 	  StackFactory.printStack(printWriter, frame);
 	  this.stackTrace.append(stringWriter.getBuffer());
       
-	  logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
+	  fine.log("exiting generateStackTrace", task);
       }
 
     public String getStackTrace ()

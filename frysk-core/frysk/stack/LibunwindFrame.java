@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,9 +39,8 @@
 
 package frysk.stack;
 
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.isa.registers.Register;
-import java.util.logging.Logger;
 import lib.unwind.Cursor;
 import frysk.isa.ISA;
 import frysk.proc.Task;
@@ -49,9 +48,9 @@ import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.isa.registers.RegisterMap;
 
-class LibunwindFrame extends Frame
-{  
-    private static Logger logger = Logger.getLogger("frysk");
+class LibunwindFrame extends Frame {  
+    private static final Log fine = Log.fine(LibunwindFrame.class);
+
     private Symbol symbol;
   
     /* Identifies this frame by its CFA and frame start address */
@@ -104,8 +103,7 @@ class LibunwindFrame extends Frame
 			    byte[] bytes, int start) {
 	if (registerMap.containsKey(register)) {
 	    Number number = registerMap.getRegisterNumber(register);
-	    logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
-		       new Object[] { this, register, number });
+	    fine.log(this, "getRegister register", register, "number", number);
 	    cursor.getRegister(number, offset, length, bytes, start);
 	} else {
 	    getTask().access(register, (int)offset, length, bytes, start,
@@ -117,8 +115,7 @@ class LibunwindFrame extends Frame
 			    byte[] bytes, int start) {
 	if (registerMap.containsKey(register)) {
 	    Number number = registerMap.getRegisterNumber(register);
-	    logger.log(Level.FINE, "{0}: getRegister register: {1} ({2})\n",
-		       new Object[] { this, register, number });
+	    fine.log(this, "getRegister register", register, "number", number);
 	    cursor.setRegister(registerMap.getRegisterNumber(register),
 			       offset, length, bytes, start);
 	} else {

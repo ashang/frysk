@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,25 +41,21 @@
 package frysk.rt;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
+import frysk.rsl.Log;
 
 import lib.dwfl.DwflLine;
 
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 
-public class LineBreakpoint
-  extends SourceBreakpoint
-{
+public class LineBreakpoint extends SourceBreakpoint {
+    private static final Log fine = Log.fine(LineBreakpoint.class);
+
   private String fileName;
   private int lineNumber;
   private int column;
-  static private Logger logger;
     
   public LineBreakpoint(int id, String fileName, int lineNumber, int column) 
   {
@@ -96,6 +92,7 @@ public class LineBreakpoint
   }
 
   public LinkedList getBreakpointRawAddresses(Task task) {
+      fine.log(this, "getBreakpointRawAddresses task", task, "...");
       LinkedList dies
           = DwflCache.getDwfl(task)
 	  .getLineAddresses(fileName, lineNumber, column);
@@ -105,16 +102,7 @@ public class LineBreakpoint
           result.add(new Long(((DwflLine)iterator.next()).getAddress()));
       }
       
-      if (logger == null)
-          logger = LogManager.getLogManager().getLogger("frysk");
-      if (logger != null && logger.isLoggable(Level.FINEST) && result != null) {
-          Iterator iter = result.iterator();
-          int i;
-          for (i = 0; iter.hasNext(); i++) {
-              logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-                          "dwfl[" + i + "]: {0}", iter.next());
-          }
-      }
+      fine.log(this, "getBreakpointRawAddresses ... returns", result);
       return result;
   }
 

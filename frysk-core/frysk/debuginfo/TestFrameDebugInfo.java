@@ -43,10 +43,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Logger;
-
 import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
@@ -63,11 +60,7 @@ import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.value.Variable;
 
-public class TestFrameDebugInfo
-    extends TestLib
-{
-    /// I am not looking at what you are typing. I just have to see ya type
-  Logger logger = Logger.getLogger("frysk");
+public class TestFrameDebugInfo extends TestLib {
 
   public void testFrameDebugInfoStackTrace()
   {

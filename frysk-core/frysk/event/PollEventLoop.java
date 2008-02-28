@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,15 +44,15 @@ import frysk.sys.PollBuilder;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Implements an event loop.
  */
 
-class PollEventLoop
-    extends EventLoop
-{
+class PollEventLoop extends EventLoop {
+    private static final Log fine = Log.fine(PollEventLoop.class);
+
     protected void signalEmpty()
     {
 	Poll.empty ();
@@ -66,7 +66,7 @@ class PollEventLoop
      */
     public synchronized void add (PollEvent fd)
     {
-	logger.log (Level.FINE, "{0} add PollEvent\n", this);
+	fine.log(this, "add PollEvent", fd);
 	throw new RuntimeException ("not implemented");
     }
 
@@ -90,11 +90,11 @@ class PollEventLoop
 	    {
 		super(Signal.CHLD);
 		this.waitBuilder = waitBuilder;
-		logger.log(Level.FINE, "{0} PollWaitOnSigChld\n", this);
+		fine.log(this, "PollWaitOnSigChld");
 	    }
 	    public final void execute ()
 	    {
-		logger.log(Level.FINE, "{0} execute\n", this);
+		fine.log(this, "execute");
 		Wait.waitAllNoHang(waitBuilder);
 	    }
 	}
@@ -108,7 +108,7 @@ class PollEventLoop
 		return ("{" + super.toString () + "}");
 	    }
 	    public void signal(Signal sig) {
-		logger.log (Level.FINEST, "{0} PollBuilder.signal Sig\n", this); 
+		fine.log(this, "PollBuilder.signal Sig", sig); 
 		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.
@@ -117,9 +117,8 @@ class PollEventLoop
 	    }
 	};
     
-    protected void block (long millisecondTimeout)
-    {
-	logger.log (Level.FINEST, "{0} block\n", this); 
+    protected void block (long millisecondTimeout) {
+	fine.log(this, "block timeout", millisecondTimeout); 
 	Poll.poll (pollObserver, millisecondTimeout);
     }
 }

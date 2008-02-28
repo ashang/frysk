@@ -1,3 +1,7 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* HardList.java: Use frysk.rsl.
+
 2008-02-28  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestKillCommand.java: Fix regular expressions; add wait so 

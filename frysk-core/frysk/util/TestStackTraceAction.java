@@ -42,7 +42,7 @@ package frysk.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 import frysk.Config;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.RequestStopEvent;
@@ -54,9 +54,8 @@ import frysk.proc.dead.LinuxCoreFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
-public class TestStackTraceAction
-    extends TestLib
-{
+public class TestStackTraceAction extends TestLib {
+    private static final Log fine = Log.fine(TestStackTraceAction.class);
 
     static PrintStackOptions options = new PrintStackOptions();
     
@@ -128,7 +127,7 @@ public class TestStackTraceAction
              + "}";
 
     String result = stringWriter.getBuffer().toString();
-    logger.log(Level.FINE, result);
+    fine.log("result", result);
     assertTrue(result + "should match: " + regex + " threads",
                result.matches(regex));
 

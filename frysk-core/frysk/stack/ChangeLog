@@ -1,3 +1,9 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindAddressSpace.java: Use frysk.rsl.
+	* TestFrame.java: Ditto.
+	* LibunwindFrame.java: Ditto.
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java: Use PrintStackOptions instead of boolean list.

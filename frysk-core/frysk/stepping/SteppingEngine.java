@@ -48,8 +48,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import lib.dwfl.DwflLine;
@@ -72,7 +71,7 @@ import frysk.isa.signals.Signal;
  * stepping.
  */
 public class SteppingEngine {
-    protected Logger logger = Logger.getLogger("frysk");
+    private static final Log fine = Log.fine(SteppingEngine.class);
 
     /* Set of Tasks currently running, or unblocked.
      Package access so Breakpoint.PersistentBreakpoint can get at it. */
@@ -1293,28 +1292,17 @@ public class SteppingEngine {
 		monitor = new Object();
 	}
 
-	protected void logHit(Task task, long address, String message) {
-	    if (logger.isLoggable(Level.FINEST)) {
-		Object[] logArgs = { task, Long.toHexString(address),
-				     Long.toHexString(task.getPC()),
-			Long.toHexString(this.address) };
-		logger.logp(Level.FINEST, "SteppingEngine.SteppingBreakpoint",
-			"updateHit", message, logArgs);
-	    }
-	}
-
 	public Action updateHit(Task task, long address) {
 	    //      System.err.println("SteppingBreakpoint.updateHIt " + task);
-	    logHit(task, address, "task {0} at 0x{1}\n");
+	    fine.log(this, "updateHit task", task, "address", address);
 	    if (address != this.address) {
-		logger.logp(Level.WARNING, "SteppingEngine.SteppingBreakpoint",
-			"updateHit", "Hit wrong address!");
+		fine.log(this, "Hit wrong address!");
 		return Action.CONTINUE;
 	    } else {
 		addy = address;
-		logHit(task, address, "adding instructionobserver {0} 0x{2}");
-		task
-			.requestAddInstructionObserver(SteppingEngine.this.steppingObserver);
+		fine.log(this, "updateHit task", task, "address", address,
+			 "adding instruction observer");
+		task.requestAddInstructionObserver(SteppingEngine.this.steppingObserver);
 	    }
 
 	    ++triggered;

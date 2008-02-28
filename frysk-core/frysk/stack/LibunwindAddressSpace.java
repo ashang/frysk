@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,8 +49,7 @@ import frysk.dwfl.DwflFactory;
 import frysk.isa.ISA;
 import frysk.proc.MemoryMap;
 import frysk.proc.Task;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import lib.unwind.AddressSpace;
 import lib.unwind.ByteOrder;
 import lib.unwind.ElfImage;
@@ -58,8 +57,8 @@ import lib.unwind.ProcInfo;
 import frysk.isa.registers.RegisterMap;
 
 class LibunwindAddressSpace extends AddressSpace {
+    private static final Log fine = Log.fine(LibunwindAddressSpace.class);
 
-    private static final Logger logger = Logger.getLogger("frysk");
     private final Task task;
     private final ISA isa;
     private final RegisterMap registerMap;
@@ -93,11 +92,7 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     public int accessMem (long addr, byte[] valp, boolean write) {
-	logger.log(Level.FINEST, "accessMem address {0} length: {1}\n",
-		   new Object[] {
-		       Long.toHexString(addr),
-		       new Integer(valp.length)
-		   });
+	fine.log(this, "accessMem address", addr, "length", valp.length);
 	task.getMemory().get(addr, valp, 0, valp.length);
 	return 0;
     }
@@ -110,38 +105,33 @@ class LibunwindAddressSpace extends AddressSpace {
 	    length = register.getType().getSize();
 	else
 	    length = fpvalp.length;
-	logger.log(Level.FINE, "{0}: accessReg {1} ({2}), {3} bytes\n",
-		   new Object[] { this, regnum, register,
-				  new Integer(length) });
+	fine.log(this, "accessReg", regnum, "register", register,
+		 "length", length);
 	task.access(register, 0, length, fpvalp, 0, write);
 	return 0;
     }
 
     public long getReg(Number regnum) {
 	Register register = registerMap.getRegister(regnum);
-	logger.log(Level.FINE, "{0}: getReg {1} ({2})",
-		   new Object[] { this, regnum, register });
+	fine.log(this, "getReg", regnum, "register", register);
 	long val = task.getRegister(register);
-	logger.log(Level.FINE, "read value: 0x{0}\n",
-		   Long.toHexString(val));
+	fine.log(this, "read value", val);
 	return val;
     }
 
     public void setReg(Number regnum, long regval) {
 	Register register = registerMap.getRegister(regnum);
-	logger.log(Level.FINE, "{0}: setReg {1} ({2}), val {3}",
-		   new Object[] { this, regnum, register, new Long(regval) });
+	fine.log(this, "setReg", regnum, "register", register, "value", regval);
 	task.setRegister(register, regval);
     }
 
     public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
-	logger.log(Level.FINE, "Entering findProcInfo, ip: {0}\n",
-		   Long.toHexString(ip));
+	fine.log(this, "findProcInfo ip", ip, "needUnwindInfo", needUnwindInfo);
 	ElfImage elfImage = getElfImage(ip);
-	logger.log(Level.FINEST, "Obtained elfImage: {0}\n", elfImage);
+	fine.log(this, "Obtained elfImage", elfImage);
 	procInfo = getUnwinder()
 	    .createProcInfoFromElfImage(this, ip, needUnwindInfo, elfImage);
-	logger.log(Level.FINE, "post procInfo {0}\n", procInfo);
+	fine.log(this, "post procInfo", procInfo);
 	return procInfo;
     }
 
@@ -151,27 +141,25 @@ class LibunwindAddressSpace extends AddressSpace {
     }
 
     private ElfImage getElfImage (long addr) {
-	logger.log(Level.FINE, "{0} Entering getElfImage, addr: 0x{1}\n", 
-		   new Object [] {this, Long.toHexString(addr)} );
+	fine.log(this, "getElfImage addr", addr);
 	ElfImage elfImage = null;
 	MemoryMap map = task.getProc().getMap(addr);
     
 	if (map == null) {
-	    logger.log(Level.FINEST, "Couldn't find memory map.\n");
+	    fine.log(this, "Couldn't find memory map");
 	    return null;
 	}
 	if (DwflFactory.isVDSO(task.getProc(), map)) {
-	    logger.log(Level.FINEST, "Handling VDSO map\n");
+	    fine.log(this, "Handling VDSO map");
 	    elfImage = getUnwinder()
 		.createElfImageFromVDSO(this, map.addressLow, 
 					map.addressHigh, map.offset);
 	} else {
-	    logger.log(Level.FINEST, "Handling regular map name: {0}",
-		       map.name);
+	    fine.log(this, "Handling regular map name", map.name);
 	    elfImage = ElfImage.mapElfImage(map.name, map.addressLow, 
 					    map.addressHigh, map.offset);
 	}
-	logger.log(Level.FINER, "Leaving getElfImage");
+	fine.log(this, "Leaving getElfImage");
 	return elfImage;
     }
 }

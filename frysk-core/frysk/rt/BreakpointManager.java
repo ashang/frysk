@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,9 +45,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import frysk.rsl.Log;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
@@ -64,12 +62,11 @@ import lib.dwfl.DwarfDie;
  * inserting breakpoints whose addresses cannot be found in the
  * executable, trying again when shared libraries are loaded.
  */
-public class BreakpointManager
-  extends Observable {
-//    private int breakpointID = 0;
+public class BreakpointManager extends Observable {
+    private static final Log fine = Log.fine(BreakpointManager.class);
+
     private TreeMap breakpointMap = new TreeMap();    
     private SteppingEngine steppingEngine;
-    protected Logger logger = Logger.getLogger("frysk");
 
     /**
      * Initialize the BreakpointManager.
@@ -252,9 +249,7 @@ public class BreakpointManager
                 }
 
                 public void addFailed(Object observable, Throwable w) {
-                    logger.log(Level.SEVERE,
-                               "_dl_debug_state breakpoint couldn't be added: {0}",
-                               w.toString());
+                    fine.log("_dl_debug_state breakpoint couldn't be added:", w);
                     codeObserverLatch.countDown();
                 }
 

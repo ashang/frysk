@@ -2,7 +2,7 @@
 
 # This file is part of the program FRYSK.
 #
-# Copyright 2007, Red Hat Inc.
+# Copyright 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ class j:
 package frysk.debuginfo;
 
 import java.io.*;
-import java.util.logging.Logger;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
@@ -132,12 +131,6 @@ public class %s extends TestLib {
 	    baos.reset();
 	}
     }
-''')
-
-        print('''
-
-    Logger logger = Logger.getLogger("frysk");
-
 ''')
 
     def start_test(self, executable, name):

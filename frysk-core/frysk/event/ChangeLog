@@ -1,3 +1,10 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Use frysk.rsl.
+	* TimerEvent.java: Ditto.
+	* WaitEventLoop.java: Ditto.
+	* PollEventLoop.java: Ditto.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcEvent.java (executeDead(Proc)): Replace executeDead(Proc,File).

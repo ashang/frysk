@@ -1,3 +1,9 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Breakpoint.java: Use frysk.rsl.
+	* BreakpointManager.java: Ditto.
+	* LineBreakpoint.java: Ditto.
+
 2008-02-21  Rick Moseley  <rmoseley@redhat.com>
 
 	* ProcTaskIDManager.java(removeProc): Change to set

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 
 package frysk.debuginfo;
 
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -54,10 +53,7 @@ import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
 
-public class TestLocationExpression 
-	extends TestLib
-{
-    Logger logger = Logger.getLogger("frysk");
+public class TestLocationExpression extends TestLib {
        
     /*
      * Test for DW_OP_breg3/DW_OP_breg5 and DW_OP_dup

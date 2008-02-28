@@ -60,8 +60,6 @@ import frysk.rsl.Log;
  */
 
 public class TestLib extends TestCase {
-    protected final static java.util.logging.Logger logger
-	= java.util.logging.Logger.getLogger("frysk");
     private static final Log fine = Log.fine(TestLib.class);
 
     /**

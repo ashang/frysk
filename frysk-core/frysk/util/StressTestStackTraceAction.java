@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,8 +42,7 @@ package frysk.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.logging.Level;
-
+import frysk.rsl.Log;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -54,9 +53,8 @@ import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.FunitThreadsOffspring;
 
-public class StressTestStackTraceAction
-    extends TestLib
-{
+public class StressTestStackTraceAction extends TestLib {
+    private static final Log fine = Log.fine(StressTestStackTraceAction.class);
 
   static String mainClone
       = "Task #\\d+\n"
@@ -108,7 +106,7 @@ public class StressTestStackTraceAction
     String regex = "(" + mainClone + ")(" + clone + ")*";
 
     String result = stringWriter.getBuffer().toString();
-    logger.log(Level.FINE, result);
+    fine.log("result", result);
     assertTrue(result + "should match: " + regex, result.matches(regex));
 
   }

@@ -42,8 +42,7 @@ package frysk.testbed;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -65,8 +64,7 @@ import frysk.isa.corefiles.LinuxElfCorefileFactory;
  */
 
 public class CoredumpAction implements ProcObserver.ProcAction {
-
-    protected static final Logger logger = Logger.getLogger("frysk");
+    private static final Log fine = Log.fine(CoredumpAction.class);
 
     private String filename = "core";
 
@@ -205,14 +203,13 @@ public class CoredumpAction implements ProcObserver.ProcAction {
 	Proc proc;
 
 	public InterruptEvent(Proc theProc) {
-
 	    super(Signal.INT);
 	    proc = theProc;
-	    logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+	    fine.log(this, "InterruptEvent proc", theProc);
 	}
 
 	public final void execute() {
-	    logger.log(Level.FINE, "{0} execute\n", this);
+	    fine.log(this, "execute");
 	    proc.requestAbandonAndRunEvent(new RequestStopEvent(
 		    Manager.eventLoop));
 	    try {

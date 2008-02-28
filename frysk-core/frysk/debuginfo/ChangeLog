@@ -1,3 +1,9 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* gen-type-expect-tests.py: Ditto.
+	* TestFrameDebugInfo.java: Delete unused logger.
+	* TestLocationExpression.java: Ditto.
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* PrintStackOptions.java: New.

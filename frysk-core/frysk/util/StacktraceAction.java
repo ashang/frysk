@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,9 +43,7 @@ package frysk.util;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import frysk.rsl.Log;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
@@ -58,9 +56,9 @@ import frysk.proc.Task;
 import frysk.stack.StackFactory;
 import frysk.sys.Signal;
 
-public abstract class StacktraceAction
-    implements ProcObserver.ProcAction
-{
+public abstract class StacktraceAction implements ProcObserver.ProcAction {
+    private static final Log fine = Log.fine(StacktraceAction.class);
+
   public void addedTo (Object observable)
   {
   }
@@ -81,8 +79,6 @@ public abstract class StacktraceAction
 
   PrintStackOptions options;
   
-  protected static Logger logger = Logger.getLogger("frysk"); 
-
   /**
    * Runs a stacktrace on the given process.
    * 
@@ -113,8 +109,7 @@ public abstract class StacktraceAction
   public final void existingTask (Task task)
   {
 
-    logger.log(Level.FINE, "{0} existingTask, Task : {1}\n",
-               new Object[] { this, task });
+      fine.log(this, "existingTask, Task", task);
 
     // Print the stack frame for this stack.
     
@@ -127,14 +122,13 @@ public abstract class StacktraceAction
 
   public void taskAddFailed (Object observable, Throwable w)
   {
-    logger.log(Level.FINE, "{0} could not be added to {1} because: {2}\n",
-               new Object[] { this, observable, w.getMessage() });
-
+      fine.log(this, "could not be added to", observable,
+	       "because", w);
   }
 
   private final void printTasks ()
   {
-    logger.log(Level.FINE, "{0} printTasks\n", this);
+    fine.log(this, "printTasks");
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
       {
@@ -151,7 +145,7 @@ public abstract class StacktraceAction
 	}
 	printWriter.println();
       }
-    logger.log(Level.FINE, "{0} exiting printTasks\n", this);
+    fine.log(this, "exiting printTasks");
   }
 
   public void flush(){
@@ -170,12 +164,12 @@ public abstract class StacktraceAction
 
       super(Signal.INT);
       proc = theProc;
-      logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+      fine.log(this, "InterruptEvent proc", theProc);
     }
 
     public final void execute ()
     {
-      logger.log(Level.FINE, "{0} execute\n", this);
+      fine.log(this, "execute");
       proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       try
         {
@@ -192,7 +186,7 @@ public abstract class StacktraceAction
 
   public void allExistingTasksCompleted ()
   {
-    logger.log(Level.FINE, "{0} allExistingTasksCompleted\n", this);
+    fine.log(this, "allExistingTasksCompleted");
     // Print all the tasks in order.
     printTasks();
 

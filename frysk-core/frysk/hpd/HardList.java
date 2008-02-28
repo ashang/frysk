@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,24 +42,23 @@ package frysk.hpd;
 import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 public class HardList extends AbstractCollection{
+    private static final Log fine = Log.fine(HardList.class);
 
-    Logger logger = Logger.getLogger("frysk");
     private LinkedList elements;
 
     private int hardSize;
 
     public HardList(int hardSize) {
-	logger.log(Level.FINE, "created HardList\n");
 	this.hardSize = hardSize;
 	elements = new LinkedList();
+	fine.log(this, "created HardList");
     }
 
     public boolean add(Object o) {
-	logger.log(Level.FINE, "{0} adding {1}\n", new Object[] {this, o});
+	fine.log(this, "adding", o);
 	elements.addLast(o);
 	if (elements.size() > hardSize)
 	    elements.removeFirst();

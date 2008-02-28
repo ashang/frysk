@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@
 
 package frysk.event;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 /**
  * A timer event.
@@ -49,10 +48,9 @@ import java.util.logging.Logger;
  * intervals).
  */
 
-public abstract class TimerEvent
-    implements Event, Comparable
-{
-    private static Logger logger = Logger.getLogger ("frysk.event");
+public abstract class TimerEvent implements Event, Comparable {
+    private static final Log fine = Log.fine(TimerEvent.class);
+
     private long timeMillis;
     private long periodMillis = 0;
 
@@ -63,7 +61,7 @@ public abstract class TimerEvent
     public TimerEvent (long offsetMillis)
     {
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
-	logger.log (Level.FINE, "{0} new long\n", this); 
+	fine.log(this, "new offsetMillis", offsetMillis); 
     }
 
     /**
@@ -79,7 +77,7 @@ public abstract class TimerEvent
     {
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
 	this.periodMillis = periodMillis;
-	logger.log (Level.FINEST, "{0} new long long\n", this); 
+	fine.log(this, "new offset", offsetMillis, "period", periodMillis);
     }
 
     /**
@@ -115,15 +113,13 @@ public abstract class TimerEvent
      * fire, and any re-schedule time).  Return true if the timer
      * needs to be scheduled further.
      */
-    boolean reSchedule (long currentTimeMillis)
-    {
-	logger.log (Level.FINEST, "{0} reSchedule\n", this);
+    boolean reSchedule(long currentTimeMillis) {
+	fine.log(this, "reSchedule");
 	if (periodMillis > 0) {
 	    count = (currentTimeMillis - timeMillis) / periodMillis + 1;
 	    timeMillis = timeMillis + periodMillis * count;
 	    return true;
-	}
-	else {
+	} else {
 	    return false;
 	}
     }

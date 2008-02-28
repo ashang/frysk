@@ -49,17 +49,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 
 /**
  * Implements an event loop.
  */
 
-public abstract class EventLoop
-    extends Thread
-{
-    protected static Logger logger = Logger.getLogger("frysk");
+public abstract class EventLoop extends Thread {
+    private static final Log fine = Log.fine(EventLoop.class);
 
     /**
      * The EventLoop uses Signal.IO to wake up, or unblock, the
@@ -71,7 +68,7 @@ public abstract class EventLoop
 	// Signal.IO is used to wake up a blocked event loop when an
 	// asynchronous event arrives.
 	signalAdd(Signal.IO);
-	logger.log (Level.FINE, "{0} new\n", this); 
+	fine.log(this, "new"); 
     }
 
 
@@ -147,7 +144,7 @@ public abstract class EventLoop
      */
     private synchronized void wakeupIfBlocked ()
     {
-	logger.log (Level.FINEST, "{0} wakeupIfBlocked\n", this); 
+	fine.log(this, "wakeupIfBlocked"); 
 	if (isGoingToBlock) {
 	    wakeupBlockedEventLoop();
 	    isGoingToBlock = false;
@@ -167,7 +164,7 @@ public abstract class EventLoop
      */
     public synchronized void add (TimerEvent t)
     {
-	logger.log (Level.FINEST, "{0} add TimerEvent\n", this); 
+	fine.log(this, "add TimerEvent"); 
 	timerEvents.put (t, t);
 	wakeupIfBlocked ();
     }
@@ -176,7 +173,7 @@ public abstract class EventLoop
      */
     public synchronized void remove (TimerEvent t)
     {
-	logger.log (Level.FINEST, "{0} remove TimerEvent\n", this); 
+	fine.log(this, "remove TimerEvent"); 
 	timerEvents.remove (t);
 	pendingEvents.remove (t);
     }
@@ -209,7 +206,7 @@ public abstract class EventLoop
      */
     private synchronized void checkForTimerEvents ()
     {
-	logger.log (Level.FINEST, "{0} checkForTimerEvents\n", this); 
+	fine.log(this, "checkForTimerEvents"); 
 	long time = java.lang.System.currentTimeMillis ();
 	while (!timerEvents.isEmpty ()) {
 	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
@@ -236,8 +233,7 @@ public abstract class EventLoop
      */
     public synchronized void add (SignalEvent signalEvent)
     {
-	logger.log (Level.FINEST, "{0} add SignalEvent {1}\n",
-		    new Object[] { this, signalEvent });
+	fine.log(this, "add SignalEvent", signalEvent);
 	Object old = signalHandlers.put (signalEvent.getSignal(), signalEvent);
 	if (old == null)
 	    // New signal, tell Poll.
@@ -250,7 +246,7 @@ public abstract class EventLoop
      */
     public synchronized void remove (SignalEvent signalEvent)
     {
-	logger.log (Level.FINE, "{0} remove SignalEvent\n", this); 
+	fine.log(this, "remove SignalEvent", signalEvent); 
 	signalHandlers.remove (signalEvent.getSignal());
 	// XXX: Poll.SignalSet.remove (sig.signal);
     }
@@ -261,7 +257,7 @@ public abstract class EventLoop
      * longer going to block.
      */
     protected synchronized void processSignal(Signal sig) {
-	logger.log (Level.FINEST, "{0} processSignal Sig\n", this); 
+	fine.log(this, "processSignal", sig); 
 	SignalEvent handler = (SignalEvent) signalHandlers.get (sig);
 	if (handler != null)
 	    pendingEvents.add (handler);
@@ -279,7 +275,7 @@ public abstract class EventLoop
      */
     public synchronized void add (Event e)
     {
-	logger.log (Level.FINEST, "{0} add Event\n {1}", new Object[] {this, e}); 
+	fine.log(this, "add Event", e);
 	pendingEvents.add (e);
 	wakeupIfBlocked ();
     }
@@ -288,7 +284,7 @@ public abstract class EventLoop
      */
     public synchronized void remove (Event e)
     {
-	logger.log (Level.FINE, "{0} remove Event\n", this); 
+	fine.log(this, "remove Event", e); 
 	pendingEvents.remove (e);
     }
     /**
@@ -334,14 +330,14 @@ public abstract class EventLoop
      */
     private synchronized Event remove ()
     {
-	logger.log (Level.FINEST, "{0} remove\n", this); 
+	fine.log(this, "remove ..."); 
 	if (pendingEvents.isEmpty ()) {
 	    isGoingToBlock = true;
 	    return null;
 	}
 	else {
 	    Event removed = (Event) pendingEvents.remove (0);
-	    logger.log (Level.FINEST, "... return {0}\n", removed); 
+	    fine.log(this, "remove ... return", removed); 
 	    return removed;
 	}
     }
@@ -358,15 +354,14 @@ public abstract class EventLoop
      */
     private void runEventLoop (boolean pendingOnly)
     {
-	logger.log (Level.FINEST, "{0} runEventLoop\n", this); 
+	fine.log(this, "runEventLoop pendingOnly", pendingOnly); 
 	try {
 	    // Assert: isGoingToBlock == false
 	    stop = pendingOnly;
 	    while (true) {
 		// Drain any pending events.
 		for (Event e = remove (); e != null; e = remove ()) {
-		    logger.logp(Level.FINEST, "EventLoop", "runEventLoop",
-				"executing {0}\n", e);
+		    fine.log(this, "runEventLoop executing", e);
 		    e.execute ();
 		}
 		// {@link #remove()} will have set {@link
@@ -392,7 +387,7 @@ public abstract class EventLoop
      */
     public void requestStop ()
     {
-	logger.log (Level.FINEST, "{0} requestStop\n", this); 
+	fine.log(this, "requestStop"); 
 	stop = true;
 	wakeupIfBlocked ();
     }
@@ -410,7 +405,7 @@ public abstract class EventLoop
      */
     public final void runPending ()
     {
-	logger.log (Level.FINE, "{0} runPending\n", this); 
+	fine.log(this, "runPending"); 
 	updateTid();
 	runEventLoop (true);
     }
@@ -430,7 +425,7 @@ public abstract class EventLoop
      */
     public final boolean runPolling (long timeout)
     {
-	logger.log (Level.FINE, "{0} runPolling long\n", this); 
+	fine.log(this, "runPolling timeout", timeout); 
 	updateTid();
 	class Timeout
 	    extends TimerEvent
@@ -438,12 +433,12 @@ public abstract class EventLoop
 	    Timeout (long timeout)
 	    {
 		super (timeout);
-		logger.log (Level.FINE, "{0} timeout\n", this);
+		fine.log(this, "timeout");
 	    }
 	    boolean expired = false;
 	    public void execute ()
 	    {
-		logger.log (Level.FINE, "{0} execute\n", this); 
+		fine.log(this, "execute"); 
 		expired = true;
 		requestStop ();
 	    }
@@ -476,7 +471,7 @@ public abstract class EventLoop
     
     public final void run ()
     {
-	logger.log (Level.FINE, "{0} run\n", this); 
+	fine.log(this, "run"); 
 	// Finish initializing, and then ack that the thread is
 	// running.
 	synchronized (running) {
@@ -492,7 +487,7 @@ public abstract class EventLoop
      */
     public synchronized void start()
     {
-	logger.log (Level.FINE, "{0} start\n", this); 
+	fine.log(this, "start"); 
 	synchronized (running) {
 	    setDaemon(true);
 	    super.start();

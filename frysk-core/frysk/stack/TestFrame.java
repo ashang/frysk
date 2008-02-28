@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,9 +39,7 @@
 
 package frysk.stack;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import frysk.rsl.Log;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -49,11 +47,8 @@ import frysk.proc.TaskObserver;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
-public class TestFrame
-    extends TestLib
-{
-
-  Logger logger = Logger.getLogger("frysk");
+public class TestFrame extends TestLib {
+    private static final Log fine = Log.fine(TestFrame.class);
   
   public void testAttached()
   {
@@ -97,8 +92,7 @@ public class TestFrame
     while (frame != null)
       {
      // System.err.println(frame.cursor.getProcName(100).name);
-      logger.log(Level.FINE, "testAttached, frame name: {0}\n", 
-                 frame.getSymbol().getName());
+	  fine.log("testAttached, frame name", frame.getSymbol().getName());
       frame = frame.getOuter();
     } 
     

@@ -45,8 +45,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -56,6 +55,7 @@ import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
 public class FCatch {
+    private static final Log fine = Log.fine(FCatch.class);
 
     private int numTasks = 0;
 
@@ -80,7 +80,6 @@ public class FCatch {
 
     Proc proc = null;
 
-    protected static final Logger logger = Logger.getLogger("frysk");
 
     Frame[] frames;
 
@@ -92,7 +91,7 @@ public class FCatch {
      * to attach to an already-running process.
      */
     public void trace(String[] command, boolean attach) {
-	logger.log(Level.FINE, "{0} trace", this);
+	fine.log(this, "trace");
 
 	if (attach == true)
 	    init();
@@ -114,16 +113,16 @@ public class FCatch {
 	// Run the event-loop from within this thread - no need to
 	// multi-thread this application.
 	Manager.eventLoop.run();
-	logger.log(Level.FINE, "{0} exiting trace", this);
+	fine.log(this, "exiting trace");
     }
 
     /**
      * Attaches FCatch to an already running process.
      */
     private void init() {
-	logger.log(Level.FINE, "{0} init", this);
+	fine.log(this, "init");
 	iterateTasks(proc);
-	logger.log(Level.FINE, "{0} exiting init", this);
+	fine.log(this, "exiting init");
     }
 
     /**
@@ -142,7 +141,7 @@ public class FCatch {
      * @param id  The PID to be traced
      */
     public void addProc(Proc proc) {
-	logger.log(Level.FINE, "{0} addTracePid", proc);
+	fine.log(this, "addProc", proc);
 	this.proc = proc;
     }
 
@@ -154,7 +153,7 @@ public class FCatch {
      * @param task    The Task to be StackTraced
      */
     private void generateStackTrace(Task task) {
-	logger.log(Level.FINE, "{0} generateStackTrace", task);
+	fine.log(this, "generateStackTrace", task);
 	--this.numTasks;
 	Frame frame = null;
 	try {
@@ -168,7 +167,7 @@ public class FCatch {
 	StackFactory.printStack(printWriter, frame);
 	this.stackTrace.append(stringWriter.getBuffer());
 
-	logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
+	fine.log(this, "exiting generateStackTrace", task);
     }
 
     /**
@@ -232,8 +231,7 @@ public class FCatch {
 	 */
 	public Action updateAttached(Task task) {
 	    numTasks = task.getProc().getTasks().size();
-	    logger.log(Level.FINE, "{0} updateAttached", task);
-	    //                System.err.println("CatchObserver.updateAttached on" + task);
+	    fine.log(this, "updateAttached", task);
 	    if (signalObserver == null)
 		signalObserver = new SignalObserver();
 
@@ -246,7 +244,8 @@ public class FCatch {
 	}
 
 	public Action updateClonedParent(Task parent, Task offspring) {
-	    logger.log(Level.FINE, "{0} updateClonedParent", parent);
+	    fine.log(this, "updateClonedParent", parent, "offspring",
+		     offspring);
 	    //System.out.println("Cloned.updateParent");
 	    parent.requestUnblock(this);
 	    return Action.BLOCK;
@@ -257,8 +256,8 @@ public class FCatch {
 	 * properly.
 	 */
 	public Action updateClonedOffspring(Task parent, Task offspring) {
-	    logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
-	    //                System.err.println("CatchObserver.updateClonedOffspring " + offspring);
+	    fine.log(this, "updateClonedOffspring", offspring, "parent",
+		     parent);
 	    FCatch.this.numTasks = offspring.getProc().getTasks().size();
 	    SignalObserver sigo = new SignalObserver();
 
@@ -271,14 +270,12 @@ public class FCatch {
 	}
 
 	public Action updateTerminating(Task task, Signal signal, int value) {
-	    logger.log(Level.FINE, "{0} updateTerminating", task);
-	    //                System.err.println("CatchObserver.updateTerminating on " + task + " " + value + " " + numTasks);
+	    fine.log(this, "updateTerminating", task, "signal", signal);
 	    return Action.CONTINUE;
 	}
 
 	public Action updateTerminated(Task task, Signal signal, int value) {
-	    logger.log(Level.FINE, "{0} updateTerminated", task);
-	    //                System.err.println("CatchObserver.updateTerminated " + task + " " + numTasks);
+	    fine.log(this, "updateTerminated", task, "signal", signal);
 	    if (--FCatch.this.numTasks <= 0)
 		Manager.eventLoop.requestStop();
 
@@ -286,9 +283,7 @@ public class FCatch {
 	}
 
 	public void addedTo(Object observable) {
-	    logger.log(Level.FINE, "{0} CatchObserver.addedTo",
-		    (Task) observable);
-	    //      System.out.println("CatchObserver.addedTo " + (Task) observable);
+	    fine.log(this, "CatchObserver.addedTo", observable);
 	}
 
 	public void addFailed(Object observable, Throwable w) {
@@ -296,8 +291,7 @@ public class FCatch {
 	}
 
 	public void deletedFrom(Object observable) {
-	    //	    System.err.println("Catch observer deleted");
-	    logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+	    fine.log(this, "deletedFrom", observable);
 	}
     }
 
@@ -311,7 +305,7 @@ public class FCatch {
 	 * was signaled.
 	 */
 	public Action updateSignaled(Task task, Signal signal) {
-	    logger.log(Level.FINE, "{0} updateSignaled", task);
+	    fine.log(this, "updateSignaled", task, "signal", signal);
 	    sigTask = task;
 
 	    FCatch.this.sig = signal;
@@ -339,13 +333,11 @@ public class FCatch {
 	}
 
 	public void addedTo(Object observable) {
-	    logger.log(Level.FINE, "{0} SignalObserver.addedTo",
-		    (Task) observable);
-	    //            System.err.println("SignalObserver.addedTo");
+	    fine.log(this, "SignalObserver.addedTo", observable);
 	}
 
 	public void deletedFrom(Object observable) {
-	    logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+	    fine.log(this, "deletedFrom", observable);
 	}
     }
 
@@ -363,12 +355,11 @@ public class FCatch {
 	}
 
 	public void addedTo(Object observable) {
-	    logger.log(Level.FINE, "{0} SignalObserver.addedTo",
-		    (Task) observable);
+	    fine.log(this, "SignalObserver.addedTo", observable);
 	}
 
 	public void deletedFrom(Object observable) {
-	    logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+	    fine.log(this, "deletedFrom", observable);
 	}
     }
 }

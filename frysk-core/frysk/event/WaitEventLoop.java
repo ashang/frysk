@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,15 +43,15 @@ import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
 import frysk.sys.SignalBuilder;
 import frysk.sys.Signal;
-import java.util.logging.Level;
+import frysk.rsl.Log;
 
 /**
  * Implements an event loop using waitpid.
  */
 
-class WaitEventLoop
-    extends EventLoop
-{
+class WaitEventLoop extends EventLoop {
+    private static final Log fine = Log.fine(WaitEventLoop.class);
+
     protected void signalEmpty()
     {
 	Wait.signalEmpty ();
@@ -63,27 +63,21 @@ class WaitEventLoop
 
     public synchronized void add (WaitBuilder waitBuilder)
     {
-	logger.log (Level.FINE, "{0} add PollEvent\n", this);
+	fine.log(this, "add WaitBuilder", waitBuilder);
 	this.waitBuilder = waitBuilder;
     }
     private WaitBuilder waitBuilder;
 
     private SignalBuilder signalBuilder = new SignalBuilder ()
 	{
-	    public void signal (Signal sig)
-	    {
-	      if (logger.isLoggable(Level.FINEST))
-		{
-		  Object[] logArgs = { this, sig.toString() };
-		  logger.log (Level.FINEST, "{0} PollBuilder.signal {1}\n",
-			      logArgs); 
-		}
+	    public void signal (Signal sig) {
+		fine.log(this, "PollBuilder signal", sig);
 		processSignal (sig);
 	    }
 	};
 
     protected void block(long millisecondTimeout) {
-	logger.log (Level.FINEST, "{0} block\n", this); 
+	fine.log(this, "block timeout", millisecondTimeout); 
 	Wait.wait(waitBuilder, signalBuilder, millisecondTimeout);
     }
 }

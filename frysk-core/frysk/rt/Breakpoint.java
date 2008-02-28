@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,9 +40,7 @@
 package frysk.rt;
 
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import frysk.rsl.Log;
 import frysk.proc.Action;
 import frysk.proc.Observable;
 import frysk.proc.Task;
@@ -50,7 +48,7 @@ import frysk.proc.TaskObserver;
 import frysk.stepping.SteppingEngine;
 
 public class Breakpoint implements TaskObserver.Code {
-    protected static Logger logger = Logger.getLogger ("frysk");
+    private static final Log fine = Log.fine(Breakpoint.class);
 
     protected long address;
 
@@ -74,26 +72,17 @@ public class Breakpoint implements TaskObserver.Code {
         this.address = address;
     }
 
-    protected void logHit (Task task, long address, String message) {
-        if (logger.isLoggable(Level.FINEST)) {
-            Object[] logArgs = { task, Long.toHexString(address),
-                                 Long.toHexString(task.getPC()),
-                                 Long.toHexString(this.address) };
-            logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
-                        message, logArgs);
-        }
-    }
-
     public Action updateHit (Task task, long address) {
-        //    System.err.println("SteppingBreakpoint.updateHIt " + task);
-        logHit(task, address, "task {0} at 0x{1}\n");
+
+	fine.log(this, "updateHit task", task, "address", address);
         if (address != this.address) {
-            logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
-                        "Hit wrong address!");
+            fine.log(this, "updateHit task", task, "address", address,
+		     "wrong address!");
             return Action.CONTINUE;
         }
         else {
-            logHit(task, address, "adding instructionobserver {0} 0x{2}");
+	    fine.log(this, "updateHit adding instruction observer", task,
+		     "address", address);
             task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
             this.steppingEngine.addBlocker(task, this);
         }
@@ -184,11 +173,9 @@ public class Breakpoint implements TaskObserver.Code {
         }
 
         public Action updateHit(Task task, long address) {
-            //logger.entering("RunState.PersistentBreakpoint",
-            //"updateHit");
             if (task != targetTask)
                 return Action.CONTINUE;
-            logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
+	    fine.log(this, "updateHit task", task, "address", address);
             Action action = super.updateHit(task, address);
 
             synchronized (SteppingEngine.class) {

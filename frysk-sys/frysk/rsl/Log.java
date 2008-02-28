@@ -487,6 +487,11 @@ public final class Log {
     }
 
     // dynamic 2 parameters
+    public void log(Object self, String p1, boolean p2) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).suffix();
+    }
     public void log(Object self, String p1, int p2) {
 	if (!logging)
 	    return;
@@ -511,6 +516,26 @@ public final class Log {
     }
 
     // dynamic 4 parameters
+    public void log(Object self, String p1, long p2, String p3, boolean p4) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
+    }
+    public void log(Object self, String p1, Object p2, String p3, boolean p4) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
+    }
+    public void log(Object self, String p1, Object p2, String p3, long p4) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
+    }
+    public void log(Object self, String p1, long p2, String p3, long p4) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).suffix();
+    }
     public void log(Object self, String p1, boolean p2, String p3, int p4) {
 	if (!logging)
 	    return;
@@ -540,6 +565,11 @@ public final class Log {
     }
 
     // dynamic 6 parameters
+    public void log(Object self, String p1, Object p2, String p3, Object p4, String p5, long p6) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
+    }
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6) {
 	if (!logging)
 	    return;
