@@ -60,16 +60,15 @@ public class TestKillCommand extends TestLib {
 	} 
 	 */
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
-		+ "\n");
-	e.expect("Loaded executable file*");
-	e.send("run\n");
-	e.expect("Attached to process*");
-	e.send("go\n");
-	e.expect("Running process*");
-	e.send("kill\n");
-	e.expect("Killing process*");
-	e.expect("Loaded executable file*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+
+	e.sendCommandExpectPrompt("run", "Attached to process.*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.sendCommandExpectPrompt("go", "Running process.*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.sendCommandExpectPrompt("kill", "Killing process.*Loaded executable file.*");
+
 	/* Make sure you run again to make sure all has been cleaned up properly
 	 * from the last run.
 	 */
@@ -89,9 +88,25 @@ public class TestKillCommand extends TestLib {
 	e.expect("Killing process*");
 	e.expect("Loaded executable file*");
 	/* Make sure we can quit gracefully  */
-	/*
-	e.send("quit\n");
-	e.expect("Quitting*"); */
+	
+	/* adding the quit/Quitting statements causes this backtrace:
+	 * 
+	 *  frysk.expunit.EndOfFileException: end-of-file; expecting:  <<Quitting\.\.\..*>>; buffer <<java.lang.RuntimeException: {frysk.proc.live.LinuxPtraceTask@2fa6f255,pid=26380,tid=26381,state=StartClonedTask.blockedOffspring} in state "StartClonedTask.blockedOffspring" did not handle handleTerminatedEvent
+   at frysk.proc.live.State.unhandled(State.java:67)
+   at frysk.proc.live.LinuxPtraceTaskState.handleTerminatedEvent(LinuxPtraceTaskState.java:73)
+   at frysk.proc.live.LinuxPtraceTask.processTerminatedEvent(LinuxPtraceTask.java:233)
+   at frysk.proc.live.LinuxWaitBuilder.terminated(LinuxWaitBuilder.java:200)
+   at frysk.sys.Wait.wait(Wait.cxx:586)
+   at frysk.sys.Wait.wait(Wait.java:125)
+   at frysk.event.WaitEventLoop.block(WaitEventLoop.java:87)
+   at frysk.event.EventLoop.runEventLoop(EventLoop.java:377)
+   at frysk.event.EventLoop.run(EventLoop.java:487)
+   at frysk.bindir.fhpd.main(fhpd.java:171)
+
+	 */
+	
+	//e.send("quit\n");
+	//e.expect("Quitting\\.\\.\\..*");
 	e.close();
     }
     
@@ -101,15 +116,26 @@ public class TestKillCommand extends TestLib {
      */
     public void testLoadKill() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
-		+ "\n");
-	e.expect("Loaded executable file*");
-	e.send("run\n");
-	e.expect("Attached to process*");
-	e.send("kill\n");
-	e.expect("Killing process*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run", "Attached to process.*");
+	e.sendCommandExpectPrompt("kill", "Killing process.*");
+	/* Adding the quit/Quitting lines causes the following stack trace:
+	
+	frysk.expunit.EndOfFileException: end-of-file; expecting:  <<Quitting\.\.\..*>>; buffer <<Exception in thread "main" java.lang.RuntimeException: {frysk.proc.live.LinuxPtraceTask@2fa6f255,pid=26391,tid=26392,state=StartClonedTask.blockedOffspring} in state "StartClonedTask.blockedOffspring" did not handle handleTerminatedEvent
+	   at frysk.proc.live.State.unhandled(State.java:67)
+	   at frysk.proc.live.LinuxPtraceTaskState.handleTerminatedEvent(LinuxPtraceTaskState.java:73)
+	   at frysk.proc.live.LinuxPtraceTask.processTerminatedEvent(LinuxPtraceTask.java:233)
+	   at frysk.proc.live.LinuxWaitBuilder.terminated(LinuxWaitBuilder.java:200)
+	   at frysk.sys.Wait.wait(Wait.cxx:586)
+	   at frysk.sys.Wait.wait(Wait.java:125)
+	   at frysk.event.WaitEventLoop.block(WaitEventLoop.java:87)
+	   at frysk.event.EventLoop.runEventLoop(EventLoop.java:377)
+	   at frysk.event.EventLoop.run(EventLoop.java:487)
+	   at frysk.bindir.fhpd.main(fhpd.java:171) */
+
 	//e.send("quit\n");
-	//e.expect("Quitting*");
+	//e.expect("Quitting\\.\\.\\..*");
 	e.close();
     }
     

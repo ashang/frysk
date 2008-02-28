@@ -1,3 +1,8 @@
+2008-02-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestKillCommand.java: Fix regular expressions; add wait so 
+	test will successfully finish.
+
 2008-02-28  Tim Moore  <timoore@redhat.com>
 
 	* CLI.java (constructors): Take a Writer argument instead of a
