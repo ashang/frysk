@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.testbed;
+package frysk.isa.corefiles;
 
 import inua.eio.ByteOrder;
 
@@ -62,8 +62,9 @@ import frysk.proc.dead.LinuxCoreFactory;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
+import frysk.testbed.CoredumpAction;
 
-public class TestCoredumpAction
+public class TestLinuxElfCorefile
     extends TestLib
 {
 

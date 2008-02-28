@@ -1,3 +1,8 @@
+2008-02-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxElfCorefile.java: Move and rename from
+	frysk/testbed/TestCoredumpAction.java.
+
 2008-02-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxElfCorefile.java (buildMap): Add vdso test.
