@@ -2,6 +2,8 @@
 
 	* Log.java: Add more loggers.
 
+	* Log.java: Add more loggers.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (dump(Throwable)): Use toString(), not getMessage();

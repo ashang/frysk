@@ -1,3 +1,8 @@
+2008-02-28  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflCache.java: Use frysk.rsl.
+	* DwflFactory.java: Ditto.
+
 2008-02-05  Stan Cox  <scox@redhat.com>
 
 	* DwflCache.java (getRelativeSysRoot): Use getCanonicalPath.

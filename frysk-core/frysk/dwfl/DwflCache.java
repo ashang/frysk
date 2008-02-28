@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,13 +40,11 @@
 package frysk.dwfl;
 
 import frysk.proc.Task;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import lib.dwfl.Dwfl;
 
 /**
@@ -55,9 +53,9 @@ import lib.dwfl.Dwfl;
  * If a process changes, and the Dwfl needs to be updated, this class
  * will re-open the dwfl returning a new object.
  */
-public class DwflCache
-{
-    private static Logger logger = Logger.getLogger("frysk");
+
+public class DwflCache {
+    private static final Log fine = Log.fine(DwflCache.class);
 
     static private class Mod {
 	final Dwfl dwfl;
@@ -133,11 +131,11 @@ public class DwflCache
      * @return a Dwfl created using the tasks maps.
      */
     public static Dwfl getDwfl(Task task) {
-	logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
+	fine.log("entering createDwfl, task", task);
 
 	// If there is no dwfl for this task create one.
 	if (!modMap.containsKey(task)) {
-	    logger.log(Level.FINEST, "creating new dwfl for task {0}\n", task);
+	    fine.log("creating new dwfl for task", task);
 	    String sysroot = (String)sysrootMap.get(task.getProc().getCommand());
 	    if (sysroot == null)
 		sysroot = "/";
@@ -157,12 +155,12 @@ public class DwflCache
 
 	// If a dwfl doesn't match the Tasks mod count, update it.
 	if (mod.count != task.getMod()) {
-	    logger.log(Level.FINEST, "existing dwfl out-of-date\n");
+	    fine.log("existing dwfl out-of-date");
 	    DwflFactory.updateDwfl(mod.dwfl, task);
 	    mod.count = task.getMod();
 	}
 
-	logger.log(Level.FINER, "returning existing dwfl {0}\n", mod.dwfl);
+	fine.log("returning existing dwfl", mod.dwfl);
 	return mod.dwfl;
     }
 

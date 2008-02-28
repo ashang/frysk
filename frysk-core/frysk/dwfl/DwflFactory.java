@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,17 +43,16 @@ import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import frysk.rsl.Log;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 
 /**
  * Factory for creating Dwfl objects for Procs and Tasks.
  */
-public class DwflFactory
-{
-    private static Logger logger = Logger.getLogger("frysk");
+
+public class DwflFactory {
+    private static final Log fine = Log.fine(DwflFactory.class);
 
     /**
      * Check whether a given {@link frysk.proc.MemoryMap} from a
@@ -86,7 +85,7 @@ public class DwflFactory
 		}
 	    }
 	}
-	logger.log(Level.FINE, "Couldn't get vdso address\n");
+	fine.log("Couldn't get vdso address");
 	return 0;
     }
 
@@ -133,7 +132,7 @@ public class DwflFactory
 
 	// If map represents the vdso section, report vdso.
 	if (isVDSO(proc, maps[count])) {
-	    logger.log(Level.FINE, "Found the vdso!\n");
+	    fine.log("Found the vdso!");
 	    dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
 				    maps[count].addressHigh);
 	} else {
@@ -194,9 +193,9 @@ public class DwflFactory
 	dwfl.dwfl_report_end();
 	DwflModule module = dwfl.getModule(VDSOAddressLow(proc));
 
-	logger.log(Level.FINE, "Main task {0}", proc.getMainTask());
-	logger.log(Level.FINE, "Memory {0}", proc.getMainTask().getMemory());
-	logger.log(Level.FINE, "Dwfl module: {0}\n", module);
+	fine.log("updateDwfl main task", proc.getMainTask(),
+		 "memory", proc.getMainTask().getMemory(),
+		 "dwfl module", module);
 	// XXX: Should this method instead have this block of memory
 	// pre-fetched and passed in?
 	if (module != null) {
