@@ -1,3 +1,7 @@
+2008-02-29  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcLogger.java: Delete.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Use frysk.rsl.
