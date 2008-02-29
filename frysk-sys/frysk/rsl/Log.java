@@ -43,7 +43,6 @@ import frysk.sys.Tid;
 import frysk.sys.Pid;
 import inua.util.PrintWriter;
 import java.io.PrintStream;
-import java.text.MessageFormat;
 import java.lang.reflect.Array;
 
 /**
@@ -349,27 +348,6 @@ public final class Log {
 	return this;
     }
     
-    /**
-     * For compatibility with existing loggers.
-     */
-    public void format(String msg, Object[] o) {
-	if (!logging)
-	    return;
-	prefix();
-	print(MessageFormat.format(msg, o));
-	suffix();
-    }
-    /**
-     * For compatibility with existing loggers.
-     */
-    public void format(String msg, Object o) {
-	if (!logging)
-	    return;
-	prefix();
-	print(MessageFormat.format(msg, new Object[] { o }));
-	suffix();
-    }
-
     // static 1 parameter
     public void log(String p1) {
 	if (!logging)

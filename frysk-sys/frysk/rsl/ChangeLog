@@ -1,3 +1,9 @@
+2008-02-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Logger.java: Delete.
+	* Log.java (format(String,Object[])): Delete.
+	(format(String,Object)): Delete.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Add more loggers.
