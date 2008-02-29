@@ -122,4 +122,8 @@ public class Glob {
     public static Pattern compile(String glob) {
 	return Pattern.compile(toRegex(glob));
     }
+
+    public static Pattern compile(String glob, int flags) {
+	return Pattern.compile(toRegex(glob), flags);
+    }
 }

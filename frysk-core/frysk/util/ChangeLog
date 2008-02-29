@@ -1,3 +1,7 @@
+2008-02-29  Petr Machata  <pmachata@redhat.com>
+
+	* Glob.java (compile(String, int)): New method.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Glob.java: Extracted from frysk.bindir.ftrace.
