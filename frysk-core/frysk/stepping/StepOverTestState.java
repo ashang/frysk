@@ -86,6 +86,16 @@ public class StepOverTestState extends State {
 		 * it exits - success!
 		 */
 		Frame frame = newFrame.getOuter();
+		if (frame == null)
+		  {
+		    // But urgh... Where did our outer frame go...
+		    // We need to just try to keep stepping till we are
+		    // able to get a solid frame again.
+		    tse.getSteppingEngine().continueForStepping(this.task,
+								true);
+		    return this;
+		  }
+
 		tse.getSteppingEngine().setBreakpoint(this.task,
 			frame.getAddress());
 		return new StepOverState(this.task);

@@ -1,3 +1,8 @@
+2008-02-29  Mark Wielaard  <mwielaard@redhat.com>
+
+	* StepOverTestState.java (handleUpdate): Don't crash when there is
+	a bad outer frame.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* SteppingEngine.java: Use frysk.rsl.
