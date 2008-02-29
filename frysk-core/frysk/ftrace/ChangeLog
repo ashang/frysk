@@ -1,3 +1,9 @@
+2008-02-29  Andrew Cagney  <cagney@redhat.com>
+
+	* FtraceController.java: Extract from frysk.bindir.ftrace.
+	* Rule.java: Extract from frysk.bindir.ftrace.
+	* SymbolRule.java: Extract from frysk.bindir.ftrace.
+
 2008-02-29  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java: Support signal tracing.
