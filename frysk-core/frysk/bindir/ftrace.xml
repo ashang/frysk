@@ -74,6 +74,7 @@
       <arg choice="opt">-o=<replaceable>FILE</replaceable></arg>
       <arg choice="opt" rep="repeat">-p=<replaceable>PID</replaceable></arg>
       <arg choice="opt">-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
+      <arg choice="opt">-sig=<replaceable>SIG</replaceable>[,<replaceable>SIG</replaceable>...]</arg>
       <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
@@ -118,16 +119,26 @@
     </refsect2>
 
     <refsect2>
-	<title>System Call Tracing</title>
+	<title>System Call and Signal Tracing</title>
 
 	<variablelist>
 	  <varlistentry>
 	    <term>-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
 	    <listitem>
 	      <para>Trace system calls that match given
-	      <replaceable>SYSCALL</replaceable> ruleset are.  See
+	      <replaceable>SYSCALL</replaceable> ruleset.  See
 	      below for description of
 	      <replaceable>SYSCALL</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-sig=<replaceable>SIGNAL</replaceable>[,<replaceable>SIGNAL</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace signals that match given
+	      <replaceable>SIGNAL</replaceable> ruleset.  See
+	      below for description of
+	      <replaceable>SIGNAL</replaceable> syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -246,7 +257,7 @@
     that the call should still be traced, but stack trace shouldn't be
     generated.  <replaceable>pattern</replaceable> defines which PLT
     entries from which libraries should be added or removed from
-    working set.  Syntax of pattern is the following:</para>
+    working sennt.  Syntax of pattern is the following:</para>
 
     <para><optional><replaceable>symbol</replaceable></optional><optional>@<replaceable>soname</replaceable></optional><optional>@@<replaceable>version</replaceable></optional></para>
 
@@ -276,34 +287,38 @@
     is possible to request symbol without a version with the pattern
     "foo@@".)</para>
 
-    <para>Empty rule is considered to miss all components.  If you
-    need to match an empty symbol, use regular expression "^$".</para>
+    <para>Empty rule is considered to miss all components.</para>
   </refsect1>
 
   <refsect1>
-    <title>SYSCALL RULE SYNTAX</title>
+    <title>SYSCALL AND SIGNAL RULE SYNTAX</title>
 
-    <para>Under the presence of the <option>-sys</option> option, all
-    system calls are always traced.  This is a limitation of the
-    ptrace layer.  The system call rules however serve as a simple way
-    of filtering the output.</para>
+    <para>Under the presence of the <option>-sys</option> (or
+    <option>-sig</option>) option, ALL system calls (or signals) are
+    ALWAYS traced.  This is a limitation of the ptrace layer.  The
+    system call and signal rules however serve as a simple way of
+    filtering out the output that you are not interested in.  In
+    following paragraphs, the word &quot;event&quot; will be used to
+    mean &quot;signal or syscall, whatever applies&quot;.</para>
 
-    <para>System call rule syntax and semantics are the same as the
-    symbol rule syntax:</para>
+    <para>The system call and signal rule syntax and semantics are the
+    same as the symbol rule syntax:</para>
 
     <para>[-][#]<replaceable>pattern</replaceable></para>
 
-    <para>System call selection pattern syntax is then as
-    follows:</para>
+    <para>Event selection pattern syntax is then as follows:</para>
 
     <para><optional><replaceable>syscall name</replaceable>|<replaceable>syscall number</replaceable></optional></para>
+    <para><optional><replaceable>SIGNAME</replaceable>|<replaceable>signal number</replaceable></optional></para>
 
-    <para>When the pattern is empty, then it matches all system calls
-    known to frysk.  When the pattern is simple number
-    (e.g. &quot;12&quot;), then the pattern matches system call with
-    the given number.  Otherwise the pattern is considered to be
-    written using extended regular expression syntax, and matched
-    agains system call names.</para>
+    <para>When the pattern is empty, then it matches all events known
+    to frysk.  When the pattern is simple number (e.g.
+    &quot;12&quot;), then the pattern matches the event with the given
+    number.  Otherwise the pattern is considered to be written using
+    glob syntax, and matched against event names.</para>
+
+    <para>Signal names have to be given in upper case and include the
+    leading &quot;SIG&quot;.</para>
   </refsect1>
 
   <refsect1>
@@ -313,18 +328,18 @@
       <para>Trace all system calls:</para>
       <cmdsynopsis><command>ftrace -sys= ls</command></cmdsynopsis>
       <para>Trace variants of stat system call and moreover a system call #3:</para>
-      <cmdsynopsis><command>ftrace -sys=&quot;.*stat.*&quot;,3 ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -sys=&apos;*stat*,3&apos; ls</command></cmdsynopsis>
       <para>Trace all library calls:</para>
       <cmdsynopsis><command>ftrace -plt= ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain
       substring "write" in their names:</para>
-      <cmdsynopsis><command>ftrace -plt=&quot;.*write.*&quot; ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&apos;*write*&apos; ls</command></cmdsynopsis>
       <para>Trace memory functions done from libraries, i.e. not from
       main executable:</para>
-      <cmdsynopsis><command>ftrace -plt=&quot;[cm]alloc|free,-@MAIN" ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&apos;[cm]alloc|free,-@MAIN&apos; ls</command></cmdsynopsis>
       <para>Stack trace on everything, except for memory allocation
       functions (which should still be traced):</para>
-      <cmdsynopsis><command>ftrace -plt=&quot;#,-#[cm]alloc|free" ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -plt=&apos;#,-#[cm]alloc,-#free&apos; ls</command></cmdsynopsis>
     </informalexample>
 
   </refsect1>
@@ -381,7 +396,6 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para>I think ftrace doesn't handle tracing one function through both entry point and plt.</para>
     <para>The option parser is greedy when looking for options so running ftrace on a program that uses options can be a problem, use -- to split between ftrace and the program. So change from:</para>
     <screen>~/prefix/bin/ftrace ~/prefix/lib64/frysk/funit --arch 32 frysk.proc.TestAbandon</screen>
     <para>to</para>

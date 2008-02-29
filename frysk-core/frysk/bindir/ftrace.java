@@ -40,7 +40,8 @@
 package frysk.bindir;
 
 import inua.util.PrintWriter;
-import frysk.util.Util;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,28 +50,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import frysk.proc.Proc;
 import java.util.logging.*;
 import java.util.regex.Pattern;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import frysk.isa.syscalls.SyscallTable;
-import frysk.isa.syscalls.Syscall;
-import frysk.proc.Task;
-
-import frysk.util.CommandlineParser;
 
 import frysk.ftrace.Ftrace;
 import frysk.ftrace.ObjectFile;
+import frysk.ftrace.Symbol;
 import frysk.ftrace.TracePoint;
 import frysk.ftrace.TracePointOrigin;
-import frysk.ftrace.Symbol;
-
-import lib.dwfl.ElfSymbolVersion;
+import frysk.isa.signals.Signal;
+import frysk.isa.signals.SignalTable;
+import frysk.isa.syscalls.Syscall;
+import frysk.isa.syscalls.SyscallTable;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import frysk.util.CommandlineParser;
 import frysk.util.Glob;
+import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
+import lib.dwfl.ElfSymbolVersion;
 
 abstract class Rule
 {
@@ -198,52 +197,11 @@ class SymbolRule
     }
 }
 
-class SyscallRule
-    extends Rule
-{
-    public SyscallRule(boolean addition, boolean stackTrace) {
-	super (addition, stackTrace);
-    }
-
-    public boolean matches(Object traceable) {
-	return true;
-    }
-}
-
-class ByNumberSyscallRule
-    extends SyscallRule
-{
-    long number;
-    public ByNumberSyscallRule(boolean addition, boolean stackTrace, long number) {
-	super (addition, stackTrace);
-	this.number = number;
-    }
-
-    public boolean matches(Object traceable) {
-	Syscall syscall = (Syscall)traceable;
-	return syscall.getNumber() == number;
-    }
-}
-
-class ByRegexpSyscallRule
-    extends SyscallRule
-{
-    Pattern pattern;
-    public ByRegexpSyscallRule(boolean addition, boolean stackTrace, String regexp) {
-	super (addition, stackTrace);
-	this.pattern = Glob.compile(regexp);
-    }
-
-    public boolean matches(Object traceable) {
-	Syscall syscall = (Syscall)traceable;
-	return this.pattern.matcher(syscall.getName()).matches();
-    }
-}
-
 class MyFtraceController
     implements Ftrace.Controller,
 	       Ftrace.StackTracedSymbolsProvider,
-	       Ftrace.TracedSyscallProvider
+	       Ftrace.TracedSyscallProvider,
+	       Ftrace.TracedSignalProvider
 {
     protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -252,6 +210,7 @@ class MyFtraceController
     private final List dynRules = new ArrayList();
     private final List symRules = new ArrayList();
     private final List sysRules = new ArrayList();
+    private final List sigRules = new ArrayList();
 
     // Which symbols should yield a stack trace.
     private HashSet symbolsStackTraceSet = new HashSet();
@@ -288,19 +247,18 @@ class MyFtraceController
 	this.sysRules.addAll(rules);
     }
 
-    // Syscall working and stack trace sets can be pre-computed for
-    // each task.  This is in contrast to tracing rules, that are
-    // computed incrementally when DSOs are mapped.
-    public Map computeSyscallWorkingSet(Task task) {
+    public void gotSigRules(List rules) {
+	logger.log(Level.FINER, "Got " + rules.size() + " signal rules.");
+	this.sigRules.addAll(rules);
+    }
+
+    private Map computeWorkingSet(Task task, String what,
+				 List rules, ArrayList candidates)
+    {
 	HashSet workingSet = new HashSet();
 	HashSet stackTraceSet = new HashSet();
-	SyscallTable syscallTable = task.getSyscallTable();
-	long n = syscallTable.getNumSyscalls();
-	ArrayList candidates = new ArrayList();
-	for (long i = 0; i < n; ++i)
-	    candidates.add(syscallTable.getSyscall(i));
 
-	for (Iterator it = sysRules.iterator(); it.hasNext(); ) {
+	for (Iterator it = rules.iterator(); it.hasNext(); ) {
 	    final Rule rule = (Rule)it.next();
 	    logger.log(Level.FINEST, "Considering syscall rule " + rule + ".");
 	    rule.apply(logger, candidates, workingSet, stackTraceSet);
@@ -314,6 +272,31 @@ class MyFtraceController
 					     || stackTraceSet.contains(syscall)));
 	}
 	return ret;
+    }
+
+    // Syscall working and stack trace sets can be pre-computed for
+    // each task.  This is in contrast to tracing rules, that are
+    // computed incrementally when DSOs are mapped.
+    public Map computeSyscallWorkingSet(Task task) {
+	SyscallTable syscallTable = task.getSyscallTable();
+	long n = syscallTable.getNumSyscalls();
+	ArrayList candidates = new ArrayList();
+	for (long i = 0; i < n; ++i)
+	    candidates.add(syscallTable.getSyscall(i));
+
+	return computeWorkingSet(task, "syscall", sysRules, candidates);
+    }
+
+    // Compute signal working and stack trace sets.
+    public Map computeSignalWorkingSet(Task task) {
+	frysk.sys.Signal[] hostSignals
+	    = frysk.sys.Signal.getHostSignalSet().toArray();
+	SignalTable signalTable = task.getSignalTable();
+	ArrayList candidates = new ArrayList();
+	for (int i = 0; i < hostSignals.length; i++)
+	    candidates.add(signalTable.get(hostSignals[i].intValue()));
+
+	return computeWorkingSet(task, "signal", sigRules, candidates);
     }
 
     private boolean isInterpOf(ObjectFile objf, String exe)
@@ -402,19 +385,19 @@ class ftrace
 
     protected static final Logger logger = Logger.getLogger("frysk");
 
-    // Set of all Syscalls we want to trace.
-    // This is null if the user hasn't specified any.
-    HashSet tracedCalls;
     // True if a PID was requested.
     boolean requestedPid;
     // Command and arguments to exec.
     ArrayList commandAndArguments;
 
-    // For Ltrace.
+    // For configuration of overall working set.  We need to load and
+    // apply rules separately, to get all log messages, that's the
+    // reason we need these temporary array lists.
     final List pltRules = new ArrayList();
     final List dynRules = new ArrayList();
     final List symRules = new ArrayList();
     final List sysRules = new ArrayList();
+    final List sigRules = new ArrayList();
     final MyFtraceController controller = new MyFtraceController();
     boolean allowInterpTracing = false;
 
@@ -478,15 +461,21 @@ class ftrace
 	return rules;
     }
 
-    private List parseSyscallRules(String arg) {
+    private static interface TraceableExaminer {
+	int traceableNumber(Object traceable);
+	String traceableName(Object traceable);
+    }
+
+    private List parseSigSysRules(String arg, final TraceableExaminer examiner) {
 	String[] strs = arg.split(",", -1);
 	Pattern sysnumPat = Pattern.compile("[0-9]+");
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
-	    // 14, SYS14: syscall number 14
-	    // otherwise: syscall whose name matches regular expression
+	    // "14": traceable number 14
+	    // "foo*": traceable whose name matches glob
+	    // "": wildcard matching all traceables
 	    String str = strs[i];
-	    final SyscallRule rule;
+	    final Rule rule;
 	    final boolean addition;
 	    final boolean stackTrace;
 
@@ -506,18 +495,30 @@ class ftrace
 
 	    if (sysnumPat.matcher(str).matches()) {
 		logger.log(Level.FINE, i + ": " + str + ": by number rule");
-		if (str.startsWith("SYS"))
-		    str = str.substring(3);
-		long sysnum = (new Long(str)).longValue();
-		rule = new ByNumberSyscallRule(addition, stackTrace, sysnum);
+		final int number = (new Integer(str)).intValue();
+		rule = new Rule(addition, stackTrace) {
+			public boolean matches(final Object traceable) {
+			    return number == examiner.traceableNumber(traceable);
+			}
+		    };
 	    }
 	    else if (!str.equals("")) {
-		logger.log(Level.FINE, i + ": " + str + ": by regexp rule");
-		rule = new ByRegexpSyscallRule(addition, stackTrace, str);
+		logger.log(Level.FINE, i + ": " + str + ": by name rule");
+		final Pattern pattern = Glob.compile(str);
+		rule = new Rule(addition, stackTrace) {
+			public boolean matches(final Object traceable) {
+			    String name = examiner.traceableName(traceable);
+			    return pattern.matcher(name).matches();
+			}
+		    };
 	    }
 	    else {
 		logger.log(Level.FINE, i + ": " + str + ": \"everything\" rule");
-		rule = new SyscallRule(addition, stackTrace);
+		rule = new Rule(addition, stackTrace) {
+			public boolean matches(Object traceable) {
+			    return true;
+			}
+		    };
 	    }
 
 	    rules.add(rule);
@@ -574,6 +575,13 @@ class ftrace
           {
 	      allowInterpTracing = true;
           }
+        });
+
+        parser.add(new Option("sig", "trace signals", "SIG[,SIG]...") {
+		public void parsed(String arg) throws OptionException
+		{
+		    sigRules.add(arg);
+		}
         });
 
         parser.add(new Option("sys", "trace system calls", "CALL[,CALL]...") {
@@ -637,32 +645,56 @@ class ftrace
         parser.parse(args);
         if (writer == null)
             writer = new PrintWriter(System.out);
+        tracer.setWriter(writer);
 
-	// If tracing dynamic linker disabled, generate implicit
-	// -@INTERP rule at the end of the chain.
-	if (!allowInterpTracing) {
-	    if (pltRules.size() > 0)
+	if (!pltRules.isEmpty() || !dynRules.isEmpty() || !symRules.isEmpty()) {
+	    // If tracing dynamic linker disabled, generate implicit
+	    // -@INTERP rule at the end of the chain.
+	    if (!allowInterpTracing) {
 		pltRules.add("-@INTERP");
-	    if (dynRules.size() > 0)
 		dynRules.add("-@INTERP");
-	    if (symRules.size() > 0)
 		symRules.add("-@INTERP");
+	    }
+
+	    for (Iterator it = pltRules.iterator(); it.hasNext(); )
+		controller.gotPltRules(parseSymbolRules((String)it.next()));
+	    for (Iterator it = dynRules.iterator(); it.hasNext(); )
+		controller.gotDynRules(parseSymbolRules((String)it.next()));
+	    for (Iterator it = symRules.iterator(); it.hasNext(); )
+		controller.gotSymRules(parseSymbolRules((String)it.next()));
+
+	    tracer.setTraceFunctions(controller, controller);
 	}
 
-	// We need to load and apply rules separately, to get all log
-	// messages.
-	for (Iterator it = pltRules.iterator(); it.hasNext(); )
-	    controller.gotPltRules(parseSymbolRules((String)it.next()));
-	for (Iterator it = dynRules.iterator(); it.hasNext(); )
-	    controller.gotDynRules(parseSymbolRules((String)it.next()));
-	for (Iterator it = symRules.iterator(); it.hasNext(); )
-	    controller.gotSymRules(parseSymbolRules((String)it.next()));
-	for (Iterator it = sysRules.iterator(); it.hasNext(); )
-	    controller.gotSysRules(parseSyscallRules((String)it.next()));
+	if (!sysRules.isEmpty()) {
+	    TraceableExaminer syscallExaminer = new TraceableExaminer() {
+		    public int traceableNumber(Object traceable) {
+			return ((Syscall)traceable).getNumber();
+		    }
+		    public String traceableName(Object traceable) {
+			return ((Syscall)traceable).getName();
+		    }
+		};
+	    for (Iterator it = sysRules.iterator(); it.hasNext(); )
+		controller.gotSysRules(parseSigSysRules((String)it.next(),
+							syscallExaminer));
+	    tracer.setTraceSyscalls(controller);
+	}
 
-        tracer.setWriter(writer);
-	tracer.setTraceFunctions(controller, controller);
-	tracer.setTraceSyscalls(controller);
+	if (!sigRules.isEmpty()) {
+	    TraceableExaminer signalExaminer = new TraceableExaminer() {
+		    public int traceableNumber(Object traceable) {
+			return ((Signal)traceable).intValue();
+		    }
+		    public String traceableName(Object traceable) {
+			return ((Signal)traceable).getName();
+		    }
+		};
+	    for (Iterator it = sigRules.iterator(); it.hasNext(); )
+		controller.gotSigRules(parseSigSysRules((String)it.next(),
+							signalExaminer));
+	    tracer.setTraceSignals(controller);
+	}
 
         if (commandAndArguments != null) {
             String[] cmd = (String[]) commandAndArguments.toArray(new String[0]);

@@ -215,7 +215,7 @@ done
 
 cat <<EOF
     static {
-        // Populate the run-time signal table.  XXX while signal(7)
+        // Populate the real-time signal table.  XXX while signal(7)
         // seems to imply rtMax() is valid (cannot "exceed"), the code
         // suggests otherwise.
         for (int sig = rtMin(); sig < rtMax(); sig++) {

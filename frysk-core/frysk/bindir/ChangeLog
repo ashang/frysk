@@ -1,3 +1,22 @@
+2008-02-29  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Support signal tracing, cleanups.
+	(SyscallRule): Deleted class.
+	(ByNumberSyscallRule): Deleted class.
+	(ByRegexpSyscallRule): Deleted class.
+	(MyFtraceController.sigRules): New field.
+	(MyFtraceController.computeWorkingSet): New method.
+	(MyFtraceController.computeSyscallWorkingSet): Use computeWorkingSet.
+	(MyFtraceController.computeSignalWorkingSet): New method.
+	(ftrace.tracedCalls): Delete unused field.
+	(ftrace.sigRules): New field.
+	(ftrace.parseSyscallRules): New method.
+	(ftrace.TraceableExaminer): New interface.
+	(ftrace.parseSyscallRules): Rename to parseSigSysRules, use
+	examiner to generalize over both types of traceables.
+	(ftrace.run): Rewrite to only request tracing when rules are present.
+	* ftrace.xml: Update.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Glob moved to frysk.util.Glob.

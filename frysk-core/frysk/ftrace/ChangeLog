@@ -1,3 +1,14 @@
+2008-02-29  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java: Support signal tracing.
+	Only request syscall/signal/mapping observation when necessary.
+	(traceSyscalls): Delete unused field.
+	(TracedSignalProvider): New interface.
+	(tracedSignalProvider): New field.
+	(setTraceSignals): New method.
+	(signalSetForTask): New field.
+	(MySignaledObserver): New class.
+
 2008-02-28  Petr Machata  <pmachata@redhat.com>
 
 	* TracePoint.java (TracePoint.Instance): New class.

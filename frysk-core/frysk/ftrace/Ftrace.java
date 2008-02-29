@@ -69,9 +69,6 @@ public class Ftrace
     // True if we're tracing children as well.
     boolean traceChildren = false;
 
-    // True if we're tracing syscalls.
-    boolean traceSyscalls = false;
-
     // True if we're tracing mmaps/unmaps.
     boolean traceMmapUnmap = false;
 
@@ -109,9 +106,20 @@ public class Ftrace
      * and stack trace on.
      */
     public static interface TracedSyscallProvider {
-	/** Answers Map&lt;Syscall,bool&gt;, where the value is whether to
-    	    stack trace on given syscall. */
+	/** Answers Map&lt;Syscall, Boolean&gt;, where the boolean
+    	    value is whether to stack trace on given syscall. */
 	Map computeSyscallWorkingSet(Task task);
+    }
+
+    /**
+     * External entity implementing this interface is called out for
+     * each new process, and should construct set of signals to trace
+     * and stack trace on.
+     */
+    public static interface TracedSignalProvider {
+	/** Answers Map&lt;String, Boolean&gt;, where the boolean
+    	    value is whether to stack trace on given signal. */
+	Map computeSignalWorkingSet(Task task);
     }
 
     /**
@@ -127,6 +135,7 @@ public class Ftrace
     Controller ftraceController = null;
     StackTracedSymbolsProvider stackTraceSetProvider = null;
     TracedSyscallProvider tracedSyscallProvider = null;
+    TracedSignalProvider tracedSignalProvider = null;
 
     public void setTraceChildren ()
     {
@@ -136,7 +145,11 @@ public class Ftrace
     public void setTraceSyscalls (TracedSyscallProvider tracedSyscallProvider)
     {
 	this.tracedSyscallProvider = tracedSyscallProvider;
-	this.traceSyscalls = true;
+    }
+
+    public void setTraceSignals (TracedSignalProvider tracedSignalProvider)
+    {
+	this.tracedSignalProvider = tracedSignalProvider;
     }
 
     public void setTraceMmaps ()
@@ -213,11 +226,20 @@ public class Ftrace
     {
 	Proc proc = task.getProc();
 
-	if (traceSyscalls) {
+	if (tracedSyscallProvider != null) {
 	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
-	    Map workingSet = tracedSyscallProvider.computeSyscallWorkingSet(task);
+	    Map workingSet
+		= tracedSyscallProvider.computeSyscallWorkingSet(task);
 	    syscallSetForTask.put(task, workingSet);
+	}
+
+	if (tracedSignalProvider != null) {
+	    task.requestAddSignaledObserver(new MySignaledObserver());
+	    observationRequested(task);
+	    Map workingSet
+		= tracedSignalProvider.computeSignalWorkingSet(task);
+	    signalSetForTask.put(task, workingSet);
 	}
 
 	task.requestAddForkedObserver(forkedObserver);
@@ -229,8 +251,11 @@ public class Ftrace
 	task.requestAddTerminatedObserver(new MyTerminatedObserver());
 	observationRequested(task);
 
-	MappingGuard.requestAddMappingObserver(task, new MyMappingObserver(ftraceController));
-	observationRequested(task);
+	if (ftraceController != null || traceMmapUnmap) {
+	    MappingGuard.requestAddMappingObserver
+		(task, new MyMappingObserver(ftraceController));
+	    observationRequested(task);
+	}
 
 	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
 	reporter.eventSingle(task, "attached " + proc.getExe());
@@ -244,6 +269,10 @@ public class Ftrace
     /** Remembers traced syscall set for each task.
         Map&lt;Task, Map&lt;Syscall, Boolean&gt;&gt; */
     private final HashMap syscallSetForTask = new HashMap();
+
+    /** Remembers traced signal set for each task.
+        Map&lt;Task, Map&lt;String, Boolean&gt;&gt; */
+    private final HashMap signalSetForTask = new HashMap();
 
     private class TracePointWorkingSet
 	implements Driver
@@ -419,8 +448,6 @@ public class Ftrace
 		reporter.eventEntry(task, syscall, "syscall", name,
 				    syscall.extractCallArguments(task));
 
-	    // If we should stack trace on this system call, do it
-	    // before continuing on.
 	    if (stackTrace.booleanValue())
 		reporter.generateStackTrace(task);
 
@@ -538,6 +565,30 @@ public class Ftrace
 	public void addFailed (Object observable, Throwable w) { }
     }
 
+    class MySignaledObserver implements TaskObserver.Signaled {
+	public Action updateSignaled(Task task, Signal signal) {
+	    String name = signal.getName();
+	    Map signalWorkingSet = (Map)signalSetForTask.get(task);
+	    Boolean stackTrace = (Boolean)signalWorkingSet.get(signal);
+	    if (stackTrace == null)
+		return Action.CONTINUE;
+
+	    reporter.eventSingle(task, "signal " + name);
+
+	    if (stackTrace.booleanValue())
+		reporter.generateStackTrace(task);
+
+	    return Action.CONTINUE;
+	}
+
+	public void addedTo (Object observable) {
+	    Task task = (Task) observable;
+	    observationRealized(task);
+	}
+	public void deletedFrom (Object observable) { }
+	public void addFailed (Object observable, Throwable w) { }
+    }
+
     class MyMappingObserver
 	implements MappingObserver
     {
@@ -551,6 +602,9 @@ public class Ftrace
 	{
 	    if (traceMmapUnmap)
 		reporter.eventSingle(task, "map " + mapping.path);
+
+	    if (this.tracingController == null)
+		return Action.CONTINUE;
 
 	    java.io.File path = mapping.path;
 	    if (path.getPath().equals("/SYSV00000000 (deleted)")) {
