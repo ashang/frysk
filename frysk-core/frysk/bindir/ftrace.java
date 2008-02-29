@@ -466,7 +466,9 @@ class ftrace
 	String traceableName(Object traceable);
     }
 
-    private List parseSigSysRules(String arg, final TraceableExaminer examiner) {
+    private List parseSigSysRules(String arg, final TraceableExaminer examiner,
+				  String optionalPrefix)
+    {
 	String[] strs = arg.split(",", -1);
 	Pattern sysnumPat = Pattern.compile("[0-9]+");
 	List rules = new ArrayList();
@@ -504,7 +506,10 @@ class ftrace
 	    }
 	    else if (!str.equals("")) {
 		logger.log(Level.FINE, i + ": " + str + ": by name rule");
-		final Pattern pattern = Glob.compile(str);
+		str = str.toLowerCase();
+		if (optionalPrefix != null && !str.startsWith(optionalPrefix))
+		    str = optionalPrefix + str;
+		final Pattern pattern = Glob.compile(str, Pattern.CASE_INSENSITIVE);
 		rule = new Rule(addition, stackTrace) {
 			public boolean matches(final Object traceable) {
 			    String name = examiner.traceableName(traceable);
@@ -677,7 +682,7 @@ class ftrace
 		};
 	    for (Iterator it = sysRules.iterator(); it.hasNext(); )
 		controller.gotSysRules(parseSigSysRules((String)it.next(),
-							syscallExaminer));
+							syscallExaminer, null));
 	    tracer.setTraceSyscalls(controller);
 	}
 
@@ -692,7 +697,7 @@ class ftrace
 		};
 	    for (Iterator it = sigRules.iterator(); it.hasNext(); )
 		controller.gotSigRules(parseSigSysRules((String)it.next(),
-							signalExaminer));
+							signalExaminer, "sig"));
 	    tracer.setTraceSignals(controller);
 	}
 

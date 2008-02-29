@@ -308,17 +308,18 @@
 
     <para>Event selection pattern syntax is then as follows:</para>
 
-    <para><optional><replaceable>syscall name</replaceable>|<replaceable>syscall number</replaceable></optional></para>
-    <para><optional><replaceable>SIGNAME</replaceable>|<replaceable>signal number</replaceable></optional></para>
+    <para><optional><replaceable>event name</replaceable>|<replaceable>event number</replaceable></optional></para>
 
     <para>When the pattern is empty, then it matches all events known
     to frysk.  When the pattern is simple number (e.g.
     &quot;12&quot;), then the pattern matches the event with the given
-    number.  Otherwise the pattern is considered to be written using
-    glob syntax, and matched against event names.</para>
+    number.  Otherwise the pattern is considered to be
+    case-insensitive glob, and matched against event names.  Whole
+    name has to match for event to be part of working set.</para>
 
-    <para>Signal names have to be given in upper case and include the
-    leading &quot;SIG&quot;.</para>
+    <para>Signal can be given both with and without leading
+    &quot;sig&quot; (e.g. &quot;sigkill&quot; as well as
+    &quot;kill&quot;).</para>
   </refsect1>
 
   <refsect1>
@@ -329,6 +330,8 @@
       <cmdsynopsis><command>ftrace -sys= ls</command></cmdsynopsis>
       <para>Trace variants of stat system call and moreover a system call #3:</para>
       <cmdsynopsis><command>ftrace -sys=&apos;*stat*,3&apos; ls</command></cmdsynopsis>
+      <para>Various ways to tell ftrace that you want to stack trace on SIGUSR1:</para>
+      <cmdsynopsis><command>ftrace -sig=#USR1,#usr1,#SIGUSR1,#sigusr1,#10 ~/sig</command></cmdsynopsis>
       <para>Trace all library calls:</para>
       <cmdsynopsis><command>ftrace -plt= ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain

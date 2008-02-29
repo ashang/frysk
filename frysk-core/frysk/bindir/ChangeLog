@@ -1,5 +1,11 @@
 2008-02-29  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java (parseSigSysRules): Produce case insensitive rules,
+	allow optional prefix for signals (i.e. sigkill == KILL).
+	* ftrace.xml: Update.
+
+2008-02-29  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Support signal tracing, cleanups.
 	(SyscallRule): Deleted class.
 	(ByNumberSyscallRule): Deleted class.
