@@ -1,3 +1,7 @@
+2008-02-29  Andrew Cagney  <cagney@redhat.com>
+
+	* ftrace.java: Glob moved to frysk.util.Glob.
+
 2008-02-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFcatch.java (testFcatchFollowsForks): new test.

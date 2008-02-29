@@ -51,8 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import frysk.proc.Proc;
 import java.util.logging.*;
-import java.util.regex.*;
-
+import java.util.regex.Pattern;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -69,91 +68,9 @@ import frysk.ftrace.TracePointOrigin;
 import frysk.ftrace.Symbol;
 
 import lib.dwfl.ElfSymbolVersion;
-
+import frysk.util.Glob;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-
-class Glob
-{
-    private static int matchCharacterClass(String glob, int from)
-	throws PatternSyntaxException
-    {
-	int i = from + 2;
-	while (glob.charAt(++i) != ':' && i < glob.length())
-	    continue;
-	if (i >= glob.length() || glob.charAt(++i) != ']')
-	    throw new PatternSyntaxException
-		("Unmatched '['.", glob, from);
-	return i;
-    }
-
-    private static int matchBrack(String glob, int from)
-	throws PatternSyntaxException
-    {
-	// On first character, both [ and ] are legal.  But when [ is
-	// foolowed with :, it's character class.
-	int i = from + 1;
-	if (glob.charAt(i) == '[' && glob.charAt(i + 1) == ':')
-	    i = matchCharacterClass(glob, i) + 1;
-	else
-	    ++i; // skip any character, including [ or ]
-	boolean escape = false;
-	for (; i < glob.length(); ++i) {
-	    char c = glob.charAt(i);
-	    if (escape) {
-		++i;
-		escape = false;
-	    }
-	    else if (c == '[' && glob.charAt(i + 1) == ':')
-		i = matchCharacterClass(glob, i);
-	    else if (c == ']')
-		return i;
-	}
-	throw new PatternSyntaxException
-	    ("Unmatched '" + glob.charAt(from) + "'.", glob, from);
-    }
-
-    private static String toRegex(String glob) {
-	StringBuffer buf = new StringBuffer();
-	boolean escape = false;
-	for(int i = 0; i < glob.length(); ++i) {
-	    char c = glob.charAt(i);
-	    if (escape) {
-		if (c == '\\')
-		    buf.append("\\\\");
-		else if (c == '*')
-		    buf.append("\\*");
-		else if (c == '?')
-		    buf.append('?');
-		else
-		    buf.append('\\').append(c);
-		escape = false;
-	    }
-	    else {
-		if (c == '\\')
-		    escape = true;
-		else if (c == '[') {
-		    int j = matchBrack(glob, i);
-		    buf.append(glob.substring(i, j+1));
-		    i = j;
-		}
-		else if (c == '*')
-		    buf.append(".*");
-		else if (c == '?')
-		    buf.append('.');
-		else if (c == '.')
-		    buf.append("\\.");
-		else
-		    buf.append(c);
-	    }
-	}
-	return buf.toString();
-    }
-
-    public static Pattern compile(String glob) {
-	return Pattern.compile(toRegex(glob));
-    }
-}
 
 abstract class Rule
 {
