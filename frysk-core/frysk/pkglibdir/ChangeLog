@@ -1,3 +1,7 @@
+2008-02-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-3forks.c: The last fork sigfaults.
+
 2008-02-28  Sami Wagiaalla  <swagiaal@lredhat.com>
 
 	* funit-3forks.c: New test program.

@@ -47,17 +47,22 @@
 
 int main ()
 {
-
   printf ("fork1\n");
   int i = fork();
   
   if(i == 0){
     printf ("fork2\n");
     i = fork();
-    
+
     if(i == 0){
       printf ("fork3\n");
-      i = fork();  
+      i = fork();
+
+      if(i == 0){
+	int* a= 0;
+	a[0] = 0;
+      }
+      
     }
   }
   return 0;
