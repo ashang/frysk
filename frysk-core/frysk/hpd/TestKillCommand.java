@@ -110,6 +110,36 @@ public class TestKillCommand extends TestLib {
 	e.close();
     }
     
+    
+    public void testKillCommandTest() {
+	/* 
+	 * This is a copy of the testKillCommand as it should be able to be run without
+	 * the delay and without leaving off the "quit" command.
+	 * 
+	 */
+	if (unresolved(5615))
+	    return;
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+		"Loaded executable file.*");
+
+	e.sendCommandExpectPrompt("run", "Attached to process.*");
+	e.sendCommandExpectPrompt("go", "Running process.*");
+	e.sendCommandExpectPrompt("kill", "Killing process.*Loaded executable file.*");
+
+	e.sendCommandExpectPrompt("run", "Attached to process.*");
+	e.sendCommandExpectPrompt("go", "Running process.*");
+	e.sendCommandExpectPrompt("kill", "Killing process.*Loaded executable file.*");
+
+	e.expect("Loaded executable file*");
+	/* Make sure we can quit gracefully  */
+	
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
+    
+    
     /**
      * Test when all you have done is loaded/run the process and not
      * have done a "go" on it.
