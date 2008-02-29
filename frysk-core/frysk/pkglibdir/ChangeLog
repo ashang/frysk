@@ -1,3 +1,7 @@
+2008-02-28  Sami Wagiaalla  <swagiaal@lredhat.com>
+
+	* funit-3forks.c: New test program.
+
 2008-02-19  Stan Cox  <scox@redhat.com>
 
 	* funit-type-class.cxx (class_accessibility): New.

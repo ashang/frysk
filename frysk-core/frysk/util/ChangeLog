@@ -1,3 +1,8 @@
+2008-02-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcRunningUtil.java: Framework for all commandline
+	utilites which keep the process running.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* FCatch.java: Use frysk.rsl.

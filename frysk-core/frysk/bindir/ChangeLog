@@ -1,3 +1,9 @@
+2008-02-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ferror.java: new command line utility.
+	* ferror.xml: new file.
+	* TestFerror.java: New test.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* fcatch.java: Delete unused logger.
