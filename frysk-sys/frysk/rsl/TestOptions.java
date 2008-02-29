@@ -48,7 +48,7 @@ import gnu.classpath.tools.getopt.OptionException;
 public class TestOptions extends TestLib {
     private void parse(String option) {
 	try {
-	    LogOption.level(get(""), option);
+	    LogOption.parse(get(""), option);
 	} catch (OptionException e) {
 	    fail(e.getMessage());
 	}

@@ -1,5 +1,10 @@
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
+	* LogOption.java (parse(String)): Rename level(String).
+	(parse(Node,String)): Rename level(Node,String).
+	(LogOption(String,char)): New.
+	* TestOptions.java: Update.
+
 	* Logger.java: Delete.
 	* Log.java (format(String,Object[])): Delete.
 	(format(String,Object)): Delete.

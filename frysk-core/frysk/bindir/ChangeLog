@@ -25,6 +25,8 @@
 
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFcore.java: Update option tests to match options.
+
 	* ftrace.java: Glob moved to frysk.util.Glob.
 
 2008-02-29  Sami Wagiaalla  <swagiaal@redhat.com>

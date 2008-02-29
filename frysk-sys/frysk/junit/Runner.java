@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 package frysk.junit;
 
 import frysk.Config;
-import frysk.EventLogger;
+import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -51,9 +51,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 import junit.framework.Test;
 import junit.framework.TestResult;
@@ -64,11 +61,7 @@ import junit.textui.TestRunner;
  * <em>frysk</em> specific extension to the JUnit test framework.
  */
 
-public class Runner
-    extends TestRunner
-{
-    static final Logger logger = Logger.getLogger("frysk");
-    
+public class Runner extends TestRunner {
     // Repeat once by default.
     private int repeatValue = 1;
     private Collection testCases = null;
@@ -221,42 +214,14 @@ public class Runner
     private Parser createCommandLineParser (String programName) {
 	Parser parser = new Parser (programName, "1.0", true);
 	
-	EventLogger.addConsoleOptions(parser);
+	parser.add(new LogOption("debug", 'c'));
 	
 	parser.add(new Option("unbreak", 'u', "Run broken tests") {
 		public void parsed (String arg) throws OptionException {
 		    skipUnresolvedTests = false;
 		}
 	    });
-    
-	parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.",
-			      "<LEVEL>") {
-		public void parsed (String arg0) throws OptionException {
-		    Logger logger = LogManager.getLogManager()
-			.getLogger("frysk");
-		    try {
-			Level consoleLevel = Level.parse(arg0);
-			EventLogger.setConsoleLog(logger, consoleLevel);
-			
-		    } catch (IllegalArgumentException e) {
-			throw new OptionException("Invalid log console: " + arg0);
-		    }
-		}
-	    });
 		
-	parser.add(new Option('l', "Shortcut for --log frysk=LEVEL",
-			      "<LEVEL>") {
-		public void parsed (String arg0) throws OptionException {
-		    Logger logger = LogManager.getLogManager()
-			.getLogger("frysk");
-		    try {
-			Level level = Level.parse(arg0);
-			logger.setLevel(level);
-		    } catch (IllegalArgumentException e) {
-			throw new OptionException ("Invalid log console: " + arg0);
-		    }
-		}
-	    });
 	// Determine the number of times that the testsuite should be
 	// run.
 	parser.add (new Option ("repeat",  'r',

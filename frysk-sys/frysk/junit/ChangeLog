@@ -1,3 +1,9 @@
+2008-02-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (logger): Delete.
+	(-l, -log): Delete.
+	(-c): Call LogOption.parse(String).
+
 2008-02-19  Nurdin Premji  <npremji@redhat.com>
 
 	* TestCase.java (unresolvedCompilerNoSupportForAT_INTERFACE): Added.

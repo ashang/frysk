@@ -4,6 +4,8 @@
 
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
+	* CommandlineParser.java: Replace EventLogger with LogOption.
+
 	* Glob.java: Extracted from frysk.bindir.ftrace.
 
 2008-02-28  Sami Wagiaalla  <swagiaal@redhat.com>

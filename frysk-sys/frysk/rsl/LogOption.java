@@ -47,6 +47,9 @@ import java.io.FileOutputStream;
 
 public class LogOption extends Option {
 
+    /**
+     * Create a logger option, with NAME as the long flag.
+     */
     public LogOption(String name) {
 	super(name,
 	      ("Set debug-tracing of COMP to LEVEL.\n"
@@ -54,19 +57,33 @@ public class LogOption extends Option {
 	       + "Example: " + name + " frysk.rsl=FINE"),
 	      "<COMP=LEVEL,...>");
     }
+    /**
+     * Create a log option, with NAME as the long parameter, and C
+     * as the character flag.
+     */
+    public LogOption(String name, char c) {
+	super(name, c,
+	      ("Set debug-tracing of COMP to LEVEL.\n"
+	       + "LEVEL can be [ NONE | FINE | FINEST ]; default is FINE.\n"
+	       + "Example: " + name + " frysk.rsl=FINE"),
+	      "<COMP=LEVEL,...>");
+    }
+    /**
+     * Called by option parser; handle option with specified argument.
+     */
     public void parsed (String arg0) throws OptionException {
-	level(arg0);
+	parse(arg0);
     }
     /**
      * Parse ARG0 setting log levels.
      */
-    public static void level(String arg0) throws OptionException {
-	level(LogFactory.root, arg0);
+    public static void parse(String arg0) throws OptionException {
+	parse(LogFactory.root, arg0);
     }
     /**
      * Parse ARG0 setting log levels.
      */
-    static void level(Node root, String arg0) throws OptionException {
+    static void parse(Node root, String arg0) throws OptionException {
 	String[] logs = arg0.split(",");
 	for (int i = 0; i < logs.length; i++) {
 	    String[] logLevel = logs[i].split("=");
@@ -92,10 +109,10 @@ public class LogOption extends Option {
 		throw new OptionException("Could not parse: " + logs[i]);
 	    }
 	    if (logger == null)
-		throw new OptionException("Couldn't find logger for: "
+		throw new OptionException("Could not find logger: "
 					  + logs[i]);
 	    if (level == null)
-		throw new OptionException("Invalid log level for: "
+		throw new OptionException("Invalid log level: "
 					  + logs[i]);
 	    logger.set(level);
 	}

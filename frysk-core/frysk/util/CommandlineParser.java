@@ -48,7 +48,7 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
-import frysk.EventLogger;
+import frysk.rsl.LogOption;
 import frysk.rsl.Log;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.dead.LinuxExeFactory;
@@ -56,8 +56,7 @@ import frysk.proc.Proc;
 
 /**
  * CommandlineParser extends the getopt {@link Parser} class with
- * common options for Frysk command-line applications. It adds the
- * {@link EventLogger} options.
+ * common options for Frysk command-line applications.
  */
 public class CommandlineParser {
     private final Log fine = Log.fine(CommandlineParser.class);
@@ -66,7 +65,7 @@ public class CommandlineParser {
 
     public CommandlineParser(String name, String version) {
 	parser = new Parser(name, version, true);
-	EventLogger.addConsoleOptions(parser);
+	parser.add(new LogOption("debug"));
 	add(new Option("noexe", "Do not attempt to read an"+
 		       " executable for a corefile ") {
 		public void parsed(String exeValue) throws OptionException {

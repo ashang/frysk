@@ -57,52 +57,22 @@ public class TestFcore extends TestLib {
 	e.expect("Error: ");
     }
 
-    public void testBadConsoleParameter () {
+    public void testBadDebugParameter () {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
-		"-console", "frysk=SILLY",
+		"-debug", "frysk=SILLY",
 		"1"
 	    });
-	e.expect("fcore: Invalid log console: SILLY");
+	e.expect("fcore: Invalid log level: frysk=SILLY");
     }
 
-    public void testBadLogParameter () {
+    public void testGoodDebugParameter () {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcore").getAbsolutePath (),
-		"-log", "frysk=SILLY",
-		"1"
+		"-debug", "frysk=FINE",
+		"no-such-file"
 	    });
-	e.expect("fcore: Invalid log level: SILLY");
-    }
-
-    public void testGoodConsoleBadLogParameter () {
-	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
-		"-console", "frysk=FINE",
-		"-log", "frysk=SILLY",
-		"1"
-	    });
-	e.expect ("fcore: Invalid log level: SILLY");
-    }
-
-    public void testBadConsoleBadLogParameter () {
-	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
-		"-console", "frysk=SILLY",
-		"-log", "frysk=SILLY",
-		"1"
-	    });
-	e.expect("fcore: Invalid log console: SILLY");
-    }
-
-    public void testBadConsoleGoodLogParameter () {
-	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
-		"-console", "frysk=SILLY",
-		"-log", "frysk=FINE",
-		"1"
-	    });
-	e.expect("fcore: Invalid log console: SILLY");
+	e.expect("Error: open: No such file or directory");
     }
 
     public void testInvalidArgument () {
