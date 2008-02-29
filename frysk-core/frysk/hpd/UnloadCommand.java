@@ -90,9 +90,12 @@ public class UnloadCommand extends ParameterizedCommand {
 		cli.addMessage("Trying to remove a proc that has not been loaded", Message.TYPE_ERROR);
 		return;
 	    }
-	    removeFromHashMap(proc, cli.getLoadedProcs(), cli);
-	    cli.targetset.removeProc(id);
-	    proc.getHost().remove(proc);
+	    if (removeFromHashMap(proc, cli.getLoadedProcs(), cli)) {
+		cli.targetset.removeProc(id);
+		cli.addMessage("Removed Target set [" + id + "]" , Message.TYPE_NORMAL);
+	    } else {
+		cli.addMessage("Target id " + id + " could not be found", Message.TYPE_ERROR);
+	    }
 	    return;
 	}
 	if (cmd.parameter(0).equals("-all")) {
@@ -109,7 +112,7 @@ public class UnloadCommand extends ParameterizedCommand {
      * @param procMap is the HashMap of the procs to search for removal
      * @param cli is the current command line interface object
      */
-    private void removeFromHashMap(Proc proc, HashMap procMap, CLI cli) {
+    private boolean removeFromHashMap(Proc proc, HashMap procMap, CLI cli) {
 	Set procSet = procMap.entrySet();
 	Iterator foo = procSet.iterator();
 	while (foo.hasNext()) {
@@ -119,9 +122,10 @@ public class UnloadCommand extends ParameterizedCommand {
 		synchronized (cli) {
 		    foo.remove();
 		}
-		return;
+		return true;
 	    }
 	}
+	return false;
     }
 
     /**

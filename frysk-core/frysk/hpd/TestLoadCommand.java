@@ -77,7 +77,7 @@ public class TestLoadCommand extends TestLib {
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 		"\\[1\\.0\\]\t\t0*\\t0.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
-	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\].*\\[1\\.0].*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\].*\\[1\\.0\\].*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
@@ -109,7 +109,7 @@ public class TestLoadCommand extends TestLib {
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("load", "Target set.*\\[0\\.0\\].*\\[1\\.0].*");
+	e.sendCommandExpectPrompt("load", "Target set.*\\[0\\.0\\].*\\[1\\.0\\].*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();

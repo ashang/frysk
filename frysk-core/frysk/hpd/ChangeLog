@@ -7,7 +7,12 @@
 2008-02-29  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestKillCommand.java: Add test that points to bz 5615.
-
+	
+	* TestUnloadommand.java; New.
+	* TestLoadCommand.java: Fix regexp errors.
+	* UnloadCommand.java: Add info message when removing id's;
+	remove proc.getHost().remove(proc) call.
+	
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* HardList.java: Use frysk.rsl.
