@@ -1,3 +1,9 @@
+2008-02-29  Stan Cox  <scox@redhat.com>
+
+	* fhpd.java (main): Remove -sysroot option.
+	(CommandLine.run): Use no sysroot variant of AttachCommand, CoreCommand,
+	and LoadCommand.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Move Rule, SymbolRule and MyFtraceController to

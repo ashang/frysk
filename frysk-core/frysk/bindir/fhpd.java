@@ -57,8 +57,6 @@ import frysk.util.FlowControlWriter;
 import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
 import frysk.util.ObservingTerminal;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
 import frysk.sys.FileDescriptor;
 import frysk.proc.Proc;
 
@@ -66,7 +64,6 @@ public class fhpd {
     private static Proc[] pids;
     private static Proc command;
     private static Proc[] cores;
-    private static String sysroot;
     private static int exitStatus;
 
     final static class FhpdCompletor implements Completor {
@@ -131,14 +128,14 @@ public class fhpd {
 	    // Prime the CLI based on the parameters.
 	    if (pids != null) {
 		for (int i = 0; i < pids.length; i++) {
-		    AttachCommand.attach(pids[i], cli, sysroot);
+		    AttachCommand.attach(pids[i], cli);
 		}
 	    } else if (cores != null) {
 		for (int i = 0; i < cores.length; i++) {
-		    CoreCommand.load(cores[i], cli, sysroot);
+		    CoreCommand.load(cores[i], cli);
 		}
 	    } else if (command != null) {
-		LoadCommand.load(command, cli, sysroot);
+		LoadCommand.load(command, cli);
 	    }
 
 	    try {
@@ -172,18 +169,6 @@ public class fhpd {
                     fhpd.cores = cores;
                 }
             };
-        parser.add(new Option("sysroot", 's',
-                              "Assume the executable is from a sysroot build ",
-                              "SysRoot-Path") {
-                public void parsed(String sysrootValue) throws OptionException {
-                    try {
-                        sysroot = sysrootValue;
-                    } catch (IllegalArgumentException e) {
-                        throw new OptionException("Invalid sysroot parameter "
-                                                  + sysrootValue);
-                    }
-                }
-            });
     
         parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
         parser.parse(args);

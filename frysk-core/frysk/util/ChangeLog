@@ -1,3 +1,8 @@
+2008-02-29  Stan Cox  <scox@redhat.com>
+
+	* CommandlineParser.java (CommandlineParser): Add new option sysroot.
+	(parseSysroot): Use it.
+
 2008-02-29  Petr Machata  <pmachata@redhat.com>
 
 	* Glob.java (compile(String, int)): New method.

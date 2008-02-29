@@ -50,6 +50,7 @@ import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.rsl.LogOption;
 import frysk.rsl.Log;
+import frysk.dwfl.DwflCache;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.dead.LinuxExeFactory;
 import frysk.proc.Proc;
@@ -70,6 +71,11 @@ public class CommandlineParser {
 		       " executable for a corefile ") {
 		public void parsed(String exeValue) throws OptionException {
 		    extendedCore = false;
+		}
+	    });
+	add(new Option("sysroot", "special root directory", "Path of special root directory") {
+		public void parsed(String arg) throws OptionException {
+			parseSysroot(arg);
 		}
 	    });
     }
@@ -109,6 +115,15 @@ public class CommandlineParser {
     public void parseCommand(Proc command) {
 	System.err.println("Error: Commands not supported.");
 	System.exit(1);
+    }
+
+    /**
+     * Callback function. Sets the default sysroot
+     * 
+     * @param sysrootPath The special root directory
+     */
+    public void parseSysroot(String sysrootPath) {
+    DwflCache.setDefaultSysroot(sysrootPath);
     }
 
     public String[] parse(String[] args) {

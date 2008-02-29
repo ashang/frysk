@@ -119,6 +119,10 @@ public class CoreCommand extends ParameterizedCommand {
 	load(coreProc, cli, options.sysroot);
     }
 
+    public static void load(Proc coreProc, CLI cli) {
+    load(coreProc, cli, null);
+    }
+
     public static void load(Proc coreProc, CLI cli, String sysroot) {
 	// All checks are done. Host is built. Now start reserving
 	// space in the sets.

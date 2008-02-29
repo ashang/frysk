@@ -1,3 +1,8 @@
+2008-02-29  Stan Cox  <scox@redhat.com>
+
+	* DwflCache.java (setDefaultSysroot): New.
+	(getDwfl): Use it.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* DwflCache.java: Use frysk.rsl.

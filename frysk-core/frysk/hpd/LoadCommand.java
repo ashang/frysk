@@ -113,6 +113,10 @@ public class LoadCommand extends ParameterizedCommand {
 	load(exeProc, cli, o.sysroot);
     }
 
+    public static void load(Proc exeProc, CLI cli) {
+    load(exeProc, cli, null);
+    }
+
     public static void load(Proc exeProc, CLI cli, String sysroot) {
 	int procID;
 	if (cli.taskID < 0)

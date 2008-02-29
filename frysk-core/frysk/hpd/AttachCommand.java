@@ -121,6 +121,10 @@ public class AttachCommand extends ParameterizedCommand {
 	}
     }
 
+    public static void attach(Proc proc, CLI cli) {
+    attach(proc, cli, null);
+    }
+
     public static void attach(Proc proc, CLI cli, String sysroot) {
 	DwflCache.setSysroot(proc.getMainTask(), sysroot);
 	cli.doAttach(proc, false);

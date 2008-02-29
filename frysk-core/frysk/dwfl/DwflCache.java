@@ -137,8 +137,11 @@ public class DwflCache {
 	if (!modMap.containsKey(task)) {
 	    fine.log("creating new dwfl for task", task);
 	    String sysroot = (String)sysrootMap.get(task.getProc().getCommand());
-	    if (sysroot == null)
-		sysroot = "/";
+	    if (sysroot == null) {
+	    	sysroot = (String)sysrootMap.get("default");
+	    	if (sysroot == null)
+	    		sysroot = "/";
+	    }
 	    File sysrootFile = new File(sysroot);
 	    File relativeSysroot = getRelativeSysRoot(task.getProc().getExe(), sysrootFile);
 	    Dwfl dwfl = new Dwfl(relativeSysroot.getPath());
@@ -167,11 +170,20 @@ public class DwflCache {
     /**
      * set the sysroot corresponding to a {@link frysk.proc.Task}. 
      * 
-     * @param task is the task. 
+     * @param task is the task.
      * @param sysroot is this task's sysroot.
      */
     public static void setSysroot(Task task, String sysroot) {
 	sysrootMap.put(task.getProc().getCommand(), sysroot);
+    }
+    
+    /**
+     * set the default sysroot
+     * 
+     * @param sysroot is the default special root directory
+     */
+    public static void setDefaultSysroot(String sysroot) {
+    sysrootMap.put("default", sysroot);
     }
     
     /**
