@@ -1,5 +1,10 @@
 2008-03-01  Tom Tromey  <tromey@redhat.com>
 
+	* RunCommand.java (RunCommand): Fix typo.
+	* LoadCommand.java (LoadCommand): Add missing spaces.
+
+2008-03-01  Tom Tromey  <tromey@redhat.com>
+
 	Bugzilla 5731
 	* DbgVariableCommands.java (Set.interpret): Use
 	DbgVariables.print.

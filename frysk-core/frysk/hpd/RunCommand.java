@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class RunCommand extends StartRun {
     // Used to synchronize with updateAttached method
     RunCommand() {
 	super("run program and immediately attach",
-	      "run <arguments*> || <--norags>",
+	      "run <arguments*> || <--noargs>",
 	      "The run command alllows the debugger to run a(any) program(s)"
 	      + " that has(have) been previously loaded via a load or"
 	      + " core command.  The run command can accept arguments to"

@@ -64,8 +64,8 @@ public class LoadCommand extends ParameterizedCommand {
 	      "The load command lets the user examine information about"
 	      + " an executable file without actually running it.  An"
 	      + " executable must be loaded with this command before it"
-	      + " can be run with either the 'start' or 'run' command."
-	      + " If no args are entered a list of the loaded procs(if any)"
+	      + " can be run with either the 'start' or 'run' command. "
+	      + " If no args are entered a list of the loaded procs (if any)"
 	      + " is displayed.\nNo arguments to be passed to the proc are"
 	      + " entered here.  Those arguments are passed to the proc(s)"
 	      + " via the 'start' or 'run' commands.");
