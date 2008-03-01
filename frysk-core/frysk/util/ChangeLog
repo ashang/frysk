@@ -1,3 +1,13 @@
+2008-02-29  Tom Tromey  <tromey@redhat.com>
+
+	* FlowControlWriter.java (outStream): Remove.
+	(FlowControlWriter): Update.
+	(flush): Update.
+	(close): Update.
+	(write(char[],int,int)): Update.
+	(write(int)): Update.
+	(write(String,int,int)): Update.
+
 2008-02-29  Stan Cox  <scox@redhat.com>
 
 	* CommandlineParser.java (CommandlineParser): Add new option sysroot.

@@ -47,7 +47,6 @@ import java.io.Writer;
  * Extension of Writer that allows output to be paused.
  */
 public class FlowControlWriter extends FilterWriter {
-    private Writer outStream;
     private boolean paused = false;
 
     /**
@@ -55,7 +54,6 @@ public class FlowControlWriter extends FilterWriter {
      */
     public FlowControlWriter(Writer outStream) {
 	super(outStream);
-	this.outStream = outStream;
     }
 
     public synchronized boolean isPaused() {
@@ -81,7 +79,7 @@ public class FlowControlWriter extends FilterWriter {
 	    }
 	}
 	try {
-	    outStream.flush();
+	    super.flush();
 	}
 	catch (IOException e) {
 	}
@@ -96,7 +94,6 @@ public class FlowControlWriter extends FilterWriter {
 		
 	    }
 	}
-	outStream.close();
 	super.close();
     }
 
@@ -109,9 +106,9 @@ public class FlowControlWriter extends FilterWriter {
 		
 	    }
 	}
-	outStream.write(buf, offset, len);
+	super.write(buf, offset, len);
 	try {
-	    outStream.flush();
+	    super.flush();
 	}
 	catch (IOException e) {
 	}
@@ -126,9 +123,9 @@ public class FlowControlWriter extends FilterWriter {
 		
 	    }
 	}
-	outStream.write(b);
+	super.write(b);
 	try {
-	    outStream.flush();
+	    super.flush();
 	}
 	catch (IOException e) {
 	}
@@ -143,9 +140,9 @@ public class FlowControlWriter extends FilterWriter {
 		
 	    }
 	}
-	outStream.write(str, offset, len);
+	super.write(str, offset, len);
 	try {
-	    outStream.flush();
+	    super.flush();
 	}
 	catch (IOException e) {
 	    
