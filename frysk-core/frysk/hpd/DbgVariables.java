@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,12 +40,14 @@
 package frysk.hpd;
 
 import java.util.SortedMap;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.LinkedList;
 import java.util.Arrays;
 import java.lang.Integer;
 import java.util.Iterator;
 import java.util.List;
+import java.io.PrintWriter;
 
 /**
  * Debugger variable accessible through the "set" command.
@@ -183,5 +185,14 @@ public class DbgVariables {
 	}
 	CompletionFactory.padSingleCandidate(candidates);
 	return 0;
+    }
+
+    public void print(PrintWriter out) {
+	for (Iterator i = vars.entrySet().iterator(); i.hasNext(); ) {
+	    Map.Entry e = (Map.Entry) i.next();
+	    out.print(e.getKey());
+	    out.print("=");
+	    out.println(((Value) e.getValue()).getValue());
+	}
     }
 }

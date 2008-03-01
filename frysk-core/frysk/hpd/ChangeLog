@@ -1,3 +1,10 @@
+2008-03-01  Tom Tromey  <tromey@redhat.com>
+
+	Bugzilla 5731
+	* DbgVariableCommands.java (Set.interpret): Use
+	DbgVariables.print.
+	* DbgVariables.java (print): New method.
+
 2008-02-29  Stan Cox  <scox@redhat.com>
 
 	* LoadCommand.java (load): Add no sysroot variant.
