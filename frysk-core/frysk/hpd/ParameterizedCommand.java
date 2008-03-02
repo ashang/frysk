@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.List;
+import frysk.util.WordWrapWriter;
 
 abstract class ParameterizedCommand extends Command {
     private final SortedMap longOptions = new TreeMap();
@@ -147,22 +148,25 @@ abstract class ParameterizedCommand extends Command {
     }
 
     void help(CLI cli, Input input) {
-	cli.outWriter.print(syntax);
+	WordWrapWriter out = cli.getWordWrapWriter();
+	out.print(syntax);
 	if (longOptions.size() > 0) {
-	    cli.outWriter.println(" -option ...; where options are:");
+	    out.println(" -option ...; where options are:");
 	    for (Iterator i = longOptions.values().iterator();
 		 i.hasNext(); ) {
 		CommandOption option = (CommandOption)i.next();
-		cli.outWriter.print("  -");
-		cli.outWriter.print(option.longName);
-		cli.outWriter.print("\t");
-		cli.outWriter.print(option.description);
-		cli.outWriter.println();
+		out.print("  -");
+		out.print(option.longName);
+		out.print("\t");
+		out.setWrapIndentFromColumn();
+		out.print(option.description);
+		out.setWrapIndent(0);
+		out.println();
 	    }
 	} else {
-	    cli.outWriter.println();
+	    out.println();
 	}
-	cli.outWriter.println(full);
+	out.println(full);
     }
 
     /**

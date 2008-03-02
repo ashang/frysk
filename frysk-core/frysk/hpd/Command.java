@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 package frysk.hpd;
 
 import java.util.List;
+import java.io.PrintWriter;
 
 /**
  * A handler class for the CLI that supplies its own help messages.
@@ -72,11 +73,12 @@ public abstract class Command {
      * command.
      */
     void help(CLI cli, Input buffer) {
-	cli.outWriter.print("Usage: ");
-	cli.outWriter.print(syntax);
-	cli.outWriter.println();
-	cli.outWriter.print(full);
-	cli.outWriter.println();
+	PrintWriter out = cli.getWordWrapWriter();
+	out.print("Usage: ");
+	out.print(syntax);
+	out.println();
+	out.print(full);
+	out.println();
     }
 
     /**

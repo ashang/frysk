@@ -1,3 +1,13 @@
+2008-03-02  Tom Tromey  <tromey@redhat.com>
+
+	* ParameterizedCommand.java (help): Use getWordWrapWriter.  Set
+	indent for wrapping.
+	* NoOptsCommand.java (help): Use getWordWrapWriter.
+	* MultiLevelCommand.java (help): use getWordWrapWriter.  Set
+	indent for wrapping.
+	* Command.java (help): Use getWordWrapWriter.
+	* CLI.java (getWordWrapWriter): New method.
+
 2008-03-01  Tom Tromey  <tromey@redhat.com>
 
 	* RunCommand.java (RunCommand): Fix typo.

@@ -61,6 +61,7 @@ import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
 import frysk.util.CountDownLatch;
+import frysk.util.WordWrapWriter;
 import frysk.expr.Expression;
 import frysk.expr.ScratchSymTab;
 import frysk.expr.ExprSymTab;
@@ -179,6 +180,10 @@ public class CLI {
         // Assign this proc to the passed in procID 
         else
             idManager.manageProc(proc, this.taskID);
+    }
+
+    WordWrapWriter getWordWrapWriter() {
+	return new WordWrapWriter(outWriter);
     }
 
     final PrintWriter outWriter;

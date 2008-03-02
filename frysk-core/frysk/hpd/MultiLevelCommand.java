@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.List;
+import frysk.util.WordWrapWriter;
 
 /**
  * A handler class for the CLI that supplies its own help messages.
@@ -115,14 +116,17 @@ public abstract class MultiLevelCommand extends Command {
      */
     void help(CLI cli, Input input) {
 	if (input.size() == 0) {
+	    WordWrapWriter out = cli.getWordWrapWriter();
 	    for (Iterator i = subCommands.entrySet().iterator();
 		 i.hasNext(); ) {
 		Map.Entry entry = (Map.Entry)(i.next());
 		String name = (String)entry.getKey();
 		Command command = (Command)entry.getValue();
-		cli.outWriter.print(name);
-		cli.outWriter.print(" - ");
-		cli.outWriter.println(command.description());
+		out.print(name);
+		out.print(" - ");
+		out.setWrapIndentFromColumn();
+		out.println(command.description());
+		out.setWrapIndent(0);
 	    }
 	} else {
 	    lookup(input.parameter(0)).help(cli, input.accept());
