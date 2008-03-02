@@ -152,17 +152,26 @@ abstract class ParameterizedCommand extends Command {
 	out.print(syntax);
 	if (longOptions.size() > 0) {
 	    out.println(" -option ...; where options are:");
+	    int maxLen = 0;
+	    for (Iterator i = longOptions.values().iterator();
+		 i.hasNext(); ) {
+		CommandOption option = (CommandOption)i.next();
+		maxLen = Math.max(maxLen, option.longName.length());
+	    }
+	    // 3 for the "  -", 5 for the gap.
+	    maxLen += 3 + 5;
+	    out.setWrapIndent(maxLen);
 	    for (Iterator i = longOptions.values().iterator();
 		 i.hasNext(); ) {
 		CommandOption option = (CommandOption)i.next();
 		out.print("  -");
 		out.print(option.longName);
-		out.print("\t");
-		out.setWrapIndentFromColumn();
+		for (int j = 3 + option.longName.length(); j < maxLen; ++j)
+		    out.print(" ");
 		out.print(option.description);
-		out.setWrapIndent(0);
 		out.println();
 	    }
+	    out.setWrapIndent(0);
 	} else {
 	    out.println();
 	}

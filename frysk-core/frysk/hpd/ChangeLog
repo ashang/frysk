@@ -1,5 +1,10 @@
 2008-03-02  Tom Tromey  <tromey@redhat.com>
 
+	* ParameterizedCommand.java (help): Align all option
+	descriptions.
+
+2008-03-02  Tom Tromey  <tromey@redhat.com>
+
 	* CLI.java (getWordWrapWriter): Document.
 
 2008-03-02  Tom Tromey  <tromey@redhat.com>
