@@ -64,6 +64,13 @@ public class WordWrapWriter extends PrintWriter {
     // The current column.
     private int column;
 
+    /**
+     * Create a new WordWrapWriter, specifying all parameters.
+     * @param outStream the output writer to wrap
+     * @param columns the number of columns to allow before wrapping
+     * @param wrapIndent the number of columns to indent after wrapping
+     * @param locale the locale to use for determining word breaks
+     */
     public WordWrapWriter(Writer outStream, int columns, int wrapIndent, Locale locale) {
 	// Always enable auto-flush.
 	super(outStream, true);
@@ -72,26 +79,64 @@ public class WordWrapWriter extends PrintWriter {
 	this.iter = BreakIterator.getWordInstance(locale);
     }
 
+    /**
+     * Create a new WordWrapWriter, specifying just the number of columns.
+     * By default there will be no indentation after a wrap, and the
+     * default locale will be used.
+     * @param outStream the output writer to wrap
+     * @param columns the number of columns to allow before wrapping
+     */
     public WordWrapWriter(Writer outStream, int columns) {
 	this(outStream, columns, 0, Locale.getDefault());
     }
 
+    /**
+     * Create a new WordWrapWriter using the defaults.  Wrapping will
+     * happen at column 72.  By default there will be no indentation
+     * after a wrap, and the default locale will be used.
+     * @param outStream the output writer to wrap
+     */
     public WordWrapWriter(Writer outStream) {
 	this(outStream, 72, 0, Locale.getDefault());
     }
 
+    /**
+     * Set the number of columns of output.  The writer will try to
+     * break a line before a word that would go past this column.
+     * @param columns the number of columns to allow before wrapping
+     */
     public void setColumns(int columns) {
 	this.columns = columns;
     }
 
+    /**
+     * Set the amount of indentation after wrapping.  This can be used
+     * to line up some text if it wraps past the end of the line.
+     * Indentation is accomplished by emitting spaces.  Tabs in the
+     * output are considered to move to the next column that is a
+     * multiple of 8 ("unix style").  An argument of 0 means that no
+     * indentation will be applied after wrapping.
+     * @param wrapIndent the number of columns to indent after wrapping
+     */
     public void setWrapIndent(int wrapIndent) {
 	this.wrapIndent = wrapIndent;
     }
 
+    /**
+     * Like setWrapIndent(int), but sets the indentation column based
+     * on the current column known to this writer.  This can be useful
+     * for aligning text when the precise formatting is not known --
+     * you can emit a prefix for a line, mark the indentation level,
+     * and then emit the remainder of the text, which will all line up
+     * at the marked position.
+     */
     public void setWrapIndentFromColumn() {
 	this.wrapIndent = this.column;
     }
 
+    // All PrintWriter output methods (in particular the print
+    // methods) eventually delegate to a write() method.  We override
+    // just the necessary ones to have everything work properly.
     public void write(char[] buf, int offset, int len) {
 	// A bit inefficient but we don't care much.
 	write(new String(buf, offset, len));

@@ -1,5 +1,9 @@
 2008-03-02  Tom Tromey  <tromey@redhat.com>
 
+	* CLI.java (getWordWrapWriter): Document.
+
+2008-03-02  Tom Tromey  <tromey@redhat.com>
+
 	* ParameterizedCommand.java (help): Use getWordWrapWriter.  Set
 	indent for wrapping.
 	* NoOptsCommand.java (help): Use getWordWrapWriter.

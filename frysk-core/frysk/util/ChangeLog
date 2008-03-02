@@ -1,5 +1,9 @@
 2008-03-02  Tom Tromey  <tromey@redhat.com>
 
+	* WordWrapWriter.java: Document.
+
+2008-03-02  Tom Tromey  <tromey@redhat.com>
+
 	* WordWrapWriter.java: New file.
 
 2008-02-29  Tom Tromey  <tromey@redhat.com>

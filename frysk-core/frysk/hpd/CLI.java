@@ -182,6 +182,9 @@ public class CLI {
             idManager.manageProc(proc, this.taskID);
     }
 
+    /**
+     * Return a WordWrapWriter which wraps this CLI's output writer.
+     */
     WordWrapWriter getWordWrapWriter() {
 	return new WordWrapWriter(outWriter);
     }
