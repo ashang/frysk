@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (dump(Object)): Add missing else.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* LogOption.java (parse(String)): Rename level(String).

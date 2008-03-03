@@ -190,9 +190,9 @@ public final class Log {
     private void dump(Object o) {
 	if (o == null) {
 	    out.print("<<null>>");
-	} if (o instanceof char[]) {
+	} else if (o instanceof char[]) {
 	    dump((char[])o);
-	} if (o instanceof boolean[]) {
+	} else if (o instanceof boolean[]) {
 	    dump((boolean[])o);
 	} else if (o instanceof int[]) {
 	    dump((int[])o);
@@ -206,11 +206,11 @@ public final class Log {
 		dump(o, i);
 	    }
 	    out.print("]");
-	} else if (o instanceof Throwable)
+	} else if (o instanceof Throwable) {
 	    dump((Throwable) o);
-	else if (o instanceof String)
+	} else if (o instanceof String) {
 	    dump((String)o);
-	else {
+	} else {
 	    out.print("<<");
 	    out.print(o.toString());
 	    out.print(">>");
