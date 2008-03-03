@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@ package frysk.value;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
-import frysk.junit.TestCase;
+import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 
-public class TestInterface extends TestCase {
+public class TestInterface extends TestLib {
 
     private CompositeType getType(String program, String variableName) {
 	Task task = (new DaemonBlockedAtSignal(program)).getMainTask();

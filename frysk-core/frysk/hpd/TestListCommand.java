@@ -52,6 +52,8 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
+	if (unresolved(5855))
+	    return;
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");

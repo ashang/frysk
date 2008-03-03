@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestListCommand.java (testListPC()): Mark as unresolved, 5855.
+
 2008-03-02  Tom Tromey  <tromey@redhat.com>
 
 	* ParameterizedCommand.java (help): Align all option
