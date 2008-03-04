@@ -1,3 +1,8 @@
+2008-03-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcWiseDataModel.java: Deleted observableProc*XXX, and
+	used new refresh code intead.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/ObserverManager.java: Use frysk.config.

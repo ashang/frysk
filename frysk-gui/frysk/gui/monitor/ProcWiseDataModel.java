@@ -40,14 +40,11 @@
 
 package frysk.gui.monitor;
 
-import frysk.sys.ProcessIdentifierFactory;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,6 +63,7 @@ import frysk.proc.Host;
 import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.proc.Stat;
 
 /**
@@ -96,12 +94,6 @@ public class ProcWiseDataModel
 
   private DataColumnBoolean sensitiveDC;
 
-  private ProcCreatedObserver procCreatedObserver;
-
-  private ProcDestroyedObserver procDestroyedObserver;
-
-  // private TimerEvent refreshTimer;
-
   private HashMap iterMap;
 
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
@@ -131,13 +123,7 @@ public class ProcWiseDataModel
                                                      this.sensitiveDC });
     
 
-    this.procCreatedObserver = new ProcCreatedObserver();
-    this.procDestroyedObserver = new ProcDestroyedObserver();
-
-    Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
-    Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
-
-	// Create a refresh time with a low refresh; FIXME:
+    	// Create a refresh time with a low refresh; FIXME:
 	// This belongs in the process-picker window.  That
 	// way the process picker gets to regulate when
 	// updates come through.  For instance, while a search
@@ -158,7 +144,10 @@ public class ProcWiseDataModel
 	    public void construct(Collection newProcesses,
 				  Collection exitedProcesses) {
 		known.addAll(newProcesses);
+		addProcCollection(newProcesses);
+		
 		known.removeAll(exitedProcesses);
+		removeProcCollection(exitedProcesses);
 	    }
 	}
 	Manager.eventLoop.add (new Refresher(Manager.host));
@@ -308,13 +297,26 @@ public class ProcWiseDataModel
     return processData;
   }
 
-  class ProcCreatedObserver
-      implements Observer
-  {
-    public void update (Observable o, Object obj)
-    {
+  private void addProcCollection(Collection collection){
+      Iterator iterator = collection.iterator();
+      while (iterator.hasNext()) {
+	Proc proc = (Proc) iterator.next();
+	addProc(proc);
+    }
+  }
+  
+  private void removeProcCollection(Collection collection){
+      Iterator iterator = collection.iterator();
+      while (iterator.hasNext()) {
+	Proc proc = (Proc) iterator.next();
+	removeProc(proc);
+    }
+  }
+  
+  private void addProc(Proc obj){
+      
       final Proc proc = (Proc) obj;
-
+      
       org.gnu.glib.CustomEvents.addEvent(new Runnable()
       {
         public void run ()
@@ -373,16 +375,12 @@ public class ProcWiseDataModel
                 treeStore.setValue(parent, timeDC, min + ":" + sec);
         }
       });
-    }
+
   }
-
-  class ProcDestroyedObserver
-      implements Observer
-  {
-    public void update (Observable o, Object obj)
-    {
+  
+  private void removeProc(Proc obj){
       final Proc proc = (Proc) obj;
-
+      
       org.gnu.glib.CustomEvents.addEvent(new Runnable()
       {
         public void run ()
@@ -433,9 +431,9 @@ public class ProcWiseDataModel
         }
 
       });
-    }
-  }
 
+  }
+  
   public TreeStore getModel ()
   {
     return this.treeStore;
