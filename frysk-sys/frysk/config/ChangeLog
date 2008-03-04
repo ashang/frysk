@@ -1,5 +1,11 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/FryskVersion.cxx-in (getVersion()): Extract from
+	Config.cxx-in.
+	* FryskVersion.java: Extract from Config.java.
+	* Config.java (getVersion()): Delete.
+	* cni/Config.cxx-in (getVersion()): Delete.
+
 	* package.html: New.
 	* cni/Config.cxx-in: Move from frysk-sys/frysk/cni.
 	* cni/CompilerVersion.cxx: Move from frysk-sys/frysk/cni.

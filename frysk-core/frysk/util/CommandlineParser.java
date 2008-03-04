@@ -39,6 +39,7 @@
 
 package frysk.util;
 
+import frysk.config.FryskVersion;
 import java.io.File;
 import java.util.LinkedList;
 import lib.dwfl.Elf;
@@ -47,7 +48,6 @@ import lib.dwfl.ElfEHeader;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
-import frysk.config.Config;
 import frysk.rsl.LogOption;
 import frysk.rsl.Log;
 import frysk.dwfl.DwflCache;
@@ -81,7 +81,7 @@ public class CommandlineParser {
     }
 
     public CommandlineParser(String programName) {
-	this(programName, Config.getVersion());
+	this(programName, FryskVersion.getVersion());
     }
 
     /**

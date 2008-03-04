@@ -211,12 +211,6 @@ public class Config
 	return getFile(current.thePkgLib64Dir, file);
     }
 
-    /**
-     * The frysk version number.  Typically of the form:
-     * MAJOR.MINOR.PATCH.YYYY.MM.DD.
-     */
-    public static final native String getVersion ();
-
     public static File getFryskDir(){
 	File file = new File(getHomeDir()+"/"+".frysk/");
 	if(file.exists()){

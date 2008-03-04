@@ -63,12 +63,6 @@ asFile (jstring prefix, const char *suffix)
 }
 
 jstring
-frysk::config::Config::getVersion ()
-{
-  return JvNewStringUTF ("@VERSION@");
-}
-
-jstring
 frysk::config::Config::getRootSrcDir ()
 {
   return JvNewStringUTF ("@root_srcdir@");

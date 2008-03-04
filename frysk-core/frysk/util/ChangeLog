@@ -1,5 +1,7 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* CommandlineParser.java: Use FryskVersion.
+	
 	* TestCommandlineParser.java: Use frysk.config.
 	* CommandlineParser.java: Ditto.
 	* TestStackTraceAction.java: Ditto.

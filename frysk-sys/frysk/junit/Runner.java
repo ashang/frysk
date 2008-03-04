@@ -39,6 +39,7 @@
 
 package frysk.junit;
 
+import frysk.config.FryskVersion;
 import frysk.config.Config;
 import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
@@ -212,7 +213,8 @@ public class Runner extends TestRunner {
      * tests.
      */
     private Parser createCommandLineParser (String programName) {
-	Parser parser = new Parser (programName, "1.0", true);
+	Parser parser = new Parser(programName, FryskVersion.getVersion(),
+				   true);
 	
 	parser.add(new LogOption("debug", 'c'));
 	

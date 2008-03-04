@@ -1,5 +1,7 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java: Pass FryskVersion to Parser.
+	
 	* Runner.java: Use frysk.config.
 	* TestCase.java: Ditto.
 
