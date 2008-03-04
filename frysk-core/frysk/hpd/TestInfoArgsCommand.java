@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,35 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.hpd;
 
-import frysk.testbed.TearDownExpect;
-import frysk.testbed.TestLib;
-import frysk.config.Config;
-import java.io.File;
+public class TestInfoArgsCommand extends TestLib {
 
-public class TestFexe extends TestLib {
-    public void testExeOfPid() {
-	File fexe = Config.getBinFile("fexe");
-	// XXX: Some versions of bash (e.g., bash-3.2-20.fc8.x86_64)
-	// will exec, instead of fork, a program if it is the only
-	// command.  This leads to $$ pointing at the fexe process.
-	// Work around it by forcing bash to execute two commands.
-	TearDownExpect e = new TearDownExpect(new String[] {
-		"/bin/bash",
-		"-c",
-		fexe.getAbsolutePath() + " $$ ; echo \"\""
-	    });
-	e.expect("/bin/bash" + "\r\n");
-    }
-
-    public void testExeOfExe() {
-	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fexe").getPath(),
-		"-exe", "/bin/ls",
-		"--",
-		"arg0", "arg1"
-	    });
-	e.expect("/bin/ls" + "\r\n");
+    public void testInfoArgs() {
+	e = HpdTestbed.load("funit-stacks");
+	e.sendCommandExpectPrompt("info args", "funit-stacks\r\n");
     }
 }

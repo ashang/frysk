@@ -48,6 +48,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.util.CommandlineParser;
 import gnu.classpath.tools.getopt.Option;
+import frysk.rsl.Log;
 
 /**
  * Framework to be used for frysk utilities that,
@@ -56,9 +57,9 @@ import gnu.classpath.tools.getopt.Option;
  * 
  * Utilities must define a event.ProcEvent to execute.
  */
-public class ProcStopUtil
-{
-    private Proc proc;
+public class ProcStopUtil {
+    private static final Log fine = Log.fine(ProcStopUtil.class);
+
     private String[] args;
     private CommandlineParser parser;
 	
@@ -69,7 +70,7 @@ public class ProcStopUtil
 		//@Override
 		public void parsePids(Proc[] procs) { 
 		    for (int i= 0; i < procs.length; i++)  {                  
-			proc = procs[i];
+			Proc proc = procs[i];
 			UtilEvent utilEvent = new UtilEvent(proc, procEvent);
 			new ProcBlockAction(proc, new UtilAction(proc, utilEvent));
 			Manager.eventLoop.run();
@@ -80,13 +81,15 @@ public class ProcStopUtil
 		public void parseCores(Proc[] cores) {
 		    for (int i = 0; i < cores.length; i++) {       
 			Proc core = cores[i];
+			fine.log("execute dead core", core);
 			procEvent.executeDead(core);
 		    }
 		}  
 	    
 		//@Override
 		public void parseCommand(Proc command) {
-		    procEvent.executeDead(proc);
+		    fine.log("execute dead command", command);
+		    procEvent.executeDead(command);
 		}
 	    };
     }    
@@ -159,6 +162,7 @@ public class ProcStopUtil
 	}
 	
 	public void execute() {
+	    fine.log("execute live", proc);
 	    event.executeLive(proc);
 	    
 	    // FIXME: Should request eventloop to stop

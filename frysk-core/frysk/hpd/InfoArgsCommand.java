@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,35 +37,34 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.hpd;
 
-import frysk.testbed.TearDownExpect;
-import frysk.testbed.TestLib;
-import frysk.config.Config;
-import java.io.File;
+import java.util.Iterator;
+import frysk.proc.Proc;
+import java.util.List;
 
-public class TestFexe extends TestLib {
-    public void testExeOfPid() {
-	File fexe = Config.getBinFile("fexe");
-	// XXX: Some versions of bash (e.g., bash-3.2-20.fc8.x86_64)
-	// will exec, instead of fork, a program if it is the only
-	// command.  This leads to $$ pointing at the fexe process.
-	// Work around it by forcing bash to execute two commands.
-	TearDownExpect e = new TearDownExpect(new String[] {
-		"/bin/bash",
-		"-c",
-		fexe.getAbsolutePath() + " $$ ; echo \"\""
-	    });
-	e.expect("/bin/bash" + "\r\n");
+class InfoArgsCommand extends ParameterizedCommand {
+    
+    InfoArgsCommand() {
+	super("print arguments", "args",
+	      "print the processes command-line arguments");
     }
 
-    public void testExeOfExe() {
-	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fexe").getPath(),
-		"-exe", "/bin/ls",
-		"--",
-		"arg0", "arg1"
-	    });
-	e.expect("/bin/ls" + "\r\n");
+    void interpret(CLI cli, Input cmd, Object options) {
+	PTSet ptset = cli.getCommandPTSet(cmd);
+	Iterator taskDataIter = ptset.getTaskData();
+	while (taskDataIter.hasNext()) {
+	    TaskData td = (TaskData) taskDataIter.next();
+	    Proc proc = td.getTask().getProc();
+	    td.printHeader(cli.outWriter);
+	    String[] args = proc.getCmdLine();
+	    for (int i = 0; i < args.length; i++) {
+		cli.outWriter.println(args[i]);
+	    }
+	}
+    }
+
+    int completer(CLI cli, Input input, int cursor, List completions) {
+	return -1;
     }
 }

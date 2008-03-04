@@ -44,8 +44,10 @@ import frysk.testbed.TestLib;
 import frysk.testbed.CorefileFactory;
 import frysk.config.Config;
 import frysk.proc.Proc;
+import frysk.rsl.Log;
 
 public class TestCommandlineParser extends TestLib {
+    private static final Log fine = Log.fine(TestCommandlineParser.class);
 
     private File exe;
     private File core;
@@ -99,5 +101,20 @@ public class TestCommandlineParser extends TestLib {
 	    };
 	// args: CORE
 	parser.parse(new String[] { core.getPath() });
+    }
+
+    public void testExeOption() {
+	CommandlineParser parser = new CommandlineParser("test") {
+		public void parseCommand(Proc command) {
+		    fine.log("command", command);
+		    assertEquals("exe", "/bin/ls", command.getExe());
+		    assertEquals("arg0", "arg0", command.getCmdLine()[0]);
+		}
+	    };
+	parser.parse(new String[] {
+		"-exe", "/bin/ls",
+		"--",
+		"arg0", "arg1", "arg2"
+	    });
     }
 }

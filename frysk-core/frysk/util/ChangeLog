@@ -1,3 +1,10 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcStopUtil.java (proc): Delete
+	(parseCommand(command)): Pass command through to executeDead.
+	* TestCommandlineParser.java (testExeOption()): New.
+	* CommandlineParser.java (-exe): New option.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java: Use FryskVersion.

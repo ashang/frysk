@@ -207,46 +207,23 @@ public class HpdTestbed extends TearDownExpect {
     }
 
     /**
-     * Start the specified program from under HPD.
+     * Load the specified program into HPD.
      */
-    static HpdTestbed start(String program, String args) {
+    static HpdTestbed load(String program, String args) {
 	HpdTestbed h = new HpdTestbed();
 	File exe = Config.getPkgLibFile(program);
-	h.send("start ");
-	h.send(exe.getAbsolutePath());
-	if (args != null) {
-	    h.send(" ");
-	    h.send(args);
-	}
-	h.send("\n");
-	try {
-	    h.expect(new Match[] {
-			 new Regex("Attached to process ([0-9]+)\r\n"
-				   + h.prompt) {
-			     public void execute() {
-				 TearDownProcess.add
-				     (ProcessIdentifierFactory.create
-				      (Integer.parseInt(group(1))));
-			     }
-			 },
-			 new Regex(".*\r\n" + h.prompt) {
-			     public void execute() {
-				 TestCase.fail("Expecting <start> got: <"
-					       + group() + ">");
-			     }
-			 }
-		     });
-	} catch (EndOfFileException e) {
-	    TestCase.fail("Expecting <start " + program + "> got: <EOF>");
-	} catch (TimeoutException t) {
-	    TestCase.fail("Expecting <start " + program + "> got: <TIMEOUT>");
-	}
+	String command;
+	if (args == null)
+	    command = "load " + exe;
+	else
+	    command = "load " + exe + " " + args;
+	h.sendCommandExpectPrompt(command, "Loaded executable file:.*\r\n");
 	return h;
     }
-
-    static HpdTestbed start(String program) {
-	return start(program, null);
+    static HpdTestbed load(String program) {
+	return load(program, null);
     }
+
     /**
      * Start HPD attached to PROGRAM that is crashing (due to a
      * signal).

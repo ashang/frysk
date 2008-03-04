@@ -60,9 +60,11 @@ import frysk.proc.Proc;
  * common options for Frysk command-line applications.
  */
 public class CommandlineParser {
-    private final Log fine = Log.fine(CommandlineParser.class);
+    private static final Log fine = Log.fine(CommandlineParser.class);
+
     private final Parser parser;
     private boolean extendedCore = true;
+    private String explicitExe = null;
 
     public CommandlineParser(String name, String version) {
 	parser = new Parser(name, version, true);
@@ -71,11 +73,20 @@ public class CommandlineParser {
 		       " executable for a corefile ") {
 		public void parsed(String exeValue) throws OptionException {
 		    extendedCore = false;
+		    explicitExe = null;
+		}
+	    });
+	add(new Option("exe",
+		       "Specify the full path of the executable to read",
+		       "<executable>") {
+		public void parsed(String exeValue) throws OptionException {
+		    extendedCore = true;
+		    explicitExe = exeValue;
 		}
 	    });
 	add(new Option("sysroot", "special root directory", "Path of special root directory") {
 		public void parsed(String arg) throws OptionException {
-			parseSysroot(arg);
+		    parseSysroot(arg);
 		}
 	    });
     }
@@ -177,12 +188,16 @@ public class CommandlineParser {
 		if (isCoreFile(result[file])) {
 		    Proc proc;
 		    File coreFile = new File(result[file]);
-		    if (file + 1 < result.length
-			&& isExeFile(result[file + 1])
-			&& extendedCore) {
+		    if (extendedCore
+			&& file + 1 < result.length
+			&& isExeFile(result[file + 1])) {
 			File exeFile = new File(result[file + 1]);
 			proc = LinuxCoreFactory.createProc(coreFile, exeFile);
 			file += 2;
+		    } else if (explicitExe != null) {
+			File exeFile = new File(explicitExe);
+			proc = LinuxCoreFactory.createProc(coreFile, exeFile);
+			file += 1;
 		    } else {
 			proc = LinuxCoreFactory.createProc(coreFile,
 							   extendedCore);
@@ -201,7 +216,11 @@ public class CommandlineParser {
 	}
 
 	// If not above, then this is an executable command.
-	Proc command = LinuxExeFactory.createProc(result);
+	Proc command;
+	if (explicitExe != null)
+	    command = LinuxExeFactory.createProc(new File(explicitExe), result);
+	else
+	    command = LinuxExeFactory.createProc(result);
 	fine.log(this, "parse command", command);
 	parseCommand(command);
 	return result;
