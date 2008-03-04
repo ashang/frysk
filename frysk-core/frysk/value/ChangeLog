@@ -1,3 +1,8 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestComposite.java: Update to match 2008-02-19 Stan Cox
+	<scox@redhat.com> CompositeType.java change.  Fixes #5859.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestClass.java: Use frysk.config.BuildCompiler.
