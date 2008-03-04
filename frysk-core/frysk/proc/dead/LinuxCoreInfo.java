@@ -197,7 +197,7 @@ class LinuxCoreInfo {
 	} else {
 	    fine.log("exe for core", exeParam);
 	}
-	return exeParam;
+	return new File(exeParam.getAbsolutePath());
     }
 
 
