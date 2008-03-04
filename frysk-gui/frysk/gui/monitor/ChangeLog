@@ -3,6 +3,11 @@
 	* observers/ObserverManager.java: Use frysk.config.
 	* EventLogger.java: Ditto.
 
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>   
+ 
+	* ProcWiseDataModel.java: Move refresh code from Gui.java
+	to here.
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* PickProcsListView.java: Deleted.

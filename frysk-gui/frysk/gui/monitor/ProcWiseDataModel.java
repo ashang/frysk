@@ -41,7 +41,10 @@
 package frysk.gui.monitor;
 
 import frysk.sys.ProcessIdentifierFactory;
+
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -57,7 +60,10 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 
+import frysk.event.TimerEvent;
 import frysk.gui.Gui;
+import frysk.proc.Host;
+import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.sys.proc.Stat;
@@ -130,7 +136,33 @@ public class ProcWiseDataModel
 
     Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
     Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
-    
+
+	// Create a refresh time with a low refresh; FIXME:
+	// This belongs in the process-picker window.  That
+	// way the process picker gets to regulate when
+	// updates come through.  For instance, while a search
+	// (CNTRL-F) is being performed, refreshes are
+	// blocked.
+	class Refresher extends
+	    TimerEvent implements HostRefreshBuilder
+	{
+	    private final Host host;
+	    Refresher(Host host) {
+		super(0, 3000);
+		this.host = host;
+	    }
+	    private final HashSet known = new HashSet();
+	    public void execute() {
+		host.requestRefresh(known, this);
+	    }
+	    public void construct(Collection newProcesses,
+				  Collection exitedProcesses) {
+		known.addAll(newProcesses);
+		known.removeAll(exitedProcesses);
+	    }
+	}
+	Manager.eventLoop.add (new Refresher(Manager.host));
+
     this.stat = new Stat();
   }
 

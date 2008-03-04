@@ -11,6 +11,10 @@
 	* test/TestWindowFactorization.java: Ditto.
 	* TestGlade.java: Ditto.
 
+2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* Gui.java: Moved resh code to ProWiseDataModel.
+
 2008-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Deleted PickProcDialog.java.

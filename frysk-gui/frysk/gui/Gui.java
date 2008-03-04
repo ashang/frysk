@@ -46,8 +46,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -73,7 +71,6 @@ import org.gnu.pango.Weight;
 import frysk.config.Config;
 import frysk.EventLogger;
 import frysk.event.SignalEvent;
-import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.DialogManager;
 import frysk.gui.dialogs.ErrorDialog;
@@ -94,8 +91,6 @@ import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
-import frysk.proc.Host;
-import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Manager;
 import frysk.sys.Pid;
 import frysk.sys.ProcessIdentifier;
@@ -375,33 +370,7 @@ public class Gui implements LifeCycleListener, Saveable {
 				}
 			}
 		});
-		backendStarter.start();
-		
-		// Create a refresh time with a low refresh; FIXME:
-		// This belongs in the process-picker window.  That
-		// way the process picker gets to regulate when
-		// updates come through.  For instance, while a search
-		// (CNTRL-F) is being performed, refreshes are
-		// blocked.
-		class Refresher extends
-		    TimerEvent implements HostRefreshBuilder
-		{
-		    private final Host host;
-		    Refresher(Host host) {
-			super(0, 3000);
-			this.host = host;
-		    }
-		    private final HashSet known = new HashSet();
-		    public void execute() {
-			host.requestRefresh(known, this);
-		    }
-		    public void construct(Collection newProcesses,
-					  Collection exitedProcesses) {
-			known.addAll(newProcesses);
-			known.removeAll(exitedProcesses);
-		    }
-		}
-		Manager.eventLoop.add (new Refresher(Manager.host));
+		backendStarter.start();		
 	}
 	
 	/**
