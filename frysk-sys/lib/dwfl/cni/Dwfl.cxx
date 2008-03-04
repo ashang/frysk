@@ -78,6 +78,11 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 			  const char *module_name, Dwarf_Addr base,
 			  char **file_name, Elf **elfp)
 {	
+  // There is an edge case here that was tripped by a corefile case. In that case the
+  // specified executable was defined as a relative path (ie ../foo/bar). And that is
+  // perfectly valid path name. However when the corefile created its maps it did not
+  // convert that path to an absolute path, causing the test below to fail and consider
+  // the file ../foo/bar to be an in memory elf image.
   if (module_name[0] == '/')
     {
       int fd = open64 (module_name, O_RDONLY);
