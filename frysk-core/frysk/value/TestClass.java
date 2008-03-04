@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ import frysk.junit.TestCase;
 import frysk.proc.Task;
 import frysk.rsl.Log;
 import frysk.testbed.DaemonBlockedAtSignal;
+import frysk.config.BuildCompiler;
 
 public class TestClass extends TestCase {
     
@@ -110,27 +111,27 @@ public class TestClass extends TestCase {
 
     public void testComplexStruct() {
 	CompositeType type = getType("funit-complex-struct", "complex");
-
-	// Check the type of the variable, new compiler says struct, old
-	// compiler says class.
-	if (unresolvedCompilerNoSupportForAT_CLASS())
-	    assertEquals("Variable is considered a class", "class", type
-		    .getPrefix());
+	// Check the type of the variable, new compiler says struct,
+	// old compiler says class.  Don't look at the producer field
+	// as that would be circular.
+	String expected;
+	if (BuildCompiler.supports_AT_CLASS())
+	    expected = "struct";
 	else
-	    assertEquals("Variable is a struct", "struct", type.getPrefix());
-
+	    expected = "class";
+	assertEquals("Variable prefix", expected, type.getPrefix());
     }
 
     public void testInheritedStruct() {
 	CompositeType type = getType("funit-inherited-struct", "der");
-
-	// Check the type of the variable, new compiler says struct, old
-	// compiler says class.
-	if (unresolvedCompilerNoSupportForAT_CLASS())
-	    assertEquals("Variable is considered a class", "class", type
-		    .getPrefix());
+	// Check the type of the variable, new compiler says struct,
+	// old compiler says class.
+	String expected;
+	if (BuildCompiler.supports_AT_CLASS())
+	    expected = "struct";
 	else
-	    assertEquals("Variable is a struct", "struct", type.getPrefix());
+	    expected = "class";
+	assertEquals("Variable prefix", expected, type.getPrefix());
     }
 
 }

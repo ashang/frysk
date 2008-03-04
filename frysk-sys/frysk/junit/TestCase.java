@@ -39,7 +39,6 @@
 
 package frysk.junit;
 
-import frysk.config.CompilerVersion;
 import frysk.config.Config;
 import frysk.sys.Uname;
 import java.math.BigInteger;
@@ -187,61 +186,6 @@ public class TestCase
 	    });
     }
     
-    /**
-     * Method used to compare CompilerVersion to a minimum supporting compiler.
-     * @param version The minimum supporting version.
-     * @param minorVersion The minimum supporting minor version.
-     * @param patchLevel The minimum supporting patch level.
-     * @param RHRelease The minimum supporting Red Hat release level.
-     * @return
-     */
-    private static boolean compilerVersionGreaterThanOrEqualTo(int version, 
-	    int minorVersion, int patchLevel, int RHRelease) {
-	boolean geq = false;
-	
-	//XXX: Easier way to do this?
-	if (CompilerVersion.getVersion() > version) {
-	    geq = true;
-	} else if (CompilerVersion.getVersion() == version) {
-	    if (CompilerVersion.getMinorVersion() > minorVersion) {
-		geq = true;
-	    } else if (CompilerVersion.getMinorVersion() == minorVersion) {
-		if (CompilerVersion.getPatchLevel() > 0) {
-		    geq = true;
-		} else if (CompilerVersion.getPatchLevel() == patchLevel) {
-		    if (CompilerVersion.getRHRelease() >= RHRelease) {
-			geq = true;
-		    }
-		}
-	    }
-	}
-	return geq;
-    }
-    
-    /**
-     * A method that returns true, and prints UNRESOLVED, when the compiler 
-     * does not support AT_CLASS
-     */
-    protected static boolean unresolvedCompilerNoSupportForAT_CLASS() {
-	boolean compilerSupportsClass = compilerVersionGreaterThanOrEqualTo(4,
-		1, 2, 37);
-
-	Runner.unresolved(5518, !compilerSupportsClass);
-	return !compilerSupportsClass;
-    }
-    
-    /**
-     * A method that returns true, and prints UNRESOLVED, when the compiler 
-     * does not support AT_CLASS
-     */
-    protected static boolean unresolvedCompilerNoSupportForAT_INTERFACE() {
-	boolean compilerSupportsInterface = compilerVersionGreaterThanOrEqualTo(
-		4, 3, 0, 7);
-
-	Runner.unresolved(5519, !compilerSupportsInterface);
-	return !compilerSupportsInterface;
-    }
-
     /**
      * A method that returns true, and prints UNRESOLVED, when the
      * build kernel excludes utrace.

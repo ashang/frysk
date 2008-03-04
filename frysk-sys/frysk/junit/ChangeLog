@@ -1,5 +1,9 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCase.java (compilerVersionGreaterThanOrEqualTo()): Delete.
+	(unresolvedCompilerNoSupportForAT_CLASS()): Delete.
+	(unresolvedCompilerNoSupportForAT_INTERFACE()): Delete.
+
 	* Runner.java: Pass FryskVersion to Parser.
 	
 	* Runner.java: Use frysk.config.

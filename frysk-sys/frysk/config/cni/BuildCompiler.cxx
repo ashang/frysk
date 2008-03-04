@@ -39,10 +39,10 @@
 
 #include <gcj/cni.h>
 
-#include "frysk/config/CompilerVersion.h"
+#include "frysk/config/BuildCompiler.h"
 
 jint
-frysk::config::CompilerVersion::getVersion() {
+frysk::config::BuildCompiler::getVersion() {
 #ifdef __GNUC__
 	return (jint) __GNUC__;
 #else
@@ -52,7 +52,7 @@ frysk::config::CompilerVersion::getVersion() {
 
 
 jint
-frysk::config::CompilerVersion::getMinorVersion() {
+frysk::config::BuildCompiler::getMinorVersion() {
 #ifdef __GNUC_MINOR__
 	return (jint) __GNUC_MINOR__;
 #else
@@ -61,7 +61,7 @@ frysk::config::CompilerVersion::getMinorVersion() {
 }
 
 jint
-frysk::config::CompilerVersion::getPatchLevel() {
+frysk::config::BuildCompiler::getPatchLevel() {
 #ifdef __GNUC_PATCHLEVEL__
 	return (jint) __GNUC_PATCHLEVEL__;
 #else
@@ -70,7 +70,7 @@ frysk::config::CompilerVersion::getPatchLevel() {
 }
 
 jint
-frysk::config::CompilerVersion::getRHRelease() {
+frysk::config::BuildCompiler::getRHRelease() {
 #ifdef __GNUC_RH_RELEASE__
 	return (jint) __GNUC_RH_RELEASE__;
 #else

@@ -1,5 +1,8 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestClass.java: Use frysk.config.BuildCompiler.
+	* TestInterface.java: Ditto.
+
 	* TestValue.java: Use frysk.config.
 
 	* TestInterface.java: Extend TestLib; fix bug 5856.

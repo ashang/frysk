@@ -1,5 +1,9 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* BuildCompiler.java: Replace CompilerVersion.java
+	* cni/BuildCompiler.cxx: Replace cni/CompilerVersion.cxx
+	* TestBuildCompiler.java: New.
+
 	* cni/FryskVersion.cxx-in (getVersion()): Extract from
 	Config.cxx-in.
 	* FryskVersion.java: Extract from Config.java.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,57 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.config;
 
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
-import frysk.testbed.TestLib;
-import frysk.proc.Task;
-import frysk.testbed.DaemonBlockedAtSignal;
-import frysk.config.BuildCompiler;
+/**
+ * The build compiler's version information.  Useful for build tests;
+ * not useful for deciding what the target's compiler supports.
+ */
 
-public class TestInterface extends TestLib {
+public class BuildCompiler {
 
-    private CompositeType getType(String program, String variableName) {
-	Task task = (new DaemonBlockedAtSignal(program)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory
-		.createDebugInfoStackTrace(task);
+    public static native int getVersion();
+    public static native int getMinorVersion();
+    public static native int getPatchLevel();
+    public static native int getRHRelease();
 
-	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(
-		frame);
+    public static int compareVersionTo(int version, int minorVersion,
+				       int patchLevel, int rhRelease) {
+	int diff = getVersion() - version;
+	if (diff != 0)
+	    return diff;
 
-	Variable variable = (Variable) objectDeclarationSearchEngine
-		.getVariable(variableName);
+	diff = getMinorVersion() - minorVersion;
+	if (diff != 0)
+	    return diff;
+	
+	diff = getPatchLevel() - patchLevel;
+	if (diff != 0)
+	    return diff;
 
-	assertNotNull("Variable found", variable);
-
-	Type type = variable.getType(frame.getTask().getISA());
-	CompositeType compType = null;
-
-	try {
-	    // Java variables are considered PointerTypes, so follow the
-	    // pointer.
-	    compType = (CompositeType) ((PointerType) type).getType();
-	} catch (ClassCastException e) {
-	    fail("Not a composite type" + type);
-	}
-
-	return compType;
+	return getRHRelease() - rhRelease;
     }
 
-    public void testSimpleInterface() {
-	CompositeType type = getType("FunitSimpleInterfaceTest", "inter");
-
-	String expected;
-	if (BuildCompiler.supports_AT_INTERFACE()) {
-	    expected = "interface";
-	} else if (BuildCompiler.supports_AT_CLASS()) {
-	    expected = "struct";
-	} else {
-	    expected = "class";
-	}
-	assertEquals("Variable prefix", expected, type.getPrefix());
+    public static boolean supports_AT_CLASS() {
+	return compareVersionTo(4, 1, 2, 37) >= 0;
     }
-
+    
+    /**
+     * A method that returns true, and prints UNRESOLVED, when the compiler 
+     * does not support AT_CLASS
+     */
+    public static boolean supports_AT_INTERFACE() {
+	return compareVersionTo(4, 3, 0, 7) >= 0;
+    }
 }

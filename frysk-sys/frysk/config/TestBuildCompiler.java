@@ -39,10 +39,32 @@
 
 package frysk.config;
 
-public class CompilerVersion {
+import frysk.junit.TestCase;
 
-    public static native int getVersion();
-    public static native int getMinorVersion();
-    public static native int getPatchLevel();
-    public static native int getRHRelease();
+/**
+ * The build compiler's version information.  Useful for build tests.
+ */
+public class TestBuildCompiler extends TestCase {
+
+    private final int major = BuildCompiler.getVersion();
+    private final int minor = BuildCompiler.getMinorVersion();
+    private final int patch = BuildCompiler.getPatchLevel();
+    private final int rh = BuildCompiler.getRHRelease();
+
+    public void testLessThanMajor() {
+	assertTrue("major",
+		   BuildCompiler.compareVersionTo(major + 1, 0, 0, 0) > 0);
+    }
+    public void testLessThanMinor() {
+	assertTrue("minor",
+		   BuildCompiler.compareVersionTo(major, minor + 1, 0, 0) > 0);
+    }
+    public void testLessThanPatch() {
+	assertTrue("minor",
+		   BuildCompiler.compareVersionTo(major, minor, patch + 1, 0) > 0);
+    }
+    public void testLessThanRH() {
+	assertTrue("minor",
+		   BuildCompiler.compareVersionTo(major, minor, patch, rh + 1) > 0);
+    }
 }
