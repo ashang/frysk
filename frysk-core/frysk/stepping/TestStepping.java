@@ -46,7 +46,7 @@ import java.util.Observer;
 
 import frysk.testbed.Offspring;
 import frysk.testbed.SynchronizedOffspring;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.proc.Manager;

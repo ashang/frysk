@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLtrace.java: Use frysk.config.
+	* TestMappingGuard.java: Ditto.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* FtraceController.java: Extract from frysk.bindir.ftrace.

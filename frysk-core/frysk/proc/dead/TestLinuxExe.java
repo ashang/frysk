@@ -39,7 +39,7 @@
 
 package frysk.proc.dead;
 
-import frysk.Config;
+import frysk.config.Config;
 import inua.eio.ByteBuffer;
 import java.util.HashSet;
 import frysk.proc.FindProc;

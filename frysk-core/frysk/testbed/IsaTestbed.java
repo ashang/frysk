@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Return the ISA being used by the testbed.

@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Use frysk.config.
+	* TestCase.java: Ditto.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java (logger): Delete.

@@ -43,7 +43,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import frysk.isa.signals.Signal;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;

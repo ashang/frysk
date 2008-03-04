@@ -73,8 +73,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
-
-import frysk.Config;
+import frysk.config.Config;
 import frysk.EventLogger;
 import frysk.event.TimerEvent;
 import frysk.event.SignalEvent;

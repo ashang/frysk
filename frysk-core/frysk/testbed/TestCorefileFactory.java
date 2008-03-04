@@ -40,7 +40,7 @@
 package frysk.testbed;
 
 import java.io.File;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.dead.LinuxCoreFactory;

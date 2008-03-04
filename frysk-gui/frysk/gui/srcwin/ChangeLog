@@ -1,3 +1,9 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* tags/TagsetManager.java: Use frysk.config.
+	* SourceWindow.java: Ditto.
+	* SourceWindowFactory.java: Ditto.
+
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java: Use LinuxCoreFactory.

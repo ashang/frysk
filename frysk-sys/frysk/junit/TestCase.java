@@ -39,8 +39,8 @@
 
 package frysk.junit;
 
-import frysk.CompilerVersion;
-import frysk.Config;
+import frysk.config.CompilerVersion;
+import frysk.config.Config;
 import frysk.sys.Uname;
 import java.math.BigInteger;
 

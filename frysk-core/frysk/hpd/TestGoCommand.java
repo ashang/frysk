@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * This class tests the "go" command and makes sure it does not blow up

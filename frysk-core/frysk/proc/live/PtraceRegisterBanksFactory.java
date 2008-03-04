@@ -49,7 +49,7 @@ import frysk.sys.ptrace.AddressSpace;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.banks.X86BankRegisters;
 import frysk.isa.banks.PPCBankRegisters;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * The target has registers scattered across one or more register

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 package frysk.isa;
 
 import frysk.junit.TestCase;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Searchable, hashable key sufficient for identifying the supported

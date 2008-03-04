@@ -37,12 +37,43 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk;
+#include <gcj/cni.h>
 
-public class CompilerVersion {
+#include "frysk/config/CompilerVersion.h"
 
-    public static native int getVersion();
-    public static native int getMinorVersion();
-    public static native int getPatchLevel();
-    public static native int getRHRelease();
+jint
+frysk::config::CompilerVersion::getVersion() {
+#ifdef __GNUC__
+	return (jint) __GNUC__;
+#else
+	return -1;
+#endif
+}
+
+
+jint
+frysk::config::CompilerVersion::getMinorVersion() {
+#ifdef __GNUC_MINOR__
+	return (jint) __GNUC_MINOR__;
+#else
+	return -1;
+#endif
+}
+
+jint
+frysk::config::CompilerVersion::getPatchLevel() {
+#ifdef __GNUC_PATCHLEVEL__
+	return (jint) __GNUC_PATCHLEVEL__;
+#else
+	return -1;
+#endif
+}
+
+jint
+frysk::config::CompilerVersion::getRHRelease() {
+#ifdef __GNUC_RH_RELEASE__
+	return (jint) __GNUC_RH_RELEASE__;
+#else
+	return -1;
+#endif
 }

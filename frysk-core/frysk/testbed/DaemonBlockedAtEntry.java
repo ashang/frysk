@@ -39,7 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.Config;
+import frysk.config.Config;
 import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;

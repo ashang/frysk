@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/ObserverManager.java: Use frysk.config.
+	* EventLogger.java: Ditto.
+
 2008-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcWiseDataModel.java: Use proc, not ProcId as key.

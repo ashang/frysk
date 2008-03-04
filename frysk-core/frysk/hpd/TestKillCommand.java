@@ -39,8 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.Config;
-//import frysk.testbed.FunitThreadsOffspring;
+import frysk.config.Config;
 
 /**
  * This class tests the "load" command basics of both loading a correct

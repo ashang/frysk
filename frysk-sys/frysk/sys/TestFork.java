@@ -39,7 +39,7 @@
 
 package frysk.sys;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.junit.TestCase;
 import frysk.rsl.Log;
 import frysk.testbed.TearDownProcess;

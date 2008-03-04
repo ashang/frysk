@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisplayValue.java: Use frysk.config.
+	* TestUpdatingDisplayValue.java: Ditto.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* RtLogger.java: Delete.

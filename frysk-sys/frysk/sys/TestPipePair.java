@@ -42,7 +42,7 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import frysk.testbed.Tee;
 import frysk.rsl.Log;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Test creation of a process wired up to a pipe.

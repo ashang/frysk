@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFork.java: Use frysk.config.
+	* TestPipePair.java: Ditto.
+
 2008-02-29  Petr Machata  <pmachata@redhat.com>
 
 	* Signal.java-sh: Fix typo in comment.

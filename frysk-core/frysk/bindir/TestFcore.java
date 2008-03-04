@@ -41,7 +41,7 @@ package frysk.bindir;
 
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
-import frysk.Config;
+import frysk.config.Config;
 
 public class TestFcore extends TestLib {
     public void testNoArguments() {

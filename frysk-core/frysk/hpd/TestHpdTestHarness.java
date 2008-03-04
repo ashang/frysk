@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import frysk.config.Config;
 
 public class TestHpdTestHarness extends TestLib {
     public void testKillHpdTestHarness() {

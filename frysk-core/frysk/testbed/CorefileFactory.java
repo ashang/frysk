@@ -44,7 +44,7 @@ import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.Config;
+import frysk.config.Config;
 
 public class CorefileFactory extends TestLib {
     

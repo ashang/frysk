@@ -51,7 +51,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.scopes.SourceLocation;
 import frysk.sys.Signal;
 import frysk.testbed.Offspring;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;

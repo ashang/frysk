@@ -39,7 +39,7 @@
 
 package lib.dwfl;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;

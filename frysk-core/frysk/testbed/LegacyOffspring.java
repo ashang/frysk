@@ -51,7 +51,7 @@ import frysk.sys.Errno;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import java.io.File;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * XXX: Create a process running the funit-legacy program.  Some tests

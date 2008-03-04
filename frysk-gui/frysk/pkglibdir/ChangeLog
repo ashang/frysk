@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Use frysk.config.
+
 2007-12-28  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Pass all possible Config's to Runner.
@@ -25,7 +29,7 @@
 	frysk/gui/test/dogtail_scripts/frysk_suite.in.
 	
 	* ftail.xml: New file.
-
+
 Local Variables:
 mode: change-log
 left-margin: 8

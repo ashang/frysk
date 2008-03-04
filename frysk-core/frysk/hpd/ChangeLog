@@ -1,5 +1,23 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestBreakpoints.java: Use frysk.config.
+	* HpdTestbed.java: Ditto.
+	* TestSysRoot.java: Ditto.
+	* TestStartCommand.java: Ditto.
+	* TestRunCommand.java: Ditto.
+	* TestRegs.java: Ditto.
+	* TestPeekCommand.java: Ditto.
+	* TestLoadCommand.java: Ditto.
+	* TestListCommand.java: Ditto.
+	* TestKillCommand.java: Ditto.
+	* TestHpdTestHarness.java: Ditto.
+	* TestGoCommand.java: Ditto.
+	* TestGenerateCoreCommand.java: Ditto.
+	* TestFhpdStepping.java: Ditto.
+	* TestEvalCommands.java: Ditto.
+	* TestCoreCommand.java: Ditto.
+	* TestCompletionFactory.java: Ditto.
+
 	* TestListCommand.java (testListPC()): Mark as unresolved, 5855.
 
 2008-03-02  Tom Tromey  <tromey@redhat.com>

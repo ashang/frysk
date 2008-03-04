@@ -1,3 +1,8 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSteppingEngine.java: Use frysk.config.
+	* TestStepping.java: Ditto.
+
 2008-02-29  Mark Wielaard  <mwielaard@redhat.com>
 
 	* StepOverTestState.java (handleUpdate): Don't crash when there is

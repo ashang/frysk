@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceRegisterBanksFactory.java: Use frysk.config.
+
 2008-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProcState.java: Do not use Proc.taskPool.

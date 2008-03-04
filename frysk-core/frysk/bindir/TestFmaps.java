@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.Config;
+import frysk.config.Config;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.CorefileFactory;

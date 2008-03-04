@@ -46,7 +46,7 @@ import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
 import frysk.junit.TestCase;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.sys.Pid;
 import frysk.sys.SignalSet;
 import frysk.sys.Signal;

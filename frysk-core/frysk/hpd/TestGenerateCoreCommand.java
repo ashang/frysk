@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.expunit.EndOfFileException;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;

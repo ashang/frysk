@@ -40,7 +40,7 @@
 package frysk.dwfl;
 
 import lib.dwfl.ElfSectionHeader;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;

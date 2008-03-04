@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestElfSectionCache.java: Use frysk.config.
+
 2008-02-29  Stan Cox  <scox@redhat.com>
 
 	* DwflCache.java (setDefaultSysroot): New.

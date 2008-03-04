@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,8 +47,7 @@ import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.IconSet;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.IconSource;
-
-import frysk.Config;
+import frysk.config.Config;
 import frysk.gui.monitor.TrayIcon;
 
 public class IconManager

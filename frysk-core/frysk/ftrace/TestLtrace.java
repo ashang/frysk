@@ -39,7 +39,7 @@
 
 package frysk.ftrace;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.testbed.*;

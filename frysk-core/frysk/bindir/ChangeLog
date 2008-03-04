@@ -1,3 +1,17 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFauxv.java: Use frysk.config.
+	* TestFtrace.java: Ditto.
+	* TestFstep.java: Ditto.
+	* TestFstack.java: Ditto.
+	* TestFmaps.java: Ditto.
+	* TestFhpd.java: Ditto.
+	* TestFexe.java: Ditto.
+	* TestFerror.java: Ditto.
+	* TestFdebuginfo.java: Ditto.
+	* TestFcore.java: Ditto.
+	* TestFcatch.java: Ditto.
+
 2008-02-29  Stan Cox  <scox@redhat.com>
 
 	* fhpd.java (main): Remove -sysroot option.

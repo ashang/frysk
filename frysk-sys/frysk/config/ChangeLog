@@ -1,0 +1,15 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: New.
+	* cni/Config.cxx-in: Move from frysk-sys/frysk/cni.
+	* cni/CompilerVersion.cxx: Move from frysk-sys/frysk/cni.
+	* TestConfig.java: Move from frysk-sys/frysk/TestConfig.java.
+	* Config.java: Move from frysk-sys/frysk/Config.java.
+	* CompilerVersion.java: Move from frysk-sys/frysk/CompilerVersion.java.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

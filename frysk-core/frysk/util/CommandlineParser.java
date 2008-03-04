@@ -47,7 +47,7 @@ import lib.dwfl.ElfEHeader;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.rsl.LogOption;
 import frysk.rsl.Log;
 import frysk.dwfl.DwflCache;

@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Test the functionality of the alias and unalias commands.

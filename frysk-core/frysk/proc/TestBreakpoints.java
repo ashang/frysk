@@ -47,7 +47,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.sys.DaemonPipePair;
 
 public class TestBreakpoints

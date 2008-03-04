@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;

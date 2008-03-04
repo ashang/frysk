@@ -1,3 +1,9 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCommandlineParser.java: Use frysk.config.
+	* CommandlineParser.java: Ditto.
+	* TestStackTraceAction.java: Ditto.
+
 2008-03-02  Tom Tromey  <tromey@redhat.com>
 
 	* WordWrapWriter.java: Document.

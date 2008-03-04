@@ -42,7 +42,7 @@ package frysk.proc;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.sys.Signal;
 

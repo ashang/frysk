@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ package frysk.expr;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.List;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;

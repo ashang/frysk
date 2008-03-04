@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import java.io.File;
 import frysk.isa.ISA;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Test IsaTestbed.

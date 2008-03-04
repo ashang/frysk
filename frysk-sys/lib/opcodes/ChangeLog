@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisassembler.java: Use frysk.config.
+
 2007-08-26  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDisassembler.java (testOutOfBounds, testDisassembleStartEnd)

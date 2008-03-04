@@ -1,3 +1,16 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Use frysk.config.
+	* FunitThreadsOffspring.java: Ditto.
+	* ExecCommand.java: Ditto.
+	* LegacyOffspring.java: Ditto.
+	* IsaTestbed.java: Ditto.
+	* DaemonBlockedAtEntry.java: Ditto.
+	* CorefileFactory.java: Ditto.
+	* SlaveOffspring.java: Ditto.
+	* TestIsa.java: Ditto.
+	* TestCorefileFactory.java: Ditto.
+
 2008-02-28  Andrew Cagney  <cagney@redhat.com>
 
 	* CoredumpAction.java: Use frysk.rsl.

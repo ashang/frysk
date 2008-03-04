@@ -1,5 +1,7 @@
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestValue.java: Use frysk.config.
+
 	* TestInterface.java: Extend TestLib; fix bug 5856.
 
 2008-02-19  Stan Cox  <scox@redhat.com>

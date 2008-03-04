@@ -1,3 +1,7 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk/EventLogger.java: Use frysk.config.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk/EventLogger.java: Move from frysk-sys/frysk/.

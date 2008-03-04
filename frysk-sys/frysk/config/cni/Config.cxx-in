@@ -2,7 +2,7 @@
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 
 #include <java/lang/String.h>
 #include <java/io/File.h>
-#include "frysk/Config.h"
+#include "frysk/config/Config.h"
 
 // Why not use autoconf's config.h?
 
@@ -63,39 +63,39 @@ asFile (jstring prefix, const char *suffix)
 }
 
 jstring
-frysk::Config::getVersion ()
+frysk::config::Config::getVersion ()
 {
   return JvNewStringUTF ("@VERSION@");
 }
 
 jstring
-frysk::Config::getRootSrcDir ()
+frysk::config::Config::getRootSrcDir ()
 {
   return JvNewStringUTF ("@root_srcdir@");
 }
 
 jstring
-frysk::Config::getAbsRootSrcDir ()
+frysk::config::Config::getAbsRootSrcDir ()
 {
   return JvNewStringUTF ("@abs_root_srcdir@");
 }
 
 jint
-frysk::Config::getWordSize ()
+frysk::config::Config::getWordSize ()
 {
   return sizeof (long) * 8;
 }
 
 jstring
-frysk::Config::getTargetCpuXXX ()
+frysk::config::Config::getTargetCpuXXX ()
 {
   return JvNewStringUTF ("@target_cpu@");
 }
 
-frysk::Config*
-frysk::Config::createInstallConfig ()
+frysk::config::Config*
+frysk::config::Config::createInstallConfig ()
 {
-  frysk::Config* config = new frysk::Config ();
+  frysk::config::Config* config = new frysk::config::Config ();
   config->theGladeDir = JvNewStringUTF ("@gladedir@/")->intern ();
   config->theHelpDir = asFile ("@helpdir@");
   config->theImagesDir = JvNewStringUTF ("@imagesdir@")->intern ();
@@ -115,10 +115,10 @@ frysk::Config::createInstallConfig ()
   return config;
 }
 
-frysk::Config*
-frysk::Config::createInstallConfig32 ()
+frysk::config::Config*
+frysk::config::Config::createInstallConfig32 ()
 {
-  frysk::Config* config = frysk::Config::createInstallConfig();
+  frysk::config::Config* config = frysk::config::Config::createInstallConfig();
   switch (sizeof(long))
     {
     case 4:
@@ -136,10 +136,10 @@ frysk::Config::createInstallConfig32 ()
   return config;
 }
 
-frysk::Config*
-frysk::Config::createInstallConfig64 ()
+frysk::config::Config*
+frysk::config::Config::createInstallConfig64 ()
 {
-  frysk::Config* config = frysk::Config::createInstallConfig();
+  frysk::config::Config* config = frysk::config::Config::createInstallConfig();
   switch (sizeof(long))
     {
     case 4:
@@ -155,11 +155,11 @@ frysk::Config::createInstallConfig64 ()
   return config;
 }
 
-frysk::Config*
-frysk::Config::createBuildConfig (jstring absSrcDir,
+frysk::config::Config*
+frysk::config::Config::createBuildConfig (jstring absSrcDir,
 				  jstring absBuildDir)
 {
-  frysk::Config* config = new frysk::Config ();
+  frysk::config::Config* config = new frysk::config::Config ();
   config->theGladeDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/gladedir/"))->intern ();
   config->theHelpDir = asFile (absSrcDir, "/frysk/gui/helpdir");
   config->theImagesDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/imagesdir"))->intern ();
@@ -179,11 +179,11 @@ frysk::Config::createBuildConfig (jstring absSrcDir,
   return config;
 }
 
-frysk::Config*
-frysk::Config::createBuildConfig32 (jstring absSrcDir,
+frysk::config::Config*
+frysk::config::Config::createBuildConfig32 (jstring absSrcDir,
 				    jstring absBuildDir)
 {
-  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
+  frysk::config::Config* config = frysk::config::Config::createBuildConfig(absSrcDir,
 							   absBuildDir);
   switch (sizeof(long))
     {
@@ -202,12 +202,12 @@ frysk::Config::createBuildConfig32 (jstring absSrcDir,
   return config;
 }
 
-frysk::Config*
-frysk::Config::createBuildConfig64 (jstring absSrcDir,
+frysk::config::Config*
+frysk::config::Config::createBuildConfig64 (jstring absSrcDir,
 				    jstring absBuildDir)
 {
-  frysk::Config* config = frysk::Config::createBuildConfig(absSrcDir,
-							   absBuildDir);
+  frysk::config::Config* config
+    = frysk::config::Config::createBuildConfig(absSrcDir, absBuildDir);
   switch (sizeof(long))
     {
     case 4:

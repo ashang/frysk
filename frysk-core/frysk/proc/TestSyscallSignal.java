@@ -51,7 +51,7 @@ import frysk.isa.syscalls.Syscall;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
 import frysk.testbed.TearDownProcess;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 

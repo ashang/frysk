@@ -45,7 +45,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.isa.syscalls.Syscall;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
-import frysk.Config;
+import frysk.config.Config;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

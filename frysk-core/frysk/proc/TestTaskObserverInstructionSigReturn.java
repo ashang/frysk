@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
 

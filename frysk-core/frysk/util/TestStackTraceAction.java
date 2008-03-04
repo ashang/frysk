@@ -43,7 +43,7 @@ package frysk.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import frysk.rsl.Log;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;

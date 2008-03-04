@@ -41,7 +41,7 @@ package frysk.hpd;
 
 import java.io.File;
 import frysk.testbed.CorefileFactory;
-import frysk.Config;
+import frysk.config.Config;
 
 public class TestCoreCommand extends TestLib {
 

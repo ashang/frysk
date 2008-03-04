@@ -41,7 +41,7 @@ package frysk.bindir;
 
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
-import frysk.Config;
+import frysk.config.Config;
 import java.io.File;
 
 public class TestFexe extends TestLib {

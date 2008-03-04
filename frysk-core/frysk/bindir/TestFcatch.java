@@ -40,7 +40,7 @@
 
 package frysk.bindir;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 

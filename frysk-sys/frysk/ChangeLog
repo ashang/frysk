@@ -1,3 +1,11 @@
+2008-03-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestConfig.java: Move to frysk.config.
+	* Config.java: Move to frysk.config.
+	* CompilerVersion.java: Move to frysk.config.
+	* cni/Config.cxx-in: Move to frysk.config.
+	* cni/CompilerVersion.cxx: Move to frysk.config.
+
 2008-02-29  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLogger.java: Move to frysk-gui/frysk.

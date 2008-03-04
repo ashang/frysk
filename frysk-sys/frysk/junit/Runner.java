@@ -39,7 +39,7 @@
 
 package frysk.junit;
 
-import frysk.Config;
+import frysk.config.Config;
 import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
 import gnu.classpath.tools.getopt.FileArgumentCallback;

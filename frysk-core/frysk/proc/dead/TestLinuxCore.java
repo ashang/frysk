@@ -48,7 +48,7 @@ import java.io.StringWriter;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.dwfl.DwflCache;
 import frysk.event.Event;

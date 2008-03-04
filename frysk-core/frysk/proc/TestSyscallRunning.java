@@ -49,7 +49,7 @@ import java.io.OutputStream;
 import frysk.event.Event;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.sys.DaemonPipePair;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;

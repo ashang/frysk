@@ -51,7 +51,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import frysk.proc.dead.LinuxCoreFactory;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dom.DOMFrysk;

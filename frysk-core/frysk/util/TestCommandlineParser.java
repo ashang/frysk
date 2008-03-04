@@ -42,7 +42,7 @@ package frysk.util;
 import java.io.File;
 import frysk.testbed.TestLib;
 import frysk.testbed.CorefileFactory;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.proc.Proc;
 
 public class TestCommandlineParser extends TestLib {

@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import frysk.junit.TestCase;
-import frysk.Config;
+import frysk.config.Config;
 import frysk.testbed.CorefileFactory;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;

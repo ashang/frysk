@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
 * This class tests the "start" command.

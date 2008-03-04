@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import frysk.sys.Pid;
 import frysk.junit.TestCase;
 import java.util.List;
 import java.util.LinkedList;
-import frysk.Config;
+import frysk.config.Config;
 
 /**
  * Create a program that contains a large number of threads.
