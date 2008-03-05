@@ -46,6 +46,7 @@ import frysk.rt.SourceBreakpoint;
 import frysk.rt.UpdatingDisplayValue;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -213,7 +214,13 @@ abstract class ActionPointCommands extends ParameterizedCommand {
 		    Map.Entry[] taskEntries
 			= new Map.Entry[taskEntrySet.size()];
 		    taskEntrySet.toArray(taskEntries);
-		    Arrays.sort(taskEntries);
+		    Arrays.sort(taskEntries, new Comparator() {
+			public int compare(Object o1, Object o2) {
+			  Map.Entry me1 = (Map.Entry) o1;
+			  Map.Entry me2 = (Map.Entry) o2;
+			  return ((Task) me1.getKey()).compareTo(me2.getKey());
+			}
+		      });
 		    for (int i = 0; i < taskEntries.length; i++) {
 			int id = ((Task) taskEntries[i].getKey()).getTid();
 			SourceBreakpoint.State state = (SourceBreakpoint.State) taskEntries[i]

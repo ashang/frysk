@@ -1,3 +1,9 @@
+2008-03-05  Tom Tromey  <tromey@redhat.com>
+
+	Bug 5809
+	* ActionPointCommands.java (Actions.interpret): Use Comparator to
+	sort the task set.
+
 2008-03-05  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestActionsCommand.java: New test.
