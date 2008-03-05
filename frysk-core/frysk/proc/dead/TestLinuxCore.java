@@ -75,6 +75,79 @@ public class TestLinuxCore extends TestLib {
     private Proc coreProc
 	= LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
 
+
+    public void testRelativePath() {
+
+	// Test a relative path. This exercises sourcware bz 5864.
+	// Providing a relative path with the backing executable
+	// causes the find elf map to fail. It manifests itself
+	// when an stacktrace is performed.
+
+	Proc ackProc = giveMeAProc();
+	File coreFileName = new File(constructCore(ackProc));
+
+	// Get pwd of Test runner.
+	File countPath = new File(System.getProperty("user.dir"));
+
+	// Calculate how many legs in the path from root to
+	// Test runner, and add one '../' per segment.
+	String segment = countPath.getParent();
+	StringBuffer relativeIntro = new StringBuffer();
+	while (segment != null) {
+	    relativeIntro.append("../");
+	    countPath = new File(segment);
+	    segment = countPath.getParent();
+	}
+
+	// Build relative exe path, and model core.
+	countPath = new File(relativeIntro+ackProc.getExe());
+	Proc coreProc = LinuxCoreFactory.createProc(coreFileName, countPath);
+
+	// Guard: Build a stack trace. If a relative path is not being
+	// converted to an absolute path in the Corefile code, the
+	// backtrace will fail as it infers that ../foo/bar is not a
+	// file (see 5864) and refers to the maps as an internal map
+	// with no backing file. If a backtrace is built, then the
+	// relative -> absolute converstion is occuring.
+	StacktraceAction coreStacktrace;
+	StringWriter coreStackOutput = new StringWriter();
+	PrintStackOptions options = new PrintStackOptions();
+	options.setNumberOfFrames(20);
+	options.setElfOnly(true);
+
+	// Create a stackktrace of a the corefile process
+	coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
+					      coreProc, 
+					      new PrintEvent(),options)
+	    {
+		
+		public void addFailed (Object observable, Throwable w)
+		{
+		    fail("Proc add failed: " + w.getMessage());
+		}
+	    };
+	
+	// And run ....
+	new ProcCoreAction(coreProc, coreStacktrace);
+	assertRunUntilStop("Perform corefile Backtrace");
+
+	String mainThread = "Task #\\d+\n" + 
+	    "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+	    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n\n";
+
+	String regex = new String();
+	regex += "(" + mainThread + ")";
+
+	String result = coreStackOutput.getBuffer().toString();
+	
+	assertTrue(result + "should match: " + regex + " threads",
+               result.matches(regex));
+	
+    }
+
     public void testLinuxCoreFileMaps() {
 	// Remove the hasIsa test as on -r test runs the singleton
 	// maintains reference in between runs.

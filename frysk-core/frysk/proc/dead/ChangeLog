@@ -1,5 +1,7 @@
 2008-03-04  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* TestLinuxCore.java (testRelativePath): New.
+
 	* LinuxCoreInfo.java (getExeFile): Return
 	a File derived from the absolute path.
 
