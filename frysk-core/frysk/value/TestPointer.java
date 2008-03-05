@@ -98,4 +98,20 @@ public class TestPointer
 	Value idx2 = new Value(t_idx2, l_idx2);	
 	assertEquals("toPrint", "\"Wor\"", t.slice(string, idx, idx2, memory).toPrint());
     }    
+
+    public void testConstCharPointer() {
+	// Construct a buffer with a string in it.
+	ArrayByteBuffer memory
+	    = new ArrayByteBuffer("0123Hello World\0>>>".getBytes());
+	Type t = new PointerType("xxx", ByteOrder.BIG_ENDIAN, 1,
+				 new ConstType
+				 (new CharType
+				  ("char", ByteOrder.BIG_ENDIAN, 1, true)));
+	// Construct the pointer and try it.
+	Location l = new ScratchLocation(new byte[] { 4 });
+	assertEquals("toPrint", "(const char *) 0x4 \"Hello World\"",
+		     t.toPrint(l, memory, Format.NATURAL));
+    }
+    
+
 }

@@ -89,16 +89,17 @@ public class PointerType
 	} catch (RuntimeException e) {
 	    throw new RuntimeException("Peek Memory");
 	}
-	if (type instanceof CharType) {
+	Type ultimateType = type.getUltimateType();
+	if (ultimateType instanceof CharType) {
 	    // XXX: ByteBuffer.slice wants longs.
 	    long addr = getBigInteger(location).longValue();
 	    writer.print(" \"");
 	    while (true) {
-		Location l = new ByteBufferLocation(memory, addr,
-						    type.getSize());
+		Location l = new ByteBufferLocation
+		    (memory, addr, ultimateType.getSize());
 		BigInteger c = BigInteger.ZERO;
 		try {
-		   c = ((CharType)type).getBigInteger(l);
+		   c = ((CharType)ultimateType).getBigInteger(l);
 		} catch (RuntimeException e) {
 		    writer.print(" < Memory Error > ");
 		    break;
@@ -106,7 +107,7 @@ public class PointerType
 		if (c.equals(BigInteger.ZERO))
 		    break; // NUL
 		writer.print((char)c.longValue());
-		addr += type.getSize();
+		addr += ultimateType.getSize();
 	    }
 	    writer.print("\"");
 	}

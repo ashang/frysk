@@ -1,5 +1,8 @@
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPointer.java (testConstCharPointer()): New.
+	* PointerType.java: Get the target's ultimate type.
+
 	* TestComposite.java: Update to match 2008-02-19 Stan Cox
 	<scox@redhat.com> CompositeType.java change.  Fixes #5859.
 
