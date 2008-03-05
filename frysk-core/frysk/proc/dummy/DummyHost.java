@@ -45,6 +45,7 @@ import frysk.proc.FindProc;
 import frysk.proc.Host;
 import java.util.Collection;
 import frysk.proc.HostRefreshBuilder;
+import java.io.File;
 
 public class DummyHost extends Host {
     private final String name;
@@ -55,7 +56,8 @@ public class DummyHost extends Host {
 	this("dummy-host");
     }
 
-    public void requestCreateAttachedProc(String stdin, String stdout,
+    public void requestCreateAttachedProc(File exe,
+					  String stdin, String stdout,
 					  String stderr, String[] args,
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");

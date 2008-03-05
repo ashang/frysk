@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
@@ -115,7 +116,8 @@ public abstract class Host implements Comparable {
      * process - frysk's state machine could easily detach before the
      * requestor had an oportunity to add an attached observer.
      */
-    public abstract void requestCreateAttachedProc(String stdin,
+    public abstract void requestCreateAttachedProc(File exe,
+						   String stdin,
 						   String stdout,
 						   String stderr,
 						   String[] args,
@@ -124,11 +126,38 @@ public abstract class Host implements Comparable {
      * Request that a new attached and running process(with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
-    public final void requestCreateAttachedProc(String[] args,
-						TaskObserver.Attached attachedObserver) {
-	fine.log(this, "requestCreateAttachedProc String[] TaskObserver.Attached"); 
-	requestCreateAttachedProc(null, null, null, args, attachedObserver);
+    public void requestCreateAttachedProc(String stdin, String stdout,
+					  String stderr, String[] args,
+					  TaskObserver.Attached attachedObserver) {
+	fine.log(this, "requestCreateAttachedProc", args, "observer",
+		 attachedObserver);
+	requestCreateAttachedProc(new File(args[0]), stdin, stdout, stderr,
+				  args, attachedObserver);
     }
+    /**
+     * Request that a new attached and running process(with stdin,
+     * stdout, and stderr are shared with this process) be created.
+     */
+    public void requestCreateAttachedProc(String[] args,
+					  TaskObserver.Attached attachedObserver) {
+	fine.log(this, "requestCreateAttachedProc", args, "observer",
+		 attachedObserver);
+	requestCreateAttachedProc(new File(args[0]), null, null, null,
+				  args, attachedObserver);
+    }
+    /**
+     * Request that a new attached and running process based on
+     * TEMPLATE be created.
+     */
+    public void requestCreateAttachedProc(Proc template,
+					  TaskObserver.Attached attachedObserver) {
+	fine.log(this, "requestCreateAttachedProc template", template,
+		 "observer", attachedObserver);
+	requestCreateAttachedProc(new File(template.getExe()),
+				  null, null, null,
+				  template.getCmdLine(),
+				  attachedObserver);
+    }					  
 
     /**
      * XXX: Temporary until .observable's are converted to

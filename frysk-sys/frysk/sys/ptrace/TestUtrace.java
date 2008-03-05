@@ -65,8 +65,7 @@ public class TestUtrace extends TestCase {
  
     public void testChildContinue() {
 	final ProcessIdentifier pid
-	    = Fork.utrace(null, null, null,
-			  new String[] {
+	    = Fork.utrace(new String[] {
 			      "/bin/true"
 			  });
 	System.err.println("pid = " + pid);

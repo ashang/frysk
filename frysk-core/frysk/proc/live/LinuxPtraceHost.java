@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import java.io.File;
 import java.util.HashSet;
 import frysk.event.EventLoop;
 import java.util.List;
@@ -252,7 +253,8 @@ public class LinuxPtraceHost extends LiveHost {
 	    });
     }
 
-    public void requestCreateAttachedProc(final String stdin,
+    public void requestCreateAttachedProc(final File exe,
+					  final String stdin,
 					  final String stdout,
 					  final String stderr,
 					  final String[] args,
@@ -262,7 +264,7 @@ public class LinuxPtraceHost extends LiveHost {
 		public void execute() {
 		    fine.log(LinuxPtraceHost.this, "executeCreateAttachedProc");
 		    ProcessIdentifier pid
-			= Fork.ptrace(stdin, stdout, stderr, args);
+			= Fork.ptrace(exe, stdin, stdout, stderr, args);
 		    // See if the Host knows about this task.
 		    ProcessIdentifier myTid = Tid.get();
 		    Task myTask = getTask(myTid);

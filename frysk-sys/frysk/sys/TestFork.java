@@ -74,10 +74,10 @@ public class TestFork extends TestCase {
 		   new SignalSet().getProcMask().contains(Signal.HUP));
 	fine.log("Creating funit-procmask to check the mask");
 	ProcessIdentifier pid
-	    = Fork.exec(null, "/dev/null", null,
+	    = Fork.exec(Config.getPkgLibFile("funit-procmask"),
+			null, "/dev/null", null,
 			new String[] {
-			    Config.getPkgLibFile("funit-procmask")
-			    .getPath(),
+			    "funit-procmask",
 			    "-n",
 			    "1"
 			});

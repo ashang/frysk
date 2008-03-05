@@ -1,3 +1,7 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyHost.java: Update to match File.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyProc.java: Update to match Proc.

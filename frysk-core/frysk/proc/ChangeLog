@@ -1,3 +1,9 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (requestCreateAttachedProc(...)): Add File exe arg.
+	(requestCreateAttachedProc(Proc,TaskObserver.Attached)): New.
+	* TestRun.java: Update.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* StressAttachDetachSignaledTask.java: Use frysk.config.

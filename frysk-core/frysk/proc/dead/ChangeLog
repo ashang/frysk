@@ -1,3 +1,8 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* DeadHost.java: Update to match Host.
+	* LinuxExeFactory.java: Search $PATH for the executable.
+
 2008-03-04  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxCore.java (testRelativePath): New.

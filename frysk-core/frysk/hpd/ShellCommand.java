@@ -80,9 +80,8 @@ class ShellCommand extends NoOptsCommand {
 	PtyTerminal.setToInitConsole(FileDescriptor.in);
 
 	// Request an attached proc to execute command.
-  	Manager.host.requestCreateAttachedProc(null, null, null, command,
-  		new TaskObserver.Attached()
-  	{  	    
+  	Manager.host.requestCreateAttachedProc(command,
+					       new TaskObserver.Attached() {  	    
   	    public Action updateAttached (Task task)
   	    {
   		// On termination of command, resume fhpd.

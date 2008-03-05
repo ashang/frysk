@@ -1,3 +1,7 @@
+2008-03-04  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Update to match Host.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceRegisterBanksFactory.java: Use frysk.config.

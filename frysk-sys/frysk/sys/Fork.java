@@ -39,51 +39,88 @@
 
 package frysk.sys;
 
+import java.io.File;
+
 /**
  * Create a child process (using fork) that immediatly performs some
  * sort of exec.
  */
 
 public final class Fork {
-    /**
-     * Create a child process running ARGV[0] with arguments
-     * ARGV[1..].
-     *
-     * Also wire up IN, OUT, and ERR.
-     */
-    public static native ProcessIdentifier exec(String in, String out,
-						String err, String[] argv);
-    /**
-     * Create a child process running ARGV[0] with arguments
-     * ARGV[1..].
-     */
-    public static final ProcessIdentifier exec(String[] argv) {
-	return exec (null, null, null, argv);
+    static final int NO_TRACE = 0;
+    static final int UTRACE = 1;
+    static final int PTRACE = 2;
+    private static native ProcessIdentifier spawn(File exe,
+						  String in, String out,
+						  String err,
+						  String[] args, int trace);
+    private static ProcessIdentifier spawn(String[] args, int trace) {
+	return spawn(new File(args[0]), null, null, null, args, trace);
     }
 
     /**
-     * Create a child process running ARGV[0] with arguments
-     * ARGV[1...]; mark the process for tracing.
+     * Create a child process running EXE with arguments ARGS[0..].
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native ProcessIdentifier ptrace(String in, String out,
-						  String err, String[] argv);
+    public static ProcessIdentifier exec(File exe,
+					 String in, String out,
+					 String err, String[] args) {
+	return spawn(exe, in, out, err, args, NO_TRACE);
+    }
+    /**
+     * Create a child process running EXE with arguments ARGS[0..].
+     *
+     * Also wire up IN, OUT, and ERR.
+     */
+    public static ProcessIdentifier exec(String in, String out,
+					 String err, String[] args) {
+	return spawn(new File(args[0]), in, out, err, args, NO_TRACE);
+    }
+    /**
+     * Create a child process running ARGS[0] with arguments
+     * ARGS[0..].
+     */
+    public static ProcessIdentifier exec(String[] args) {
+	return spawn(args, NO_TRACE);
+    }
 
     /**
-     * Create a child process running ARGV[0] with arguments
-     * ARGV[1...]; mark the process for utracing.
+     * Create a child process running EXE with arguments ARGV[0...];
+     * mark the process for tracing.
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native ProcessIdentifier utrace(String in, String out,
-						  String err, String[] argv);
+    public static ProcessIdentifier ptrace(File exe,
+					   String in, String out,
+					   String err, String[] args) {
+	return spawn(exe, in, out, err, args, PTRACE);
+    }
     /**
-     * Create a child process running ARGV[0] with arguments
-     * ARGV[1...]; mark the process for tracing.
+     * Create a child process running ARGS[0] with arguments
+     * ARGS[0...]; mark the process for tracing.
      */
-    public static final ProcessIdentifier ptrace(String[] argv) {
-	return ptrace (null, null, null, argv);
+    public static ProcessIdentifier ptrace(String[] args) {
+	return spawn(args, PTRACE);
+    }
+
+    /**
+     * Create a child process running EXE with arguments ARGS[0...];
+     * mark the process for utracing.
+     *
+     * Also wire up IN, OUT, and ERR.
+     */
+    public static ProcessIdentifier utrace(File exe,
+					   String in, String out,
+					   String err, String[] args) {
+	return spawn(exe, in, out, err, args, UTRACE);
+    }
+    /**
+     * Create a child process running ARGS[0] with arguments
+     * ARGV[0...]; mark the process for utracing.
+     */
+    public static ProcessIdentifier utrace(String[] args) {
+	return spawn(args, UTRACE);
     }
 
     /**
@@ -92,13 +129,22 @@ public final class Fork {
      *
      * Also wire up IN, OUT, and ERR.
      */
-    public static native ProcessIdentifier daemon(String in, String out,
+    public static native ProcessIdentifier daemon(File exe,
+						  String in, String out,
 						  String err, String[] argv);
     /**
      * Create a "daemon" process running ARGV[0] with arguments
      * ARGV[1...]; a daemon has process ID 1 as its parent.
      */
-    public static final ProcessIdentifier daemon(String[] argv) {
-	return daemon (null, null, null, argv);
+    public static ProcessIdentifier daemon(String in, String out, String err,
+					   String[] argv) {
+	return daemon(new File(argv[0]), in, out, err, argv);
+    }
+    /**
+     * Create a "daemon" process running ARGV[0] with arguments
+     * ARGV[1...]; a daemon has process ID 1 as its parent.
+     */
+    public static ProcessIdentifier daemon(String[] argv) {
+	return daemon(new File(argv[0]), null, null, null, argv);
     }
 }

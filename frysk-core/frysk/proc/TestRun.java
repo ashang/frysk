@@ -87,7 +87,7 @@ public class TestRun
 
     // Create a program that removes the above tempoary file, when
     // it exits the event loop will be shutdown.
-    String[] command = new String[] { "rm", "-f", tmpFile.toString() };
+    String[] command = new String[] { "/bin/rm", "-f", tmpFile.toString() };
     host.requestCreateAttachedProc(command, createdObserver);
 
     assertRunUntilStop("run \"rm\" to entry for tid");
@@ -133,7 +133,7 @@ public class TestRun
 
     // Create a program that removes the above temporary file, when
     // it exits the event loop will be shutdown.
-    host.requestCreateAttachedProc(new String[] { "rm", "-f",
+    host.requestCreateAttachedProc(new String[] { "/bin/rm", "-f",
                                                  tmpFile.toString() },
                                    createdObserver);
 

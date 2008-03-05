@@ -1,5 +1,7 @@
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
+	* ShellCommand.java: Use simplier requestCreateAttachedProc.
+
 	* HpdTestbed.java (start(String)): Delete.
 	(load(String)): New.
 

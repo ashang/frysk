@@ -48,6 +48,7 @@ import frysk.proc.FindProc;
 import frysk.proc.HostRefreshBuilder;
 import frysk.event.Event;
 import java.util.Collection;
+import java.io.File;
 
 /**
  * A dead Host/Proc/Task is characterised by its lack of state, and an
@@ -56,7 +57,8 @@ import java.util.Collection;
  */
 
 abstract class DeadHost extends Host {
-    public void requestCreateAttachedProc(String in, String out, String err,
+    public void requestCreateAttachedProc(File exe,
+					  String in, String out, String err,
 					  String[] args,
 					  Attached attached) {
 	throw new RuntimeException("requestCreateAttachedProc");

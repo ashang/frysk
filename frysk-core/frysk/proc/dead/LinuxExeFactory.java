@@ -46,10 +46,12 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
+import frysk.rsl.Log;
 
 public class LinuxExeFactory {
-    public static DeadProc createProc(final File exeFile,
-					  String[] args) {
+    private static final Log fine = Log.fine(LinuxExeFactory.class);
+
+    public static DeadProc createProc(final File exeFile, String[] args) {
 	Elf exeElf = null;
 	try {
 	    exeElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
@@ -84,7 +86,34 @@ public class LinuxExeFactory {
 	}
     }
 
+    private static File findExe(String arg0) {
+	if (arg0.startsWith("/")) {
+	    return new File(arg0);
+	}
+
+	String pathVar = System.getenv("PATH");
+	if (pathVar == null) {
+	    return new File(arg0);
+	}
+	
+	String[] path = pathVar.split(":");
+	if (path == null) {
+	    return new File(arg0);
+	}
+	fine.log("createProc $PATH", path);
+
+	for (int i = 0; i < path.length; i++) {
+	    File file = new File(path[i], arg0);
+	    if (file.exists()) {
+		return file;
+	    }
+	}
+	return new File(arg0); // punt
+    }
+
     public static DeadProc createProc(String[] args) {
-	return createProc(new File(args[0]), args);
+	File exe = findExe(args[0]);
+	fine.log("createProc exe", exe);
+	return createProc(exe, args);
     }
 }

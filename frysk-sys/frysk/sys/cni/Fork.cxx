@@ -47,6 +47,7 @@
 
 #include <gcj/cni.h>
 
+#include "java/io/File.h"
 #include "frysk/sys/Fork.h"
 #include "frysk/sys/cni/Errno.hxx"
 
@@ -70,11 +71,12 @@ reopen (jstring file, const char *mode, FILE *stream)
   }
 }
 
-jint
-spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt,
-       bool utraceIt)
+int
+spawn(java::io::File* exe, jstring in, jstring out, jstring err,
+      jstringArray args, jint trace)
 {
-  // Convert args into argv, argc.
+  // Convert args into argv, argc, filename.
+  char *filename = ALLOCA_STRING(exe->getPath());
   int argc = JvGetArrayLength (args);
   char **argv = (char **) alloca ((argc + 1) * sizeof (void*));
   for (int i = 0; i < argc; i++) {
@@ -103,18 +105,22 @@ spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt,
     reopen (in, "r", stdin);
     reopen (out, "w", stdout);
     reopen (err, "w", stderr);
-    if (ptraceIt) {
+    switch (trace) {
+    case frysk::sys::Fork::PTRACE:
       errno = 0;
       ::ptrace ((enum __ptrace_request) PTRACE_TRACEME, 0, 0, 0);
       if (errno != 0) {
 	::perror ("ptrace.traceme");
 	::_exit (errno);
       }
-    }
-    else if (utraceIt) {
+      break;
+    case frysk::sys::Fork::UTRACE:
       fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
+      break;
+    case frysk::sys::Fork::NO_TRACE:
+      break;
     }
-    ::execvp (argv[0], argv);
+    ::execv (filename, argv);
     // This should not happen.
     ::perror ("execvp");
     ::_exit (errno);
@@ -122,27 +128,15 @@ spawn (jstring in, jstring out, jstring err, jstringArray args, bool ptraceIt,
 }
 
 frysk::sys::ProcessIdentifier*
-frysk::sys::Fork::ptrace (jstring in, jstring out,
-			  jstring err, jstringArray args) {
-  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, true, false));
+frysk::sys::Fork::spawn(java::io::File* exe,
+			jstring in, jstring out, jstring err,
+			jstringArray args, jint trace) {
+  int pid = ::spawn(exe, in, out, err, args, trace);
+  return frysk::sys::ProcessIdentifierFactory::create(pid);
 }
 
 frysk::sys::ProcessIdentifier*
-frysk::sys::Fork::utrace (jstring in, jstring out,
-			  jstring err, jstringArray args) {
-  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false, true));
-}
-
-frysk::sys::ProcessIdentifier*
-frysk::sys::Fork::exec (jstring in, jstring out,
-			jstring err, jstringArray args)
-{
-  return frysk::sys::ProcessIdentifierFactory::create(spawn (in, out, err, args, false, false));
-}
-
-
-frysk::sys::ProcessIdentifier*
-frysk::sys::Fork::daemon (jstring in, jstring out,
+frysk::sys::Fork::daemon (java::io::File* exe, jstring in, jstring out,
 			  jstring err, jstringArray args)
 {
   volatile int pid = -1;
@@ -154,7 +148,7 @@ frysk::sys::Fork::daemon (jstring in, jstring out,
   // process id ends up in PID.
 
   if (v == 0) {
-    pid = spawn (in, out, err, args, false, false);
+    pid = ::spawn(exe, in, out, err, args, frysk::sys::Fork::NO_TRACE);
     _exit (0);
   }
 

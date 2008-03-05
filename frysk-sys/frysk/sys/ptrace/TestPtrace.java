@@ -65,8 +65,7 @@ public class TestPtrace extends TestCase {
  
     public void testChildContinue() {
 	final ProcessIdentifier pid
-	    = Fork.ptrace(null, null, null,
-			  new String[] {
+	    = Fork.ptrace(new String[] {
 			      "/bin/true"
 			  });
 	assertTrue("pid", pid.intValue() > 0);
