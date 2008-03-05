@@ -68,4 +68,12 @@ public class TestFexe extends TestLib {
 	    });
 	e.expect("/bin/ls" + "\r\n");
     }
+
+    public void testExePath() {
+	TearDownExpect e = new TearDownExpect(new String[] {
+		"/bin/bash", "-c",
+		"PATH=/bin " + Config.getBinFile("fexe").getPath() + " ls"
+	    });
+	e.expect("/bin/ls" + "\r\n");
+    }
 }

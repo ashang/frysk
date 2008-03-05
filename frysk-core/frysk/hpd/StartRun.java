@@ -57,9 +57,7 @@ import java.util.Set;
  * Due to a lot of similar code in StartCommand/RunCommand this class was
  * created to consolidate most of the methods to one code base.
  */
-class StartRun extends ParameterizedCommand {
-    
-    boolean runToBreak = false;
+abstract class StartRun extends ParameterizedCommand {
     
     StartRun(String command, String help1, String help2) {
 	super(command, help1, help2);
@@ -124,39 +122,8 @@ class StartRun extends ParameterizedCommand {
 	}
     }
     
-    /**
-     * interpretRun is called from RunCommand to run a process until
-     * its first break point(if any) or until it blows up of finishes.
-     * 
-     * @param cli is the current command line interface object
-     * @param cmd is the command to be run
-     * @param options is not used at this point
-     */
-    public void interpretRun(CLI cli, Input cmd, Object options) {
-	runToBreak = true;
-	interpretCmd(cli, cmd, options);
-	return;
-    }
-   
-    /**
-     * interpretStart is called from StartCommand to start a process and
-     * run it to the first executable statement.
-     * 
-     * @param cli is the current command line interface object
-     * @param cmd is the command to be started
-     * @param options is not used at this point
-     */
-    public void interpretStart(CLI cli, Input cmd, Object options)  {
-	runToBreak = false;
-	interpretCmd(cli, cmd, options);
-	return;
-    }
-    
-    public void interpret(CLI cli, Input cmd, Object options) {
-	return;
-    }
-
-    public void interpretCmd(CLI cli, Input cmd, Object options) {
+    public void interpretCmd(CLI cli, Input cmd, Object options,
+			     boolean runToBreak) {
 	// See if there are any running tasks, if so, process them
 	// if there are not any procs loaded with the load/core commands
 	Iterator foo = cli.targetset.getTaskData();
@@ -177,10 +144,7 @@ class StartRun extends ParameterizedCommand {
 			synchronized (cli) {
 				cli.taskID = taskid;
 			}
-			String paramList = getParameters(cmd, task);
-		    	Input newcmd = new Input(task.getProc().getExe() + " " +
-			    paramList);
-		    	run(cli, newcmd);
+		    	run(cli, cmd, task.getProc(), runToBreak);
 		    	synchronized (cli) {
 				cli.taskID = -1;
 				cli.loadedProcs.clear();
@@ -203,7 +167,7 @@ class StartRun extends ParameterizedCommand {
 	/* This is the case where there are loaded procs */
 	if (!cli.loadedProcs.isEmpty()) {
 	    Set procSet = cli.loadedProcs.entrySet();
-	    runProcs(cli, procSet, cmd);
+	    runProcs(cli, procSet, cmd, runToBreak);
 	    synchronized (cli) {
 		cli.loadedProcs.clear();
 	    }
@@ -212,16 +176,29 @@ class StartRun extends ParameterizedCommand {
 	/* Check to see if there were procs loaded from a core command */
 	if (!cli.coreProcs.isEmpty()) {
 	    Set coreSet = cli.coreProcs.entrySet();
-	    runProcs(cli, coreSet, cmd);
+	    runProcs(cli, coreSet, cmd, runToBreak);
 	    synchronized (cli) {
 		cli.coreProcs.clear();
 	    }
 	}
     }
 
-    private void run(CLI cli, Input cmd) {
+    private void run(CLI cli, Input cmd, Proc template, boolean runToBreak) {
 	Runner runner = new Runner(cli);
-	Manager.host.requestCreateAttachedProc(cmd.stringArrayValue(), runner);
+	if (cmd.size() == 0) {
+	    cli.addMessage("starting/running with this command: " + 
+			   asString(template.getCmdLine()),
+			   Message.TYPE_NORMAL);
+	    Manager.host.requestCreateAttachedProc(template, runner);
+	} else {
+	    String[] args = new String[cmd.size() + 1];
+	    args[0] = template.getCmdLine()[0];
+	    for (int i = 1; i < args.length; i++)
+		args[i] = cmd.parameter(i - 1);
+	    cli.addMessage("starting/running with this command: " + 
+			   asString(args), Message.TYPE_NORMAL);
+	    Manager.host.requestCreateAttachedProc(args, runner);
+	}
 	while (true) {
 	    try {
 		runner.latch = new CountDownLatch(1);
@@ -235,6 +212,15 @@ class StartRun extends ParameterizedCommand {
 	runner.launchedTask.requestUnblock(runner);
     }
 
+    private String asString(String[] args) {
+	StringBuffer b = new StringBuffer(args[0]);
+	for (int i = 1; i < args.length; i++) {
+	    b.append(" ");
+	    b.append(args[i]);
+	}
+	return b.toString();
+    }
+
     /**
      * runProcs does as the name implies, it runs procs found to be loaded by a
      * load or a core command.
@@ -243,7 +229,7 @@ class StartRun extends ParameterizedCommand {
      * @param procs is the set of procs to be run
      * @param cmd is the command object to use to start the proc(s)
      */
-    private void runProcs(CLI cli, Set procs, Input cmd) {
+    private void runProcs(CLI cli, Set procs, Input cmd, boolean runToBreak) {
 	Iterator foo = procs.iterator();
 	int ctr = 0;
 	while (foo.hasNext()) {
@@ -256,59 +242,11 @@ class StartRun extends ParameterizedCommand {
 	    synchronized (cli) {
 		cli.taskID = taskid.intValue();
 	    }
-	    Input newcmd = new Input(proc.getExe() + " " +
-		    getParameters(cmd, proc.getMainTask()));
-	    cli.addMessage("starting/running with this command: " + 
-		    newcmd, Message.TYPE_NORMAL);
-	    run(cli, newcmd);
+	    run(cli, cmd, proc, runToBreak);
 	    synchronized (cli) {
 		cli.taskID = -1;
 	    }
 	}
-    }
-    
-    /**
-     * getParameters figures out what parameters to send back to start/run the process with;
-     * 	if no parameters are entered, use the previous ones if any were entered; if
-     *  parameters were entered, use those.
-     *  
-     * @param cmd is the Input object containing the command and any paramaters
-     * @param task is the Task object of the process that was previously run
-     * @return a String containing the parameters to be used in starting/running
-     *         the process
-     */
-
-    private String getParameters(Input cmd, Task task) {
-	if (cmd.size() < 1) {
-	    // No params entered, use this proc's previous params(if any)
-	    Proc proc = task.getProc();
-	    return parseParameters(proc.getCmdLine(), true);
-	} else//Proc had no previous params, send back empty param list
-	    // There were parameters entered, use those
-	    return parseParameters(cmd.stringArrayValue(), false);
-    }
-    
-    /**
-     * parseParameters takes a String array and returns a space-delimited String
-     * 
-     * @param parameters is the String array to convert
-     * @param which indicates whether or not to skip the first parameter
-     * @return a String of the parameters separated by spaces
-     */
-    private String parseParameters(String[] parameters, boolean which) {
-	if (parameters == null || parameters.length <= 0)
-		return "";
-	int i;
-	if (which)
-	    // In this case skip the first parameter which is the path to the process
-	    i = 1;
-	else
-	    // In this case, get all of the parameters which does not include the process
-	    i = 0;
-	String paramList = "";
-	for (int j = i; j < parameters.length; j++) 
-	    paramList = paramList + parameters[j] + " ";
-	    return paramList;
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

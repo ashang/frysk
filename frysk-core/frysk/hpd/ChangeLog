@@ -1,5 +1,18 @@
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LoadCommand.java (interpret()): Simplify; add -exe option.
+	* RunCommand.java: Update.
+	* StartCommand.java: Update.
+	* StartRun.java: Make abstract.
+	(interpret(CLI,Input,Object)): Delete.
+	(interpretRun(CLI,Input,Object)): Delete.
+	(interpretStart(CLI,Input,Object)): Delete.
+	(interpretCmd(CLI,Input,Object,boolean)): Add runToBreak parameter.
+	(runToBreak): Pass as parameter.
+	(run(CLI,cmd,boolean)): Replace run(CLI,String,boolean).
+	(parseParameters(String[],boolean)): Delete.
+	(getParameters(Input,Task)): Delete.
+
 	* ShellCommand.java: Use simplier requestCreateAttachedProc.
 
 	* HpdTestbed.java (start(String)): Delete.

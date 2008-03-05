@@ -61,10 +61,7 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "foo\n");
-	e.expect("File does not exist or is not readable*");
-	e.send("quit\n");
-	e.expect("Quitting\\.\\.\\.");
-	e.close();
+	e.expect("Error: open: No such file or directory.*");
     }
     
     public void testLoadStart() {
@@ -113,5 +110,18 @@ public class TestLoadCommand extends TestLib {
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
+    }
+
+    public void testLoadExeArg() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load arg0 arg1 -exe /bin/ls",
+				  "/bin/ls\r\n");
+	e.sendCommandExpectPrompt("info args", "arg0\r\n" + "arg1\r\n");
+	e.sendCommandExpectPrompt("info exe", "/bin/ls\r\n");
+    }
+
+    public void testLoadPath() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load ls", "/bin/ls\r\n");
     }
 }

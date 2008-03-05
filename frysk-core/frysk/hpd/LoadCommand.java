@@ -69,17 +69,22 @@ public class LoadCommand extends ParameterizedCommand {
 	      + " is displayed.\nNo arguments to be passed to the proc are"
 	      + " entered here.  Those arguments are passed to the proc(s)"
 	      + " via the 'start' or 'run' commands.");
-	
         add(new CommandOption("sysroot", "pathname to use as a sysroot",
-        "Pathname") {
-            void parse(String args, Object options) {
-        	((Options)options).sysroot = args;
-            }
-        });
+			      "Pathname") {
+		void parse(String args, Object options) {
+		    ((Options)options).sysroot = args;
+		}
+	    });
+        add(new CommandOption("exe", "Path to executable", "executable") {
+		void parse(String args, Object options) {
+		    ((Options)options).executable = args;
+		}
+	    });
     }
 
     private static class Options {
 	String sysroot = "/";
+	String executable = null;
     }
     Object options() {
 	return new Options();
@@ -88,27 +93,25 @@ public class LoadCommand extends ParameterizedCommand {
     public void interpret(CLI cli, Input cmd, Object options) {
 	
 	Options o = (Options)options;
-	if (cmd.size() > 2) {
-	    throw new InvalidCommandException("Too many parameters");
-	} else if (cmd.size() < 1 && !cli.loadedProcs.isEmpty()) {
-	    // List the loaded procs if no parameters entered
-	    ViewsetCommand.printLoop(cli.targetset, cli, "Target set", true);
-	    return;
-	} else if (cmd.size() < 1 && cli.loadedProcs.isEmpty()) {
-	    cli.addMessage("No loaded procs currently", Message.TYPE_NORMAL);
-	    return;
+	if (cmd.size() < 1) {
+	    if (cli.loadedProcs.isEmpty()) {
+		cli.addMessage("No loaded procs currently",
+			       Message.TYPE_NORMAL);
+		return;
+	    } else {
+		// List the loaded procs if no parameters entered
+		ViewsetCommand.printLoop(cli.targetset, cli, "Target set",
+					 true);
+		return;
+	    }
 	}
-
-	File executableFile = new File(cmd.parameter(0));
-
-	if (!executableFile.exists() || !executableFile.canRead()
-		|| !executableFile.isFile()) {
-	    throw new InvalidCommandException
-	    	("File does not exist or is not readable or is not a file.");
+	Proc exeProc;
+	if (o.executable != null) {
+	    exeProc = LinuxExeFactory.createProc
+		(new File(o.executable), cmd.stringArrayValue());
+	} else {
+	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue());
 	}
-
-	Proc exeProc = LinuxExeFactory.createProc(executableFile,
-						  cmd.stringArrayValue());
 
 	load(exeProc, cli, o.sysroot);
     }

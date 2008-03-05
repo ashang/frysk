@@ -57,7 +57,15 @@ class StartCommand extends StartRun {
 		      + " process and run to the first executable instruction.");
     }
     
-    public void interpret(CLI cli, Input cmd, Object options) {
-	interpretStart(cli, cmd, options);
+    /**
+     * interpretStart is called from StartCommand to start a process and
+     * run it to the first executable statement.
+     * 
+     * @param cli is the current command line interface object
+     * @param cmd is the command to be started
+     * @param options is not used at this point
+     */
+    public void interpret(CLI cli, Input cmd, Object options)  {
+	interpretCmd(cli, cmd, options, false);
     }
 }

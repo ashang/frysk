@@ -58,7 +58,15 @@ class RunCommand extends StartRun {
 	      + " to be reloaded and run until breakpoint or termination.");
     }
 
+    /**
+     * interpretRun is called from RunCommand to run a process until
+     * its first break point(if any) or until it blows up of finishes.
+     * 
+     * @param cli is the current command line interface object
+     * @param cmd is the command to be run
+     * @param options is not used at this point
+     */
     public void interpret(CLI cli, Input cmd, Object options) {
-	interpretRun(cli, cmd, options);
+	interpretCmd(cli, cmd, options, true);
     }
 }

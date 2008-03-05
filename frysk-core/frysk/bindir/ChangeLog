@@ -1,5 +1,7 @@
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFexe.java testExePath()): New.
+	
 	* TestFexe.java (testExeOfExe()): New.
 
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
