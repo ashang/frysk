@@ -53,18 +53,18 @@ public class TestBuildCompiler extends TestCase {
 
     public void testLessThanMajor() {
 	assertTrue("major",
-		   BuildCompiler.compareVersionTo(major + 1, 0, 0, 0) > 0);
+		   BuildCompiler.compareVersionTo(major + 1, 0, 0, 0) < 0);
     }
     public void testLessThanMinor() {
 	assertTrue("minor",
-		   BuildCompiler.compareVersionTo(major, minor + 1, 0, 0) > 0);
+		   BuildCompiler.compareVersionTo(major, minor + 1, 0, 0) < 0);
     }
     public void testLessThanPatch() {
 	assertTrue("minor",
-		   BuildCompiler.compareVersionTo(major, minor, patch + 1, 0) > 0);
+		   BuildCompiler.compareVersionTo(major, minor, patch + 1, 0) < 0);
     }
     public void testLessThanRH() {
 	assertTrue("minor",
-		   BuildCompiler.compareVersionTo(major, minor, patch, rh + 1) > 0);
+		   BuildCompiler.compareVersionTo(major, minor, patch, rh + 1) < 0);
     }
 }
