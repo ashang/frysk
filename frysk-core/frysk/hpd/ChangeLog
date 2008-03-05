@@ -1,3 +1,7 @@
+2008-03-05  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestActionsCommand.java: New test.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* LoadCommand.java (interpret()): Simplify; add -exe option.
