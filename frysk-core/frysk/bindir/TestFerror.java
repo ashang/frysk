@@ -55,7 +55,7 @@ public class TestFerror extends TestLib {
 		"--",
 		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
 	e.expect("Tracing");
-	e.expect(".*main.*");
+	e.expect("main");
     }
 
     public void testFerrorTracesPID () {
@@ -69,7 +69,7 @@ public class TestFerror extends TestLib {
 		Integer.toString(task.getProc().getPid())});
 	e.expect("Tracing");
 	child.assertSendAddCloneWaitForAcks();
-	e.expect(".*main.*");
+	e.expect("main");
     }
 
     public void testFerrorFollowsForks() {
@@ -80,7 +80,22 @@ public class TestFerror extends TestLib {
 		"--",
 		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
 	e.expect("Tracing");
-	e.expect(".*main.*");
+	e.expect("main");
     }
+    
+    public void testFerrorUnderstandsRegex() {
+	TearDownExpect e = new TearDownExpect(new String[] {
+		Config.getBinFile("ferror").getAbsolutePath(),
+		"-e",
+		"fork*",
+		"--",
+		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
+	e.expect("Tracing");
+	e.expect("main");
+	e.expect("main");
+	e.expect("main");
+    }
+    
+    
 
 }

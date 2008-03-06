@@ -1,3 +1,13 @@
+2008-03-06  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* TestFerror.java: Added test for regext argument matching.
+
+2008-03-06  Phil Muldoon  <pmuldoon@redhat.com>
+ 
+       * ferror.java (main): Update option text.
+       (parsed): Do not store argument. Compile into pattern.
+       (updateSyscallEnter): Use Matcher instead of contains. 
+
 2008-03-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ferror.java: Now reads entire length of string

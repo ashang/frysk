@@ -10,20 +10,22 @@ import frysk.proc.TaskObserver.Syscalls;
 import frysk.util.ProcRunningUtil;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import java.io.PrintWriter;
 
 public class ferror {
     
     static final PrintWriter printWriter = new PrintWriter(System.out);
+    static Pattern writePattern;
     
-    private static String errorString;
     public static void main (String[] args)
     {
-       Option option = new Option('e', "--error", "error string to catch in double quotes -e \"<error string>\""){
+       Option option = new Option('e', "--error", "error regex to catch in double quotes -e \"<error string>\""){
 
 	public void parsed(String argument) throws OptionException {
-	    errorString = argument;
+	    writePattern = Pattern.compile(argument);
 	}  
        };
 	
@@ -60,9 +62,13 @@ public class ferror {
   	        task.getMemory().get (address, length, x);
   	        String xString = new String(x);
   	        
-  	        if(xString.contains(errorString)){
-  	          printWriter.println("Process is trying to output " + errorString);
-  	          
+		Matcher match = writePattern.matcher(xString);
+		if (match.find()) {
+		   printWriter.println("Process is trying to output: " +
+				       xString + 
+				       " which matches pattern: " + 
+				       writePattern.pattern());
+		    
   	          printWriter.println("Stack trace:\n");
   	          PrintStackOptions options = new PrintStackOptions();
 
