@@ -1,3 +1,8 @@
+2008-03-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ferror.java: Now reads entire length of string
+	being outputed.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFexe.java testExePath()): New.

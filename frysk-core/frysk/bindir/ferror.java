@@ -54,9 +54,10 @@ public class ferror {
       public Action updateSyscallEnter(Task task, Syscall syscall) {
   	if(syscall.getName().equals("write")){
   	        long address = syscall.getArguments(task, 2);
-  	        
+  	        long length = syscall.getArguments(task, 3);
+  	      
   	        StringBuffer x = new StringBuffer ();
-  	        task.getMemory().get (address, 200, x);
+  	        task.getMemory().get (address, length, x);
   	        String xString = new String(x);
   	        
   	        if(xString.contains(errorString)){
