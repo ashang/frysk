@@ -68,7 +68,7 @@ import gnu.classpath.tools.getopt.Option;
  * 
  * Utilities must define a event.ProcEvent to execute.
  */
-public class ProcRunningUtil {
+public class ProcRunUtil {
 
     ForkedObserver forkedObserver = new ForkedObserver();
 
@@ -83,7 +83,7 @@ public class ProcRunningUtil {
     
     public static final RunningUtilOptions DEFAULT = new RunningUtilOptions();
     
-    public ProcRunningUtil(String utilName, String usage, String[] args,
+    public ProcRunUtil(String utilName, String usage, String[] args,
 	    TaskObserver[] observers, Option[] customOptions,
 	    RunningUtilOptions options) {
 

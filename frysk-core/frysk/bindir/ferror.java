@@ -7,7 +7,7 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Syscalls;
-import frysk.util.ProcRunningUtil;
+import frysk.util.ProcRunUtil;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import java.util.regex.Pattern;
@@ -29,11 +29,11 @@ public class ferror {
 	}  
        };
 	
-       ProcRunningUtil procRunningUtil = 
-	   new ProcRunningUtil("ferror",
+       ProcRunUtil procRunningUtil = 
+	   new ProcRunUtil("ferror",
 		   "ferror -e \"<error string>\" -- <executbale|PID> [ARGS]",
 		   args, 
-		   new TaskObserver[]{syscallObserver},new Option[]{option} , ProcRunningUtil.DEFAULT);
+		   new TaskObserver[]{syscallObserver},new Option[]{option} , ProcRunUtil.DEFAULT);
        procRunningUtil.start();
     }
 
