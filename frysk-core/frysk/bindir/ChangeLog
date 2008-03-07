@@ -1,3 +1,7 @@
+2008-03-07  Teresa Thomas  <tthomas@redhat.com>
+
+	* fhpd.java (main): Add event to handle SIGINT.
+
 2008-03-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	ProcRunUtil.java: Renamed ProcRunningUtil to ProcRunUtil.

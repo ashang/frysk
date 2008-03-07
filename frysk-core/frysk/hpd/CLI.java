@@ -55,13 +55,16 @@ import java.util.WeakHashMap;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.ProcTaskIDManager;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
+import frysk.sys.Signal;
 import frysk.util.CountDownLatch;
 import frysk.util.WordWrapWriter;
+import frysk.event.SignalEvent;
 import frysk.expr.Expression;
 import frysk.expr.ScratchSymTab;
 import frysk.expr.ExprSymTab;
@@ -414,12 +417,31 @@ public class CLI {
         private Object monitor = new Object();
 
         public Object getMonitor () {
+            
+	    // Event to handle Ctrl-C signal received during
+	    // stepping.
+	    Manager.eventLoop.add(new SignalEvent(Signal.INT) {
+		public void execute () {
+		    System.out.println ("Stepping engine: Got SIGINT");
+		    // Notify the stepping engine to stop waiting.
+		    synchronized (monitor) {
+			monitor.notify();
+		    }
+		    // Set Ctrl-C handler back to fhpd settings
+		    Manager.eventLoop.add(SigIntHandler.fhpd);
+		}
+	    });  
+	    
             return this.monitor;
         }
 
         public void update (Observable observable, Object arg) {
             TaskStepEngine tse = (TaskStepEngine) arg;
-            if (!tse.isAlive()) {
+            
+	    // Ensure Ctrl-C handler is set back to fhpd settings
+	    Manager.eventLoop.add(SigIntHandler.fhpd);
+            
+	    if (!tse.isAlive()) {
 		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
 		tse.setMessage("");
 		flushMessages();

@@ -48,6 +48,7 @@ import frysk.proc.TaskObserver;
 import frysk.sys.FileDescriptor;
 import frysk.util.CountDownLatch;
 import frysk.util.PtyTerminal;
+import frysk.event.SignalEvent;
 import frysk.isa.signals.Signal;
 
 class ShellCommand extends NoOptsCommand {
@@ -79,7 +80,16 @@ class ShellCommand extends NoOptsCommand {
 	// Set terminal to initial setting.
 	PtyTerminal.setToInitConsole(FileDescriptor.in);
 
-	// Request an attached proc to execute command.
+	// SIGINT handling for shell command.
+	Manager.eventLoop.add(new SignalEvent(frysk.sys.Signal.INT) {
+	    public void execute () {
+		// Prints this message and gets out
+		// of shell command.
+		System.out.println ("shell: Got SIGINT");
+	    }
+	});
+	
+	// Request for an attached proc to execute the command.
   	Manager.host.requestCreateAttachedProc(command,
 					       new TaskObserver.Attached() {  	    
   	    public Action updateAttached (Task task)
@@ -122,6 +132,9 @@ class ShellCommand extends NoOptsCommand {
   	    }
   	}  	  	
   	
+	// Set Ctrl-C handler back to fhpd settings
+	Manager.eventLoop.add(SigIntHandler.fhpd);
+	
   	// Set terminal back to fhpd settings, i.e. character buffered.
 	PtyTerminal.setToCharBufferedConsole(FileDescriptor.in);
     }

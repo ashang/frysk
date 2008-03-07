@@ -42,6 +42,7 @@ package frysk.bindir;
 import frysk.hpd.CoreCommand;
 import frysk.hpd.LoadCommand;
 import frysk.hpd.AttachCommand;
+import frysk.hpd.SigIntHandler;
 import frysk.event.Event;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -173,6 +174,8 @@ public class fhpd {
         parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
         parser.parse(args);
 	Manager.eventLoop.add(new CommandLine());
+	// Add event to handle Ctrl-C signal
+	Manager.eventLoop.add(SigIntHandler.fhpd);
 
 	// Run the event loop then exit when it exits (or crashes).
 	Manager.eventLoop.run();

@@ -1,3 +1,10 @@
+2008-03-07  Teresa Thomas  <tthomas@redhat.com>
+.
+	* CLI.java (SteppingObserver.getMonitor): Add events to
+	handle SIGINT.
+	* ShellCommand.java (interpretCommand): Ditto.	
+	* SigIntHandler.java: New.
+
 2008-03-05  Tom Tromey  <tromey@redhat.com>
 
 	Bug 5809
