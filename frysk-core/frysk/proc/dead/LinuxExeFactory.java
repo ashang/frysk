@@ -47,6 +47,7 @@ import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
 import frysk.rsl.Log;
+import frysk.solib.SOLibMapBuilder;
 
 public class LinuxExeFactory {
     private static final Log fine = Log.fine(LinuxExeFactory.class);

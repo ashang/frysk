@@ -1,5 +1,7 @@
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
+	* SOLibMapBuilder.java: Move to here from frysk.proc.dead.
+
 	* LinkMap.java: Extract from frysk.proc.dead.LinuxCoreInfo.
 	* LinkMapFactory.java: Ditto.
 	* DynamicSegment.java: Ditto.

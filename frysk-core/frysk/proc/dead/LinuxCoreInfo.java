@@ -39,6 +39,7 @@
 
 package frysk.proc.dead;
 
+import frysk.solib.SOLibMapBuilder;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.File;

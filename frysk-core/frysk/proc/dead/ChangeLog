@@ -1,5 +1,9 @@
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
+	* SOLibMapBuilder.java: Move to frysk.solib.
+	* LinuxExeFactory.java: Update.
+	* LinuxCoreInfo.java: Update.
+
 	* LinuxCoreInfo.java: Refactor link-map code to
 	frysk.solib.LinkMapFactory and frysk.solib.DynamicSegment.
 	(addEnhancedMapData): Use LinkMapFactory.

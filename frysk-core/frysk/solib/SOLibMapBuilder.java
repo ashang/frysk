@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.solib;
 
 import lib.dwfl.Elf;
 import lib.dwfl.ElfEHeader;
@@ -46,8 +46,7 @@ import lib.dwfl.ElfCommand;
 import java.io.File;
 
 /**
- * Build a list of maps from the contents of the file linkmap table at
- * address specified.
+ * Build a list of maps from the contents of the file specified file.
  */
 
 public abstract class SOLibMapBuilder {
