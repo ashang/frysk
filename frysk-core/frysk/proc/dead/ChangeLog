@@ -1,3 +1,18 @@
+2008-03-10  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxCoreInfo.java: Refactor link-map code to
+	frysk.solib.LinkMapFactory and frysk.solib.DynamicSegment.
+	(addEnhancedMapData): Use LinkMapFactory.
+	(getLinkmapAddress): Moved to frysk.solib.
+	(getDynamicSegmentAddress): Ditto.
+	(getExeInterpreterAddress): Ditto.
+	(getExeDynamicSegmentAddress): Ditto.
+	(getExeEntryPoint): Ditto.
+	(getExeInterpreterName): Ditto.
+	(getCorefileEntryPoint): Ditto.
+	(DynamicSegmentTuple): Ditto.
+	(Linkmap): Ditto.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadHost.java: Update to match Host.
