@@ -1,5 +1,14 @@
 2008-03-10  Petr Machata  <pmachata@redhat.com>
 
+	* MappingGuard.java: Make both mapping guard terminating observers.
+	(requestAddSyscallBasedMappingObserver): New function.
+	(requestAddMappingObserver): Become private, take extra argument
+	to implement the above new function.
+	(requestAddMappingObserver): New proxy function.
+	* Ftrace.java: Request syscall based observer if user wants -m.
+
+2008-03-10  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java: Handle -m without -sym/-plt/-dyn.
 
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
