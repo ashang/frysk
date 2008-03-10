@@ -1,3 +1,7 @@
+2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestListCommand (testListFrames): Mark unresolved bug #5901
+.
 2008-03-07  Teresa Thomas  <tthomas@redhat.com>
 .
 	* CLI.java (SteppingObserver.getMonitor): Add events to

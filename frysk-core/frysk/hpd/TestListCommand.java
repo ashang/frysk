@@ -168,6 +168,9 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListFrames() {
+	if (unresolved(5901))
+	  return;
+
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
