@@ -47,15 +47,15 @@ public class TestActionsCommand extends TestLib {
       hpd = HpdTestbed.load("funit-hello");
 
       hpd.send("break print\n");
-      hpd.expect("breakpoint.*\n" + prompt);
+      hpd.expect("breakpoint 0 deferred\r\n" + prompt);
 
       hpd.send("run\n");
-      hpd.expect("Breakpoint 0.*\n");
+      hpd.expect("Breakpoint 0 print 0x[0-9a-f]+\r\n");
 
-      hpd.send("actions\n");
-      hpd.expect("actions.*\n");
-      hpd.expect("BREAKPOINTS.*\n");
-      hpd.expect("0  y print [0-9]+.*\n");
+      hpd.send("actions\r\n");
+      hpd.expect("actions\r\n");
+      hpd.expect("BREAKPOINTS\r\n");
+      hpd.expect("0  y print [0-9]+ \r\n");
 
       hpd.send("quit\n");
       hpd.expect("quit.*\nQuitting...");
