@@ -39,73 +39,20 @@
 
 package frysk.bindir;
 
-import frysk.util.Util;
-import frysk.util.CommandlineParser;
 import frysk.util.FCatch;
-import frysk.proc.Proc;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
 
 public class fcatch {
 
     FCatch catcher = new FCatch();
 
-    private boolean requestedPid = false;
-
-    private static StringBuffer argString;
+    
+    
 
     private void run(String[] args) {
-	CommandlineParser parser = new CommandlineParser("fcatch") {
-	    protected void validate() throws OptionException {
-		if (!requestedPid && argString == null)
-		    throw new OptionException("no command or PID specified");
-	    }
-
-	    //@Override
-	    public void parseCommand(Proc command) {
-		// FIXME: This concatinatin the string is unnecessary.
-		String[] line = command.getCmdLine();
-		argString = new StringBuffer(line[0]);
-		for (int i = 1; i < line.length; i++)
-		    argString.append(" ").append(line[i]);
-	    }
-
-	};
-	addOptions(parser);
-	parser
-		.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
-
-	parser.parse(args);
-
-	if (argString != null) {
-	    String[] cmd = argString.toString().split("\\s");
-
-	    catcher.trace(cmd, requestedPid);
-	}
+	catcher.run(args);
     }
 
-    public void addOptions(CommandlineParser p) {
-	p.add(new Option('p', "pid to trace", "PID") {
-	    public void parsed(String arg) throws OptionException {
-		try {
-		    int pid = Integer.parseInt(arg);
-		    catcher.addProc(Util.getProcFromPid(pid));
-		    requestedPid = true;
-		    if (argString == null)
-			argString = new StringBuffer(pid);
-		    else
-			argString.append(" " + pid);
-
-		} catch (NumberFormatException e) {
-		    OptionException oe = new OptionException(
-			    "couldn't parse pid: " + arg);
-		    oe.initCause(e);
-		    throw oe;
-		}
-	    }
-	});
-    }
-
+   
     public static void main(String[] args) {
 	fcatch fc = new fcatch();
 	fc.run(args);

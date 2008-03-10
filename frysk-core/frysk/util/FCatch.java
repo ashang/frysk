@@ -39,246 +39,72 @@
 
 package frysk.util;
 
-import frysk.isa.signals.Signal;
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.Iterator;
-import frysk.rsl.Log;
+import java.util.HashMap;
+
+import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.isa.signals.Signal;
 import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
+import frysk.rsl.Log;
+import gnu.classpath.tools.getopt.Option;
 
 public class FCatch {
+
     private static final Log fine = Log.fine(FCatch.class);
 
-    private int numTasks = 0;
+    private PrintWriter printWriter = new PrintWriter(System.out);
+    HashMap signaledTasks = new HashMap();
 
-    //True if we're tracing children as well.
-    boolean traceChildren;
-
-    boolean firstCall = true;
-
-    private StringBuffer stackTrace = new StringBuffer();
-
-    private Blocker blocker;
-
-    private SignalObserver signalObserver;
-
-    private Signal sig;
-
-    private int stacklevel = 0;
-
-    private Task sigTask;
-
-    HashSet signaledTasks = new HashSet();
-
-    Proc proc = null;
-
-
-    Frame[] frames;
+    private static class SignalStack {
+	Signal signal;
+	String stack;
+    }
 
     /**
-     * Sets up the attached process.
+     * Builds a stack trace from the incoming blocked task, and appends the
+     * output to this class' StringBuffer. Decrements the numTasks variable to
+     * let FCatch know when to unblock the signaled thread.
      * 
-     * @param command Command line arguments, including executable name
-     * @param attach  Whether to create a new process with the above arguments, or
-     * to attach to an already-running process.
+     * @param task
+     *                The Task to be StackTraced
      */
-    public void trace(String[] command, boolean attach) {
-	fine.log(this, "trace");
+    private void printStackTrace(Task task, SignalStack signalStack) {
+	printWriter.println("\n" + task.getProc().getPid() + "."
+		+ task.getTid() + " was terminated with signal "
+		+ signalStack.signal);
+	printWriter.println(signalStack.stack);
+	printWriter.flush();
+    }
 
-	if (attach == true)
-	    init();
-	else {
-	    File exe = new File(command[0]);
-	    // XXX: There is a race between this .exists call, a remove of
-	    // the executable, and the subsequent attempt to exec it.  The
-	    // only robust way to make this work is to detect the failure
-	    // in the Attach observer - when it fails.
-	    if (exe.exists())
-		Manager.host.requestCreateAttachedProc(command,
-			new CatchObserver());
-	    else {
-		System.err.println("fcatch: can't find executable!");
-		System.exit(1);
+    /**
+     * An observer that sets up things once frysk has set up the requested proc
+     * and attached to it.
+     */
+    class CatchObserver implements TaskObserver.Terminated, TaskObserver.Signaled{
+
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    SignalStack signalStack = (SignalStack) signaledTasks.get(task);
+	    if (signalStack != null && signal.equals(signalStack.signal)) {
+		printStackTrace(task, signalStack);
 	    }
-	}
-
-	// Run the event-loop from within this thread - no need to
-	// multi-thread this application.
-	Manager.eventLoop.run();
-	fine.log(this, "exiting trace");
-    }
-
-    /**
-     * Attaches FCatch to an already running process.
-     */
-    private void init() {
-	fine.log(this, "init");
-	iterateTasks(proc);
-	fine.log(this, "exiting init");
-    }
-
-    /**
-     * Adds a CatchObserver to each of the Tasks belonging to the process.
-     */
-    private void iterateTasks(Proc proc) {
-	Iterator i = proc.getTasks().iterator();
-	while (i.hasNext()) {
-	    ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
-	}
-    }
-
-    /**
-     * Adds a PID to be traced to this class' HashSet.
-     * 
-     * @param id  The PID to be traced
-     */
-    public void addProc(Proc proc) {
-	fine.log(this, "addProc", proc);
-	this.proc = proc;
-    }
-
-    /**
-     * Builds a stack trace from the incoming blocked task, and appends the output
-     * to this class' StringBuffer. Decrements the numTasks variable to let FCatch
-     * know when to unblock the signaled thread.
-     * 
-     * @param task    The Task to be StackTraced
-     */
-    private void generateStackTrace(Task task) {
-	fine.log(this, "generateStackTrace", task);
-	--this.numTasks;
-	Frame frame = null;
-	try {
-	    frame = StackFactory.createFrame(task);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-
-	StringWriter stringWriter = new StringWriter();
-	PrintWriter printWriter = new PrintWriter(stringWriter);
-	StackFactory.printStack(printWriter, frame);
-	this.stackTrace.append(stringWriter.getBuffer());
-
-	fine.log(this, "exiting generateStackTrace", task);
-    }
-
-    /**
-     * Returns a String representation of the stack trace thus far.
-     * 
-     * @return The stack trace thus far.
-     */
-    public String getStackTrace() {
-	return this.stackTrace.toString();
-    }
-
-    /**
-     * Prints the stack trace.
-     */
-    public String toString() {
-	String trace = this.stackTrace.toString();
-	System.out.println(trace);
-	return trace;
-    }
-
-    /**
-     * Depending on the signal, appends the signal type to the stack trace 
-     * StringBuffer and calls generateStackTrace(Task).
-     * If all Tasks have completed their trace, this method unblocks the signaled
-     * thread blocked by a SignaledObserver, and then removes the Blocker
-     * Objects from all the Tasks.
-     * 
-     * @param task    The Task recently blocked.
-     */
-    public synchronized void handleTaskBlock(Task task) {
-	this.signaledTasks.add(task);
-
-	stackTrace.append(sig.toString());
-	stackTrace.append(" detected - dumping stack trace for TID ");
-	stackTrace.append(task.getTid());
-	stackTrace.append("\n");
-	generateStackTrace(task);
-
-	if (numTasks <= 0) {
-	    System.out.println(this.stackTrace.toString());
-	    this.stackTrace = new StringBuffer();
-	    this.stackTrace.append(stacklevel++ + "\n");
-	    sigTask.requestUnblock(signalObserver);
-	    Iterator i = task.getProc().getTasks().iterator();
-	    while (i.hasNext()) {
-		Task t = (Task) i.next();
-		t.requestDeleteInstructionObserver(blocker);
-	    }
-	}
-    }
-
-    /**
-     * An observer that sets up things once frysk has set up
-     * the requested proc and attached to it.
-     */
-    class CatchObserver implements TaskObserver.Attached, TaskObserver.Cloned,
-	    TaskObserver.Terminating, TaskObserver.Terminated {
-	/**
-	 * This Task has been attached to and blocked - attach the rest of this
-	 * Object's implemented Observers to it.
-	 */
-	public Action updateAttached(Task task) {
-	    numTasks = task.getProc().getTasks().size();
-	    fine.log(this, "updateAttached", task);
-	    if (signalObserver == null)
-		signalObserver = new SignalObserver();
-
-	    task.requestAddSignaledObserver(signalObserver);
-	    task.requestAddClonedObserver(this);
-	    task.requestAddTerminatingObserver(this);
-	    task.requestAddTerminatedObserver(this);
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
-	}
-
-	public Action updateClonedParent(Task parent, Task offspring) {
-	    fine.log(this, "updateClonedParent", parent, "offspring",
-		     offspring);
-	    //System.out.println("Cloned.updateParent");
-	    parent.requestUnblock(this);
-	    return Action.BLOCK;
-	}
-
-	/**
-	 * One of the Tasks has forked - make sure that the child is also traced
-	 * properly.
-	 */
-	public Action updateClonedOffspring(Task parent, Task offspring) {
-	    fine.log(this, "updateClonedOffspring", offspring, "parent",
-		     parent);
-	    FCatch.this.numTasks = offspring.getProc().getTasks().size();
-	    SignalObserver sigo = new SignalObserver();
-
-	    offspring.requestAddSignaledObserver(sigo);
-	    offspring.requestAddTerminatingObserver(this);
-	    offspring.requestAddClonedObserver(this);
-	    offspring.requestAddTerminatedObserver(this);
-	    offspring.requestUnblock(this);
-	    return Action.BLOCK;
-	}
-
-	public Action updateTerminating(Task task, Signal signal, int value) {
-	    fine.log(this, "updateTerminating", task, "signal", signal);
 	    return Action.CONTINUE;
 	}
 
-	public Action updateTerminated(Task task, Signal signal, int value) {
-	    fine.log(this, "updateTerminated", task, "signal", signal);
-	    if (--FCatch.this.numTasks <= 0)
-		Manager.eventLoop.requestStop();
-
+	public Action updateSignaled(Task task, Signal signal) {
+	    fine.log(this, "updateSignaled", task, "signal", signal);
+	    
+	    StringWriter stringWriter = new StringWriter();
+	    
+	    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, DebugInfoStackFactory.DEFAULT);
+	    
+	    SignalStack signalStack = new SignalStack();
+	    signalStack.signal = signal;
+	    signalStack.stack = stringWriter.getBuffer().toString();
+	    signaledTasks.put(task, signalStack);
+	    
 	    return Action.CONTINUE;
 	}
 
@@ -295,71 +121,17 @@ public class FCatch {
 	}
     }
 
-    /**
-     * Intercepts signals to a Task and deals with them appropriately.
-     */
-    class SignalObserver implements TaskObserver.Signaled {
-	/**
-	 * The Task received a signal - block all the other tasks, and
-	 * append to the StringBuffer member of FCatch that this Task
-	 * was signaled.
-	 */
-	public Action updateSignaled(Task task, Signal signal) {
-	    fine.log(this, "updateSignaled", task, "signal", signal);
-	    sigTask = task;
+    public void run(String[] args) {
+	
+	CatchObserver catchObserver = new CatchObserver();
 
-	    FCatch.this.sig = signal;
-	    FCatch.this.numTasks = task.getProc().getTasks().size();
+	ProcRunUtil procRunUtil = new ProcRunUtil("fcatch",
+		"Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
+		args, new TaskObserver[] { catchObserver},
+		new Option[] {}, ProcRunUtil.DEFAULT);
 
-	    if (FCatch.this.numTasks > 1
-		    && FCatch.this.signaledTasks.contains(task)) {
-		FCatch.this.signaledTasks.remove(task);
-		return Action.CONTINUE;
-	    }
+	procRunUtil.start();
 
-	    stackTrace.append("fcatch: from PID " + task.getProc().getPid()
-		    + " TID " + task.getTid() + ":\n");
-	    blocker = new Blocker();
-	    Iterator i = task.getProc().getTasks().iterator();
-	    while (i.hasNext()) {
-		Task t = (Task) i.next();
-		t.requestAddInstructionObserver(blocker);
-	    }
-	    return Action.BLOCK;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    w.printStackTrace();
-	}
-
-	public void addedTo(Object observable) {
-	    fine.log(this, "SignalObserver.addedTo", observable);
-	}
-
-	public void deletedFrom(Object observable) {
-	    fine.log(this, "deletedFrom", observable);
-	}
     }
 
-    /**
-     * Blocks threads; makes sure they get stack traced.
-     */
-    class Blocker implements TaskObserver.Instruction {
-	public Action updateExecuted(Task task) {
-	    handleTaskBlock(task);
-	    return Action.BLOCK;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    w.printStackTrace();
-	}
-
-	public void addedTo(Object observable) {
-	    fine.log(this, "SignalObserver.addedTo", observable);
-	}
-
-	public void deletedFrom(Object observable) {
-	    fine.log(this, "deletedFrom", observable);
-	}
-    }
 }
