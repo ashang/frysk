@@ -1,3 +1,57 @@
+Version 0.133:
+
+readelf, elflint, libebl: SHT_GNU_ATTRIBUTE section handling (readelf -A)
+
+readelf: core note handling for NT_386_TLS, NT_PPC_SPE, Alpha NT_AUXV
+
+libdwfl: bug fixes and optimization in relocation handling
+
+elfcmp: bug fix for non-allocated section handling
+
+ld: implement newer features of binutils linker.
+
+Version 0.132:
+
+libcpu: Implement x86 and x86-64 disassembler.
+libasm: Add interface for disassembler.
+
+all programs: add debugging of branch prediction.
+
+libelf: new function elf_scnshndx.
+
+Version 0.131:
+
+libdw: DW_FORM_ref_addr support; dwarf_formref entry point now deprecated;
+       bug fixes for oddly-formatted DWARF
+
+libdwfl: bug fixes in offline archive support, symbol table handling;
+	 apply partial relocations for dwfl_module_address_section on ET_REL
+
+libebl: powerpc backend support for Altivec registers
+
+Version 0.130:
+
+readelf: -p option can take an argument like -x for one section,
+	 or no argument (as before) for all SHF_STRINGS sections;
+	 new option --archive-index (or -c);
+	 improved -n output for core files, on many machines
+
+libelf: new function elf_getdata_rawchunk, replaces gelf_rawchunk;
+	new functions gelf_getnote, gelf_getauxv, gelf_update_auxv
+
+readelf, elflint: handle SHT_NOTE sections without requiring phdrs
+
+elflint: stricter checks on debug sections
+
+libdwfl: new functions dwfl_build_id_find_elf, dwfl_build_id_find_debuginfo,
+	 dwfl_module_build_id, dwfl_module_report_build_id;
+	 support dynamic symbol tables found via phdrs;
+	 dwfl_standard_find_debuginfo now uses build IDs when available
+
+unstrip: new option --list (or -n)
+
+libebl: backend improvements for sparc, alpha, powerpc
+
 Version 0.129:
 
 readelf: new options --hex-dump (or -x), --strings (or -p)

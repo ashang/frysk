@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 ##
-## Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+## Copyright (C) 2000,2001,2002,2003,2004,2005,2006,2007,2008 Red Hat, Inc.
 ## This file is part of Red Hat elfutils.
 ##
 ## Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ AM_CFLAGS += -fpic -Wall -Wshadow -Werror -Wunused -Wextra -Wformat=2 \
 	     -std=gnu99
 
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libelf -I$(top_srcdir)/libdw \
-	   -I$(top_srcdir)/lib -I..
+	   -I$(top_srcdir)/lib -I.. -I$(srcdir)/../libasm
 VERSION = 1
 PACKAGE_VERSION = @PACKAGE_VERSION@
 LIBEBL_SUBDIR = @LIBEBL_SUBDIR@
@@ -58,7 +58,7 @@ gen_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 	      eblelfclass.c eblelfdata.c eblelfmachine.c \
 	      ebl_check_special_symbol.c eblbsspltp.c eblretval.c \
 	      eblreginfo.c eblnonerelocp.c eblrelativerelocp.c \
-	      eblsysvhashentrysize.c
+	      eblsysvhashentrysize.c eblauxvinfo.c eblcheckobjattr.c
 
 libebl_a_SOURCES = $(gen_SOURCES)
 

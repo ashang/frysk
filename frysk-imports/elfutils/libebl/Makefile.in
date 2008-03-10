@@ -77,7 +77,8 @@ am__objects_1 = eblopenbackend.$(OBJEXT) eblclosebackend.$(OBJEXT) \
 	eblelfmachine.$(OBJEXT) ebl_check_special_symbol.$(OBJEXT) \
 	eblbsspltp.$(OBJEXT) eblretval.$(OBJEXT) eblreginfo.$(OBJEXT) \
 	eblnonerelocp.$(OBJEXT) eblrelativerelocp.$(OBJEXT) \
-	eblsysvhashentrysize.$(OBJEXT)
+	eblsysvhashentrysize.$(OBJEXT) eblauxvinfo.$(OBJEXT) \
+	eblcheckobjattr.$(OBJEXT)
 am_libebl_a_OBJECTS = $(am__objects_1)
 libebl_a_OBJECTS = $(am_libebl_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
@@ -106,6 +107,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DOBJDIR=\"$(shell pwd)\"
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -208,7 +210,7 @@ top_srcdir = @top_srcdir@
 @MUDFLAP_TRUE@AM_CFLAGS = -fmudflap -fpic -Wall -Wshadow -Werror \
 @MUDFLAP_TRUE@	-Wunused -Wextra -Wformat=2 -std=gnu99
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libelf -I$(top_srcdir)/libdw \
-	   -I$(top_srcdir)/lib -I..
+	   -I$(top_srcdir)/lib -I.. -I$(srcdir)/../libasm
 
 lib_LIBRARIES = libebl.a
 pkginclude_HEADERS = libebl.h
@@ -227,7 +229,7 @@ gen_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 	      eblelfclass.c eblelfdata.c eblelfmachine.c \
 	      ebl_check_special_symbol.c eblbsspltp.c eblretval.c \
 	      eblreginfo.c eblnonerelocp.c eblrelativerelocp.c \
-	      eblsysvhashentrysize.c
+	      eblsysvhashentrysize.c eblauxvinfo.c eblcheckobjattr.c
 
 libebl_a_SOURCES = $(gen_SOURCES)
 noinst_HEADERS = libeblP.h ebl-hooks.h
@@ -306,8 +308,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ebl_check_special_symbol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblauxvinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblbackendname.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblbsspltp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblcheckobjattr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblclosebackend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblcopyrelocp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblcorenote.Po@am__quote@

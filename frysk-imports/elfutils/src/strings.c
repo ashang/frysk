@@ -228,7 +228,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2007");
+"), "2008");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -422,13 +422,13 @@ process_chunk (const char *fname, const unsigned char *buf, off64_t to,
 	  if (curlen >= min_len)
 	    {
 	      /* We found a match.  */
-	      if (unlikely (fname != NULL))
+	      if (likely (fname != NULL))
 		{
 		  fputs_unlocked (fname, stdout);
 		  fputs_unlocked (": ", stdout);
 		}
 
-	      if (unlikely (locfmt != NULL))
+	      if (likely (locfmt != NULL))
 		printf (locfmt, (int64_t) to - len - (buf - start));
 
 	      if (unlikely (*unprinted != NULL))
@@ -739,3 +739,6 @@ read_elf (Elf *elf, int fd, const char *fname, off64_t fdlen)
 
   return result;
 }
+
+
+#include "debugpred.h"

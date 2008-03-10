@@ -1,5 +1,5 @@
 /* Find debugging and symbol information for a module in libdwfl.
-   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -61,6 +61,11 @@ open_elf (Dwfl_Module *mod, struct dwfl_file *file)
 {
   if (file->elf == NULL)
     {
+      /* If there was a pre-primed file name left that the callback left
+	 behind, try to open that file name.  */
+      if (file->fd < 0 && file->name != NULL)
+	file->fd = TEMP_FAILURE_RETRY (open64 (file->name, O_RDONLY));
+
       if (file->fd < 0)
 	return CBFAIL;
 
@@ -113,6 +118,15 @@ find_file (Dwfl_Module *mod)
 						    &mod->main.name,
 						    &mod->main.elf);
   mod->elferr = open_elf (mod, &mod->main);
+
+  if (mod->elferr == DWFL_E_NOERROR && !mod->main.valid)
+    {
+      /* Clear any explicitly reported build ID, just in case it was wrong.
+	 We'll fetch it from the file when asked.  */
+      if (mod->build_id_len > 0)
+	free (mod->build_id_bits);
+      mod->build_id_len = 0;
+    }
 }
 
 /* Search an ELF file for a ".gnu_debuglink" section.  */
@@ -196,7 +210,9 @@ find_debuginfo (Dwfl_Module *mod)
 }
 
 
-/* Try to find a symbol table in FILE.  */
+/* Try to find a symbol table in FILE.
+   Returns DWFL_E_NOERROR if a proper one is found.
+   Returns DWFL_E_NO_SYMTAB if not, but still sets results for SHT_DYNSYM.  */
 static Dwfl_Error
 load_symtab (struct dwfl_file *file, struct dwfl_file **symfile,
 	     Elf_Scn **symscn, Elf_Scn **xndxscn,
@@ -214,7 +230,7 @@ load_symtab (struct dwfl_file *file, struct dwfl_file **symfile,
 	    *symfile = file;
 	    *strshndx = shdr->sh_link;
 	    *syments = shdr->sh_size / shdr->sh_entsize;
-	    if (*symscn != NULL && *xndxscn != NULL)
+	    if (*xndxscn != NULL)
 	      return DWFL_E_NOERROR;
 	    break;
 
@@ -228,13 +244,231 @@ load_symtab (struct dwfl_file *file, struct dwfl_file **symfile,
 
 	  case SHT_SYMTAB_SHNDX:
 	    *xndxscn = scn;
+	    if (*symscn != NULL)
+	      return DWFL_E_NOERROR;
 	    break;
 
 	  default:
 	    break;
 	  }
     }
+
+  if (*symscn != NULL)
+    /* We found one, though no SHT_SYMTAB_SHNDX to go with it.  */
+    return DWFL_E_NOERROR;
+
+  /* We found no SHT_SYMTAB, so any SHT_SYMTAB_SHNDX was bogus.
+     We might have found an SHT_DYNSYM and set *SYMSCN et al though.  */
+  *xndxscn = NULL;
   return DWFL_E_NO_SYMTAB;
+}
+
+
+/* Translate addresses into file offsets.
+   OFFS[*] start out zero and remain zero if unresolved.  */
+static void
+find_offsets (Elf *elf, const GElf_Ehdr *ehdr, size_t n,
+	      GElf_Addr addrs[n], GElf_Off offs[n])
+{
+  size_t unsolved = n;
+  for (uint_fast16_t i = 0; i < ehdr->e_phnum; ++i)
+    {
+      GElf_Phdr phdr_mem;
+      GElf_Phdr *phdr = gelf_getphdr (elf, i, &phdr_mem);
+      if (phdr != NULL && phdr->p_type == PT_LOAD && phdr->p_memsz > 0)
+	for (size_t j = 0; j < n; ++j)
+	  if (offs[j] == 0
+	      && addrs[j] >= phdr->p_vaddr
+	      && addrs[j] - phdr->p_vaddr < phdr->p_filesz)
+	    {
+	      offs[j] = addrs[j] - phdr->p_vaddr + phdr->p_offset;
+	      if (--unsolved == 0)
+		break;
+	    }
+    }
+}
+
+/* Try to find a dynamic symbol table via phdrs.  */
+static void
+find_dynsym (Dwfl_Module *mod)
+{
+  GElf_Ehdr ehdr_mem;
+  GElf_Ehdr *ehdr = gelf_getehdr (mod->main.elf, &ehdr_mem);
+
+  for (uint_fast16_t i = 0; i < ehdr->e_phnum; ++i)
+    {
+      GElf_Phdr phdr_mem;
+      GElf_Phdr *phdr = gelf_getphdr (mod->main.elf, i, &phdr_mem);
+      if (phdr == NULL)
+	break;
+
+      if (phdr->p_type == PT_DYNAMIC)
+	{
+	  /* Examine the dynamic section for the pointers we need.  */
+
+	  Elf_Data *data = elf_getdata_rawchunk (mod->main.elf,
+						 phdr->p_offset, phdr->p_filesz,
+						 ELF_T_DYN);
+	  if (data == NULL)
+	    continue;
+
+	  enum
+	    {
+	      i_symtab,
+	      i_strtab,
+	      i_hash,
+	      i_gnu_hash,
+	      i_max
+	    };
+	  GElf_Addr addrs[i_max] = { 0, };
+	  GElf_Xword strsz = 0;
+	  size_t n = data->d_size / gelf_fsize (mod->main.elf,
+						ELF_T_DYN, 1, EV_CURRENT);
+	  for (size_t j = 0; j < n; ++j)
+	    {
+	      GElf_Dyn dyn_mem;
+	      GElf_Dyn *dyn = gelf_getdyn (data, j, &dyn_mem);
+	      if (dyn != NULL)
+		switch (dyn->d_tag)
+		  {
+		  case DT_SYMTAB:
+		    addrs[i_symtab] = dyn->d_un.d_ptr;
+		    continue;
+
+		  case DT_HASH:
+		    addrs[i_hash] = dyn->d_un.d_ptr;
+		    continue;
+
+		  case DT_GNU_HASH:
+		    addrs[i_gnu_hash] = dyn->d_un.d_ptr;
+		    continue;
+
+		  case DT_STRTAB:
+		    addrs[i_strtab] = dyn->d_un.d_ptr;
+		    continue;
+
+		  case DT_STRSZ:
+		    strsz = dyn->d_un.d_val;
+		    continue;
+
+		  default:
+		    continue;
+
+		  case DT_NULL:
+		    break;
+		  }
+	      break;
+	    }
+
+	  /* Translate pointers into file offsets.  */
+	  GElf_Off offs[i_max] = { 0, };
+	  find_offsets (mod->main.elf, ehdr, i_max, addrs, offs);
+
+	  /* Figure out the size of the symbol table.  */
+	  if (offs[i_hash] != 0)
+	    {
+	      /* In the original format, .hash says the size of .dynsym.  */
+
+	      size_t entsz = SH_ENTSIZE_HASH (ehdr);
+	      data = elf_getdata_rawchunk (mod->main.elf,
+					   offs[i_hash] + entsz, entsz,
+					   entsz == 4 ? ELF_T_WORD
+					   : ELF_T_XWORD);
+	      if (data != NULL)
+		mod->syments = (entsz == 4
+				? *(const GElf_Word *) data->d_buf
+				: *(const GElf_Xword *) data->d_buf);
+	    }
+	  if (offs[i_gnu_hash] != 0 && mod->syments == 0)
+	    {
+	      /* In the new format, we can derive it with some work.  */
+
+	      const struct
+	      {
+		Elf32_Word nbuckets;
+		Elf32_Word symndx;
+		Elf32_Word maskwords;
+		Elf32_Word shift2;
+	      } *header;
+
+	      data = elf_getdata_rawchunk (mod->main.elf, offs[i_gnu_hash],
+					   sizeof *header, ELF_T_WORD);
+	      if (data != NULL)
+		{
+		  header = data->d_buf;
+		  Elf32_Word nbuckets = header->nbuckets;
+		  Elf32_Word symndx = header->symndx;
+		  GElf_Off buckets_at = (offs[i_gnu_hash] + sizeof *header
+					 + (gelf_getclass (mod->main.elf)
+					    * sizeof (Elf32_Word)
+					    * header->maskwords));
+
+		  data = elf_getdata_rawchunk (mod->main.elf, buckets_at,
+					       nbuckets * sizeof (Elf32_Word),
+					       ELF_T_WORD);
+		  if (data != NULL && symndx < nbuckets)
+		    {
+		      const Elf32_Word *const buckets = data->d_buf;
+		      Elf32_Word maxndx = symndx;
+		      for (Elf32_Word bucket = 0; bucket < nbuckets; ++bucket)
+			if (buckets[bucket] > maxndx)
+			  maxndx = buckets[bucket];
+
+		      GElf_Off hasharr_at = (buckets_at
+					     + nbuckets * sizeof (Elf32_Word));
+		      hasharr_at += (maxndx - symndx) * sizeof (Elf32_Word);
+		      do
+			{
+			  data = elf_getdata_rawchunk (mod->main.elf,
+						       hasharr_at,
+						       sizeof (Elf32_Word),
+						       ELF_T_WORD);
+			  if (data != NULL
+			      && (*(const Elf32_Word *) data->d_buf & 1u))
+			    {
+			      mod->syments = maxndx + 1;
+			      break;
+			    }
+			  ++maxndx;
+			  hasharr_at += sizeof (Elf32_Word);
+			} while (data != NULL);
+		    }
+		}
+	    }
+	  if (offs[i_strtab] > offs[i_symtab] && mod->syments == 0)
+	    mod->syments = ((offs[i_strtab] - offs[i_symtab])
+			    / gelf_fsize (mod->main.elf,
+					  ELF_T_SYM, 1, EV_CURRENT));
+
+	  if (mod->syments > 0)
+	    {
+	      mod->symdata = elf_getdata_rawchunk (mod->main.elf,
+						   offs[i_symtab],
+						   gelf_fsize (mod->main.elf,
+							       ELF_T_SYM,
+							       mod->syments,
+							       EV_CURRENT),
+						   ELF_T_SYM);
+	      if (mod->symdata != NULL)
+		{
+		  mod->symstrdata = elf_getdata_rawchunk (mod->main.elf,
+							  offs[i_strtab],
+							  strsz,
+							  ELF_T_BYTE);
+		  if (mod->symstrdata == NULL)
+		    mod->symdata = NULL;
+		}
+	      if (mod->symdata == NULL)
+		mod->symerr = DWFL_E (LIBELF, elf_errno ());
+	      else
+		{
+		  mod->symfile = &mod->main;
+		  mod->symerr = DWFL_E_NOERROR;
+		}
+	      return;
+	    }
+	}
+    }
 }
 
 /* Try to find a symbol table in either MOD->main.elf or MOD->debug.elf.  */
@@ -290,11 +524,16 @@ find_symtab (Dwfl_Module *mod)
 	  break;
 
 	case DWFL_E_NO_SYMTAB:
-	  if (symscn == NULL)
-	    return;
-	  /* We still have the dynamic symbol table.  */
-	  mod->symerr = DWFL_E_NOERROR;
-	  break;
+	  if (symscn != NULL)
+	    {
+	      /* We still have the dynamic symbol table.  */
+	      mod->symerr = DWFL_E_NOERROR;
+	      break;
+	    }
+
+	  /* Last ditch, look for dynamic symbols without section headers.  */
+	  find_dynsym (mod);
+	  return;
 	}
       break;
     }
@@ -351,7 +590,7 @@ __libdwfl_module_getebl (Dwfl_Module *mod)
 static Dwfl_Error
 load_dw (Dwfl_Module *mod, struct dwfl_file *debugfile)
 {
-  if (mod->e_type == ET_REL)
+  if (mod->e_type == ET_REL && !debugfile->relocated)
     {
       const Dwfl_Callbacks *const cb = mod->dwfl->callbacks;
 
@@ -366,7 +605,7 @@ load_dw (Dwfl_Module *mod, struct dwfl_file *debugfile)
       find_symtab (mod);
       Dwfl_Error result = mod->symerr;
       if (result == DWFL_E_NOERROR)
-	result = __libdwfl_relocate (mod, debugfile->elf);
+	result = __libdwfl_relocate (mod, debugfile->elf, true);
       if (result != DWFL_E_NOERROR)
 	return result;
 
@@ -455,6 +694,26 @@ dwfl_module_getelf (Dwfl_Module *mod, GElf_Addr *loadbase)
   find_file (mod);
   if (mod->elferr == DWFL_E_NOERROR)
     {
+      if (mod->e_type == ET_REL && ! mod->main.relocated)
+	{
+	  /* Before letting them get at the Elf handle,
+	     apply all the relocations we know how to.  */
+
+	  mod->main.relocated = true;
+	  if (likely (__libdwfl_module_getebl (mod) == DWFL_E_NOERROR))
+	    {
+	      (void) __libdwfl_relocate (mod, mod->main.elf, false);
+
+	      if (mod->debug.elf == mod->main.elf)
+		mod->debug.relocated = true;
+	      else if (mod->debug.elf != NULL && ! mod->debug.relocated)
+		{
+		  mod->debug.relocated = true;
+		  (void) __libdwfl_relocate (mod, mod->debug.elf, false);
+		}
+	    }
+	}
+
       *loadbase = mod->main.bias;
       return mod->main.elf;
     }
@@ -474,6 +733,16 @@ dwfl_module_getdwarf (Dwfl_Module *mod, Dwarf_Addr *bias)
   find_dw (mod);
   if (mod->dwerr == DWFL_E_NOERROR)
     {
+      /* If dwfl_module_getelf was used previously, then partial apply
+	 relocation to miscellaneous sections in the debug file too.  */
+      if (mod->e_type == ET_REL
+	  && mod->main.relocated && ! mod->debug.relocated)
+	{
+	  mod->debug.relocated = true;
+	  if (mod->debug.elf != mod->main.elf)
+	    (void) __libdwfl_relocate (mod, mod->debug.elf, false);
+	}
+
       *bias = mod->debug.bias;
       return mod->dw;
     }

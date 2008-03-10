@@ -1,5 +1,5 @@
 /* Interfaces for libdw.
-   Copyright (C) 2002, 2004, 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2002, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -57,14 +57,17 @@
 
 #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
 # define __nonnull_attribute__(...) __attribute__ ((__nonnull__ (__VA_ARGS__)))
+# define __deprecated_attribute__ __attribute__ ((__deprecated__))
 #else
 # define __nonnull_attribute__(args...)
+# define __deprecated_attribute__
 #endif
 
+
 #ifdef __GNUC_STDC_INLINE__
-# define __extern_inline extern __inline __attribute__ ((__gnu_inline__))
+# define __libdw_extern_inline extern __inline __attribute__ ((__gnu_inline__))
 #else
-# define __extern_inline extern __inline
+# define __libdw_extern_inline extern __inline
 #endif
 
 
@@ -249,14 +252,24 @@ extern Dwarf_Die *dwarf_addrdie (Dwarf *dbg, Dwarf_Addr addr,
 extern int dwarf_child (Dwarf_Die *die, Dwarf_Die *result)
      __nonnull_attribute__ (2);
 
-/* Return sibling of given DIE.  */
+/* Locates the first sibling of DIE and places it in RESULT.
+   Returns 0 if a sibling was found, -1 if something went wrong.
+   Returns 1 if no sibling could be found and, if RESULT is not
+   the same as DIE, it sets RESULT->addr to the address of the
+   (non-sibling) DIE that follows this one, or NULL if this DIE
+   was the last one in the cokmpilation unit.  */
 extern int dwarf_siblingof (Dwarf_Die *die, Dwarf_Die *result)
      __nonnull_attribute__ (2);
 
 /* Check whether the DIE has children.  */
 extern int dwarf_haschildren (Dwarf_Die *die) __nonnull_attribute__ (1);
 
-/* Get attributes of the DIE.  */
+/* Walks the attributes of DIE, starting at the one OFFSET bytes in,
+   calling the CALLBACK function for each one.  Stops if the callback
+   function ever returns a value other than DWARF_CB_OK and returns the
+   offset of the offending attribute.  If the end of the attributes
+   is reached 1 is returned.  If something goes wrong -1 is returned and
+   the dwarf error number is set.  */
 extern ptrdiff_t dwarf_getattrs (Dwarf_Die *die,
 				 int (*callback) (Dwarf_Attribute *, void *),
 				 void *arg, ptrdiff_t offset)
@@ -310,9 +323,10 @@ extern int dwarf_formsdata (Dwarf_Attribute *attr, Dwarf_Sword *return_uval)
 extern int dwarf_formaddr (Dwarf_Attribute *attr, Dwarf_Addr *return_addr)
      __nonnull_attribute__ (2);
 
-/* Return reference offset represented by attribute.  */
+/* This function is deprecated.  Always use dwarf_formref_die instead.
+   Return reference offset represented by attribute.  */
 extern int dwarf_formref (Dwarf_Attribute *attr, Dwarf_Off *return_offset)
-     __nonnull_attribute__ (2);
+     __nonnull_attribute__ (2) __deprecated_attribute__;
 
 /* Look up the DIE in a reference-form attribute.  */
 extern Dwarf_Die *dwarf_formref_die (Dwarf_Attribute *attr, Dwarf_Die *die_mem)
@@ -630,14 +644,14 @@ extern Dwarf_OOM dwarf_new_oom_handler (Dwarf *dbg, Dwarf_OOM handler);
 /* Inline optimizations.  */
 #ifdef __OPTIMIZE__
 /* Return attribute code of given attribute.  */
-__extern_inline unsigned int
+__libdw_extern_inline unsigned int
 dwarf_whatattr (Dwarf_Attribute *attr)
 {
   return attr == NULL ? 0 : attr->code;
 }
 
 /* Return attribute code of given attribute.  */
-__extern_inline unsigned int
+__libdw_extern_inline unsigned int
 dwarf_whatform (Dwarf_Attribute *attr)
 {
   return attr == NULL ? 0 : attr->form;

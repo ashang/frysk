@@ -38,9 +38,9 @@ host_triplet = @host@
 @MUDFLAP_FALSE@noinst_PROGRAMS = $(am__EXEEXT_1)
 @MUDFLAP_TRUE@am_libelf_pic_a_OBJECTS =
 subdir = libelf
-DIST_COMMON = $(euinclude_HEADERS) $(include_HEADERS) \
-	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	ChangeLog
+DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
+	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
@@ -55,8 +55,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)" \
-	"$(DESTDIR)$(includedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" \
+	"$(DESTDIR)$(pkgincludedir)"
 libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES) $(noinst_LIBRARIES)
 AR = ar
@@ -87,21 +87,23 @@ am_libelf_a_OBJECTS = elf_version.$(OBJEXT) elf_hash.$(OBJEXT) \
 	gelf_getshdr.$(OBJEXT) gelf_update_shdr.$(OBJEXT) \
 	elf_strptr.$(OBJEXT) elf_rawdata.$(OBJEXT) \
 	elf_getdata.$(OBJEXT) elf_newdata.$(OBJEXT) \
-	elf_flagelf.$(OBJEXT) elf_flagehdr.$(OBJEXT) \
-	elf_flagphdr.$(OBJEXT) elf_flagscn.$(OBJEXT) \
-	elf_flagshdr.$(OBJEXT) elf_flagdata.$(OBJEXT) \
-	elf_memory.$(OBJEXT) elf_update.$(OBJEXT) \
-	elf32_updatenull.$(OBJEXT) elf64_updatenull.$(OBJEXT) \
-	elf32_updatefile.$(OBJEXT) elf64_updatefile.$(OBJEXT) \
-	gelf_getsym.$(OBJEXT) gelf_update_sym.$(OBJEXT) \
-	gelf_getversym.$(OBJEXT) gelf_getverneed.$(OBJEXT) \
-	gelf_getvernaux.$(OBJEXT) gelf_getverdef.$(OBJEXT) \
-	gelf_getverdaux.$(OBJEXT) gelf_getrel.$(OBJEXT) \
-	gelf_getrela.$(OBJEXT) gelf_update_rel.$(OBJEXT) \
-	gelf_update_rela.$(OBJEXT) gelf_getdyn.$(OBJEXT) \
-	gelf_update_dyn.$(OBJEXT) gelf_getmove.$(OBJEXT) \
-	gelf_update_move.$(OBJEXT) gelf_getsyminfo.$(OBJEXT) \
-	gelf_update_syminfo.$(OBJEXT) gelf_xlatetof.$(OBJEXT) \
+	elf_getdata_rawchunk.$(OBJEXT) elf_flagelf.$(OBJEXT) \
+	elf_flagehdr.$(OBJEXT) elf_flagphdr.$(OBJEXT) \
+	elf_flagscn.$(OBJEXT) elf_flagshdr.$(OBJEXT) \
+	elf_flagdata.$(OBJEXT) elf_memory.$(OBJEXT) \
+	elf_update.$(OBJEXT) elf32_updatenull.$(OBJEXT) \
+	elf64_updatenull.$(OBJEXT) elf32_updatefile.$(OBJEXT) \
+	elf64_updatefile.$(OBJEXT) gelf_getsym.$(OBJEXT) \
+	gelf_update_sym.$(OBJEXT) gelf_getversym.$(OBJEXT) \
+	gelf_getverneed.$(OBJEXT) gelf_getvernaux.$(OBJEXT) \
+	gelf_getverdef.$(OBJEXT) gelf_getverdaux.$(OBJEXT) \
+	gelf_getrel.$(OBJEXT) gelf_getrela.$(OBJEXT) \
+	gelf_update_rel.$(OBJEXT) gelf_update_rela.$(OBJEXT) \
+	gelf_getdyn.$(OBJEXT) gelf_update_dyn.$(OBJEXT) \
+	gelf_getmove.$(OBJEXT) gelf_update_move.$(OBJEXT) \
+	gelf_getsyminfo.$(OBJEXT) gelf_update_syminfo.$(OBJEXT) \
+	gelf_getauxv.$(OBJEXT) gelf_update_auxv.$(OBJEXT) \
+	gelf_getnote.$(OBJEXT) gelf_xlatetof.$(OBJEXT) \
 	gelf_xlatetom.$(OBJEXT) nlist.$(OBJEXT) \
 	gelf_getsymshndx.$(OBJEXT) gelf_update_symshndx.$(OBJEXT) \
 	gelf_update_versym.$(OBJEXT) gelf_update_verneed.$(OBJEXT) \
@@ -109,12 +111,12 @@ am_libelf_a_OBJECTS = elf_version.$(OBJEXT) elf_hash.$(OBJEXT) \
 	gelf_update_verdaux.$(OBJEXT) elf_getshnum.$(OBJEXT) \
 	elf_getshstrndx.$(OBJEXT) gelf_checksum.$(OBJEXT) \
 	elf32_checksum.$(OBJEXT) elf64_checksum.$(OBJEXT) \
-	gelf_rawchunk.$(OBJEXT) gelf_freechunk.$(OBJEXT) \
 	libelf_crc32.$(OBJEXT) libelf_next_prime.$(OBJEXT) \
 	elf_clone.$(OBJEXT) gelf_getlib.$(OBJEXT) \
 	gelf_update_lib.$(OBJEXT) elf32_offscn.$(OBJEXT) \
 	elf64_offscn.$(OBJEXT) gelf_offscn.$(OBJEXT) \
-	elf_getaroff.$(OBJEXT) elf_gnu_hash.$(OBJEXT)
+	elf_getaroff.$(OBJEXT) elf_gnu_hash.$(OBJEXT) \
+	elf_scnshndx.$(OBJEXT)
 libelf_a_OBJECTS = $(am_libelf_a_OBJECTS)
 libelf_pic_a_AR = $(AR) $(ARFLAGS)
 libelf_pic_a_LIBADD =
@@ -135,9 +137,9 @@ SOURCES = $(libelf_a_SOURCES) $(libelf_pic_a_SOURCES) \
 	$(libelf_so_SOURCES)
 DIST_SOURCES = $(libelf_a_SOURCES) $(libelf_pic_a_SOURCES) \
 	$(libelf_so_SOURCES)
-euincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 includeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(euinclude_HEADERS) $(include_HEADERS) $(noinst_HEADERS)
+pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(include_HEADERS) $(noinst_HEADERS) $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -153,6 +155,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -264,8 +267,7 @@ COMPILE.os = $(filter-out -fprofile-arcs, $(filter-out -ftest-coverage, \
 lib_LIBRARIES = libelf.a
 @MUDFLAP_FALSE@noinst_LIBRARIES = libelf_pic.a
 include_HEADERS = libelf.h gelf.h nlist.h
-euincludedir = $(includedir)/elfutils
-euinclude_HEADERS = elf-knowledge.h
+pkginclude_HEADERS = elf-knowledge.h
 libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
 		   gelf_getclass.c elf_getbase.c elf_getident.c \
@@ -284,6 +286,7 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf32_getshdr.c elf64_getshdr.c gelf_getshdr.c \
 		   gelf_update_shdr.c \
 		   elf_strptr.c elf_rawdata.c elf_getdata.c elf_newdata.c \
+		   elf_getdata_rawchunk.c \
 		   elf_flagelf.c elf_flagehdr.c elf_flagphdr.c elf_flagscn.c \
 		   elf_flagshdr.c elf_flagdata.c elf_memory.c \
 		   elf_update.c elf32_updatenull.c elf64_updatenull.c \
@@ -296,6 +299,8 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   gelf_getdyn.c gelf_update_dyn.c \
 		   gelf_getmove.c gelf_update_move.c \
 		   gelf_getsyminfo.c gelf_update_syminfo.c \
+		   gelf_getauxv.c gelf_update_auxv.c \
+		   gelf_getnote.c \
 		   gelf_xlatetof.c gelf_xlatetom.c \
 		   nlist.c \
 		   gelf_getsymshndx.c gelf_update_symshndx.c \
@@ -304,19 +309,19 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   gelf_update_verdaux.c \
 		   elf_getshnum.c elf_getshstrndx.c \
 		   gelf_checksum.c elf32_checksum.c elf64_checksum.c \
-		   gelf_rawchunk.c gelf_freechunk.c \
 		   libelf_crc32.c libelf_next_prime.c \
 		   elf_clone.c \
 		   gelf_getlib.c gelf_update_lib.c \
 		   elf32_offscn.c elf64_offscn.c gelf_offscn.c \
 		   elf_getaroff.c \
-		   elf_gnu_hash.c
+		   elf_gnu_hash.c \
+		   elf_scnshndx.c
 
 @MUDFLAP_FALSE@libelf_pic_a_SOURCES = 
 @MUDFLAP_FALSE@am_libelf_pic_a_OBJECTS = $(libelf_a_SOURCES:.c=.os)
 @MUDFLAP_FALSE@libelf_so_SOURCES = 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
-		 version_xlate.h gnuhash_xlate.h dl-hash.h
+		 version_xlate.h gnuhash_xlate.h note_xlate.h dl-hash.h
 
 EXTRA_DIST = libelf.map
 CLEANFILES = $(am_libelf_pic_a_OBJECTS) *.gcno *.gcda libelf.so.$(VERSION)
@@ -447,6 +452,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getarsym.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getbase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getdata.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getdata_rawchunk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getident.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getscn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getshnum.Po@am__quote@
@@ -464,17 +470,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_rawdata.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_rawfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_readall.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_scnshndx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_strptr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_update.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_version.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_checksum.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_freechunk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_fsize.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getauxv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getclass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getdyn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getehdr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getmove.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getnote.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getphdr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getrel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_getrela.Po@am__quote@
@@ -490,7 +498,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_newehdr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_newphdr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_offscn.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_rawchunk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_update_auxv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_update_dyn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_update_ehdr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gelf_update_lib.Po@am__quote@
@@ -527,23 +535,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
-install-euincludeHEADERS: $(euinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(euincludedir)" || $(MKDIR_P) "$(DESTDIR)$(euincludedir)"
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(euincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  $(euincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(euincludedir)/$$f"; \
-	done
-
-uninstall-euincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(euincludedir)/$$f"; \
-	done
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	test -z "$(includedir)" || $(MKDIR_P) "$(DESTDIR)$(includedir)"
@@ -560,6 +551,23 @@ uninstall-includeHEADERS:
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
+	done
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(pkgincludedir)" || $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)"
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
+	done
+
+uninstall-pkgincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -640,7 +648,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 @MUDFLAP_TRUE@install: install-am
@@ -689,7 +697,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-euincludeHEADERS install-includeHEADERS
+install-data-am: install-includeHEADERS install-pkgincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -724,8 +732,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-euincludeHEADERS uninstall-includeHEADERS \
-	uninstall-libLIBRARIES
+uninstall-am: uninstall-includeHEADERS uninstall-libLIBRARIES \
+	uninstall-pkgincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -734,16 +742,15 @@ uninstall-am: uninstall-euincludeHEADERS uninstall-includeHEADERS \
 	ctags distclean distclean-compile distclean-generic \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-euincludeHEADERS install-exec \
-	install-exec-am install-html install-html-am \
-	install-includeHEADERS install-info install-info-am \
-	install-libLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-euincludeHEADERS \
-	uninstall-includeHEADERS uninstall-libLIBRARIES
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-includeHEADERS install-info \
+	install-info-am install-libLIBRARIES install-man install-pdf \
+	install-pdf-am install-pkgincludeHEADERS install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags uninstall uninstall-am uninstall-includeHEADERS \
+	uninstall-libLIBRARIES uninstall-pkgincludeHEADERS
 
 @MUDFLAP_FALSE@libelf.so: libelf_pic.a libelf.map
 @MUDFLAP_FALSE@	$(LINK) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \

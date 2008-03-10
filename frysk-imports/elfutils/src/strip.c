@@ -204,7 +204,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2007");
+"), "2008");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -383,6 +383,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
   Elf *debugelf = NULL;
   char *tmp_debug_fname = NULL;
   int result = 0;
+  size_t shdridx = 0;
   size_t shstrndx;
   struct shdr_info
   {
@@ -413,7 +414,6 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
   Elf_Data debuglink_crc_data;
   bool any_symtab_changes = false;
   Elf_Data *shstrtab_data = NULL;
-  size_t shdridx = 0;
 
   /* Create the full name of the file.  */
   if (prefix != NULL)
@@ -901,7 +901,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	  if (discard_section)
 	    debugshdr.sh_type = SHT_NOBITS;
 
-	  if (unlikely (gelf_update_shdr (scn, &debugshdr)) == 0)
+	  if (unlikely (gelf_update_shdr (scn, &debugshdr) == 0))
 	    /* There cannot be any overflows.  */
 	    INTERNAL_ERROR (fname);
 
@@ -946,7 +946,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
       debugehdr->e_flags = ehdr->e_flags;
       debugehdr->e_shstrndx = ehdr->e_shstrndx;
 
-      if (unlikely (gelf_update_ehdr (debugelf, debugehdr)) == 0)
+      if (unlikely (gelf_update_ehdr (debugelf, debugehdr) == 0))
 	{
 	  error (0, 0, gettext ("%s: error while creating ELF header: %s"),
 		 debug_fname, elf_errmsg (-1));
@@ -1640,7 +1640,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	};
 
       /* Finally write the file.  */
-      if (unlikely (elf_update (debugelf, ELF_C_WRITE)) == -1)
+      if (unlikely (elf_update (debugelf, ELF_C_WRITE) == -1))
 	{
 	  error (0, 0, gettext ("while writing '%s': %s"),
 		 debug_fname, elf_errmsg (-1));
@@ -1868,3 +1868,6 @@ cannot set access and modification date of '%s'"), fname);
 
   return result;
 }
+
+
+#include "debugpred.h"

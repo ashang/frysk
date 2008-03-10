@@ -16,6 +16,7 @@
 
 
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -77,7 +78,7 @@ libld_elf_a_OBJECTS = $(am_libld_elf_a_OBJECTS)
 libld_elf_i386_pic_a_AR = $(AR) $(ARFLAGS)
 libld_elf_i386_pic_a_LIBADD =
 libld_elf_i386_pic_a_OBJECTS = $(am_libld_elf_i386_pic_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 am__EXEEXT_1 = libld_elf_i386.so$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
@@ -119,7 +120,7 @@ nm_DEPENDENCIES = $(am__DEPENDENCIES_1) $(libebl) $(libelf) $(libeu) \
 	$(am__DEPENDENCIES_2)
 objdump_SOURCES = objdump.c
 objdump_OBJECTS = objdump.$(OBJEXT)
-objdump_DEPENDENCIES = $(libebl) $(libelf) $(libeu) \
+objdump_DEPENDENCIES = $(libasm) $(libebl) $(libelf) $(libeu) \
 	$(am__DEPENDENCIES_2)
 ranlib_SOURCES = ranlib.c
 ranlib_OBJECTS = ranlib.$(OBJEXT)
@@ -142,6 +143,8 @@ unstrip_SOURCES = unstrip.c
 unstrip_OBJECTS = unstrip.$(OBJEXT)
 unstrip_DEPENDENCIES = $(libebl) $(libelf) $(am__DEPENDENCIES_1) \
 	$(libeu) $(am__DEPENDENCIES_2)
+binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
+SCRIPTS = $(bin_SCRIPTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -181,7 +184,8 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H $(YYDEBUG) \
+DEBUGPRED = @DEBUGPRED@
+DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H $(YYDEBUG) -DDEBUGPRED=@DEBUGPRED@ \
        -DSRCDIR=\"$(shell cd $(srcdir);pwd)\" -DOBJDIR=\"$(shell pwd)\"
 
 DEPDIR = @DEPDIR@
@@ -293,7 +297,7 @@ top_srcdir = @top_srcdir@
 @MUDFLAP_TRUE@	$($(*F)_no_Wformat),,-Wformat=2) $(CFLAGS_$(*F))
 INCLUDES = -I$(srcdir) -I$(srcdir)/../libelf -I$(srcdir)/../libebl \
 	   -I$(srcdir)/../libdw -I$(srcdir)/../libdwfl \
-	   -I$(srcdir)/../lib -I..
+	   -I$(srcdir)/../libasm -I$(srcdir)/../lib -I..
 
 AM_LDFLAGS = -Wl,-rpath-link,../libelf:../libdw
 AM_YFLAGS = -pld
@@ -313,9 +317,15 @@ libar_a_SOURCES = arlib.c arlib2.c
 noinst_HEADERS = ld.h symbolhash.h sectionhash.h versionhash.h \
 		 ldscript.h xelf.h unaligned.h
 
-EXTRA_DIST = elf32-i386.script libld_elf_i386.map $(ld_modules) arlib.h
+EXTRA_DIST = elf32-i386.script libld_elf_i386.map $(ld_modules) \
+	arlib.h debugpred.h make-debug-archive.in
 ld_modules = i386_ld.c
+bin_SCRIPTS = make-debug-archive
+CLEANFILES = make-debug-archive none_ld.os $(ld_modules:.c=.os) *.gcno \
+	*.gcda *.gconv
 @MUDFLAP_TRUE@libmudflap = -lmudflap
+@BUILD_STATIC_FALSE@libasm = ../libasm/libasm.so
+@BUILD_STATIC_TRUE@libasm = ../libasm/libasm.a
 @BUILD_STATIC_FALSE@libdw = ../libdw/libdw.so
 @BUILD_STATIC_TRUE@libdw = ../libdw/libdw.a $(libelf) $(libebl) -ldl
 @BUILD_STATIC_FALSE@libelf = ../libelf/libelf.so
@@ -338,7 +348,7 @@ elflint_LDADD = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 findtextrel_LDADD = $(libdw) $(libelf) $(libmudflap)
 addr2line_LDADD = $(libdw) $(libmudflap)
 elfcmp_LDADD = $(libebl) $(libelf) $(libmudflap) -ldl
-objdump_LDADD = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
+objdump_LDADD = $(libasm) $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 ranlib_LDADD = libar.a $(libelf) $(libeu) $(libmudflap)
 strings_LDADD = $(libelf) $(libeu) $(libmudflap)
 ar_LDADD = libar.a $(libelf) $(libeu) $(libmudflap)
@@ -351,7 +361,6 @@ ldlex_no_Werror = yes
 @NATIVE_LD_FALSE@libld_elf_i386_pic_a_SOURCES = 
 @NATIVE_LD_FALSE@am_libld_elf_i386_pic_a_OBJECTS = i386_ld.os
 @NATIVE_LD_FALSE@libld_elf_i386_so_SOURCES = 
-CLEANFILES = none_ld.os $(ld_modules:.c=.os) *.gcno *.gcda *.gconv
 MAINTAINERCLEANFILES = ldlex.c ldscript.c ldscript.h
 all: all-am
 
@@ -476,6 +485,40 @@ strip$(EXEEXT): $(strip_OBJECTS) $(strip_DEPENDENCIES)
 unstrip$(EXEEXT): $(unstrip_OBJECTS) $(unstrip_DEPENDENCIES) 
 	@rm -f unstrip$(EXEEXT)
 	$(LINK) $(unstrip_OBJECTS) $(unstrip_LDADD) $(LIBS)
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f $$d$$p; then \
+	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	    echo " $(binSCRIPT_INSTALL) '$$d$$p' '$(DESTDIR)$(bindir)/$$f'"; \
+	    $(binSCRIPT_INSTALL) "$$d$$p" "$(DESTDIR)$(bindir)/$$f"; \
+	  else :; fi; \
+	done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
+	done
+
+installcheck-binSCRIPTS: $(bin_SCRIPTS)
+	bad=0; pid=$$$$; list="$(bin_SCRIPTS)"; for p in $$list; do \
+	  case ' $(AM_INSTALLCHECK_STD_OPTIONS_EXEMPT) ' in \
+	   *" $$p "* | *" $(srcdir)/$$p "*) continue;; \
+	  esac; \
+	  f=`echo "$$p" | sed 's,^.*/,,;$(transform)'`; \
+	  for opt in --help --version; do \
+	    if "$(DESTDIR)$(bindir)/$$f" $$opt >c$${pid}_.out \
+	         2>c$${pid}_.err </dev/null \
+		 && test -n "`cat c$${pid}_.out`" \
+		 && test -z "`cat c$${pid}_.err`"; then :; \
+	    else echo "$$f does not support $$opt" 1>&2; bad=1; fi; \
+	  done; \
+	done; rm -f c$${pid}_.???; exit $$bad
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -604,9 +647,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -662,7 +705,7 @@ install-data-am:
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -674,7 +717,7 @@ install-pdf: install-pdf-am
 
 install-ps: install-ps-am
 
-installcheck-am: installcheck-binPROGRAMS
+installcheck-am: installcheck-binPROGRAMS installcheck-binSCRIPTS
 
 maintainer-clean: maintainer-clean-am
 	-rm -rf ./$(DEPDIR)
@@ -693,7 +736,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 
 .MAKE: install-am install-strip
 
@@ -701,15 +744,16 @@ uninstall-am: uninstall-binPROGRAMS
 	clean-generic clean-noinstLIBRARIES clean-noinstPROGRAMS ctags \
 	distclean distclean-compile distclean-generic distclean-tags \
 	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-binPROGRAMS install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installcheck-binPROGRAMS installdirs maintainer-clean \
+	install-am install-binPROGRAMS install-binSCRIPTS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installcheck-binPROGRAMS \
+	installcheck-binSCRIPTS installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	uninstall-am uninstall-binPROGRAMS uninstall-binSCRIPTS
 
 
 ldlex.o: ldscript.c
@@ -749,6 +793,16 @@ installcheck-binPROGRAMS: $(bin_PROGRAMS)
 	    else echo "$$f does not support $$opt" 1>&2; bad=1; fi; \
 	  done; \
 	done; rm -f c$${pid}_.???; exit $$bad
+
+make-debug-archive: $(srcdir)/make-debug-archive.in
+	UNSTRIP=$(bindir)/`echo unstrip | sed '$(transform)'`; \
+	AR=$(bindir)/`echo ar | sed '$(transform)'`; \
+	sed -e "s,@UNSTRIP@,$$UNSTRIP,g" -e "s,@AR@,$$AR,g" \
+	    -e "s%[@]PACKAGE_NAME[@]%$(PACKAGE_NAME)%g" \
+	    -e "s%[@]PACKAGE_VERSION[@]%$(PACKAGE_VERSION)%g" \
+ 	    $(srcdir)/make-debug-archive.in > $@.new
+	chmod +x $@.new
+	mv -f $@.new $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

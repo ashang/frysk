@@ -1,3 +1,183 @@
+2008-02-22  Roland McGrath  <roland@redhat.com>
+
+	* run-elflint-test.sh: Typo fix.
+
+2008-02-21  Roland McGrath  <roland@redhat.com>
+
+	* run-disasm-x86.sh: Use uname instead of arch, keep tools required
+	for the build down to minimum.
+	* run-disasm-x86-64.sh: Likewise.
+
+2008-02-20  Roland McGrath  <roland@redhat.com>
+
+	* testfile46.bz2: New data file.
+	* Makefile.am (EXTRA_DIST): Add it.
+	* run-elflint-test.sh: Test on it.
+
+2008-02-01  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am: Hook up sha1-tst.c.
+	* sha1-tst.c: New file.
+
+2008-01-21  Roland McGrath  <roland@redhat.com>
+
+	* testfile45.S.bz2: Add tests for cltq, cqto.
+	* testfile45.expect.bz2: Adjust.
+
+2008-01-14  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile45.S.bz2: Add more tests.
+	* testfile45.expect.bz2: Adjust.
+
+2008-01-11  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile45.expect.bz2: Adjust for adding of address for %rip based
+	address mode.
+
+2008-01-10  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile45.S.bz2: Add more tests.
+	* testfile45.expect.bz2: Adjust.
+
+2008-01-08  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am (TESTS): Add run-disasm-x86-64.sh.
+	(EXTRA): Add testfile45.S.bz2, testfile45.expect.bz2,
+	run-disasm-x86-64.sh.
+	* run-disasm-x86-64.sh: New file.
+	* testfile45.S.bz2: New file.
+	* testfile45.expect.bz2: New file.
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2008-01-04  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2008-01-04  Roland McGrath  <roland@redhat.com>
+
+	* dwfl-bug-fd-leak.c (main): Add a cast.
+
+2008-01-03  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2008-01-01  Ulrich Drepper  <drepper@redhat.com>
+
+	* line2addr.c: Use %m modifier instead of %a to appease gcc.
+
+2008-01-01  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-31  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-30  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-29  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.s.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-28  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-27  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust.
+
+2007-12-26  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: New tests.
+	* testfile44.expect.bz2: Adjust
+
+2007-12-21  Ulrich Drepper  <drepper@redhat.com>
+
+	* testfile44.S.bz2: More tests.
+	* testfile44.expect.bz2: Adjust appropriately.
+
+2007-12-19  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am (TESTS): Add run-disasm.sh.
+	(EXTRA_DIST): Add run-disasm.sh, testfile44.S.bz2, and
+	testfile44.expect.bz2.
+	* run-disasm.sh: New file.
+	* testfile44.S.bz2: New file.
+	* testfile44.expect.bz2: New file.
+
+2007-12-15  Roland McGrath  <roland@redhat.com>
+
+	* run-allregs.sh: Change expected output for powerpc spefscr.
+
+2007-10-20  Roland McGrath  <roland@redhat.com>
+
+	* run-dwfl-addr-sect.sh: Change expected output, no errors.
+
+2007-10-19  Roland McGrath  <roland@redhat.com>
+
+	* dwfl-addr-sect.c (handle_address): Return int.
+	Don't exit on error, just return nonzero.
+	(main): Collect results.
+	* run-dwfl-addr-sect.sh: New file.
+	* testfile43.bz2: New data file.
+	* Makefile.am (EXTRA_DIST, TESTS): Add them.
+
+2007-10-18  Roland McGrath  <roland@redhat.com>
+
+	* run-allregs.sh: Update expected ppc output for vrsave/vscr.
+
+2007-10-16  Roland McGrath  <roland@redhat.com>
+
+	* test-subr.sh (remove_files): Don't pass -Bb to diff.
+
+2007-10-09  Roland McGrath  <roland@redhat.com>
+
+	* dwflmodtest.c (print_module): Don't use %p in output.
+	* run-dwfl-bug-offline-rel.sh: Updated expected output.
+
+2007-10-08  Roland McGrath  <roland@redhat.com>
+
+	* testfile42.bz2: New data file.
+	* Makefile.am (EXTRA_DIST): Add it.
+	* run-elflint-test.sh: New test on that file.
+
+2007-10-04  Roland McGrath  <roland@redhat.com>
+
+	* run-readelf-test4.sh: New file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add it.
+
+2007-10-03  Roland McGrath  <roland@redhat.com>
+
+	* run-readelf-test3.sh: New file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add it.
+
+2007-10-01  Roland McGrath  <roland@redhat.com>
+
+	* run-readelf-test2.sh: New file.
+	* Makefile.am (TESTS, EXTRA_DIST): Add it.
+
+2007-09-11  Roland McGrath  <roland@redhat.com>
+
+	* run-addrname-test.sh: Add a new case.
+	* testfile41.bz2: New data file.
+	* Makefile.am (EXTRA_DIST): Add it.
+
+2007-08-23  Roland McGrath  <roland@redhat.com>
+
+	* run-allregs.sh: Update expected x86-64 output for %rflags.
+
 2007-08-12  Roland McGrath  <roland@redhat.com>
 
 	* run-strip-test7.sh: New file.

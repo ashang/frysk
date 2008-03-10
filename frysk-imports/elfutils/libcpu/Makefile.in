@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -32,8 +34,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+noinst_PROGRAMS = i386_gendis$(EXEEXT)
 subdir = libcpu
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ChangeLog
+DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in ChangeLog i386_lex.c i386_parse.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
@@ -47,8 +51,18 @@ AR = ar
 ARFLAGS = cru
 libcpu_i386_a_AR = $(AR) $(ARFLAGS)
 libcpu_i386_a_LIBADD =
-am_libcpu_i386_a_OBJECTS = i386_dis.$(OBJEXT)
+am_libcpu_i386_a_OBJECTS = i386_disasm.$(OBJEXT)
 libcpu_i386_a_OBJECTS = $(am_libcpu_i386_a_OBJECTS)
+libcpu_x86_64_a_AR = $(AR) $(ARFLAGS)
+libcpu_x86_64_a_LIBADD =
+am_libcpu_x86_64_a_OBJECTS = x86_64_disasm.$(OBJEXT)
+libcpu_x86_64_a_OBJECTS = $(am_libcpu_x86_64_a_OBJECTS)
+PROGRAMS = $(noinst_PROGRAMS)
+am_i386_gendis_OBJECTS = i386_gendis.$(OBJEXT) i386_lex.$(OBJEXT) \
+	i386_parse.$(OBJEXT)
+i386_gendis_OBJECTS = $(am_i386_gendis_OBJECTS)
+am__DEPENDENCIES_1 =
+i386_gendis_DEPENDENCIES = $(libeu) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -56,8 +70,15 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libcpu_i386_a_SOURCES)
-DIST_SOURCES = $(libcpu_i386_a_SOURCES)
+@MAINTAINER_MODE_FALSE@am__skiplex = test -f $@ ||
+YLWRAP = $(top_srcdir)/config/ylwrap
+@MAINTAINER_MODE_FALSE@am__skipyacc = test -f $@ ||
+YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
+SOURCES = $(libcpu_i386_a_SOURCES) $(libcpu_x86_64_a_SOURCES) \
+	$(i386_gendis_SOURCES)
+DIST_SOURCES = $(libcpu_i386_a_SOURCES) $(libcpu_x86_64_a_SOURCES) \
+	$(i386_gendis_SOURCES)
+HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -73,6 +94,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -89,7 +111,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LEX_OUTPUT_ROOT = lex.$(<F:lex.l=)
 LIBEBL_SUBDIR = @LIBEBL_SUBDIR@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -170,14 +192,34 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CFLAGS = -Wall -Wshadow -Werror -Wextra -Wformat=2 -Wunused
-INCLUDES = -I$(srcdir)
-noinst_LIBRARIES = libcpu_i386.a
-libcpu_i386_a_SOURCES = i386_dis.c
+@MUDFLAP_FALSE@AM_CFLAGS = -Wall -Wshadow -Wunused -Wextra -std=gnu99 \
+@MUDFLAP_FALSE@	-fpic $($(*F)_CFLAGS) $(if \
+@MUDFLAP_FALSE@	$($(*F)_no_Werror),,-Werror)
+@MUDFLAP_TRUE@AM_CFLAGS = -fmudflap -Wall -Wshadow -Wunused -Wextra \
+@MUDFLAP_TRUE@	-std=gnu99 -fpic $($(*F)_CFLAGS) $(if \
+@MUDFLAP_TRUE@	$($(*F)_no_Werror),,-Werror)
+INCLUDES = -I$(srcdir) -I$(srcdir)/../lib -I$(srcdir)/../libelf \
+	   -I$(srcdir)/../libebl -I$(srcdir)/../libdw -I$(srcdir)/../libasm
+
+LEXCOMPILE = $(LEX) $(LFLAGS) $(AM_LFLAGS) -P$(<F:lex.l=)
+AM_YFLAGS = -p$(<F:parse.y=)
+@MUDFLAP_TRUE@libmudflap = -lmudflap
+noinst_LIBRARIES = libcpu_i386.a libcpu_x86_64.a
+libcpu_i386_a_SOURCES = i386_disasm.c
+libcpu_x86_64_a_SOURCES = x86_64_disasm.c
+i386_gendis_SOURCES = i386_gendis.c i386_lex.l i386_parse.y
+i386_lex_no_Werror = yes
+libeu = ../lib/libeu.a
+i386_lex_CFLAGS = -Wno-unused-label -Wno-unused-function -Wno-sign-compare
+i386_parse_CFLAGS = -DNMNES=$$(wc -l < i386.mnemonics)
+i386_gendis_LDADD = $(libeu) -lm $(libmudflap)
+noinst_HEADERS = memory-access.h i386_parse.h i386_data.h
+EXTRA_DIST = defs/i386
+CLEANFILES = i386.mnemonics i386_dis.h x86_64.mnemonics x86_64_dis.h
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .c .l .o .obj .y
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -214,6 +256,16 @@ libcpu_i386.a: $(libcpu_i386_a_OBJECTS) $(libcpu_i386_a_DEPENDENCIES)
 	-rm -f libcpu_i386.a
 	$(libcpu_i386_a_AR) libcpu_i386.a $(libcpu_i386_a_OBJECTS) $(libcpu_i386_a_LIBADD)
 	$(RANLIB) libcpu_i386.a
+libcpu_x86_64.a: $(libcpu_x86_64_a_OBJECTS) $(libcpu_x86_64_a_DEPENDENCIES) 
+	-rm -f libcpu_x86_64.a
+	$(libcpu_x86_64_a_AR) libcpu_x86_64.a $(libcpu_x86_64_a_OBJECTS) $(libcpu_x86_64_a_LIBADD)
+	$(RANLIB) libcpu_x86_64.a
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+i386_gendis$(EXEEXT): $(i386_gendis_OBJECTS) $(i386_gendis_DEPENDENCIES) 
+	@rm -f i386_gendis$(EXEEXT)
+	$(LINK) $(i386_gendis_OBJECTS) $(i386_gendis_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -221,7 +273,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_dis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_disasm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_gendis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x86_64_disasm.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -236,6 +292,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.l.c:
+	$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
+
+.y.c:
+	$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -313,7 +375,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -332,6 +394,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -339,9 +402,12 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f i386_lex.c
+	-rm -f i386_parse.c
 clean: clean-am
 
-clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-noinstLIBRARIES clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -399,18 +465,35 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstLIBRARIES ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-noinstLIBRARIES clean-noinstPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am
 
+
+i386_disasm.o: i386.mnemonics i386_dis.h
+x86_64_disasm.o: x86_64.mnemonics x86_64_dis.h i386_disasm.c
+
+i386_dis.h: i386_gendis $(srcdir)/defs/i386
+	m4 -Di386 -DDISASSEMBLER $(srcdir)/defs/i386 | ./i386_gendis - > $@
+x86_64_dis.h: i386_gendis $(srcdir)/defs/i386
+	m4 -Dx86_64 -DDISASSEMBLER $(srcdir)/defs/i386 | ./i386_gendis - > $@
+
+i386.mnemonics x86_64.mnemonics: %.mnemonics: $(srcdir)/defs/i386
+	m4 -D$(@:.mnemonics=) -DDISASSEMBLER $^ \
+	| sed '1,/^%%/d;/^#/d;/^[[:space:]]*$$/d;s/[^:]*:\([^[:space:]]*\).*/MNE(\1)/;s/{[^}]*}//g;/INVALID/d' \
+	| sort -u > $@
+i386_parse.o: i386_parse.c i386.mnemonics
+i386_lex.o: i386_parse.h
+
+i386_parse.h: i386_parse.c ;
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -1,5 +1,5 @@
 /* Internal definitions for libdwarf.
-   Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
@@ -62,7 +62,7 @@
 
 
 /* Version of the DWARF specification we support.  */
-#define DWARF_VERSION 2
+#define DWARF_VERSION 3
 
 /* Version of the CIE format.  */
 #define CIE_VERSION 1
@@ -267,6 +267,7 @@ struct Dwarf_CU
   Dwarf_Off end;
   uint8_t address_size;
   uint8_t offset_size;
+  uint16_t version;
 
   /* Hash table for the abbreviations.  */
   Dwarf_Abbrev_Hash abbrev_hash;
@@ -284,6 +285,19 @@ struct Dwarf_CU
   /* Known location lists.  */
   void *locs;
 };
+
+/* Compute the offset of a CU's first DIE from its offset.  This
+   is either:
+        LEN       VER     OFFSET    ADDR
+      4-bytes + 2-bytes + 4-bytes + 1-byte  for 32-bit dwarf
+     12-bytes + 2-bytes + 8-bytes + 1-byte  for 64-bit dwarf
+
+   Note the trick in the computation.  If the offset_size is 4
+   the '- 4' term changes the '3 *' into a '2 *'.  If the
+   offset_size is 8 it accounts for the 4-byte escape value
+   used at the start of the length.  */
+#define DIE_OFFSET_FROM_CU_OFFSET(cu_offset, offset_size) \
+  ((cu_offset) + 3 * (offset_size) - 4 + 3)
 
 #define CUDIE(fromcu) \
   ((Dwarf_Die)								      \
@@ -365,6 +379,11 @@ extern size_t __libdw_form_val_len (Dwarf *dbg, struct Dwarf_CU *cu,
 				    const unsigned char *valp)
      __nonnull_attribute__ (1, 2, 4) internal_function;
 
+/* Helper function for DW_FORM_ref* handling.  */
+extern int __libdw_formref (Dwarf_Attribute *attr, Dwarf_Off *return_offset)
+     __nonnull_attribute__ (1, 2) internal_function;
+
+
 /* Helper function to locate attribute.  */
 extern unsigned char *__libdw_find_attr (Dwarf_Die *die,
 					 unsigned int search_name,
@@ -411,7 +430,6 @@ INTDECL (dwarf_entrypc)
 INTDECL (dwarf_errmsg)
 INTDECL (dwarf_formaddr)
 INTDECL (dwarf_formblock)
-INTDECL (dwarf_formref)
 INTDECL (dwarf_formref_die)
 INTDECL (dwarf_formsdata)
 INTDECL (dwarf_formstring)

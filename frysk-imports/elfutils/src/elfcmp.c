@@ -1,5 +1,5 @@
 /* Compare relevant content of two ELF files.
-   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2005.
 
@@ -259,7 +259,9 @@ main (int argc, char *argv[])
 	  // XXX Any flags which should be ignored?
 	  || shdr1->sh_flags != shdr2->sh_flags
 	  || shdr1->sh_addr != shdr2->sh_addr
-	  || shdr1->sh_offset != shdr2->sh_offset
+	  || (shdr1->sh_offset != shdr2->sh_offset
+	      && (shdr1->sh_flags & SHF_ALLOC)
+	      && ehdr1->e_type != ET_REL)
 	  || shdr1->sh_size != shdr2->sh_size
 	  || shdr1->sh_link != shdr2->sh_link
 	  || shdr1->sh_info != shdr2->sh_info
@@ -520,7 +522,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2007");
+"), "2008");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -744,3 +746,6 @@ hash_content_equivalent (size_t entsize, Elf_Data *data1, Elf_Data *data2)
 
   return false;
 }
+
+
+#include "debugpred.h"

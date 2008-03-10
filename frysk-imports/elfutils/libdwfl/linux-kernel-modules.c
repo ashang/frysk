@@ -67,6 +67,8 @@
 
 #define MODULEDIRFMT	"/lib/modules/%s"
 
+#define KNOTESFILE	"/sys/kernel/notes"
+#define	MODNOTESFMT	"/sys/module/%s/notes"
 #define KSYMSFILE	"/proc/kallsyms"
 #define MODULELIST	"/proc/modules"
 #define	SECADDRDIRFMT	"/sys/module/%s/sections/"
@@ -75,7 +77,7 @@
 
 /* Try to open the given file as it is or under the debuginfo directory.  */
 static int
-try_kernel_name (Dwfl *dwfl, char **fname)
+try_kernel_name (Dwfl *dwfl, char **fname, bool try_debug)
 {
   if (*fname == NULL)
     return -1;
@@ -95,7 +97,7 @@ try_kernel_name (Dwfl *dwfl, char **fname)
       fd = INTUSE(dwfl_standard_find_debuginfo) (&fakemod, NULL, NULL, 0,
 						 *fname, basename (*fname), 0,
 						 &debugfname);
-      if (fd < 0)
+      if (fd < 0 && try_debug)
 	/* Next, let the call use the default of basename + ".debug",
 	   to look for "vmlinux.debug" files.  */
 	fd = INTUSE(dwfl_standard_find_debuginfo) (&fakemod, NULL, NULL, 0,
@@ -126,21 +128,20 @@ find_kernel_elf (Dwfl *dwfl, const char *release, char **fname)
        : asprintf (fname, "/boot/vmlinux-%s", release)) < 0)
     return -1;
 
-  int fd = try_kernel_name (dwfl, fname);
+  int fd = try_kernel_name (dwfl, fname, true);
   if (fd < 0 && release[0] != '/')
     {
       free (*fname);
       if (asprintf (fname, MODULEDIRFMT "/vmlinux", release) < 0)
 	return -1;
-      fd = try_kernel_name (dwfl, fname);
+      fd = try_kernel_name (dwfl, fname, true);
     }
 
   return fd;
 }
 
 static int
-report_kernel (Dwfl *dwfl, const char **release,
-	       int (*predicate) (const char *module, const char *file))
+get_release (Dwfl *dwfl, const char **release)
 {
   if (dwfl == NULL)
     return -1;
@@ -155,10 +156,20 @@ report_kernel (Dwfl *dwfl, const char **release,
 	*release = release_string;
     }
 
-  char *fname;
-  int fd = find_kernel_elf (dwfl, release_string, &fname);
+  return 0;
+}
 
-  int result = 0;
+static int
+report_kernel (Dwfl *dwfl, const char **release,
+	       int (*predicate) (const char *module, const char *file))
+{
+  int result = get_release (dwfl, release);
+  if (unlikely (result != 0))
+    return result;
+
+  char *fname;
+  int fd = find_kernel_elf (dwfl, *release, &fname);
+
   if (fd < 0)
     result = ((predicate != NULL && !(*predicate) (KERNEL_MODNAME, NULL))
 	      ? 0 : errno ?: ENOENT);
@@ -175,17 +186,68 @@ report_kernel (Dwfl *dwfl, const char **release,
 	  report = want > 0;
 	}
 
-      if (report
-	  && INTUSE(dwfl_report_elf) (dwfl, KERNEL_MODNAME,
-				      fname, fd, 0) == NULL)
+      if (report)
 	{
-	  close (fd);
-	  result = -1;
+	  Dwfl_Module *mod = INTUSE(dwfl_report_elf) (dwfl, KERNEL_MODNAME,
+						      fname, fd, 0);
+	  if (mod == NULL)
+	    result = -1;
+
+	  /* The kernel is ET_EXEC, but always treat it as relocatable.  */
+	  mod->e_type = ET_DYN;
 	}
+
+      if (!report || result < 0)
+	close (fd);
     }
 
   free (fname);
 
+  return result;
+}
+
+/* Look for a kernel debug archive.  If we find one, report all its modules.
+   If not, return ENOENT.  */
+static int
+report_kernel_archive (Dwfl *dwfl, const char **release,
+		       int (*predicate) (const char *module, const char *file))
+{
+  int result = get_release (dwfl, release);
+  if (unlikely (result != 0))
+    return result;
+
+  char *archive;
+  if (unlikely ((*release)[0] == '/'
+		? asprintf (&archive, "%s/debug.a", *release)
+		: asprintf (&archive, MODULEDIRFMT "/debug.a", *release)) < 0)
+    return ENOMEM;
+
+  int fd = try_kernel_name (dwfl, &archive, false);
+  if (fd < 0)
+    result = errno ?: ENOENT;
+  else
+    {
+      /* We have the archive file open!  */
+      Dwfl_Module *last = __libdwfl_report_offline (dwfl, NULL, archive, fd,
+						    true, predicate);
+      if (unlikely (last == NULL))
+	result = -1;
+      else
+	{
+	  /* Find the kernel and move it to the head of the list.  */
+	  Dwfl_Module **tailp = &dwfl->modulelist, **prevp = tailp;
+	  for (Dwfl_Module *m = *prevp; m != NULL; m = *(prevp = &m->next))
+	    if (!m->gc && m->e_type != ET_REL && !strcmp (m->name, "kernel"))
+	      {
+		*prevp = m->next;
+		m->next = *tailp;
+		*tailp = m;
+		break;
+	      }
+	}
+    }
+
+  free (archive);
   return result;
 }
 
@@ -200,8 +262,12 @@ dwfl_linux_kernel_report_offline (Dwfl *dwfl, const char *release,
 				  int (*predicate) (const char *module,
 						    const char *file))
 {
+  int result = report_kernel_archive (dwfl, &release, predicate);
+  if (result != ENOENT)
+    return result;
+
   /* First report the kernel.  */
-  int result = report_kernel (dwfl, &release, predicate);
+  result = report_kernel (dwfl, &release, predicate);
   if (result == 0)
     {
       /* Do "find /lib/modules/RELEASE -name *.ko".  */
@@ -297,13 +363,15 @@ INTDEF (dwfl_linux_kernel_report_offline)
 
 /* Grovel around to guess the bounds of the runtime kernel image.  */
 static int
-intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end)
+intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end, Dwarf_Addr *notes)
 {
   FILE *f = fopen (KSYMSFILE, "r");
   if (f == NULL)
     return errno;
 
   (void) __fsetlocking (f, FSETLOCKING_BYCALLER);
+
+  *notes = 0;
 
   char *line = NULL;
   size_t linesz = 0;
@@ -322,6 +390,14 @@ intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end)
 	    {
 	      result = -1;
 	      break;
+	    }
+
+	  if (*notes == 0)
+	    {
+	      const char *sym = (strsep (&p, " \t\n")
+				 ? strsep (&p, " \t\n") : NULL);
+	      if (sym != NULL && !strcmp (sym, "__start_notes"))
+		*notes = last;
 	    }
 	}
       if ((n == 0 && feof_unlocked (f)) || (n > 1 && line[n - 2] == ']'))
@@ -345,15 +421,129 @@ intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end)
   return result;
 }
 
+
+/* Look for a build ID note in NOTESFILE and associate the ID with MOD.  */
+static int
+check_notes (Dwfl_Module *mod, const char *notesfile,
+	     Dwarf_Addr vaddr, const char *secname)
+{
+  int fd = open64 (notesfile, O_RDONLY);
+  if (fd < 0)
+    return 1;
+
+  assert (sizeof (Elf32_Nhdr) == sizeof (GElf_Nhdr));
+  assert (sizeof (Elf64_Nhdr) == sizeof (GElf_Nhdr));
+  union
+  {
+    GElf_Nhdr nhdr;
+    unsigned char data[8192];
+  } buf;
+
+  ssize_t n = read (fd, buf.data, sizeof buf);
+  close (fd);
+
+  if (n <= 0)
+    return 1;
+
+  unsigned char *p = buf.data;
+  while (p < &buf.data[n])
+    {
+      /* No translation required since we are reading the native kernel.  */
+      GElf_Nhdr *nhdr = (void *) p;
+      p += sizeof *nhdr;
+      unsigned char *name = p;
+      p += (nhdr->n_namesz + 3) & -4U;
+      unsigned char *bits = p;
+      p += (nhdr->n_descsz + 3) & -4U;
+
+      if (p <= &buf.data[n]
+	  && nhdr->n_type == NT_GNU_BUILD_ID
+	  && nhdr->n_namesz == sizeof "GNU"
+	  && !memcmp (name, "GNU", sizeof "GNU"))
+	{
+	  /* Found it.  For a module we must figure out its VADDR now.  */
+
+	  if (secname != NULL
+	      && (INTUSE(dwfl_linux_kernel_module_section_address)
+		  (mod, NULL, mod->name, 0, secname, 0, NULL, &vaddr) != 0
+		  || vaddr == (GElf_Addr) -1l))
+	    vaddr = 0;
+
+	  if (vaddr != 0)
+	    vaddr += bits - buf.data;
+	  return INTUSE(dwfl_module_report_build_id) (mod, bits,
+						      nhdr->n_descsz, vaddr);
+	}
+    }
+
+  return 0;
+}
+
+/* Look for a build ID for the kernel.  */
+static int
+check_kernel_notes (Dwfl_Module *kernelmod, GElf_Addr vaddr)
+{
+  return check_notes (kernelmod, KNOTESFILE, vaddr, NULL) < 0 ? -1 : 0;
+}
+
+/* Look for a build ID for a loaded kernel module.  */
+static int
+check_module_notes (Dwfl_Module *mod)
+{
+  char *dirs[2] = { NULL, NULL };
+  if (asprintf (&dirs[0], MODNOTESFMT, mod->name) < 0)
+    return ENOMEM;
+
+  FTS *fts = fts_open (dirs, FTS_NOSTAT, NULL);
+  if (fts == NULL)
+    {
+      free (dirs[0]);
+      return 0;
+    }
+
+  int result = 0;
+  FTSENT *f;
+  while ((f = fts_read (fts)) != NULL)
+    {
+      switch (f->fts_info)
+	{
+	case FTS_F:
+	case FTS_NSOK:
+	  result = check_notes (mod, f->fts_accpath, 0, f->fts_name);
+	  if (result > 0)	/* Nothing found.  */
+	    {
+	      result = 0;
+	      continue;
+	    }
+	  break;
+
+	case FTS_ERR:
+	case FTS_DNR:
+	  result = f->fts_errno;
+	  break;
+
+	case FTS_NS:
+	default:
+	  continue;
+	}
+
+      /* We only get here when finished or in error cases.  */
+      break;
+    }
+  fts_close (fts);
+  free (dirs[0]);
+
+  return result;
+}
+
 int
 dwfl_linux_kernel_report_kernel (Dwfl *dwfl)
 {
   Dwarf_Addr start;
   Dwarf_Addr end;
-  inline int report (void)
+  inline Dwfl_Module *report (void)
     {
-      return INTUSE(dwfl_report_module) (dwfl, KERNEL_MODNAME,
-					 start, end) == NULL ? -1 : 0;
+      return INTUSE(dwfl_report_module) (dwfl, KERNEL_MODNAME, start, end);
     }
 
   /* This is a bit of a kludge.  If we already reported the kernel,
@@ -363,14 +553,21 @@ dwfl_linux_kernel_report_kernel (Dwfl *dwfl)
       {
 	start = m->low_addr;
 	end = m->high_addr;
-	return report ();
+	return report () == NULL ? -1 : 0;
       }
 
   /* Try to figure out the bounds of the kernel image without
      looking for any vmlinux file.  */
-  int result = intuit_kernel_bounds (&start, &end);
+  Dwarf_Addr notes;
+  /* The compiler cannot deduce that if intuit_kernel_bounds returns
+     zero NOTES will be initialized.  Fake the initialization.  */
+  asm ("" : "=m" (notes));
+  int result = intuit_kernel_bounds (&start, &end, &notes);
   if (result == 0)
-    return report ();
+    {
+      Dwfl_Module *mod = report ();
+      return unlikely (mod == NULL) ? -1 : check_kernel_notes (mod, notes);
+    }
   if (result != ENOENT)
     return result;
 
@@ -383,13 +580,20 @@ INTDEF (dwfl_linux_kernel_report_kernel)
 /* Dwfl_Callbacks.find_elf for the running Linux kernel and its modules.  */
 
 int
-dwfl_linux_kernel_find_elf (Dwfl_Module *mod __attribute__ ((unused)),
+dwfl_linux_kernel_find_elf (Dwfl_Module *mod,
 			    void **userdata __attribute__ ((unused)),
 			    const char *module_name,
 			    Dwarf_Addr base __attribute__ ((unused)),
-			    char **file_name,
-			    Elf **elfp __attribute__ ((unused)))
+			    char **file_name, Elf **elfp)
 {
+  if (mod->build_id_len > 0)
+    {
+      int fd = INTUSE(dwfl_build_id_find_elf) (mod, NULL, NULL, 0,
+					       file_name, elfp);
+      if (fd >= 0 || errno != 0)
+	return fd;
+    }
+
   const char *release = kernel_release ();
   if (release == NULL)
     return errno;
@@ -508,7 +712,7 @@ dwfl_linux_kernel_module_section_address
 {
   char *sysfile;
   if (asprintf (&sysfile, SECADDRDIRFMT "%s", modname, secname) < 0)
-    return ENOMEM;
+    return DWARF_CB_ABORT;
 
   FILE *f = fopen (sysfile, "r");
   free (sysfile);
@@ -559,7 +763,7 @@ dwfl_linux_kernel_module_section_address
 	      int len = asprintf (&sysfile, SECADDRDIRFMT "%s",
 				  modname, secname);
 	      if (len < 0)
-		return ENOMEM;
+		return DWARF_CB_ABORT;
 	      char *end = sysfile + len;
 	      do
 		{
@@ -620,12 +824,17 @@ dwfl_linux_kernel_report_modules (Dwfl *dwfl)
   while (getline (&line, &linesz, f) > 0
 	 && sscanf (line, "%128s %lu %*s %*s %*s %" PRIx64 " %*s\n",
 		    modname, &modsz, &modaddr) == 3)
-    if (INTUSE(dwfl_report_module) (dwfl, modname,
-				    modaddr, modaddr + modsz) == NULL)
-      {
-	result = -1;
-	break;
-      }
+    {
+      Dwfl_Module *mod = INTUSE(dwfl_report_module) (dwfl, modname,
+						     modaddr, modaddr + modsz);
+      if (mod == NULL)
+	{
+	  result = -1;
+	  break;
+	}
+
+      result = check_module_notes (mod);
+    }
   free (line);
 
   if (result == 0)

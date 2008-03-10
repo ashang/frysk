@@ -1,5 +1,5 @@
 /* Return line number information of CU.
-   Copyright (C) 2004, 2005, 2007 Red Hat, Inc.
+   Copyright (C) 2004, 2005, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2004.
 
@@ -164,7 +164,7 @@ dwarf_getsrclines (Dwarf_Die *cudie, Dwarf_Lines **lines, size_t *nlines)
 	}
       Dwarf_Word unit_length = read_4ubyte_unaligned_inc (dbg, linep);
       unsigned int length = 4;
-      if (unlikely (unit_length == 0xffffffff))
+      if (unlikely (unit_length == DWARF3_LENGTH_64_BIT))
 	{
 	  if (unlikely (linep + 8 > lineendp))
 	    goto invalid_data;
@@ -180,7 +180,7 @@ dwarf_getsrclines (Dwarf_Die *cudie, Dwarf_Lines **lines, size_t *nlines)
 
       /* The next element of the header is the version identifier.  */
       uint_fast16_t version = read_2ubyte_unaligned_inc (dbg, linep);
-      if (unlikely (version != DWARF_VERSION))
+      if (unlikely (version > DWARF_VERSION))
 	{
 	  __libdw_seterrno (DWARF_E_VERSION);
 	  goto out;

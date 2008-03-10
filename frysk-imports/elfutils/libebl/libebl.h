@@ -1,5 +1,5 @@
 /* Interface for libebl.
-   Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -178,13 +178,18 @@ extern const char *ebl_core_note_type_name (Ebl *ebl, uint32_t type, char *buf,
 extern const char *ebl_object_note_type_name (Ebl *ebl, uint32_t type,
 					      char *buf, size_t len);
 
-/* Print information about core note if available.  */
-extern void ebl_core_note (Ebl *ebl, const char *name, uint32_t type,
-			   uint32_t descsz, const char *desc);
-
 /* Print information about object note if available.  */
 extern void ebl_object_note (Ebl *ebl, const char *name, uint32_t type,
 			     uint32_t descsz, const char *desc);
+
+/* Check whether an attribute in a .gnu_attributes section is recognized.
+   Fills in *TAG_NAME with the name for this tag.
+   If VALUE is a known value for that tag, also fills in *VALUE_NAME.  */
+extern bool ebl_check_object_attribute (Ebl *ebl, const char *vendor,
+					int tag, uint64_t value,
+					const char **tag_name,
+					const char **value_name);
+
 
 /* Check section name for being that of a debug informatino section.  */
 extern bool ebl_debugscn_p (Ebl *ebl, const char *name);
@@ -305,6 +310,43 @@ extern void ebl_gstrtabfinalize (struct Ebl_GStrtab *st, Elf_Data *data);
 
 /* Get offset in wide char string table for string associated with SE.  */
 extern size_t ebl_gstrtaboffset (struct Ebl_GStrent *se);
+
+
+/* Register map info. */
+typedef struct
+{
+  Dwarf_Half offset;		/* Byte offset in register data block.  */
+  Dwarf_Half regno;		/* DWARF register number.  */
+  uint8_t bits;			/* Bits of data for one register.  */
+  uint8_t pad;			/* Bytes of padding after register's data.  */
+  Dwarf_Half count;		/* Consecutive register numbers here.  */
+} Ebl_Register_Location;
+
+/* Non-register data items in core notes.  */
+typedef struct
+{
+  const char *name;		/* Printable identifier.  */
+  const char *group;		/* Identifier for category of related items.  */
+  Dwarf_Half offset;		/* Byte offset in note data.  */
+  Dwarf_Half count;
+  Elf_Type type;
+  char format;
+  bool thread_identifier;
+} Ebl_Core_Item;
+
+/* Describe the format of a core file note with type field matching N_TYPE
+   and descriptor size matching DESCSZ.  */
+extern int ebl_core_note (Ebl *ebl, GElf_Word n_type, GElf_Word descsz,
+			  GElf_Word *regs_offset, size_t *nregloc,
+			  const Ebl_Register_Location **reglocs,
+			  size_t *nitems, const Ebl_Core_Item **items)
+  __nonnull_attribute__ (1, 4, 5, 6, 7, 8);
+
+/* Describe the auxv type number.  */
+extern int ebl_auxv_info (Ebl *ebl, GElf_Xword a_type,
+			  const char **name, const char **format)
+  __nonnull_attribute__ (1, 3, 4);
+
 
 #ifdef __cplusplus
 }

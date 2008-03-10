@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 ##
-## Copyright (C) 1996-2006, 2007 Red Hat, Inc.
+## Copyright (C) 1996-2006, 2007, 2008 Red Hat, Inc.
 ## This file is part of Red Hat elfutils.
 ##
 ## Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -50,8 +50,7 @@ noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 endif
 include_HEADERS = libelf.h gelf.h nlist.h
 
-euincludedir = $(includedir)/elfutils
-euinclude_HEADERS = elf-knowledge.h
+pkginclude_HEADERS = elf-knowledge.h
 
 libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
@@ -71,6 +70,7 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf32_getshdr.c elf64_getshdr.c gelf_getshdr.c \
 		   gelf_update_shdr.c \
 		   elf_strptr.c elf_rawdata.c elf_getdata.c elf_newdata.c \
+		   elf_getdata_rawchunk.c \
 		   elf_flagelf.c elf_flagehdr.c elf_flagphdr.c elf_flagscn.c \
 		   elf_flagshdr.c elf_flagdata.c elf_memory.c \
 		   elf_update.c elf32_updatenull.c elf64_updatenull.c \
@@ -83,6 +83,8 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   gelf_getdyn.c gelf_update_dyn.c \
 		   gelf_getmove.c gelf_update_move.c \
 		   gelf_getsyminfo.c gelf_update_syminfo.c \
+		   gelf_getauxv.c gelf_update_auxv.c \
+		   gelf_getnote.c \
 		   gelf_xlatetof.c gelf_xlatetom.c \
 		   nlist.c \
 		   gelf_getsymshndx.c gelf_update_symshndx.c \
@@ -91,13 +93,13 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   gelf_update_verdaux.c \
 		   elf_getshnum.c elf_getshstrndx.c \
 		   gelf_checksum.c elf32_checksum.c elf64_checksum.c \
-		   gelf_rawchunk.c gelf_freechunk.c \
 		   libelf_crc32.c libelf_next_prime.c \
 		   elf_clone.c \
 		   gelf_getlib.c gelf_update_lib.c \
 		   elf32_offscn.c elf64_offscn.c gelf_offscn.c \
 		   elf_getaroff.c \
-		   elf_gnu_hash.c
+		   elf_gnu_hash.c \
+		   elf_scnshndx.c
 
 if !MUDFLAP
 libelf_pic_a_SOURCES =
@@ -132,7 +134,7 @@ uninstall: uninstall-am
 endif
 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
-		 version_xlate.h gnuhash_xlate.h dl-hash.h
+		 version_xlate.h gnuhash_xlate.h note_xlate.h dl-hash.h
 EXTRA_DIST = libelf.map
 
 CLEANFILES = $(am_libelf_pic_a_OBJECTS) *.gcno *.gcda libelf.so.$(VERSION)

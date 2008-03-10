@@ -36,7 +36,7 @@ host_triplet = @host@
 @MUDFLAP_FALSE@am__append_1 = libdwfl_pic.a
 @MUDFLAP_TRUE@am_libdwfl_pic_a_OBJECTS =
 subdir = libdwfl
-DIST_COMMON = $(euinclude_HEADERS) $(noinst_HEADERS) \
+DIST_COMMON = $(noinst_HEADERS) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
@@ -54,16 +54,20 @@ libdwfl_a_LIBADD =
 am_libdwfl_a_OBJECTS = dwfl_begin.$(OBJEXT) dwfl_end.$(OBJEXT) \
 	dwfl_error.$(OBJEXT) dwfl_version.$(OBJEXT) \
 	dwfl_module.$(OBJEXT) dwfl_report_elf.$(OBJEXT) \
-	relocate.$(OBJEXT) derelocate.$(OBJEXT) offline.$(OBJEXT) \
-	dwfl_module_info.$(OBJEXT) dwfl_getmodules.$(OBJEXT) \
-	dwfl_module_getdwarf.$(OBJEXT) dwfl_getdwarf.$(OBJEXT) \
-	dwfl_validate_address.$(OBJEXT) argp-std.$(OBJEXT) \
-	find-debuginfo.$(OBJEXT) linux-kernel-modules.$(OBJEXT) \
-	linux-proc-maps.$(OBJEXT) dwfl_addrmodule.$(OBJEXT) \
-	dwfl_addrdwarf.$(OBJEXT) cu.$(OBJEXT) \
-	dwfl_module_nextcu.$(OBJEXT) dwfl_nextcu.$(OBJEXT) \
-	dwfl_cumodule.$(OBJEXT) dwfl_module_addrdie.$(OBJEXT) \
-	dwfl_addrdie.$(OBJEXT) lines.$(OBJEXT) dwfl_lineinfo.$(OBJEXT) \
+	relocate.$(OBJEXT) dwfl_module_build_id.$(OBJEXT) \
+	dwfl_module_report_build_id.$(OBJEXT) derelocate.$(OBJEXT) \
+	offline.$(OBJEXT) dwfl_module_info.$(OBJEXT) \
+	dwfl_getmodules.$(OBJEXT) dwfl_module_getdwarf.$(OBJEXT) \
+	dwfl_getdwarf.$(OBJEXT) dwfl_validate_address.$(OBJEXT) \
+	argp-std.$(OBJEXT) find-debuginfo.$(OBJEXT) \
+	dwfl_build_id_find_elf.$(OBJEXT) \
+	dwfl_build_id_find_debuginfo.$(OBJEXT) \
+	linux-kernel-modules.$(OBJEXT) linux-proc-maps.$(OBJEXT) \
+	dwfl_addrmodule.$(OBJEXT) dwfl_addrdwarf.$(OBJEXT) \
+	cu.$(OBJEXT) dwfl_module_nextcu.$(OBJEXT) \
+	dwfl_nextcu.$(OBJEXT) dwfl_cumodule.$(OBJEXT) \
+	dwfl_module_addrdie.$(OBJEXT) dwfl_addrdie.$(OBJEXT) \
+	lines.$(OBJEXT) dwfl_lineinfo.$(OBJEXT) \
 	dwfl_line_comp_dir.$(OBJEXT) dwfl_linemodule.$(OBJEXT) \
 	dwfl_linecu.$(OBJEXT) dwfl_getsrclines.$(OBJEXT) \
 	dwfl_onesrcline.$(OBJEXT) dwfl_module_getsrc.$(OBJEXT) \
@@ -92,9 +96,9 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(euincludedir)"
-euincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(euinclude_HEADERS) $(noinst_HEADERS)
+am__installdirs = "$(DESTDIR)$(pkgincludedir)"
+pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(noinst_HEADERS) $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -110,6 +114,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -218,15 +223,17 @@ COMPILE.os = $(filter-out -fprofile-arcs, $(filter-out -ftest-coverage, \
 						       $(COMPILE)))
 
 noinst_LIBRARIES = libdwfl.a $(am__append_1)
-euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libdwfl.h
+pkginclude_HEADERS = libdwfl.h
 libdwfl_a_SOURCES = dwfl_begin.c dwfl_end.c dwfl_error.c dwfl_version.c \
 		    dwfl_module.c dwfl_report_elf.c relocate.c \
+		    dwfl_module_build_id.c dwfl_module_report_build_id.c \
 		    derelocate.c offline.c \
 		    dwfl_module_info.c  dwfl_getmodules.c \
 		    dwfl_module_getdwarf.c dwfl_getdwarf.c \
 		    dwfl_validate_address.c \
 		    argp-std.c find-debuginfo.c \
+		    dwfl_build_id_find_elf.c \
+		    dwfl_build_id_find_debuginfo.c \
 		    linux-kernel-modules.c linux-proc-maps.c \
 		    dwfl_addrmodule.c dwfl_addrdwarf.c \
 		    cu.c dwfl_module_nextcu.c dwfl_nextcu.c dwfl_cumodule.c \
@@ -314,6 +321,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_addrdwarf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_addrmodule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_begin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_build_id_find_debuginfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_build_id_find_elf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_cumodule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_end.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_error.Po@am__quote@
@@ -329,6 +338,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_addrdie.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_addrname.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_addrsym.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_build_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getdwarf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getsrc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getsrc_file.Po@am__quote@
@@ -336,6 +346,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_nextcu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_register_names.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_report_build_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_return_value_location.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_nextcu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_onesrcline.Po@am__quote@
@@ -365,22 +376,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
-install-euincludeHEADERS: $(euinclude_HEADERS)
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(euincludedir)" || $(MKDIR_P) "$(DESTDIR)$(euincludedir)"
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
+	test -z "$(pkgincludedir)" || $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)"
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(euincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  $(euincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(euincludedir)/$$f"; \
+	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
-uninstall-euincludeHEADERS:
+uninstall-pkgincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(euincludedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -461,7 +472,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(euincludedir)"; do \
+	for dir in "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -509,7 +520,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-euincludeHEADERS
+install-data-am: install-pkgincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -544,7 +555,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-euincludeHEADERS
+uninstall-am: uninstall-pkgincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -552,15 +563,14 @@ uninstall-am: uninstall-euincludeHEADERS
 	clean-noinstLIBRARIES ctags distclean distclean-compile \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am \
-	install-euincludeHEADERS install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags uninstall uninstall-am \
-	uninstall-euincludeHEADERS
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-pkgincludeHEADERS install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-pkgincludeHEADERS
 
 
 @MUDFLAP_FALSE@%.os: %.c %.o

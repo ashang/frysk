@@ -1,5 +1,6 @@
 /* This file defines standard ELF types, structures, and macros.
-   Copyright (C) 1995-2003,2004,2005,2006,2007 Free Software Foundation, Inc.
+   Copyright (C) 1995-2003,2004,2005,2006,2007,2008
+	Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -330,6 +331,7 @@ typedef struct
 #define SHT_SYMTAB_SHNDX  18		/* Extended section indeces */
 #define	SHT_NUM		  19		/* Number of defined types.  */
 #define SHT_LOOS	  0x60000000	/* Start OS-specific.  */
+#define SHT_GNU_ATTRIBUTES 0x6ffffff5	/* Object attributes.  */
 #define SHT_GNU_HASH	  0x6ffffff6	/* GNU-style hash table.  */
 #define SHT_GNU_LIBLIST	  0x6ffffff7	/* Prelink library list */
 #define SHT_CHECKSUM	  0x6ffffff8	/* Checksum for DSO content.  */
@@ -604,6 +606,9 @@ typedef struct
 #define NT_LWPSINFO	17		/* Contains copy of lwpinfo struct */
 #define NT_PRFPXREG	20		/* Contains copy of fprxregset struct */
 #define NT_PRXFPREG	0x46e62b7f	/* Contains copy of user_fxsr_struct */
+#define NT_PPC_VMX	0x100		/* PowerPC Altivec/VMX registers */
+#define NT_PPC_SPE	0x101		/* PowerPC SPE/EVR registers */
+#define NT_386_TLS	0x200		/* i386 TLS slots (struct user_desc) */
 
 /* Legal values for the note segment descriptor types for object files.  */
 
@@ -1277,6 +1282,7 @@ typedef struct
 #define HWCAP_SPARC_V9		16	/* The CPU is v9, so v8plus is ok.  */
 #define HWCAP_SPARC_ULTRA3	32
 #define HWCAP_SPARC_BLKINIT	64	/* Sun4v with block-init/load-twin.  */
+#define HWCAP_SPARC_N2		128
 
 /* MIPS R3000 specific definitions.  */
 
@@ -1723,6 +1729,8 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_PARISC_LTOFF_FPTR14R	62	/* LT-rel. fct ptr, right 14 bits. */
 #define R_PARISC_FPTR64		64	/* 64 bits function address.  */
 #define R_PARISC_PLABEL32	65	/* 32 bits function address.  */
+#define R_PARISC_PLABEL21L	66	/* Left 21 bits of fdesc address.  */
+#define R_PARISC_PLABEL14R	70	/* Right 14 bits of fdesc address.  */
 #define R_PARISC_PCREL64	72	/* 64 bits PC-rel. address.  */
 #define R_PARISC_PCREL22F	74	/* 22 bits PC-rel. address.  */
 #define R_PARISC_PCREL14WR	75	/* PC-rel. address, right 14 bits.  */
@@ -1783,6 +1791,26 @@ typedef Elf32_Addr Elf32_Conflict;
 #define R_PARISC_LTOFF_TP16F	229	/* 16 bits LT-TP-rel. address.  */
 #define R_PARISC_LTOFF_TP16WF	230	/* 16 bits LT-TP-rel. address.  */
 #define R_PARISC_LTOFF_TP16DF	231	/* 16 bits LT-TP-rel. address.  */
+#define R_PARISC_GNU_VTENTRY	232
+#define R_PARISC_GNU_VTINHERIT	233
+#define R_PARISC_TLS_GD21L	234	/* GD 21-bit left.  */
+#define R_PARISC_TLS_GD14R	235	/* GD 14-bit right.  */
+#define R_PARISC_TLS_GDCALL	236	/* GD call to __t_g_a.  */
+#define R_PARISC_TLS_LDM21L	237	/* LD module 21-bit left.  */
+#define R_PARISC_TLS_LDM14R	238	/* LD module 14-bit right.  */
+#define R_PARISC_TLS_LDMCALL	239	/* LD module call to __t_g_a.  */
+#define R_PARISC_TLS_LDO21L	240	/* LD offset 21-bit left.  */
+#define R_PARISC_TLS_LDO14R	241	/* LD offset 14-bit right.  */
+#define R_PARISC_TLS_DTPMOD32	242	/* DTP module 32-bit.  */
+#define R_PARISC_TLS_DTPMOD64	243	/* DTP module 64-bit.  */
+#define R_PARISC_TLS_DTPOFF32	244	/* DTP offset 32-bit.  */
+#define R_PARISC_TLS_DTPOFF64	245	/* DTP offset 32-bit.  */
+#define R_PARISC_TLS_LE21L	R_PARISC_TPREL21L
+#define R_PARISC_TLS_LE14R	R_PARISC_TPREL14R
+#define R_PARISC_TLS_IE21L	R_PARISC_LTOFF_TP21L
+#define R_PARISC_TLS_IE14R	R_PARISC_LTOFF_TP14R
+#define R_PARISC_TLS_TPREL32	R_PARISC_TPREL32
+#define R_PARISC_TLS_TPREL64	R_PARISC_TPREL64
 #define R_PARISC_HIRESERVE	255
 
 /* Legal values for p_type field of Elf32_Phdr/Elf64_Phdr.  */

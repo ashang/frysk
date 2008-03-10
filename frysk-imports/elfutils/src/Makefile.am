@@ -24,7 +24,7 @@
 ## Network licensing program, please visit www.openinventionnetwork.com
 ## <http://www.openinventionnetwork.com>.
 ##
-DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H $(YYDEBUG) \
+DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H $(YYDEBUG) -DDEBUGPRED=@DEBUGPRED@ \
        -DSRCDIR=\"$(shell cd $(srcdir);pwd)\" -DOBJDIR=\"$(shell pwd)\"
 if MUDFLAP
 AM_CFLAGS = -fmudflap
@@ -38,7 +38,7 @@ AM_CFLAGS += -Wall -Wshadow -std=gnu99 $(native_ld_cflags) \
 
 INCLUDES = -I$(srcdir) -I$(srcdir)/../libelf -I$(srcdir)/../libebl \
 	   -I$(srcdir)/../libdw -I$(srcdir)/../libdwfl \
-	   -I$(srcdir)/../lib -I..
+	   -I$(srcdir)/../libasm -I$(srcdir)/../lib -I..
 
 AM_LDFLAGS = -Wl,-rpath-link,../libelf:../libdw
 
@@ -81,17 +81,24 @@ libar_a_SOURCES = arlib.c arlib2.c
 noinst_HEADERS = ld.h symbolhash.h sectionhash.h versionhash.h \
 		 ldscript.h xelf.h unaligned.h
 
-EXTRA_DIST = elf32-i386.script libld_elf_i386.map $(ld_modules) arlib.h
+EXTRA_DIST = elf32-i386.script libld_elf_i386.map $(ld_modules) arlib.h \
+	     debugpred.h
 ld_modules = i386_ld.c
+
+bin_SCRIPTS = make-debug-archive
+EXTRA_DIST += make-debug-archive.in
+CLEANFILES = make-debug-archive
 
 if MUDFLAP
 libmudflap = -lmudflap
 endif
 
 if BUILD_STATIC
+libasm = ../libasm/libasm.a
 libdw = ../libdw/libdw.a $(libelf) $(libebl) -ldl
 libelf = ../libelf/libelf.a
 else
+libasm = ../libasm/libasm.so
 libdw = ../libdw/libdw.so
 libelf = ../libelf/libelf.so
 endif
@@ -118,7 +125,7 @@ elflint_LDADD  = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 findtextrel_LDADD = $(libdw) $(libelf) $(libmudflap)
 addr2line_LDADD = $(libdw) $(libmudflap)
 elfcmp_LDADD = $(libebl) $(libelf) $(libmudflap) -ldl
-objdump_LDADD  = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
+objdump_LDADD  = $(libasm) $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 ranlib_LDADD = libar.a $(libelf) $(libeu) $(libmudflap)
 strings_LDADD = $(libelf) $(libeu) $(libmudflap)
 ar_LDADD = libar.a $(libelf) $(libeu) $(libmudflap)
@@ -176,6 +183,17 @@ installcheck-binPROGRAMS: $(bin_PROGRAMS)
 	  done; \
 	done; rm -f c$${pid}_.???; exit $$bad
 
-CLEANFILES = none_ld.os $(ld_modules:.c=.os) *.gcno *.gcda *.gconv
+CLEANFILES += none_ld.os $(ld_modules:.c=.os) *.gcno *.gcda *.gconv
 
 MAINTAINERCLEANFILES = ldlex.c ldscript.c ldscript.h
+
+
+make-debug-archive: $(srcdir)/make-debug-archive.in
+	UNSTRIP=$(bindir)/`echo unstrip | sed '$(transform)'`; \
+	AR=$(bindir)/`echo ar | sed '$(transform)'`; \
+	sed -e "s,@UNSTRIP@,$$UNSTRIP,g" -e "s,@AR@,$$AR,g" \
+	    -e "s%[@]PACKAGE_NAME[@]%$(PACKAGE_NAME)%g" \
+	    -e "s%[@]PACKAGE_VERSION[@]%$(PACKAGE_VERSION)%g" \
+ 	    $(srcdir)/make-debug-archive.in > $@.new
+	chmod +x $@.new
+	mv -f $@.new $@

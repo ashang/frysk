@@ -50,7 +50,8 @@ ARFLAGS = cru
 libeu_a_AR = $(AR) $(ARFLAGS)
 libeu_a_LIBADD =
 am_libeu_a_OBJECTS = xstrndup.$(OBJEXT) xmalloc.$(OBJEXT) \
-	next_prime.$(OBJEXT) crc32.$(OBJEXT) crc32_file.$(OBJEXT)
+	next_prime.$(OBJEXT) crc32.$(OBJEXT) crc32_file.$(OBJEXT) \
+	md5.$(OBJEXT) sha1.$(OBJEXT)
 libeu_a_OBJECTS = $(am_libeu_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
@@ -77,6 +78,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -181,9 +183,11 @@ top_srcdir = @top_srcdir@
 INCLUDES = -I$(srcdir)/../libelf -I..
 noinst_LIBRARIES = libeu.a
 libeu_a_SOURCES = xstrndup.c xmalloc.c next_prime.c \
-		  crc32.c crc32_file.c
+		  crc32.c crc32_file.c md5.c sha1.c
 
-noinst_HEADERS = fixedsizehash.h system.h dynamicsizehash.h list.h
+noinst_HEADERS = fixedsizehash.h system.h dynamicsizehash.h list.h md5.h \
+		 sha1.h
+
 EXTRA_DIST = dynamicsizehash.c
 @GPROF_FALSE@xmalloc_CFLAGS = -ffunction-sections
 all: all-am
@@ -235,7 +239,9 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc32_file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/next_prime.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmalloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xstrndup.Po@am__quote@
 

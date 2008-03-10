@@ -106,6 +106,7 @@ integer registers:
 	 14: %r14 (r14), signed 64 bits
 	 15: %r15 (r15), signed 64 bits
 	 16: %rip (rip), address 64 bits
+	 49: %rflags (rflags), unsigned 64 bits
 MMX registers:
 	 41: %mm0 (mm0), unsigned 64 bits
 	 42: %mm1 (mm1), unsigned 64 bits
@@ -133,7 +134,6 @@ SSE registers:
 	 31: %xmm14 (xmm14), unsigned 128 bits
 	 32: %xmm15 (xmm15), unsigned 128 bits
 control registers:
-	 49: %rflags (rflags), unsigned 64 bits
 	 62: %tr (tr), unsigned 64 bits
 	 63: %ldtr (ldtr), unsigned 64 bits
 	 64: %mxcsr (mxcsr), unsigned 64 bits
@@ -502,7 +502,6 @@ privileged registers:
 	353: spr253 (spr253), unsigned 32 bits
 	354: spr254 (spr254), unsigned 32 bits
 	355: spr255 (spr255), unsigned 32 bits
-	356: vrsave (vrsave), unsigned 32 bits
 	357: spr257 (spr257), unsigned 32 bits
 	358: spr258 (spr258), unsigned 32 bits
 	359: spr259 (spr259), unsigned 32 bits
@@ -758,7 +757,6 @@ privileged registers:
 	609: spr509 (spr509), unsigned 32 bits
 	610: spr510 (spr510), unsigned 32 bits
 	611: spr511 (spr511), unsigned 32 bits
-	612: spr512 (spr512), unsigned 32 bits
 	613: spr513 (spr513), unsigned 32 bits
 	614: spr514 (spr514), unsigned 32 bits
 	615: spr515 (spr515), unsigned 32 bits
@@ -1147,6 +1145,9 @@ privileged registers:
 	998: spr898 (spr898), unsigned 32 bits
 	999: spr899 (spr899), unsigned 32 bits
 vector registers:
+	 67: vscr (vscr), unsigned 32 bits
+	356: vrsave (vrsave), unsigned 32 bits
+	612: spefscr (spefscr), unsigned 32 bits
 	1124: vr0 (vr0), unsigned 128 bits
 	1125: vr1 (vr1), unsigned 128 bits
 	1126: vr2 (vr2), unsigned 128 bits
@@ -1524,7 +1525,6 @@ privileged registers:
 	353: spr253 (spr253), unsigned 64 bits
 	354: spr254 (spr254), unsigned 64 bits
 	355: spr255 (spr255), unsigned 64 bits
-	356: vrsave (vrsave), unsigned 64 bits
 	357: spr257 (spr257), unsigned 64 bits
 	358: spr258 (spr258), unsigned 64 bits
 	359: spr259 (spr259), unsigned 64 bits
@@ -1780,7 +1780,6 @@ privileged registers:
 	609: spr509 (spr509), unsigned 64 bits
 	610: spr510 (spr510), unsigned 64 bits
 	611: spr511 (spr511), unsigned 64 bits
-	612: spr512 (spr512), unsigned 64 bits
 	613: spr513 (spr513), unsigned 64 bits
 	614: spr514 (spr514), unsigned 64 bits
 	615: spr515 (spr515), unsigned 64 bits
@@ -2169,6 +2168,9 @@ privileged registers:
 	998: spr898 (spr898), unsigned 64 bits
 	999: spr899 (spr899), unsigned 64 bits
 vector registers:
+	 67: vscr (vscr), unsigned 32 bits
+	356: vrsave (vrsave), unsigned 32 bits
+	612: spefscr (spefscr), unsigned 32 bits
 	1124: vr0 (vr0), unsigned 128 bits
 	1125: vr1 (vr1), unsigned 128 bits
 	1126: vr2 (vr2), unsigned 128 bits

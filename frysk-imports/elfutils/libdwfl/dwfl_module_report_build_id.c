@@ -1,7 +1,6 @@
-/* Retrieve uninterpreted chunk of the file contents.
-   Copyright (C) 2002, 2005, 2007 Red Hat, Inc.
+/* Report build ID information for a module.
+   Copyright (C) 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by the
@@ -48,61 +47,56 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "libdwflP.h"
 
-#include <errno.h>
-#include <libelf.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include <system.h>
-#include "libelfP.h"
-
-
-char *
-gelf_rawchunk (elf, offset, size)
-     Elf *elf;
-     GElf_Off offset;
-     GElf_Word size;
+// XXX vs report changed module: punting old file
+int
+dwfl_module_report_build_id (Dwfl_Module *mod,
+			     const unsigned char *bits, size_t len,
+			     GElf_Addr vaddr)
 {
-  if (elf == NULL)
+  if (mod == NULL)
+    return -1;
+
+  if (mod->main.elf != NULL)
     {
-      /* No valid descriptor.  */
-      __libelf_seterrno (ELF_E_INVALID_HANDLE);
-      return NULL;
+      /* Once we know about a file, we won't take any lies about
+	 its contents.  The only permissible call is a no-op.  */
+
+      if ((size_t) mod->build_id_len == len
+	  && (mod->build_id_vaddr == vaddr || vaddr == 0)
+	  && !memcmp (bits, mod->build_id_bits, len))
+	return 0;
+
+      __libdwfl_seterrno (DWFL_E_ALREADY_ELF);
+      return -1;
     }
 
-  if (unlikely (offset >= elf->maximum_size
-		|| offset + size >= elf->maximum_size
-		|| offset + size < offset))
+  if (vaddr != 0 && (vaddr < mod->low_addr || vaddr + len > mod->high_addr))
     {
-      /* Invalid request.  */
-      __libelf_seterrno (ELF_E_INVALID_OP);
-      return NULL;
+      __libdwfl_seterrno (DWFL_E_ADDR_OUTOFRANGE);
+      return -1;
     }
 
-  /* If the file is mmap'ed return an appropriate pointer.  */
-  if (elf->map_address != NULL)
-    return (char *) elf->map_address + elf->start_offset + offset;
+  void *copy = NULL;
+  if (len > 0)
+    {
+      copy = malloc (len);
+      if (unlikely (copy == NULL))
+	{
+	  __libdwfl_seterrno (DWFL_E_NOMEM);
+	  return -1;
+	}
+      memcpy (copy, bits, len);
+    }
 
-  /* We allocate the memory and read the data from the file.  */
-  char *result = (char *) malloc (size);
-  if (result == NULL)
-    __libelf_seterrno (ELF_E_NOMEM);
-  else
-    /* Read the file content.  */
-    if (unlikely ((size_t) pread_retry (elf->fildes, result, size,
-					elf->start_offset + offset)
-		  != size))
-      {
-	/* Something went wrong.  */
-	__libelf_seterrno (ELF_E_READ_ERROR);
-	free (result);
-	result = NULL;
-      }
+  if (mod->build_id_len > 0)
+    free (mod->build_id_bits);
 
-  return result;
+  mod->build_id_bits = copy;
+  mod->build_id_len = len;
+  mod->build_id_vaddr = vaddr;
+
+  return 0;
 }
+INTDEF (dwfl_module_report_build_id)

@@ -1,5 +1,5 @@
 /* Internal interfaces for libelf.
-   Copyright (C) 1998,1999,2000,2001,2002,2003,2005,2006,2007 Red Hat, Inc.
+   Copyright (C) 1998-2003, 2005, 2006, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -224,6 +224,9 @@ struct Elf_Scn
   int data_read;		/* Nonzero if the section was created by the
 				   user or if the data from the file/memory
 				   is read.  */
+  int shndx_index;		/* Index of the extended section index
+				   table for this symbol table (if this
+				   section is a symbol table).  */
 
   size_t index;			/* Index of this section.  */
   struct Elf *elf;		/* The underlying ELF file.  */
@@ -253,6 +256,18 @@ typedef struct Elf_ScnList
   struct Elf_ScnList *next;	/* Next block of sections.  */
   struct Elf_Scn data[0];	/* Section data.  */
 } Elf_ScnList;
+
+
+/* elf_getdata_rawchunk result.  */
+typedef struct Elf_Data_Chunk
+{
+  Elf_Data_Scn data;
+  union
+  {
+    Elf_Scn dummy_scn;
+    struct Elf_Data_Chunk *next;
+  };
+} Elf_Data_Chunk;
 
 
 /* The ELF descriptor.  */
@@ -313,6 +328,7 @@ struct Elf
       Elf_ScnList *scns_last;	/* Last element in the section list.
 				   If NULL the data has not yet been
 				   read from the file.  */
+      Elf_Data_Chunk *rawchunks; /* List of elf_getdata_rawchunk results.  */
       unsigned int scnincr;	/* Number of sections allocate the last
 				   time.  */
       off64_t sizestr_offset;	/* Offset of the size string in the parent
@@ -332,6 +348,7 @@ struct Elf
       Elf_ScnList *scns_last;	/* Last element in the section list.
 				   If NULL the data has not yet been
 				   read from the file.  */
+      Elf_Data_Chunk *rawchunks; /* List of elf_getdata_rawchunk results.  */
       unsigned int scnincr;	/* Number of sections allocate the last
 				   time.  */
       off64_t sizestr_offset;	/* Offset of the size string in the parent
@@ -357,6 +374,7 @@ struct Elf
       Elf_ScnList *scns_last;	/* Last element in the section list.
 				   If NULL the data has not yet been
 				   read from the file.  */
+      Elf_Data_Chunk *rawchunks; /* List of elf_getdata_rawchunk results.  */
       unsigned int scnincr;	/* Number of sections allocate the last
 				   time.  */
       off64_t sizestr_offset;	/* Offset of the size string in the parent
@@ -517,6 +535,7 @@ extern Elf_Scn *__elf_getscn_internal (Elf *__elf, size_t __index)
      attribute_hidden;
 extern Elf_Scn *__elf_nextscn_internal (Elf *__elf, Elf_Scn *__scn)
      attribute_hidden;
+extern int __elf_scnshndx_internal (Elf_Scn *__scn) attribute_hidden;
 extern Elf_Data *__elf_getdata_internal (Elf_Scn *__scn, Elf_Data *__data)
      attribute_hidden;
 extern Elf_Data *__elf_rawdata_internal (Elf_Scn *__scn, Elf_Data *__data)
@@ -573,6 +592,9 @@ extern uint32_t __libelf_crc32 (uint32_t crc, unsigned char *buf, size_t len)
 	(flag) |= ELF_F_DIRTY;						      \
       }									      \
   } while (0)
+
+/* Align offset to 4 bytes as needed for note name and descriptor data.  */
+#define NOTE_ALIGN(n)	(((n) + 3) & -4U)
 
 /* Convenience macro.  Assumes int NDX and TYPE with size at least
    2 bytes.  */

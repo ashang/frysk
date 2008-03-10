@@ -1,3 +1,124 @@
+2008-02-19  Roland McGrath  <roland@redhat.com>
+
+	* elf.h: Update from glibc.
+
+2008-02-08  Roland McGrath  <roland@redhat.com>
+
+	* elf.h: Update from glibc.
+
+2008-01-31  Ulrich Drepper  <drepper@redhat.com>
+
+	* elf_strptr.c (elf_strptr): Don't fail if the ELF file is currently
+	under construction and no raw data can be read from disk.
+
+2008-01-30  Roland McGrath  <roland@redhat.com>
+
+	* elf.h: Update from glibc.
+
+2008-01-26  Roland McGrath  <roland@redhat.com>
+
+	* elf_begin.c (__libelf_next_arhdr): Rewrite conversions using a macro.
+	Fixes various pastos in wrong type in sizeof, wrong string parsed.
+
+2008-01-20  Roland McGrath  <roland@redhat.com>
+
+	* elf_getaroff.c: Calculate from start_offset, instead of using
+	parent's state.ar.offset field.
+
+2008-01-08  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (euinclude): Variable removed.
+	(pkginclude_HEADERS): Set this instead of euinclude_HEADERS.
+
+2008-01-03  Roland McGrath  <roland@redhat.com>
+
+	* common.h: Add __attribute__ ((unused)) to static functions.
+
+2007-12-20  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am (libelf_a_SOURCES): Add elf_scnshndx.
+	* libelfP.h (struct Elf_Scn): Add shndx_index field.
+	Declare __elf_scnshndx_internal.
+	* elf32_getshdr.c: Record location of extended section header.
+	* elf_begin.c (file_read_elf): Likewise.
+	* elf_scnshndx.c: New file.
+	* libelf.h: Declare elf_scnshndx.
+	* libelf.map: Add elf_scnshndx to version ELFUTILS_1.4.
+
+2007-11-12  Roland McGrath  <roland@redhat.com>
+
+	* libelf.h: Replace off64_t with loff_t throughout.
+	Only that type name is unconditionally defined by <sys/types.h>
+
+2007-11-03  Roland McGrath  <roland@redhat.com>
+
+	* libelf.h (Elf_Data): Comment fix.
+
+2007-10-18  Roland McGrath  <roland@redhat.com>
+
+	* elf.h: Update from glibc.
+
+2007-10-07  Roland McGrath  <roland@redhat.com>
+
+	* elf_begin.c (__libelf_next_arhdr): Fix fencepost error and wrong
+	member access in terminating name with no trailing /.  Trim trailing
+	spaces when there is no /.
+
+2007-10-04  Roland McGrath  <roland@redhat.com>
+
+	* elf_end.c (elf_end): Don't free ELF->state.ar.ar_sym when it's -1l.
+
+2007-10-03  Roland McGrath  <roland@redhat.com>
+
+	* libelf.h (Elf_Data): Use off64_t for d_off.
+	(Elf_Arhdr): Use off64_t for ar_size.
+	(elf_update, elf_getbase, elf_getaroff): Return off64_t.
+
+	* gelf_rawchunk.c: File removed.
+	* gelf_freechunk.c: File removed.
+	* Makefile.am (libelf_a_SOURCES): Remove them.
+	* libelf.map (ELFUTILS_1.0): Remove exports.
+	* gelf.h: Remove decls.
+
+	* elf_getdata_rawchunk.c: New file.
+	* Makefile.am (libelf_a_SOURCES): Add it.
+	* libelf.map (ELFUTILS_1.3): Add elf_getdata_rawchunk.
+	* libelf.h: Declare it.
+	* libelfP.h (Elf_Data_Chunk): New type.
+	(struct Elf.elf): New member `rawchunks'.
+	* elf_end.c (elf_end): Free recorded rawchunk buffers.
+
+2007-08-24  Roland McGrath  <roland@redhat.com>
+
+	* gelf_getnote.c: New file.
+	* Makefile.am (libelf_a_SOURCES): Add it.
+	* gelf.h: Declare gelf_getnote.
+	* libelf.map (ELFUTILS_1.3): Add gelf_getnote.
+
+	* libelfP.h (NOTE_ALIGN): New macro.
+	* note_xlate.h: New file.
+	* Makefile.am (noinst_HEADERS): Add it.
+	* gelf_xlate.c: Include it.
+	(__elf_xfctstom): Use elf_cvt_note.
+	* elf_getdata.c (shtype_map, __libelf_type_align): Handle SHT_NOTE.
+	(__libelf_set_rawdata): Likewise.
+
+2007-08-19  Roland McGrath  <roland@redhat.com>
+
+	* gelf_update_auxv.c: New file.
+	* gelf_getauxv.c: New file.
+	* Makefile.am (libelf_a_SOURCES): Add them.
+	* gelf.h: Declare gelf_getauxv, gelf_update_auxv.
+	* libelf.map (ELFUTILS_1.3): New set, inherits fom ELFUTILS_1.2.
+	Export gelf_getauxv, gelf_update_auxv.
+
+	* libelf.h (Elf_Type): Add ELF_T_AUXV.
+	* abstract.h: Add auxv_t entries.
+	* exttypes.h: Likewise.
+	* gelf_xlate.h: Likewise.
+	* gelf_xlate.c (__elf_xfctstom): Add ELF_T_AUXV entries.
+	* gelf_fsize.c (__libelf_type_sizes): Likewise.
+
 2007-08-12  Roland McGrath  <roland@redhat.com>
 
 	* elf32_updatefile.c (compare_sections): Sort secondarily on sh_size,

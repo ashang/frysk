@@ -61,14 +61,16 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile$(EXEEXT) \
 	run-elflint-self.sh run-ranlib-test.sh run-ranlib-test2.sh \
 	run-ranlib-test3.sh run-ranlib-test4.sh run-addrscopes.sh \
 	run-strings-test.sh run-funcscopes.sh run-find-prologues.sh \
-	run-allregs.sh run-readelf-test1.sh run-native-test.sh \
+	run-allregs.sh run-readelf-test1.sh run-readelf-test2.sh \
+	run-readelf-test3.sh run-readelf-test4.sh run-native-test.sh \
 	run-bug1-test.sh dwfl-bug-addr-overflow$(EXEEXT) \
 	run-addrname-test.sh dwfl-bug-fd-leak$(EXEEXT) \
 	dwfl-bug-report$(EXEEXT) run-dwfl-bug-offline-rel.sh \
+	run-dwfl-addr-sect.sh run-disasm-x86.sh run-disasm-x86-64.sh \
 	$(am__EXEEXT_1) $(am__EXEEXT_3)
 # run-show-ciefde.sh
-@STANDALONE_FALSE@am__append_3 = msg_tst
-@STANDALONE_FALSE@am__append_4 = msg_tst
+@STANDALONE_FALSE@am__append_3 = msg_tst sha1-tst
+@STANDALONE_FALSE@am__append_4 = msg_tst sha1-tst
 @HAVE_LIBASM_TRUE@am__append_5 = $(asm_TESTS)
 @HAVE_LIBASM_TRUE@am__append_6 = $(asm_TESTS)
 subdir = tests
@@ -81,7 +83,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-@STANDALONE_FALSE@am__EXEEXT_1 = msg_tst$(EXEEXT)
+@STANDALONE_FALSE@am__EXEEXT_1 = msg_tst$(EXEEXT) sha1-tst$(EXEEXT)
 am__EXEEXT_2 = asm-tst1$(EXEEXT) asm-tst2$(EXEEXT) asm-tst3$(EXEEXT) \
 	asm-tst4$(EXEEXT) asm-tst5$(EXEEXT) asm-tst6$(EXEEXT) \
 	asm-tst7$(EXEEXT) asm-tst8$(EXEEXT) asm-tst9$(EXEEXT)
@@ -238,6 +240,9 @@ scnnames_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
 sectiondump_SOURCES = sectiondump.c
 sectiondump_OBJECTS = sectiondump.$(OBJEXT)
 sectiondump_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
+sha1_tst_SOURCES = sha1-tst.c
+sha1_tst_OBJECTS = sha1-tst.$(OBJEXT)
+sha1_tst_DEPENDENCIES = $(libeu) $(am__DEPENDENCIES_4)
 show_abbrev_SOURCES = show-abbrev.c
 show_abbrev_OBJECTS = show-abbrev.$(OBJEXT)
 show_abbrev_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_1) \
@@ -281,8 +286,9 @@ SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arls.c \
 	funcretval.c funcscopes.c get-aranges.c get-files.c \
 	get-lines.c get-pubnames.c hash.c line2addr.c msg_tst.c \
 	newfile.c newscn.c rdwrmmap.c saridx.c scnnames.c \
-	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
-	test-nlist.c update1.c update2.c update3.c update4.c
+	sectiondump.c sha1-tst.c show-abbrev.c show-die-info.c \
+	showptable.c test-nlist.c update1.c update2.c update3.c \
+	update4.c
 DIST_SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arls.c \
 	arsymtest.c asm-tst1.c asm-tst2.c asm-tst3.c asm-tst4.c \
 	asm-tst5.c asm-tst6.c asm-tst7.c asm-tst8.c asm-tst9.c \
@@ -291,8 +297,9 @@ DIST_SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arls.c \
 	funcretval.c funcscopes.c get-aranges.c get-files.c \
 	get-lines.c get-pubnames.c hash.c line2addr.c msg_tst.c \
 	newfile.c newscn.c rdwrmmap.c saridx.c scnnames.c \
-	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
-	test-nlist.c update1.c update2.c update3.c update4.c
+	sectiondump.c sha1-tst.c show-abbrev.c show-die-info.c \
+	showptable.c test-nlist.c update1.c update2.c update3.c \
+	update4.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -308,6 +315,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -DHAVE_CONFIG_H -D_GNU_SOURCE
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -442,6 +450,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	     run-find-prologues.sh run-allregs.sh run-native-test.sh \
 	     run-addrname-test.sh run-dwfl-bug-offline-rel.sh \
+	     run-dwfl-addr-sect.sh \
 	     testfile15.bz2 testfile15.debug.bz2 \
 	     testfile16.bz2 testfile16.debug.bz2 \
 	     testfile17.bz2 testfile17.debug.bz2 \
@@ -450,14 +459,20 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     testfile21.bz2 testfile21.index.bz2 \
 	     testfile22.bz2 testfile23.bz2 testfile24.bz2 testfile25.bz2 \
 	     testfile26.bz2 testfile27.bz2 \
-	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
+	     coverage.sh test-subr.sh test-wrapper.sh \
+	     run-readelf-test1.sh run-readelf-test2.sh run-readelf-test3.sh \
+	     run-readelf-test4.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
 	     testfile29.bz2 testfile29.rdwr.bz2 \
 	     testfile30.bz2 testfile31.bz2 testfile32.bz2 testfile33.bz2 \
 	     testfile34.bz2 testfile35.bz2 testfile35.debug.bz2 \
 	     testfile36.bz2 testfile36.debug.bz2 \
 	     testfile37.bz2 testfile37.debug.bz2 \
-	     testfile38.bz2 testfile39.bz2 testfile40.bz2 testfile40.debug.bz2
+	     testfile38.bz2 testfile39.bz2 testfile40.bz2 testfile40.debug.bz2 \
+	     testfile41.bz2 testfile42.bz2 testfile43.bz2 \
+	     testfile44.S.bz2 testfile44.expect.bz2 run-disasm-x86.sh \
+	     testfile45.S.bz2 testfile45.expect.bz2 run-disasm-x86-64.sh \
+	     testfile46.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -482,6 +497,7 @@ installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 @STANDALONE_TRUE@libasm = -lasm
 @STANDALONE_FALSE@libebl = ../libebl/libebl.a
 @STANDALONE_TRUE@libebl = -lebl
+@STANDALONE_FALSE@libeu = ../lib/libeu.a
 arextract_LDADD = $(libelf) $(libmudflap)
 arsymtest_LDADD = $(libelf) $(libmudflap)
 newfile_LDADD = $(libelf) $(libmudflap)
@@ -529,6 +545,7 @@ arls_LDADD = $(libelf) $(libmudflap)
 dwfl_bug_fd_leak_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 dwfl_bug_report_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 dwfl_addr_sect_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
+sha1_tst_LDADD = $(libeu) $(libmudflap)
 CLEANFILES = xxx *.gcno *.gcda *gconv
 all: all-am
 
@@ -677,6 +694,9 @@ scnnames$(EXEEXT): $(scnnames_OBJECTS) $(scnnames_DEPENDENCIES)
 sectiondump$(EXEEXT): $(sectiondump_OBJECTS) $(sectiondump_DEPENDENCIES) 
 	@rm -f sectiondump$(EXEEXT)
 	$(LINK) $(sectiondump_OBJECTS) $(sectiondump_LDADD) $(LIBS)
+sha1-tst$(EXEEXT): $(sha1_tst_OBJECTS) $(sha1_tst_DEPENDENCIES) 
+	@rm -f sha1-tst$(EXEEXT)
+	$(LINK) $(sha1_tst_OBJECTS) $(sha1_tst_LDADD) $(LIBS)
 show-abbrev$(EXEEXT): $(show_abbrev_OBJECTS) $(show_abbrev_DEPENDENCIES) 
 	@rm -f show-abbrev$(EXEEXT)
 	$(LINK) $(show_abbrev_OBJECTS) $(show_abbrev_LDADD) $(LIBS)
@@ -745,6 +765,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/saridx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scnnames.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sectiondump.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1-tst.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/show-abbrev.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/show-die-info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showptable.Po@am__quote@

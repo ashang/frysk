@@ -102,7 +102,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 71 "ldscript.y"
+#line 71 "../../../redhat/stock-elfutils/src/ldscript.y"
 {
   uintmax_t num;
   enum expression_tag op;

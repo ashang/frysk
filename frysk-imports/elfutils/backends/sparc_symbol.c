@@ -1,5 +1,5 @@
 /* SPARC specific symbolic name handling.
-   Copyright (C) 2002, 2003, 2005 Red Hat, Inc.
+   Copyright (C) 2002, 2003, 2005, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Jakub Jelinek <jakub@redhat.com>, 2002.
 
@@ -54,4 +54,15 @@ sparc_reloc_simple_type (Ebl *ebl __attribute__ ((unused)), int type)
     default:
       return ELF_T_NUM;
     }
+}
+
+/* Check whether machine flags are valid.  */
+bool
+sparc_machine_flag_check (GElf_Word flags)
+{
+  return ((flags &~ (EF_SPARCV9_MM
+		     | EF_SPARC_LEDATA
+		     | EF_SPARC_32PLUS
+		     | EF_SPARC_SUN_US1
+		     | EF_SPARC_SUN_US3)) == 0);
 }

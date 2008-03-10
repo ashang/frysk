@@ -38,9 +38,9 @@ host_triplet = @host@
 @MUDFLAP_FALSE@noinst_PROGRAMS = $(am__EXEEXT_1)
 @MUDFLAP_TRUE@am_libdw_pic_a_OBJECTS =
 subdir = libdw
-DIST_COMMON = $(euinclude_HEADERS) $(include_HEADERS) \
-	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	ChangeLog
+DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
+	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
 	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/configure.ac
@@ -55,8 +55,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)" \
-	"$(DESTDIR)$(includedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" \
+	"$(DESTDIR)$(pkgincludedir)"
 libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES) $(noinst_LIBRARIES)
 AR = ar
@@ -131,9 +131,9 @@ SOURCES = $(libdw_a_SOURCES) $(libdw_pic_a_SOURCES) \
 	$(libdw_so_SOURCES)
 DIST_SOURCES = $(libdw_a_SOURCES) $(libdw_pic_a_SOURCES) \
 	$(libdw_so_SOURCES)
-euincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 includeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(euinclude_HEADERS) $(include_HEADERS) $(noinst_HEADERS)
+pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(include_HEADERS) $(noinst_HEADERS) $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -149,6 +149,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DIS_LIBDW
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -257,8 +258,7 @@ COMPILE.os = $(filter-out -fprofile-arcs, $(filter-out -ftest-coverage, \
 lib_LIBRARIES = libdw.a
 @MUDFLAP_FALSE@noinst_LIBRARIES = libdw_pic.a
 include_HEADERS = dwarf.h
-euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libdw.h
+pkginclude_HEADERS = libdw.h
 libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_getelf.c \
 		  dwarf_getpubnames.c dwarf_getabbrev.c dwarf_tag.c \
 		  dwarf_error.c dwarf_nextcu.c dwarf_diename.c dwarf_offdie.c \
@@ -493,23 +493,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
-install-euincludeHEADERS: $(euinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(euincludedir)" || $(MKDIR_P) "$(DESTDIR)$(euincludedir)"
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(euincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  $(euincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(euincludedir)/$$f"; \
-	done
-
-uninstall-euincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(euincludedir)/$$f"; \
-	done
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	test -z "$(includedir)" || $(MKDIR_P) "$(DESTDIR)$(includedir)"
@@ -526,6 +509,23 @@ uninstall-includeHEADERS:
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
+	done
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(pkgincludedir)" || $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)"
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
+	done
+
+uninstall-pkgincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -606,7 +606,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 @MUDFLAP_TRUE@install: install-am
@@ -655,7 +655,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-euincludeHEADERS install-includeHEADERS
+install-data-am: install-includeHEADERS install-pkgincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -690,8 +690,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-euincludeHEADERS uninstall-includeHEADERS \
-	uninstall-libLIBRARIES
+uninstall-am: uninstall-includeHEADERS uninstall-libLIBRARIES \
+	uninstall-pkgincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -700,21 +700,23 @@ uninstall-am: uninstall-euincludeHEADERS uninstall-includeHEADERS \
 	ctags distclean distclean-compile distclean-generic \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-euincludeHEADERS install-exec \
-	install-exec-am install-html install-html-am \
-	install-includeHEADERS install-info install-info-am \
-	install-libLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-euincludeHEADERS \
-	uninstall-includeHEADERS uninstall-libLIBRARIES
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-includeHEADERS install-info \
+	install-info-am install-libLIBRARIES install-man install-pdf \
+	install-pdf-am install-pkgincludeHEADERS install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags uninstall uninstall-am uninstall-includeHEADERS \
+	uninstall-libLIBRARIES uninstall-pkgincludeHEADERS
 
 @MUDFLAP_FALSE@libdw.so: $(srcdir)/libdw.map libdw_pic.a \
 @MUDFLAP_FALSE@	  ../libdwfl/libdwfl_pic.a ../libebl/libebl.a \
 @MUDFLAP_FALSE@	  ../libelf/libelf.so
+# The rpath is necessary for libebl because its $ORIGIN use will
+# not fly in a setuid executable that links in libdw.
 @MUDFLAP_FALSE@	$(LINK) -shared -o $@ -Wl,--soname,$@.$(VERSION),-z,defs \
+@MUDFLAP_FALSE@		-Wl,--enable-new-dtags,-rpath,$(pkglibdir) \
 @MUDFLAP_FALSE@		-Wl,--version-script,$<,--no-undefined \
 @MUDFLAP_FALSE@		-Wl,--whole-archive $(filter-out $<,$^) -Wl,--no-whole-archive\
 @MUDFLAP_FALSE@		-ldl

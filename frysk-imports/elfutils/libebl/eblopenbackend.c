@@ -1,5 +1,5 @@
 /* Generate ELF backend handle.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2000,2001,2002,2003,2004,2005,2006,2007,2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -186,8 +186,12 @@ static const char *default_core_note_type_name (uint32_t, char *buf,
 						size_t len);
 static const char *default_object_note_type_name (uint32_t, char *buf,
 						  size_t len);
-static bool default_core_note (const char *name, uint32_t type,
-			       uint32_t descsz, const char *desc);
+static int default_core_note (GElf_Word n_type, GElf_Word descsz,
+			      GElf_Word *regs_offset, size_t *nregloc,
+			      const Ebl_Register_Location **reglocs,
+			      size_t *nitems, const Ebl_Core_Item **);
+static int default_auxv_info (GElf_Xword a_type,
+			      const char **name, const char **format);
 static bool default_object_note (const char *name, uint32_t type,
 				 uint32_t descsz, const char *desc);
 static bool default_debugscn_p (const char *name);
@@ -206,6 +210,10 @@ static ssize_t default_register_info (Ebl *ebl,
 				      const char **prefix,
 				      const char **setname,
 				      int *bits, int *type);
+static bool default_check_object_attribute (Ebl *ebl, const char *vendor,
+					    int tag, uint64_t value,
+					    const char **tag_name,
+					    const char **value_name);
 
 
 static void
@@ -232,6 +240,7 @@ fill_defaults (Ebl *result)
   result->core_note_type_name = default_core_note_type_name;
   result->object_note_type_name = default_object_note_type_name;
   result->core_note = default_core_note;
+  result->auxv_info = default_auxv_info;
   result->object_note = default_object_note;
   result->debugscn_p = default_debugscn_p;
   result->copy_reloc_p = default_copy_reloc_p;
@@ -241,6 +250,8 @@ fill_defaults (Ebl *result)
   result->bss_plt_p = default_bss_plt_p;
   result->return_value_location = default_return_value_location;
   result->register_info = default_register_info;
+  result->check_object_attribute = default_check_object_attribute;
+  result->disasm = NULL;
   result->destr = default_destr;
   result->sysvhash_entrysize = sizeof (Elf32_Word);
 }
@@ -567,19 +578,31 @@ default_core_note_type_name (uint32_t ignore __attribute__ ((unused)),
   return NULL;
 }
 
+static int
+default_auxv_info (GElf_Xword a_type __attribute__ ((unused)),
+		   const char **name __attribute__ ((unused)),
+		   const char **format __attribute__ ((unused)))
+{
+  return 0;
+}
+
+static int
+default_core_note (GElf_Word n_type __attribute__ ((unused)),
+		   GElf_Word descsz __attribute__ ((unused)),
+		   GElf_Word *ro __attribute__ ((unused)),
+		   size_t *nregloc  __attribute__ ((unused)),
+		   const Ebl_Register_Location **reglocs
+		   __attribute__ ((unused)),
+		   size_t *nitems __attribute__ ((unused)),
+		   const Ebl_Core_Item **items __attribute__ ((unused)))
+{
+  return 0;
+}
+
 static const char *
 default_object_note_type_name (uint32_t ignore __attribute__ ((unused)),
 			       char *buf __attribute__ ((unused)),
 			       size_t len __attribute__ ((unused)))
-{
-  return NULL;
-}
-
-static bool
-default_core_note (const char *name __attribute__ ((unused)),
-		   uint32_t type __attribute__ ((unused)),
-		   uint32_t descsz __attribute__ ((unused)),
-		   const char *desc __attribute__ ((unused)))
 {
   return NULL;
 }
@@ -681,4 +704,16 @@ default_register_info (Ebl *ebl __attribute__ ((unused)),
   *bits = -1;
   *type = DW_ATE_void;
   return snprintf (name, namelen, "reg%d", regno);
+}
+
+static bool
+default_check_object_attribute (Ebl *ebl __attribute__ ((unused)),
+				const char *vendor  __attribute__ ((unused)),
+				int tag __attribute__ ((unused)),
+				uint64_t value __attribute__ ((unused)),
+				const char **tag_name, const char **value_name)
+{
+  *tag_name = NULL;
+  *value_name = NULL;
+  return false;
 }

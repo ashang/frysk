@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 ##
-## Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+## Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
 ## This file is part of Red Hat elfutils.
 ##
 ## Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -77,16 +77,19 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-elflint-test.sh run-elflint-self.sh run-ranlib-test.sh \
 	run-ranlib-test2.sh run-ranlib-test3.sh run-ranlib-test4.sh \
 	run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
-	run-find-prologues.sh run-allregs.sh run-readelf-test1.sh \
+	run-find-prologues.sh run-allregs.sh \
+	run-readelf-test1.sh run-readelf-test2.sh run-readelf-test3.sh \
+	run-readelf-test4.sh \
 	run-native-test.sh run-bug1-test.sh \
 	dwfl-bug-addr-overflow run-addrname-test.sh \
 	dwfl-bug-fd-leak dwfl-bug-report \
-	run-dwfl-bug-offline-rel.sh
+	run-dwfl-bug-offline-rel.sh run-dwfl-addr-sect.sh \
+	run-disasm-x86.sh run-disasm-x86-64.sh
 # run-show-ciefde.sh
 
 if !STANDALONE
-noinst_PROGRAMS += msg_tst
-TESTS += msg_tst
+noinst_PROGRAMS += msg_tst sha1-tst
+TESTS += msg_tst sha1-tst
 endif
 
 if HAVE_LIBASM
@@ -112,6 +115,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	     run-find-prologues.sh run-allregs.sh run-native-test.sh \
 	     run-addrname-test.sh run-dwfl-bug-offline-rel.sh \
+	     run-dwfl-addr-sect.sh \
 	     testfile15.bz2 testfile15.debug.bz2 \
 	     testfile16.bz2 testfile16.debug.bz2 \
 	     testfile17.bz2 testfile17.debug.bz2 \
@@ -120,14 +124,20 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     testfile21.bz2 testfile21.index.bz2 \
 	     testfile22.bz2 testfile23.bz2 testfile24.bz2 testfile25.bz2 \
 	     testfile26.bz2 testfile27.bz2 \
-	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
+	     coverage.sh test-subr.sh test-wrapper.sh \
+	     run-readelf-test1.sh run-readelf-test2.sh run-readelf-test3.sh \
+	     run-readelf-test4.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
 	     testfile29.bz2 testfile29.rdwr.bz2 \
 	     testfile30.bz2 testfile31.bz2 testfile32.bz2 testfile33.bz2 \
 	     testfile34.bz2 testfile35.bz2 testfile35.debug.bz2 \
 	     testfile36.bz2 testfile36.debug.bz2 \
 	     testfile37.bz2 testfile37.debug.bz2 \
-	     testfile38.bz2 testfile39.bz2 testfile40.bz2 testfile40.debug.bz2
+	     testfile38.bz2 testfile39.bz2 testfile40.bz2 testfile40.debug.bz2 \
+	     testfile41.bz2 testfile42.bz2 testfile43.bz2 \
+	     testfile44.S.bz2 testfile44.expect.bz2 run-disasm-x86.sh \
+	     testfile45.S.bz2 testfile45.expect.bz2 run-disasm-x86-64.sh \
+	     testfile46.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -166,6 +176,7 @@ libelf = ../libelf/libelf.so
 libasm = ../libasm/libasm.so
 endif
 libebl = ../libebl/libebl.a
+libeu = ../lib/libeu.a
 endif !STANDALONE
 
 arextract_LDADD = $(libelf) $(libmudflap)
@@ -215,6 +226,7 @@ arls_LDADD = $(libelf) $(libmudflap)
 dwfl_bug_fd_leak_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 dwfl_bug_report_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 dwfl_addr_sect_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
+sha1_tst_LDADD = $(libeu) $(libmudflap)
 
 CLEANFILES = xxx *.gcno *.gcda *gconv
 

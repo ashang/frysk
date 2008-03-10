@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Configure input file for elfutils.                     -*-autoconf-*-
 dnl
-dnl Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+dnl Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software Foundation,
 dnl Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 dnl
-AC_INIT([Red Hat elfutils],[0.129],[http://bugzilla.redhat.com/bugzilla/],
+AC_INIT([Red Hat elfutils],[0.133],[http://bugzilla.redhat.com/bugzilla/],
 	[elfutils])
 
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_FILES([config/Makefile])
 
-AC_COPYRIGHT([Copyright (C) 1996-2003, 2004, 2005, 2006, 2007 Red Hat, Inc.])
+AC_COPYRIGHT([Copyright (C) 1996-2007, 2008 Red Hat, Inc.])
 AC_PREREQ(2.59)			dnl Minimum Autoconf version required.
 
 dnl We use GNU make extensions; automake 1.10 defaults to -Wportability.
@@ -134,7 +134,15 @@ if test "$use_mudflap" = fail; then
 fi
 AM_CONDITIONAL(MUDFLAP, test "$use_mudflap" = yes)
 
-# Enable gprof suport.
+dnl enable debugging of branch prediction.
+use_debugpred=0
+AC_ARG_ENABLE([debugpred],
+AC_HELP_STRING([--enable-debugpred],
+[build binaries with support to debug branch prediction]),
+[use_debugpred=1], [use_debugpred=0])
+AC_SUBST([DEBUGPRED], $use_debugpred)
+
+dnl Enable gprof suport.
 AC_ARG_ENABLE([gprof],
 AC_HELP_STRING([--enable-gprof],
 [build binaries with gprof support]), [use_gprof=yes], [use_gprof=no])
@@ -267,8 +275,47 @@ AH_BOTTOM([
 # define ALLOW_UNALIGNED	0
 #endif
 
-#define unlikely(expr) __builtin_expect (expr, 0)
-#define likely(expr) __builtin_expect (expr, 1)
+#if DEBUGPRED
+# ifdef __x86_64__
+asm (".section predict_data, \"aw\"; .previous\n"
+     ".section predict_line, \"a\"; .previous\n"
+     ".section predict_file, \"a\"; .previous");
+#  ifndef PIC
+#   define debugpred__(e, E) \
+  ({ long int _e = !!(e); \
+     asm volatile (".pushsection predict_data; ..predictcnt%=: .quad 0; .quad 0\n" \
+                   ".section predict_line; .quad %c1\n" \
+                   ".section predict_file; .quad %c2; .popsection\n" \
+                   "addq $1,..predictcnt%=(,%0,8)" \
+                   : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__)); \
+    __builtin_expect (_e, E); \
+  })
+#  endif
+# elif defined __i386__
+asm (".section predict_data, \"aw\"; .previous\n"
+     ".section predict_line, \"a\"; .previous\n"
+     ".section predict_file, \"a\"; .previous");
+#  ifndef PIC
+#   define debugpred__(e, E) \
+  ({ long int _e = !!(e); \
+     asm volatile (".pushsection predict_data; ..predictcnt%=: .long 0; .long 0\n" \
+                   ".section predict_line; .long %c1\n" \
+                   ".section predict_file; .long %c2; .popsection\n" \
+                   "incl ..predictcnt%=(,%0,8)" \
+                   : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__)); \
+    __builtin_expect (_e, E); \
+  })
+#  endif
+# endif
+# ifdef debugpred__
+#  define unlikely(e) debugpred__ (e,0)
+#  define likely(e) debugpred__ (e,1)
+# endif
+#endif
+#ifndef likely
+# define unlikely(expr) __builtin_expect (!!(expr), 0)
+# define likely(expr) __builtin_expect (!!(expr), 1)
+#endif
 
 #define obstack_calloc(ob, size) \
   ({ size_t _s = (size); memset (obstack_alloc (ob, _s), '\0', _s); })

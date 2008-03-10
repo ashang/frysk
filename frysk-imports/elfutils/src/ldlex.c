@@ -53,7 +53,7 @@
 #if __STDC_VERSION__ >= 199901L
 
 /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
+ * if you want the limit (max/min) macros for int types.
  */
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS 1
@@ -70,7 +70,7 @@ typedef uint32_t flex_uint32_t;
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
-typedef unsigned char flex_uint8_t; 
+typedef unsigned char flex_uint8_t;
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
 #endif /* ! C99 */
@@ -181,7 +181,7 @@ extern FILE *ldin, *ldout;
 
     /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
      *       access to the local variable yy_act. Since yyless() is a macro, it would break
-     *       existing scanners that call yyless() from OUTSIDE ldlex. 
+     *       existing scanners that call yyless() from OUTSIDE ldlex.
      *       One obvious solution it to make yy_act a global. I tried that, and saw
      *       a 5% performance hit in a non-ldlineno scanner, because yy_act is
      *       normally declared as a register variable-- so it is not worth it.
@@ -193,7 +193,7 @@ extern FILE *ldin, *ldout;
                     if ( ldtext[yyl] == '\n' )\
                         --ldlineno;\
             }while(0)
-    
+
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
@@ -260,7 +260,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -471,7 +471,7 @@ static yyconst flex_int32_t yy_ec[256] =
 static yyconst flex_int32_t yy_meta[67] =
     {   0,
         1,    2,    2,    1,    1,    1,    2,    2,    3,    1,
-        1,    1,    3,    1,    3,    3,    3,    2,    2,    1,
+        1,    3,    3,    1,    3,    3,    3,    2,    2,    1,
         3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
         3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
         3,    3,    3,    3,    3,    2,    1,    2,    3,    3,
@@ -481,30 +481,30 @@ static yyconst flex_int32_t yy_meta[67] =
 
 static yyconst flex_int16_t yy_base[223] =
     {   0,
-        0,  224,    0,  219,  221, 2250,   65,   67, 2250, 2250,
-     2250, 2250,    0, 2250, 2250, 2250,   70,  211,  135,   62,
+        0,  217,    0,  216,  216, 2250,   65,   67, 2250, 2250,
+     2250, 2250,    0, 2250, 2250, 2250,   70,  206,  135,   62,
      2250, 2250, 2250,    0,  186,   70,  127,  146,  179,  210,
       259,  308,  246,   46,    0,  268,  297, 2250, 2250, 2250,
-       42, 2250,   43,   70,    0,    0,  304,    0,   48,  224,
+       25, 2250,   42,   70,    0,    0,  304,    0,   48,  224,
       337,  386,  389,  438,  441,  444,  493,  496,  545,  532,
       554,  583,  589,  638,  634,  641,  672,   73, 2250,  691,
-      695,   47,  161,   49,  160,   96,  728,  747,  751,  780,
+      695,   38,  159,   47,  158,   69,  728,  747,  751,  780,
       784,  813,  819,  842,  848,  871,  877,  900,  908,  929,
-      937,  958,   89,  966,  987,   57,  161,  160,   61,  158,
+      937,  958,   81,  966,  987,   52,  158,  155,   69,  154,
 
-      155,  995, 1018, 1031, 1039, 1070, 1062, 1091, 1120, 1127,
+      153,  995, 1018, 1031, 1039, 1070, 1062, 1091, 1120, 1127,
      1131, 1160, 1171, 1193, 1204, 1164, 1226, 1233,  151, 1237,
-     1266,  142,  134,  124,  115,  112,  111,  102,   99, 1277,
+     1266,  142,  138,  134,  134,  132,  132,  124,  115, 1277,
      1288, 1301, 1322, 1341, 1345, 1374, 1380, 1409, 1430, 1433,
-     1464, 1485, 1488, 1509, 1538,   95,  154,   83,   79,   77,
-      169,   69,   67, 1545, 1549, 1578, 1582, 1589, 1611, 1633,
-     1640, 1644, 1684, 1693, 2250,   58, 2250,  171,  173,   48,
-     2250,  181,  184, 1697, 1728, 1737, 1750, 1772, 1781, 1794,
-     1803, 1825, 2250,   43, 2250, 2250,   37, 2250, 2250, 1834,
-     1847, 1838, 1869, 1878, 1900,  189,  204, 1907, 1929, 1936,
+     1464, 1485, 1488, 1509, 1538,  114,  135,  110,  104,   81,
+      145,   77,   75, 1545, 1549, 1578, 1582, 1589, 1611, 1633,
+     1640, 1644, 1684, 1693, 2250,   68, 2250,  151,  154,   65,
+     2250,  169,  171, 1697, 1728, 1737, 1750, 1772, 1781, 1794,
+     1803, 1825, 2250,   57, 2250, 2250,   53, 2250, 2250, 1834,
+     1847, 1838, 1869, 1878, 1900,  173,  181, 1907, 1929, 1936,
 
      1960, 1967, 2250, 2250, 1989, 1996, 2000, 2040, 2051, 2029,
-     2064, 2085, 2108, 2119, 2142, 2148, 2177, 2250, 2240,   76,
+     2064, 2085, 2108, 2119, 2142, 2148, 2177, 2250, 2240,   89,
      2243, 2246
     } ;
 
@@ -546,24 +546,24 @@ static yyconst flex_int16_t yy_nxt[2317] =
        33,   17,   17,   17,   17,   34,   35,    6,   17,   17,
        17,   17,   17,   17,   17,   36,   17,   17,   37,   17,
        17,   17,   17,   38,   39,   40,   44,   44,   44,   44,
-       46,   44,   44,   46,   46,   46,   50,   50,   45,   46,
-       46,   46,   68,   46,   47,   47,   47,   68,   68,   46,
-       47,  197,   53,   69,   53,   72,   74,  196,   73,   75,
+       46,   44,   44,   46,   46,   46,   50,   50,   72,   46,
+       46,   73,   68,   46,   47,   47,   47,   68,   68,   46,
+       47,   45,   53,   69,   53,   74,   96,   97,   75,  102,
 
-       47,  187,   47,   56,   47,   96,   97,   99,  100,   93,
-       47,  184,   57,  122,   93,   93,   46,  126,  123,   53,
-       69,  173,  127,  172,   47,  119,  102,   47,  102,  170,
-      119,  119,   47,  169,   46,   46,   69,  168,   46,   46,
-       46,   47,   47,   47,   46,   46,   46,  166,   46,   49,
-       49,   50,  153,  102,   46,  167,  167,   47,  152,   47,
-       47,   47,   47,   58,  151,   51,  150,   51,  149,   47,
-      171,  171,  185,  185,  186,  186,   47,   52,   47,   59,
-      148,   46,  188,  188,   47,  189,  189,  147,   47,   47,
-      203,  203,   51,   47,   47,   47,  146,   52,   69,   46,
+       47,  102,   47,   56,   47,   99,  100,  197,  122,   93,
+       47,  196,   57,  123,   93,   93,   46,  119,  187,   53,
+       69,  184,  119,  119,   47,  126,  102,   47,   69,  173,
+      127,  172,   47,  170,   46,   46,  167,  167,   46,   46,
+       46,   47,   47,   47,   46,   46,  171,  171,   46,   49,
+       49,   50,  185,  185,   46,  186,  186,   47,  169,   47,
+       47,   47,   47,   58,  168,   51,  166,   51,  153,   47,
+      188,  188,  189,  189,  203,  203,   47,   52,   47,   59,
+      152,   46,  204,  204,   47,  151,  150,  149,   47,   47,
+      148,  147,   51,   47,   47,   47,  146,   52,   69,   46,
 
-       47,   47,   47,   47,   60,  204,  204,  129,   47,   47,
-      128,   47,  125,  124,  101,   98,   47,   54,   47,   48,
-      218,   47,   43,   55,   47,   47,   47,   41,   47,  218,
+       47,   47,   47,   47,   60,  129,  128,  125,   47,   47,
+      124,   47,  101,   98,   48,  218,   47,   54,   47,   43,
+       41,   47,  218,   55,   47,   47,   47,  218,   47,  218,
       218,  218,  218,  218,  218,  218,   47,  218,   50,   50,
        47,   47,   47,   47,  218,  218,  218,  218,   47,   61,
       218,  218,   47,  218,   53,  218,   53,  218,  218,  218,
@@ -805,24 +805,24 @@ static yyconst flex_int16_t yy_chk[2317] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    7,    7,    8,    8,
-       17,   44,   44,   17,   17,   17,   20,   20,  220,   17,
-       17,   17,   34,   17,   26,   26,   26,   34,   34,   17,
-       49,  187,   20,   34,   20,   41,   43,  184,   41,   43,
+       17,   44,   44,   17,   17,   17,   20,   20,   41,   17,
+       17,   41,   34,   17,   26,   26,   26,   34,   34,   17,
+       49,  220,   20,   34,   20,   43,   72,   72,   43,   76,
 
-       26,  170,   26,   26,   20,   72,   72,   74,   74,   68,
-       49,  166,   26,   96,   68,   68,   17,   99,   96,   20,
-       68,  153,   99,  152,   20,   93,   76,   26,   76,  150,
-       93,   93,   26,  149,   17,   19,   93,  148,   19,   19,
-       19,   27,   27,   27,   19,   19,   19,  146,   19,   19,
-       19,   19,  129,   76,   19,  147,  147,   27,  128,   27,
-       28,   28,   28,   27,  127,   19,  126,   19,  125,   27,
-      151,  151,  168,  168,  169,  169,   28,   19,   28,   28,
-      124,   19,  172,  172,   27,  173,  173,  123,   28,   27,
-      196,  196,   19,   29,   29,   29,  122,   19,  119,   19,
+       26,   76,   26,   26,   20,   74,   74,  187,   96,   68,
+       49,  184,   26,   96,   68,   68,   17,   93,  170,   20,
+       68,  166,   93,   93,   20,   99,   76,   26,   93,  153,
+       99,  152,   26,  150,   17,   19,  147,  147,   19,   19,
+       19,   27,   27,   27,   19,   19,  151,  151,   19,   19,
+       19,   19,  168,  168,   19,  169,  169,   27,  149,   27,
+       28,   28,   28,   27,  148,   19,  146,   19,  129,   27,
+      172,  172,  173,  173,  196,  196,   28,   19,   28,   28,
+      128,   19,  197,  197,   27,  127,  126,  125,   28,   27,
+      124,  123,   19,   29,   29,   29,  122,   19,  119,   19,
 
-       25,   25,   25,   28,   29,  197,  197,  101,   28,   29,
-      100,   29,   98,   97,   75,   73,   25,   25,   25,   18,
-        5,   29,    4,   25,   30,   30,   30,    2,   25,    0,
+       25,   25,   25,   28,   29,  101,  100,   98,   28,   29,
+       97,   29,   75,   73,   18,    5,   25,   25,   25,    4,
+        2,   29,    0,   25,   30,   30,   30,    0,   25,    0,
         0,    0,    0,    0,    0,    0,   29,    0,   50,   50,
        30,   29,   30,   25,    0,    0,    0,    0,   25,   30,
         0,    0,   30,    0,   50,    0,   50,    0,    0,    0,
@@ -1058,8 +1058,8 @@ static yyconst flex_int16_t yy_chk[2317] =
 /* Table of booleans, true if rule could match eol. */
 static yyconst flex_int32_t yy_rule_can_match_eol[51] =
     {   0,
-1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
@@ -1078,7 +1078,7 @@ int ld_flex_debug = 0;
 char *ldtext;
 #line 1 "ldlex.l"
 #line 2 "ldlex.l"
-/* Copyright (C) 2001, 2002, 2003, 2004, 2005 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2004, 2005, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -1189,7 +1189,7 @@ extern int ldwrap (void );
 #endif
 
     static void yyunput (int c,char *buf_ptr  );
-    
+
 #ifndef yytext_ptr
 static void yy_flex_strncpy (char *,yyconst char *,int );
 #endif
@@ -1230,7 +1230,7 @@ static int input (void );
 		{ \
 		int c = '*'; \
 		size_t n; \
-		for ( n = 0; n < max_size && \
+		for ( n = 0; n < (size_t) max_size &&			\
 			     (c = getc( ldin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
 		if ( c == '\n' ) \
@@ -1313,7 +1313,7 @@ YY_DECL
 	register yy_state_type yy_current_state;
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
-    
+
 #line 96 "ldlex.l"
 
 				if (unlikely (ld_scan_version_script))
@@ -1396,7 +1396,7 @@ yy_find_action:
 			int yyl;
 			for ( yyl = 0; yyl < ldleng; ++yyl )
 				if ( ldtext[yyl] == '\n' )
-					   
+
     ldlineno++;
 ;
 			}
@@ -2009,7 +2009,7 @@ static int yy_get_next_buffer (void)
 {
 	register yy_state_type yy_current_state;
 	register char *yy_cp;
-    
+
 	yy_current_state = (yy_start);
 	yy_current_state += YY_AT_BOL();
 
@@ -2064,7 +2064,7 @@ static int yy_get_next_buffer (void)
     static void yyunput (int c, register char * yy_bp )
 {
 	register char *yy_cp;
-    
+
     yy_cp = (yy_c_buf_p);
 
 	/* undo effects of setting up ldtext */
@@ -2111,7 +2111,7 @@ static int yy_get_next_buffer (void)
 
 {
 	int c;
-    
+
 	*(yy_c_buf_p) = (yy_hold_char);
 
 	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
@@ -2174,7 +2174,7 @@ static int yy_get_next_buffer (void)
 
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = (c == '\n');
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_at_bol )
-		   
+
     ldlineno++;
 ;
 
@@ -2184,12 +2184,12 @@ static int yy_get_next_buffer (void)
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
- * 
+ *
  * @note This function does not reset the start condition to @c INITIAL .
  */
     void ldrestart  (FILE * input_file )
 {
-    
+
 	if ( ! YY_CURRENT_BUFFER ){
         ldensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
@@ -2202,11 +2202,11 @@ static int yy_get_next_buffer (void)
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
- * 
+ *
  */
     void ld_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
-    
+
 	/* TODO. We should be able to replace this entire function body
 	 * with
 	 *		ldpop_buffer_state();
@@ -2246,13 +2246,13 @@ static void ld_load_buffer_state  (void)
 /** Allocate and initialize an input buffer state.
  * @param file A readable stream.
  * @param size The character buffer size in bytes. When in doubt, use @c YY_BUF_SIZE.
- * 
+ *
  * @return the allocated buffer state.
  */
     YY_BUFFER_STATE ld_create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	b = (YY_BUFFER_STATE) ldalloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in ld_create_buffer()" );
@@ -2275,11 +2275,11 @@ static void ld_load_buffer_state  (void)
 
 /** Destroy the buffer.
  * @param b a buffer created with ld_create_buffer()
- * 
+ *
  */
     void ld_delete_buffer (YY_BUFFER_STATE  b )
 {
-    
+
 	if ( ! b )
 		return;
 
@@ -2300,7 +2300,7 @@ static void ld_load_buffer_state  (void)
 
 {
 	int oerrno = errno;
-    
+
 	ld_flush_buffer(b );
 
 	b->yy_input_file = file;
@@ -2316,13 +2316,13 @@ static void ld_load_buffer_state  (void)
     }
 
         b->yy_is_interactive = 0;
-    
+
 	errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
- * 
+ *
  */
     void ld_flush_buffer (YY_BUFFER_STATE  b )
 {
@@ -2351,7 +2351,7 @@ static void ld_load_buffer_state  (void)
  *  the current state. This function will allocate the stack
  *  if necessary.
  *  @param new_buffer The new state.
- *  
+ *
  */
 void ldpush_buffer_state (YY_BUFFER_STATE new_buffer )
 {
@@ -2381,7 +2381,7 @@ void ldpush_buffer_state (YY_BUFFER_STATE new_buffer )
 
 /** Removes and deletes the top of the stack, if present.
  *  The next element becomes the new top.
- *  
+ *
  */
 void ldpop_buffer_state (void)
 {
@@ -2405,7 +2405,7 @@ void ldpop_buffer_state (void)
 static void ldensure_buffer_stack (void)
 {
 	int num_to_alloc;
-    
+
 	if (!(yy_buffer_stack)) {
 
 		/* First allocation is just for 2 elements, since we don't know if this
@@ -2416,9 +2416,9 @@ static void ldensure_buffer_stack (void)
 		(yy_buffer_stack) = (struct yy_buffer_state**)ldalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
-		
+
 		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		(yy_buffer_stack_max) = num_to_alloc;
 		(yy_buffer_stack_top) = 0;
 		return;
@@ -2444,13 +2444,13 @@ static void ldensure_buffer_stack (void)
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
- * 
- * @return the newly allocated buffer state object. 
+ *
+ * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE ld_scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	if ( size < 2 ||
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
@@ -2479,14 +2479,14 @@ YY_BUFFER_STATE ld_scan_buffer  (char * base, yy_size_t  size )
 /** Setup the input buffer state to scan a string. The next call to ldlex() will
  * scan from a @e copy of @a str.
  * @param str a NUL-terminated string to scan
- * 
+ *
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       ld_scan_bytes() instead.
  */
 YY_BUFFER_STATE ld_scan_string (yyconst char * yystr )
 {
-    
+
 	return ld_scan_bytes(yystr,strlen(yystr) );
 }
 
@@ -2494,7 +2494,7 @@ YY_BUFFER_STATE ld_scan_string (yyconst char * yystr )
  * scan from a @e copy of @a bytes.
  * @param bytes the byte buffer to scan
  * @param len the number of bytes in the buffer pointed to by @a bytes.
- * 
+ *
  * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE ld_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
@@ -2503,7 +2503,7 @@ YY_BUFFER_STATE ld_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 	char *buf;
 	yy_size_t n;
 	int i;
-    
+
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
 	buf = (char *) ldalloc(n  );
@@ -2557,16 +2557,16 @@ static void yy_fatal_error (yyconst char* msg )
 /* Accessor  methods (get/set functions) to struct members. */
 
 /** Get the current line number.
- * 
+ *
  */
 int ldget_lineno  (void)
 {
-        
+
     return ldlineno;
 }
 
 /** Get the input stream.
- * 
+ *
  */
 FILE *ldget_in  (void)
 {
@@ -2574,7 +2574,7 @@ FILE *ldget_in  (void)
 }
 
 /** Get the output stream.
- * 
+ *
  */
 FILE *ldget_out  (void)
 {
@@ -2582,7 +2582,7 @@ FILE *ldget_out  (void)
 }
 
 /** Get the length of the current token.
- * 
+ *
  */
 int ldget_leng  (void)
 {
@@ -2590,7 +2590,7 @@ int ldget_leng  (void)
 }
 
 /** Get the current token.
- * 
+ *
  */
 
 char *ldget_text  (void)
@@ -2600,18 +2600,18 @@ char *ldget_text  (void)
 
 /** Set the current line number.
  * @param line_number
- * 
+ *
  */
 void ldset_lineno (int  line_number )
 {
-    
+
     ldlineno = line_number;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
  * @param in_str A readable stream.
- * 
+ *
  * @see ld_switch_to_buffer
  */
 void ldset_in (FILE *  in_str )
@@ -2642,7 +2642,7 @@ static int yy_init_globals (void)
 
     /* We do not touch ldlineno unless the option is enabled. */
     ldlineno =  1;
-    
+
     (yy_buffer_stack) = 0;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -2668,7 +2668,7 @@ static int yy_init_globals (void)
 /* ldlex_destroy is for both reentrant and non-reentrant scanners. */
 int ldlex_destroy  (void)
 {
-    
+
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
 		ld_delete_buffer(YY_CURRENT_BUFFER  );
@@ -2893,4 +2893,3 @@ invalid_char (int ch)
 // Local Variables:
 // mode: C
 // End:
-

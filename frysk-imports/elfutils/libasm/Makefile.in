@@ -37,7 +37,7 @@ host_triplet = @host@
 @MUDFLAP_FALSE@noinst_PROGRAMS = $(am__EXEEXT_1)
 @MUDFLAP_TRUE@am_libasm_pic_a_OBJECTS =
 subdir = libasm
-DIST_COMMON = $(euinclude_HEADERS) $(noinst_HEADERS) \
+DIST_COMMON = $(noinst_HEADERS) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
@@ -53,7 +53,7 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)"
 libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES) $(noinst_LIBRARIES)
 AR = ar
@@ -72,7 +72,8 @@ am_libasm_a_OBJECTS = asm_begin.$(OBJEXT) asm_abort.$(OBJEXT) \
 	asm_addint32.$(OBJEXT) asm_adduint32.$(OBJEXT) \
 	asm_addint64.$(OBJEXT) asm_adduint64.$(OBJEXT) \
 	asm_adduleb128.$(OBJEXT) asm_addsleb128.$(OBJEXT) \
-	symbolhash.$(OBJEXT)
+	disasm_begin.$(OBJEXT) disasm_cb.$(OBJEXT) \
+	disasm_end.$(OBJEXT) disasm_str.$(OBJEXT) symbolhash.$(OBJEXT)
 libasm_a_OBJECTS = $(am_libasm_a_OBJECTS)
 libasm_pic_a_AR = $(AR) $(ARFLAGS)
 libasm_pic_a_LIBADD =
@@ -93,8 +94,8 @@ SOURCES = $(libasm_a_SOURCES) $(libasm_pic_a_SOURCES) \
 	$(libasm_so_SOURCES)
 DIST_SOURCES = $(libasm_a_SOURCES) $(libasm_pic_a_SOURCES) \
 	$(libasm_so_SOURCES)
-euincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(euinclude_HEADERS) $(noinst_HEADERS)
+pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(noinst_HEADERS) $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -110,6 +111,7 @@ CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
+DEBUGPRED = @DEBUGPRED@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
@@ -221,8 +223,7 @@ COMPILE.os = $(filter-out -fprofile-arcs, $(filter-out -ftest-coverage, \
 
 lib_LIBRARIES = libasm.a
 @MUDFLAP_FALSE@noinst_LIBRARIES = libasm_pic.a
-euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libasm.h
+pkginclude_HEADERS = libasm.h
 libasm_a_SOURCES = asm_begin.c asm_abort.c asm_end.c asm_error.c \
 		   asm_getelf.c asm_newscn.c asm_newscn_ingrp.c \
 		   asm_newsubscn.c asm_newsym.c asm_newcomsym.c \
@@ -234,6 +235,7 @@ libasm_a_SOURCES = asm_begin.c asm_abort.c asm_end.c asm_error.c \
 		   asm_addint32.c asm_adduint32.c \
 		   asm_addint64.c asm_adduint64.c \
 		   asm_adduleb128.c asm_addsleb128.c \
+		   disasm_begin.c disasm_cb.c disasm_end.c disasm_str.c \
 		   symbolhash.c
 
 @MUDFLAP_FALSE@libasm_pic_a_SOURCES = 
@@ -354,6 +356,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm_newsubscn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm_newsym.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm_scngrp_newsignature.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/disasm_begin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/disasm_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/disasm_end.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/disasm_str.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symbolhash.Po@am__quote@
 
 .c.o:
@@ -369,22 +375,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
-install-euincludeHEADERS: $(euinclude_HEADERS)
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(euincludedir)" || $(MKDIR_P) "$(DESTDIR)$(euincludedir)"
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
+	test -z "$(pkgincludedir)" || $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)"
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(euincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  $(euincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(euincludedir)/$$f"; \
+	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
-uninstall-euincludeHEADERS:
+uninstall-pkgincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(euinclude_HEADERS)'; for p in $$list; do \
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(euincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(euincludedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -465,7 +471,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(euincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 @MUDFLAP_TRUE@install: install-am
@@ -514,7 +520,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-euincludeHEADERS
+install-data-am: install-pkgincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -549,7 +555,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-euincludeHEADERS uninstall-libLIBRARIES
+uninstall-am: uninstall-libLIBRARIES uninstall-pkgincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -558,14 +564,15 @@ uninstall-am: uninstall-euincludeHEADERS uninstall-libLIBRARIES
 	ctags distclean distclean-compile distclean-generic \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-euincludeHEADERS install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLIBRARIES install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-euincludeHEADERS uninstall-libLIBRARIES
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLIBRARIES install-man install-pdf install-pdf-am \
+	install-pkgincludeHEADERS install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-libLIBRARIES \
+	uninstall-pkgincludeHEADERS
 
 @MUDFLAP_FALSE@libasm.so: libasm_pic.a libasm.map
 @MUDFLAP_FALSE@	$(LINK) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \

@@ -1,5 +1,5 @@
 /* Return note type name.
-   Copyright (C) 2002, 2007 Red Hat, Inc.
+   Copyright (C) 2002, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
@@ -86,20 +86,28 @@ ebl_core_note_type_name (ebl, type, buf, len)
 	  KNOWNSTYPE (LWPSTATUS),
 	  KNOWNSTYPE (LWPSINFO),
 	  KNOWNSTYPE (PRFPXREG)
+#undef KNOWNSTYPE
 	};
 
       /* Handle standard names.  */
       if (type < sizeof (knowntypes) / sizeof (knowntypes[0])
 	  && knowntypes[type] != NULL)
 	res = knowntypes[type];
-      else if (type == NT_PRXFPREG)
-	res = "PRXFPREG";
       else
-	{
-	  snprintf (buf, len, "%s: %" PRIu32, gettext ("<unknown>"), type);
+	switch (type)
+	  {
+#define KNOWNSTYPE(name) case NT_##name: res = #name; break
+	    KNOWNSTYPE (PRXFPREG);
+	    KNOWNSTYPE (PPC_VMX);
+	    KNOWNSTYPE (PPC_SPE);
+	    KNOWNSTYPE (386_TLS);
+#undef KNOWNSTYPE
 
-	  res = buf;
-	}
+	  default:
+	    snprintf (buf, len, "%s: %" PRIu32, gettext ("<unknown>"), type);
+
+	    res = buf;
+	  }
     }
 
   return res;

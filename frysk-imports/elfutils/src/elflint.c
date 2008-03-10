@@ -1,5 +1,5 @@
 /* Pedantic checking of ELF files compliance with gABI/psABI spec.
-   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -46,7 +46,12 @@
 
 #include <elf-knowledge.h>
 #include <system.h>
+#include "../libelf/libelfP.h"
+#include "../libelf/common.h"
 #include "../libebl/libeblP.h"
+#include "../libdw/libdwP.h"
+#include "../libdwfl/libdwflP.h"
+#include "../libdw/memory-access.h"
 
 
 /* Name and version of program.  */
@@ -96,6 +101,9 @@ static void process_file (int fd, Elf *elf, const char *prefix,
 			  bool only_one);
 static void process_elf_file (Elf *elf, const char *prefix, const char *suffix,
 			      const char *fname, size_t size, bool only_one);
+static void check_note_section (Ebl *ebl, GElf_Ehdr *ehdr,
+				GElf_Shdr *shdr, int idx);
+
 
 /* Report an error.  */
 #define ERROR(str, args...) \
@@ -236,7 +244,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2007");
+"), "2008");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -584,11 +592,10 @@ check_symtab (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
 	   idx, section_name (ebl, idx));
 
   /* Search for an extended section index table section.  */
-  size_t cnt;
   Elf_Data *xndxdata = NULL;
   Elf32_Word xndxscnidx = 0;
   bool found_xndx = false;
-  for (cnt = 1; cnt < shnum; ++cnt)
+  for (size_t cnt = 1; cnt < shnum; ++cnt)
     if (cnt != (size_t) idx)
       {
 	Elf_Scn *xndxscn = elf_getscn (ebl->elf, cnt);
@@ -614,8 +621,8 @@ section [%2d] '%s': symbol table cannot have more than one extended index sectio
   size_t sh_entsize = gelf_fsize (ebl->elf, ELF_T_SYM, 1, EV_CURRENT);
   if (shdr->sh_entsize != sh_entsize)
     ERROR (gettext ("\
-section [%2zu] '%s': entry size is does not match ElfXX_Sym\n"),
-	   cnt, section_name (ebl, cnt));
+section [%2u] '%s': entry size is does not match ElfXX_Sym\n"),
+	   idx, section_name (ebl, idx));
 
   /* Test the zeroth entry.  */
   GElf_Sym sym_mem;
@@ -650,7 +657,7 @@ section [%2d] '%s': XINDEX for zeroth entry not zero\n"),
 	       xndxscnidx, section_name (ebl, xndxscnidx));
     }
 
-  for (cnt = 1; cnt < shdr->sh_size / sh_entsize; ++cnt)
+  for (size_t cnt = 1; cnt < shdr->sh_size / sh_entsize; ++cnt)
     {
       sym = gelf_getsymshndx (data, xndxdata, cnt, &sym_mem, &xndx);
       if (sym == NULL)
@@ -734,13 +741,14 @@ section [%2d] '%s': symbol %zu: function in COMMON section is nonsense\n"),
 	  destshdr = gelf_getshdr (elf_getscn (ebl->elf, xndx), &destshdr_mem);
 	  if (destshdr != NULL)
 	    {
+	      GElf_Addr sh_addr = (ehdr->e_type == ET_REL ? 0
+				   : destshdr->sh_addr);
 	      if (GELF_ST_TYPE (sym->st_info) != STT_TLS)
 		{
 		  if (! ebl_check_special_symbol (ebl, ehdr, sym, name,
 						  destshdr))
 		    {
-		      if ((sym->st_value - destshdr->sh_addr)
-			  > destshdr->sh_size)
+		      if (sym->st_value - sh_addr > destshdr->sh_size)
 			{
 			  /* GNU ld has severe bugs.  When it decides to remove
 			     empty sections it leaves symbols referencing them
@@ -757,7 +765,7 @@ section [%2d] '%s': symbol %zu: function in COMMON section is nonsense\n"),
 section [%2d] '%s': symbol %zu: st_value out of bounds\n"),
 				   idx, section_name (ebl, idx), cnt);
 			}
-		      else if ((sym->st_value - destshdr->sh_addr
+		      else if ((sym->st_value - sh_addr
 				+ sym->st_size) > destshdr->sh_size)
 			ERROR (gettext ("\
 section [%2d] '%s': symbol %zu does not fit completely in referenced section [%2d] '%s'\n"),
@@ -897,18 +905,24 @@ section [%2d] '%s': symbol %zu: non-local section symbol\n"),
 		    destshdr = gelf_getshdr (gotscn, &destshdr_mem);
 		}
 
-	      const char *sname = (destshdr == NULL ? NULL
+	      const char *sname = ((destshdr == NULL || xndx == SHN_UNDEF)
+				   ? NULL
 				   : elf_strptr (ebl->elf, ehdr->e_shstrndx,
 						 destshdr->sh_name));
 	      if (sname == NULL)
-		ERROR (gettext ("\
-section [%2d] '%s': _GLOBAL_OFFSET_TABLE_ symbol refers to bad section\n"),
-		       idx, section_name (ebl, idx));
+		{
+		  if (xndx != SHN_UNDEF || ehdr->e_type != ET_REL)
+		    ERROR (gettext ("\
+section [%2d] '%s': _GLOBAL_OFFSET_TABLE_ symbol refers to \
+bad section [%2d]\n"),
+			   idx, section_name (ebl, idx), xndx);
+		}
 	      else if (strcmp (sname, ".got.plt") != 0
 		       && strcmp (sname, ".got") != 0)
 		ERROR (gettext ("\
-section [%2d] '%s': _GLOBAL_OFFSET_TABLE_ symbol refers to '%s' section\n"),
-		       idx, section_name (ebl, idx), sname);
+section [%2d] '%s': _GLOBAL_OFFSET_TABLE_ symbol refers to \
+section [%2d] '%s'\n"),
+		       idx, section_name (ebl, idx), xndx, sname);
 
 	      if (destshdr != NULL)
 		{
@@ -916,7 +930,8 @@ section [%2d] '%s': _GLOBAL_OFFSET_TABLE_ symbol refers to '%s' section\n"),
 		  if (!ebl_check_special_symbol (ebl, ehdr, sym, name,
 						 destshdr))
 		    {
-		      if (sym->st_value != destshdr->sh_addr)
+		      if (ehdr->e_type != ET_REL
+			  && sym->st_value != destshdr->sh_addr)
 			/* This test is more strict than the psABIs which
 			   usually allow the symbol to be in the middle of
 			   the .got section, allowing negative offsets.  */
@@ -1321,7 +1336,8 @@ section [%2d] '%s': relocation %zu: only symbol '_GLOBAL_OFFSET_TABLE_' can be u
     {
       if (destshdr != NULL
 	  && GELF_R_TYPE (r_info) != 0
-	  && (r_offset - destshdr->sh_addr) >= destshdr->sh_size)
+	  && (r_offset - (ehdr->e_type == ET_REL ? 0
+			  : destshdr->sh_addr)) >= destshdr->sh_size)
 	ERROR (gettext ("\
 section [%2d] '%s': relocation %zu: offset out of bounds\n"),
 	       idx, section_name (ebl, idx), cnt);
@@ -1515,7 +1531,6 @@ check_dynamic (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
       [DT_JMPREL] = { [DT_PLTRELSZ] = true, [DT_PLTREL] = true },
       [DT_RUNPATH] = { [DT_STRTAB] = true },
       [DT_PLTREL] = { [DT_JMPREL] = true },
-      [DT_PLTRELSZ] = { [DT_JMPREL] = true }
     };
   bool has_dt[DT_NUM];
   bool has_val_dt[DT_VALNUM];
@@ -2100,7 +2115,8 @@ section [%2d] '%s': hash chain for bucket %zu lower than symbol index bias\n"),
 		  && GELF_ST_TYPE (sym->st_info) != STT_FUNC)
 		ERROR (gettext ("\
 section [%2d] '%s': symbol %u referenced in chain for bucket %zu is undefined\n"),
-		       idx, section_name (ebl, idx), symidx, cnt / 2 - 1);
+		       idx, section_name (ebl, idx), symidx,
+		       cnt - (4 + bitmask_words));
 
 	      const char *symname = elf_strptr (ebl->elf, symshdr->sh_link,
 						sym->st_name);
@@ -2110,7 +2126,8 @@ section [%2d] '%s': symbol %u referenced in chain for bucket %zu is undefined\n"
 		  if ((hval & ~1u) != (chainhash & ~1u))
 		    ERROR (gettext ("\
 section [%2d] '%s': hash value for symbol %u in chain for bucket %zu wrong\n"),
-			   idx, section_name (ebl, idx), symidx, cnt / 2 - 1);
+			   idx, section_name (ebl, idx), symidx,
+			   cnt - (4 + bitmask_words));
 
 		  /* Set the bits in the bitmask.  */
 		  size_t maskidx = (hval / classbits) & bitmask_idxmask;
@@ -2140,12 +2157,12 @@ section [%2d] '%s': hash value for symbol %u in chain for bucket %zu wrong\n"),
       if (symidx - symbias >= maxidx)
 	ERROR (gettext ("\
 section [%2d] '%s': hash chain for bucket %zu out of bounds\n"),
-	       idx, section_name (ebl, idx), cnt / 2 - 1);
+	       idx, section_name (ebl, idx), cnt - (4 + bitmask_words));
       else if (symshdr != NULL
 	       && symidx > symshdr->sh_size / symshdr->sh_entsize)
 	ERROR (gettext ("\
 section [%2d] '%s': symbol reference in chain for bucket %zu out of bounds\n"),
-	       idx, section_name (ebl, idx), cnt / 2 - 1);
+	       idx, section_name (ebl, idx), cnt - (4 + bitmask_words));
     }
 
   if (memcmp (collected.p32, bitmask.p32, bitmask_words * sizeof (Elf32_Word)))
@@ -2390,9 +2407,9 @@ section [%2d] '%s': section groups only allowed in relocatable object files\n"),
     }
 
   /* Check that sh_link is an index of a symbol table.  */
+  Elf_Scn *symscn = elf_getscn (ebl->elf, shdr->sh_link);
   GElf_Shdr symshdr_mem;
-  GElf_Shdr *symshdr = gelf_getshdr (elf_getscn (ebl->elf, shdr->sh_link),
-				     &symshdr_mem);
+  GElf_Shdr *symshdr = gelf_getshdr (symscn, &symshdr_mem);
   if (symshdr == NULL)
     ERROR (gettext ("section [%2d] '%s': cannot get symbol table: %s\n"),
 	   idx, section_name (ebl, idx), elf_errmsg (-1));
@@ -2411,6 +2428,19 @@ section [%2d] '%s': invalid symbol index in sh_info\n"),
 
       if (shdr->sh_flags != 0)
 	ERROR (gettext ("section [%2d] '%s': sh_flags not zero\n"),
+	       idx, section_name (ebl, idx));
+
+      GElf_Sym sym_data;
+      GElf_Sym *sym = gelf_getsym (elf_getdata (symscn, NULL), shdr->sh_info,
+				   &sym_data);
+      if (sym == NULL)
+	ERROR (gettext ("\
+section [%2d] '%s': cannot get symbol for signature\n"),
+	       idx, section_name (ebl, idx));
+      else if (strcmp (elf_strptr (ebl->elf, symshdr->sh_link, sym->st_name),
+		       "") == 0)
+	ERROR (gettext ("\
+section [%2d] '%s': signature symbol canot be empty string\n"),
 	       idx, section_name (ebl, idx));
 
       if (be_strict
@@ -3123,6 +3153,194 @@ section [%2d] '%s': unknown parent version '%s'\n"),
     }
 }
 
+static void
+check_attributes (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
+{
+  if (shdr->sh_size == 0)
+    {
+      ERROR (gettext ("section [%2d] '%s': empty object attributes section\n"),
+	     idx, section_name (ebl, idx));
+      return;
+    }
+
+  Elf_Data *data = elf_rawdata (elf_getscn (ebl->elf, idx), NULL);
+  if (data == NULL || data->d_size == 0)
+    {
+      ERROR (gettext ("section [%2d] '%s': cannot get section data\n"),
+	     idx, section_name (ebl, idx));
+      return;
+    }
+
+  inline size_t pos (const unsigned char *p)
+  {
+    return p - (const unsigned char *) data->d_buf;
+  }
+
+  const unsigned char *p = data->d_buf;
+  if (*p++ != 'A')
+    {
+      ERROR (gettext ("section [%2d] '%s': unrecognized attribute format\n"),
+	     idx, section_name (ebl, idx));
+      return;
+    }
+
+  inline size_t left (void)
+  {
+    return (const unsigned char *) data->d_buf + data->d_size - p;
+  }
+
+  while (left () >= 4)
+    {
+      uint32_t len;
+      memcpy (&len, p, sizeof len);
+
+      if (len == 0)
+	ERROR (gettext ("\
+section [%2d] '%s': offset %zu: zero length field in attribute section\n"),
+	       idx, section_name (ebl, idx), pos (p));
+
+      if (MY_ELFDATA != ehdr->e_ident[EI_DATA])
+	CONVERT (len);
+
+      if (len > left ())
+	{
+	  ERROR (gettext ("\
+section [%2d] '%s': offset %zu: invalid length in attribute section\n"),
+		 idx, section_name (ebl, idx), pos (p));
+	  break;
+	}
+
+      const unsigned char *name = p + sizeof len;
+      p += len;
+
+      unsigned const char *q = memchr (name, '\0', len);
+      if (q == NULL)
+	{
+	  ERROR (gettext ("\
+section [%2d] '%s': offset %zu: unterminated vendor name string\n"),
+		 idx, section_name (ebl, idx), pos (p));
+	  continue;
+	}
+      ++q;
+
+      if (q - name == sizeof "gnu" && !memcmp (name, "gnu", sizeof "gnu"))
+	while (q < p)
+	  {
+	    unsigned const char *chunk = q;
+
+	    unsigned int subsection_tag;
+	    get_uleb128 (subsection_tag, q);
+
+	    if (q >= p)
+	      {
+		ERROR (gettext ("\
+section [%2d] '%s': offset %zu: endless ULEB128 in attribute subsection tag\n"),
+		       idx, section_name (ebl, idx), pos (chunk));
+		break;
+	      }
+
+	    uint32_t subsection_len;
+	    if (p - q < (ptrdiff_t) sizeof subsection_len)
+	      {
+		ERROR (gettext ("\
+section [%2d] '%s': offset %zu: truncated attribute section\n"),
+		       idx, section_name (ebl, idx), pos (q));
+		break;
+	      }
+
+	    memcpy (&subsection_len, q, sizeof subsection_len);
+	    if (subsection_len == 0)
+	      {
+		ERROR (gettext ("\
+section [%2d] '%s': offset %zu: zero length field in attribute subsection\n"),
+		       idx, section_name (ebl, idx), pos (q));
+
+		q += sizeof subsection_len;
+		continue;
+	      }
+
+	    if (MY_ELFDATA != ehdr->e_ident[EI_DATA])
+	      CONVERT (subsection_len);
+
+	    if (p - chunk < (ptrdiff_t) subsection_len)
+	      {
+		ERROR (gettext ("\
+section [%2d] '%s': offset %zu: invalid length in attribute subsection\n"),
+		       idx, section_name (ebl, idx), pos (q));
+		break;
+	      }
+
+	    const unsigned char *subsection_end = chunk + subsection_len;
+	    chunk = q;
+	    q = subsection_end;
+
+	    if (subsection_tag != 1) /* Tag_File */
+	      ERROR (gettext ("\
+section [%2d] '%s': offset %zu: attribute subsection has unexpected tag %u\n"),
+		     idx, section_name (ebl, idx), pos (chunk), subsection_tag);
+	    else
+	      {
+		chunk += sizeof subsection_len;
+		while (chunk < q)
+		  {
+		    unsigned int tag;
+		    get_uleb128 (tag, chunk);
+
+		    uint64_t value = 0;
+		    const unsigned char *r = chunk;
+		    if (tag == 32 || (tag & 1) == 0)
+		      {
+			get_uleb128 (value, r);
+			if (r > q)
+			  {
+			    ERROR (gettext ("\
+section [%2d] '%s': offset %zu: endless ULEB128 in attribute tag\n"),
+				   idx, section_name (ebl, idx), pos (chunk));
+			    break;
+			  }
+		      }
+		    if (tag == 32 || (tag & 1) != 0)
+		      {
+			r = memchr (r, '\0', q - r);
+			if (r == NULL)
+			  {
+			    ERROR (gettext ("\
+section [%2d] '%s': offset %zu: unterminated string in attribute\n"),
+				   idx, section_name (ebl, idx), pos (chunk));
+			    break;
+			  }
+			++r;
+		      }
+
+		    const char *tag_name = NULL;
+		    const char *value_name = NULL;
+		    if (!ebl_check_object_attribute (ebl, (const char *) name,
+						     tag, value,
+						     &tag_name, &value_name))
+		      ERROR (gettext ("\
+section [%2d] '%s': offset %zu: unrecognized attribute tag %u\n"),
+			     idx, section_name (ebl, idx), pos (chunk), tag);
+		    else if ((tag & 1) == 0 && value_name == NULL)
+		      ERROR (gettext ("\
+section [%2d] '%s': offset %zu: unrecognized %s attribute value %" PRIu64 "\n"),
+			     idx, section_name (ebl, idx), pos (chunk),
+			     tag_name, value);
+
+		    chunk = r;
+		  }
+	      }
+	  }
+      else
+	ERROR (gettext ("\
+section [%2d] '%s': offset %zu: vendor '%s' unknown\n"),
+	       idx, section_name (ebl, idx), pos (p), name);
+    }
+
+  if (left () != 0)
+    ERROR (gettext ("\
+section [%2d] '%s': offset %zu: extra bytes after last attribute section\n"),
+	   idx, section_name (ebl, idx), pos (p));
+}
 
 static bool has_loadable_segment;
 static bool has_interp_segment;
@@ -3132,7 +3350,7 @@ static const struct
   const char *name;
   size_t namelen;
   GElf_Word type;
-  enum { unused, exact, atleast } attrflag;
+  enum { unused, exact, atleast, exact_or_gnuld } attrflag;
   GElf_Word attr;
   GElf_Word attr2;
 } special_sections[] =
@@ -3142,7 +3360,8 @@ static const struct
     { ".comment", 8, SHT_PROGBITS, exact, 0, 0 },
     { ".data", 6, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE, 0 },
     { ".data1", 7, SHT_PROGBITS, exact, SHF_ALLOC | SHF_WRITE, 0 },
-    { ".debug", 7, SHT_PROGBITS, exact, 0, 0 },
+    { ".debug_str", 11, SHT_PROGBITS, exact_or_gnuld, SHF_MERGE | SHF_STRINGS, 0 },
+    { ".debug", 6, SHT_PROGBITS, exact, 0, 0 },
     { ".dynamic", 9, SHT_DYNAMIC, atleast, SHF_ALLOC, SHF_WRITE },
     { ".dynstr", 8, SHT_STRTAB, exact, SHF_ALLOC, 0 },
     { ".dynsym", 8, SHT_DYNSYM, exact, SHF_ALLOC, 0 },
@@ -3173,11 +3392,16 @@ static const struct
     /* The following are GNU extensions.  */
     { ".gnu.version", 13, SHT_GNU_versym, exact, SHF_ALLOC, 0 },
     { ".gnu.version_d", 15, SHT_GNU_verdef, exact, SHF_ALLOC, 0 },
-    { ".gnu.version_r", 15, SHT_GNU_verneed, exact, SHF_ALLOC, 0 }
+    { ".gnu.version_r", 15, SHT_GNU_verneed, exact, SHF_ALLOC, 0 },
+    { ".gnu.attributes", 16, SHT_GNU_ATTRIBUTES, exact, 0, 0 },
   };
 #define nspecial_sections \
   (sizeof (special_sections) / sizeof (special_sections[0]))
 
+#define IS_KNOWN_SPECIAL(idx, string, prefix)			      \
+  (special_sections[idx].namelen == sizeof string - (prefix ? 1 : 0)  \
+   && !memcmp (special_sections[idx].name, string, \
+	       sizeof string - (prefix ? 1 : 0)))
 
 static void
 check_sections (Ebl *ebl, GElf_Ehdr *ehdr)
@@ -3259,13 +3483,18 @@ cannot get section header for section [%2zu] '%s': %s\n"),
 		char stbuf3[100];
 
 		GElf_Word good_type = special_sections[s].type;
-		if (special_sections[s].namelen == sizeof ".plt" &&
-		    !memcmp (special_sections[s].name, ".plt", sizeof ".plt")
+		if (IS_KNOWN_SPECIAL (s, ".plt", false)
 		    && ebl_bss_plt_p (ebl, ehdr))
 		  good_type = SHT_NOBITS;
 
+		/* In a debuginfo file, any normal section can be SHT_NOBITS.
+		   This is only invalid for DWARF sections and .shstrtab.  */
 		if (shdr->sh_type != good_type
-		    && !(is_debuginfo && shdr->sh_type == SHT_NOBITS))
+		    && (shdr->sh_type != SHT_NOBITS
+			|| !is_debuginfo
+			|| IS_KNOWN_SPECIAL (s, ".debug_str", false)
+			|| IS_KNOWN_SPECIAL (s, ".debug", true)
+			|| IS_KNOWN_SPECIAL (s, ".shstrtab", false)))
 		  ERROR (gettext ("\
 section [%2d] '%s' has wrong type: expected %s, is %s\n"),
 			 (int) cnt, scnname,
@@ -3274,12 +3503,14 @@ section [%2d] '%s' has wrong type: expected %s, is %s\n"),
 			 ebl_section_type_name (ebl, shdr->sh_type,
 						stbuf2, sizeof (stbuf2)));
 
-		if (special_sections[s].attrflag == exact)
+		if (special_sections[s].attrflag == exact
+		    || special_sections[s].attrflag == exact_or_gnuld)
 		  {
 		    /* Except for the link order and group bit all the
 		       other bits should match exactly.  */
 		    if ((shdr->sh_flags & ~(SHF_LINK_ORDER | SHF_GROUP))
-			!= special_sections[s].attr)
+			!= special_sections[s].attr
+			&& (special_sections[s].attrflag == exact || !gnuld))
 		      ERROR (gettext ("\
 section [%2zu] '%s' has wrong flags: expected %s, is %s\n"),
 			     cnt, scnname,
@@ -3377,6 +3608,7 @@ section [%2zu] '%s': size not multiple of entry size\n"),
 	ERROR (gettext ("cannot get section header\n"));
 
       if (shdr->sh_type >= SHT_NUM
+	  && shdr->sh_type != SHT_GNU_ATTRIBUTES
 	  && shdr->sh_type != SHT_GNU_LIBLIST
 	  && shdr->sh_type != SHT_CHECKSUM
 	  && shdr->sh_type != SHT_GNU_verdef
@@ -3548,6 +3780,10 @@ section [%2zu] '%s': relocatable files cannot have dynamic symbol tables\n"),
 	  check_group (ebl, ehdr, shdr, cnt);
 	  break;
 
+	case SHT_NOTE:
+	  check_note_section (ebl, ehdr, shdr, cnt);
+	  break;
+
 	case SHT_GNU_versym:
 	  /* We cannot process this section now since we have no guarantee
 	     that the verneed and verdef sections have already been read.
@@ -3563,6 +3799,10 @@ section [%2zu] '%s': relocatable files cannot have dynamic symbol tables\n"),
 
 	case SHT_GNU_verdef:
 	  check_verdef (ebl, shdr, cnt);
+	  break;
+
+	case SHT_GNU_ATTRIBUTES:
+	  check_attributes (ebl, ehdr, shdr, cnt);
 	  break;
 
 	default:
@@ -3614,6 +3854,86 @@ no .gnu.versym section present but .gnu.versym_d or .gnu.versym_r section exist\
 }
 
 
+static GElf_Off
+check_note_data (Ebl *ebl, const GElf_Ehdr *ehdr,
+		 Elf_Data *data, int shndx, int phndx, GElf_Off start)
+{
+  size_t offset = 0;
+  size_t last_offset = 0;
+  GElf_Nhdr nhdr;
+  size_t name_offset;
+  size_t desc_offset;
+  while (offset < data->d_size
+	 && (offset = gelf_getnote (data, offset,
+				    &nhdr, &name_offset, &desc_offset)) > 0)
+    {
+      last_offset = offset;
+
+      /* Make sure it is one of the note types we know about.  */
+      if (ehdr->e_type == ET_CORE)
+	switch (nhdr.n_type)
+	  {
+	  case NT_PRSTATUS:
+	  case NT_FPREGSET:
+	  case NT_PRPSINFO:
+	  case NT_TASKSTRUCT:		/* NT_PRXREG on Solaris.  */
+	  case NT_PLATFORM:
+	  case NT_AUXV:
+	  case NT_GWINDOWS:
+	  case NT_ASRS:
+	  case NT_PSTATUS:
+	  case NT_PSINFO:
+	  case NT_PRCRED:
+	  case NT_UTSNAME:
+	  case NT_LWPSTATUS:
+	  case NT_LWPSINFO:
+	  case NT_PRFPXREG:
+	    /* Known type.  */
+	    break;
+
+	  default:
+	    if (shndx == 0)
+	      ERROR (gettext ("\
+phdr[%d]: unknown core file note type %" PRIu32 " at offset %" PRIu64 "\n"),
+		     phndx, (uint32_t) nhdr.n_type, start + offset);
+	    else
+	      ERROR (gettext ("\
+section [%2d] '%s': unknown core file note type %" PRIu32
+			      " at offset %Zu\n"),
+		     shndx, section_name (ebl, shndx),
+		     (uint32_t) nhdr.n_type, offset);
+	  }
+      else
+	switch (nhdr.n_type)
+	  {
+	  case NT_GNU_ABI_TAG:
+	  case NT_GNU_HWCAP:
+	  case NT_GNU_BUILD_ID:
+	    break;
+
+	  case 0:
+	    /* Linux vDSOs use a type 0 note for the kernel version word.  */
+	    if (nhdr.n_namesz == sizeof "Linux"
+		&& !memcmp (data->d_buf + name_offset, "Linux", sizeof "Linux"))
+	      break;
+
+	  default:
+	    if (shndx == 0)
+	      ERROR (gettext ("\
+phdr[%d]: unknown object file note type %" PRIu32 " at offset %Zu\n"),
+		     phndx, (uint32_t) nhdr.n_type, offset);
+	    else
+	      ERROR (gettext ("\
+section [%2d] '%s': unknown object file note type %" PRIu32
+			      " at offset %Zu\n"),
+		     shndx, section_name (ebl, shndx),
+		     (uint32_t) nhdr.n_type, offset);
+	  }
+    }
+
+  return last_offset;
+}
+
 static void
 check_note (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Phdr *phdr, int cnt)
 {
@@ -3627,152 +3947,54 @@ phdr[%d]: no note entries defined for the type of file\n"),
     /* The p_offset values in a separate debug file are bogus.  */
     return;
 
-  char *notemem = gelf_rawchunk (ebl->elf, phdr->p_offset, phdr->p_filesz);
-  if (notemem == NULL)
+  if (phdr->p_filesz == 0)
     return;
 
-  /* ELF64 files often use note section entries in the 32-bit format.
-     The p_align field is set to 8 in case the 64-bit format is used.
-     In case the p_align value is 0 or 4 the 32-bit format is
-     used.  */
-  GElf_Xword align = phdr->p_align == 0 || phdr->p_align == 4 ? 4 : 8;
-#define ALIGNED_LEN(len) (((len) + align - 1) & ~(align - 1))
+  GElf_Off notes_size = 0;
+  Elf_Data *data = elf_getdata_rawchunk (ebl->elf,
+					 phdr->p_offset, phdr->p_filesz,
+					 ELF_T_NHDR);
+  if (data != NULL)
+    notes_size = check_note_data (ebl, ehdr, data, 0, cnt, phdr->p_offset);
 
-  GElf_Xword idx = 0;
-  while (idx < phdr->p_filesz)
-    {
-      uint64_t namesz;
-      uint64_t descsz;
-      uint64_t type;
-      uint32_t namesz32;
-      uint32_t descsz32;
-
-      if (align == 4)
-	{
-	  uint32_t *ptr = (uint32_t *) (notemem + idx);
-
-	  if ((__BYTE_ORDER == __LITTLE_ENDIAN
-	       && ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
-	      || (__BYTE_ORDER == __BIG_ENDIAN
-		  && ehdr->e_ident[EI_DATA] == ELFDATA2LSB))
-	    {
-	      namesz32 = namesz = bswap_32 (*ptr);
-	      ++ptr;
-	      descsz32 = descsz = bswap_32 (*ptr);
-	      ++ptr;
-	      type = bswap_32 (*ptr);
-	    }
-	  else
-	    {
-	      namesz32 = namesz = *ptr++;
-	      descsz32 = descsz = *ptr++;
-	      type = *ptr;
-	    }
-	}
-      else
-	{
-	  uint64_t *ptr = (uint64_t *) (notemem + idx);
-	  uint32_t *ptr32 = (uint32_t *) (notemem + idx);
-
-	  if ((__BYTE_ORDER == __LITTLE_ENDIAN
-	       && ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
-	      || (__BYTE_ORDER == __BIG_ENDIAN
-		  && ehdr->e_ident[EI_DATA] == ELFDATA2LSB))
-	    {
-	      namesz = bswap_64 (*ptr);
-	      ++ptr;
-	      descsz = bswap_64 (*ptr);
-	      ++ptr;
-	      type = bswap_64 (*ptr);
-
-	      namesz32 = bswap_32 (*ptr32);
-	      ++ptr32;
-	      descsz32 = bswap_32 (*ptr32);
-	    }
-	  else
-	    {
-	      namesz = *ptr++;
-	      descsz = *ptr++;
-	      type = *ptr;
-
-	      namesz32 = *ptr32++;
-	      descsz32 = *ptr32;
-	    }
-	}
-
-      if (idx + 3 * align > phdr->p_filesz
-	  || (idx + 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz)
-	      > phdr->p_filesz))
-	{
-	  if (ehdr->e_ident[EI_CLASS] == ELFCLASS64
-	      && idx + 3 * 4 <= phdr->p_filesz
-	      && (idx + 3 * 4 + ALIGNED_LEN (namesz32) + ALIGNED_LEN (descsz32)
-		  <= phdr->p_filesz))
-	    ERROR (gettext ("\
-phdr[%d]: note entries probably in form of a 32-bit ELF file\n"), cnt);
-	  else
-	    ERROR (gettext ("phdr[%d]: extra %zu bytes after last note\n"),
-		   cnt, (size_t) (phdr->p_filesz - idx));
-	  break;
-	}
-
-      /* Make sure it is one of the note types we know about.  */
-      if (ehdr->e_type == ET_CORE)
-	{
-	  switch (type)
-	    {
-	    case NT_PRSTATUS:
-	    case NT_FPREGSET:
-	    case NT_PRPSINFO:
-	    case NT_TASKSTRUCT:		/* NT_PRXREG on Solaris.  */
-	    case NT_PLATFORM:
-	    case NT_AUXV:
-	    case NT_GWINDOWS:
-	    case NT_ASRS:
-	    case NT_PSTATUS:
-	    case NT_PSINFO:
-	    case NT_PRCRED:
-	    case NT_UTSNAME:
-	    case NT_LWPSTATUS:
-	    case NT_LWPSINFO:
-	    case NT_PRFPXREG:
-	      /* Known type.  */
-	      break;
-
-	    default:
-	      ERROR (gettext ("\
-phdr[%d]: unknown core file note type %" PRIu64 " at offset %" PRIu64 "\n"),
-		     cnt, type, idx);
-	    }
-	}
-      else
-	switch (type)
-	  {
-	  case NT_GNU_ABI_TAG:	/* aka NT_VERSION */
-	  case NT_GNU_HWCAP:
-	  case NT_GNU_BUILD_ID:
-	    /* Known type.  */
-	    break;
-
-	  case 0:
-	    /* Linux vDSOs use a type 0 note for the kernel version word.  */
-	    if (namesz == sizeof "Linux"
-		&& !memcmp (notemem + idx + 3 * align, "Linux", sizeof "Linux"))
-	      break;
-
-	  default:
-	    ERROR (gettext ("\
-phdr[%d]: unknown object file note type %" PRIu64 " at offset %" PRIu64 "\n"),
-		   cnt, type, idx);
-	  }
-
-      /* Move to the next entry.  */
-      idx += 3 * align + ALIGNED_LEN (namesz) + ALIGNED_LEN (descsz);
-    }
-
-  gelf_freechunk (ebl->elf, notemem);
+  if (notes_size == 0)
+    ERROR (gettext ("phdr[%d]: cannot get content of note section: %s\n"),
+	   cnt, elf_errmsg (-1));
+  else if (notes_size != phdr->p_filesz)
+    ERROR (gettext ("phdr[%d]: extra %" PRIu64 " bytes after last note\n"),
+	   cnt, phdr->p_filesz - notes_size);
 }
 
+static void
+check_note_section (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
+{
+  if (shdr->sh_size == 0)
+    return;
+
+  Elf_Data *data = elf_getdata (elf_getscn (ebl->elf, idx), NULL);
+  if (data == NULL)
+    {
+      ERROR (gettext ("section [%2d] '%s': cannot get section data\n"),
+	     idx, section_name (ebl, idx));
+      return;
+    }
+
+  if (ehdr->e_type != ET_CORE && ehdr->e_type != ET_REL
+      && ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN)
+    ERROR (gettext ("\
+section [%2d] '%s': no note entries defined for the type of file\n"),
+	     idx, section_name (ebl, idx));
+
+  GElf_Off notes_size = check_note_data (ebl, ehdr, data, idx, 0, 0);
+
+  if (notes_size == 0)
+    ERROR (gettext ("section [%2d] '%s': cannot get content of note section\n"),
+	   idx, section_name (ebl, idx));
+  else if (notes_size != shdr->sh_size)
+    ERROR (gettext ("section [%2d] '%s': extra %" PRIu64
+		    " bytes after last note\n"),
+	   idx, section_name (ebl, idx), shdr->sh_size - notes_size);
+}
 
 static void
 check_program_header (Ebl *ebl, GElf_Ehdr *ehdr)
@@ -3997,3 +4219,6 @@ process_elf_file (Elf *elf, const char *prefix, const char *suffix,
   /* Free the resources.  */
   ebl_closebackend (ebl);
 }
+
+
+#include "debugpred.h"

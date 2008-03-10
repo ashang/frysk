@@ -1,5 +1,5 @@
 /* This file defines generic ELF types, structures, and macros.
-   Copyright (C) 1999, 2000, 2001, 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2004, 2005, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -327,11 +327,20 @@ extern int gelf_update_verdaux (Elf_Data *__data, int __offset,
 				GElf_Verdaux *__src);
 
 
-/* Retrieve uninterpreted chunk of the file contents.  */
-extern char *gelf_rawchunk (Elf *__elf, GElf_Off __offset, GElf_Word __size);
+/* Get auxv entry at the given index.  */
+extern GElf_auxv_t *gelf_getauxv (Elf_Data *__data, int __ndx,
+				  GElf_auxv_t *__dst);
 
-/* Release uninterpreted chunk of the file contents.  */
-extern void gelf_freechunk (Elf *__elf, char *__ptr);
+/* Update auxv entry at the given index.  */
+extern int gelf_update_auxv (Elf_Data *__data, int __ndx, GElf_auxv_t *__src);
+
+
+/* Get note header at the given offset into the data, and the offsets of
+   the note's name and descriptor data.  Returns the offset of the next
+   note header, or 0 for an invalid offset or corrupt note header.  */
+extern size_t gelf_getnote (Elf_Data *__data, size_t __offset,
+			    GElf_Nhdr *__result,
+			    size_t *__name_offset, size_t *__desc_offset);
 
 
 /* Compute simple checksum from permanent parts of the ELF file.  */

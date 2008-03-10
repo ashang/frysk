@@ -51,6 +51,7 @@
 #define _LIBEBLP_H 1
 
 #include <gelf.h>
+#include <libasm.h>
 #include <libebl.h>
 #include <libintl.h>
 

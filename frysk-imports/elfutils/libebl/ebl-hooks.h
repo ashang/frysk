@@ -107,11 +107,20 @@ const char *EBLHOOK(core_note_type_name) (uint32_t, char *, size_t);
 /* Name of a note entry type for object files.  */
 const char *EBLHOOK(object_note_type_name) (uint32_t, char *, size_t);
 
-/* Handle core note.  */
-bool EBLHOOK(core_note) (const char *, uint32_t, uint32_t, const char *);
+/* Describe core note format.  */
+int EBLHOOK(core_note) (GElf_Word, GElf_Word, GElf_Word *, size_t *,
+			const Ebl_Register_Location **,
+			size_t *, const Ebl_Core_Item **);
 
 /* Handle object file note.  */
 bool EBLHOOK(object_note) (const char *, uint32_t, uint32_t, const char *);
+
+/* Check object attribute.  */
+bool EBLHOOK(check_object_attribute) (Ebl *, const char *, int, uint64_t,
+				      const char **, const char **);
+
+/* Describe auxv element type.  */
+int EBLHOOK(auxv_info) (GElf_Xword, const char **, const char **);
 
 /* Check section name for being that of a debug informatino section.  */
 bool EBLHOOK(debugscn_p) (const char *);
@@ -142,6 +151,11 @@ ssize_t EBLHOOK(register_info) (Ebl *ebl,
 				int regno, char *name, size_t namelen,
 				const char **prefix, const char **setname,
 				int *bits, int *type);
+
+/* Disassembler function.  */
+int EBLHOOK(disasm) (const uint8_t **startp, const uint8_t *end,
+		     GElf_Addr addr, const char *fmt, DisasmOutputCB_t outcb,
+		     DisasmGetSymCB_t symcb, void *outcbarg, void *symcbarg);
 
 
 /* Destructor for ELF backend handle.  */
