@@ -1,3 +1,7 @@
+2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-libfunccall.c: New test program for TestLibFunctionStepFrame.
+
 2008-02-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-steps.c: new test program.
