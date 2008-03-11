@@ -1,5 +1,7 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestMemory.java: Delete.
+
 	* SyscallExaminer.java: Delete.
 
 	* Proc.java (getMainTask()): Make abstract.
