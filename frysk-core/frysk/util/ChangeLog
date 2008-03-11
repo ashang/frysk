@@ -1,3 +1,8 @@
+2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* ProcRunUtil.java (.parseCommand): Pass template proc
+	to host for creating live proc.
+
 2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FCatch.java: Remove cached stack trace if	new stack
