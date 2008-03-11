@@ -1,5 +1,8 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFindProc.java (ProcCounter): Delete.
+	(doFindProc(SlaveOffspring)): Replace doFindProc(SlaveOffspring,int).
+
 	* TestRun.java: Do not use ProcCounter.  Use
 	StopEventLoopWhenProcTerminates.
 

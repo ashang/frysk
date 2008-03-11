@@ -40,38 +40,23 @@
 
 package frysk.proc;
 
-import java.util.Observable;
 import frysk.rsl.Log;
-import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
 public class TestFindProc extends TestLib {
     private static final Log fine = Log.fine(TestFindProc.class);
 
-  class ProcCounter
-      implements Observer
-  {
-
-    int count = 0;
-    public void update (Observable o, Object arg)
-    {
-    count++;
-    }
-    public int getCount ()
-    {
-      return count;
-    }
-  }
-
     class MyFinder implements FindProc {
 	private final int expectedId;
+	Proc proc;
 	public MyFinder(int pid) {
 	    expectedId = pid;
 	}
 	public void procFound(Proc proc) {
 	    fine.log("procFound", proc, "parent", proc.getParent());
 	    assertEquals("procId", expectedId, proc.getPid());
+	    this.proc = proc;
 	    Manager.eventLoop.requestStop();
 	}
 	public void procNotFound(int pid) {
@@ -79,54 +64,34 @@ public class TestFindProc extends TestLib {
 	}
     }
 
-  public void testFindProcDetached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
-    doFindProc(ackProc, 1);
-  }
+    public void testFindProcDetached() {
+	SlaveOffspring ackProc = SlaveOffspring.createChild();
+	doFindProc(ackProc);
+    }
   
-  public void testFindProcAttached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-    
-    //expect no additional processes to be added to the procPool.
-    doFindProc(ackProc, 0);
-  }
+    public void testFindProcAttached() {
+	SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
+	//expect no additional processes to be added to the procPool.
+	doFindProc(ackProc);
+    }
   
-  public void testFindProcAckDaemon ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
-    doFindProc(ackProc, 1);
-  }
+    public void testFindProcAckDaemon() {
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+	doFindProc(ackProc);
+    }
 
-  public void doFindProc (SlaveOffspring ackProc, int expectedCount)
-  {
-   
-    ProcCounter o = new ProcCounter();
-    Manager.host.observableProcAddedXXX.addObserver(o);
-
-    
-    /*
-     * This finds out how many processes are associated with the frysk process.
-     * For example: init->gnome terminal->bash->frysk.
-     */
-    Manager.host.getSelf();
-    int preFind = o.getCount();
-
-
-    /*
-     * Find out how many processes are associated with the test process.
-     * Should be just the one.
-     */
-    FindProc finder = new MyFinder(ackProc.getPid().intValue());
-    Manager.host.requestProc(ackProc.getPid().intValue(), finder);
-    assertRunUntilStop("testFindProc");
-
-    int postFind = o.getCount();
-
-    assertEquals(expectedCount, postFind - preFind);
-    
-  }
+    private void doFindProc(SlaveOffspring ackProc) {
+	// This finds out how many processes are associated with the
+	// frysk process.  For example: init->gnome
+	// terminal->bash->frysk.
+	Manager.host.getSelf();
+	// Find out how many processes are associated with the test
+	// process.  Should be just the one.
+	MyFinder finder = new MyFinder(ackProc.getPid().intValue());
+	Manager.host.requestProc(ackProc.getPid().intValue(), finder);
+	assertRunUntilStop("testFindProc");
+	assertNotNull("finder got proc", finder.proc);
+    }
   
     public void testFindAndRefreshFailed() {
 	FindProc finder = new FindProc() {
