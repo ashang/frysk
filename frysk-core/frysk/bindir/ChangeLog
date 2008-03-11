@@ -1,3 +1,7 @@
+2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* TestFcatch.java (testFcatchFollowsPATH): New test
+	
 2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFcatch.java (testFcatchFollowsForks): enabled

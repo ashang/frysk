@@ -64,5 +64,16 @@ public class TestFcatch extends TestLib {
 	e.expect("in main");
     }
     
+    public void testFcatchFollowsPATH() {
+
+	TearDownExpect e = new TearDownExpect(new String[] {
+		Config.getBinFile("fcatch").getAbsolutePath(),
+		"ls",
+		Config.getPkgLibSrcDir()
+	    });
+	// just look for main.
+	e.expect("funit-3forks");
+    }
+    
     
 }
