@@ -1,5 +1,8 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRun.java: Do not use ProcCounter.  Use
+	StopEventLoopWhenProcTerminates.
+
 	* StressTestAbandon.java: Update to match Offspring.
 	* TestProcTasksObserver.java: Ditto.
 	* TestProcGet.java: Ditto.
