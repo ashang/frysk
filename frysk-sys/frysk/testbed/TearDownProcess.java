@@ -76,7 +76,9 @@ public class TearDownProcess {
 	fine.log("add", pid);
 	// Had better not try to register process one.
 	if (pid.intValue() == 1)
-	    throw new RuntimeException("killing process one during teardown");
+	    throw new RuntimeException("teardown init process: " + pid);
+	if (pid.intValue() <= 0)
+	    throw new RuntimeException("teardown process invalid: " + pid);
 	pidsToKillDuringTearDown.add(pid);
     }
 

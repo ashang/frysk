@@ -1,3 +1,9 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTearDownProcess.java (testInvalidPid()): New.
+	(testInitPid()): New.
+	* TearDownProcess.java (add(ProcessIdentifier)): Validate PID.
+
 2008-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TearDownProcess.java: Update to match frysk.sys.Wait.
