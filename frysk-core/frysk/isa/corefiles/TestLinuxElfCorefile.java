@@ -248,7 +248,6 @@ public class TestLinuxElfCorefile
     MemoryMap[] liveMaps = ackProc.getMaps();
     
     for(int i=0; i<liveMaps.length; i++) {
-	System.out.println(liveMaps[i].name);
 	if (liveMaps[i].name.equals("[stack]"))
 	    stackMap = liveMaps[i];
 	if (liveMaps[i].name.equals("[vdso]")) 
