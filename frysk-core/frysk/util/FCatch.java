@@ -73,7 +73,7 @@ public class FCatch {
      */
     private void printStackTrace(Task task, SignalStack signalStack) {
 	printWriter.println("\n" + task.getProc().getPid() + "."
-		+ task.getTid() + " was terminated with signal "
+		+ task.getTid() + " terminated with signal "
 		+ signalStack.signal);
 	printWriter.println(signalStack.stack);
 	printWriter.flush();
@@ -86,9 +86,17 @@ public class FCatch {
     class CatchObserver implements TaskObserver.Terminated, TaskObserver.Signaled{
 
 	public Action updateTerminated(Task task, Signal signal, int value) {
-	    SignalStack signalStack = (SignalStack) signaledTasks.get(task);
-	    if (signalStack != null && signal.equals(signalStack.signal)) {
+	    SignalStack signalStack = (SignalStack) signaledTasks.remove(task);
+	    if (signalStack != null && signal != null && signal.equals(signalStack.signal)) {
 		printStackTrace(task, signalStack);
+	    }else{
+		// if the main thread exited print out a message that the process
+		// terminated safely 
+		if(task.getTid() == task.getProc().getPid()){
+		    printWriter.println(task.getProc().getPid() + "."
+				+ task.getTid() + " terminated normally");
+		    printWriter.flush();
+		}
 	    }
 	    return Action.CONTINUE;
 	}
@@ -103,6 +111,7 @@ public class FCatch {
 	    SignalStack signalStack = new SignalStack();
 	    signalStack.signal = signal;
 	    signalStack.stack = stringWriter.getBuffer().toString();
+	    signaledTasks.remove(task);
 	    signaledTasks.put(task, signalStack);
 	    
 	    return Action.CONTINUE;
