@@ -51,19 +51,17 @@ public class TestFcatch extends TestLib {
 		Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
 	    });
 	// just look for main.
-	e.expect(" in main ");
+	e.expect("in main");
     }
     
     public void testFcatchFollowsForks() {
-	if(unresolved(4536)){
-	    return;
-	}
+
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("fcatch").getAbsolutePath(),
 		Config.getPkgLibFile("funit-3forks").getAbsolutePath()
 	    });
 	// just look for main.
-	e.expect(" in main ");
+	e.expect("in main");
     }
     
     

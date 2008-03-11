@@ -1,3 +1,8 @@
+2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFcatch.java (testFcatchFollowsForks): enabled
+	and corrected test.
+
 2008-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fcatch.java: Moved the bulk of the code to FCatch.
