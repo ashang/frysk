@@ -117,10 +117,13 @@ public abstract class Proc implements Comparable {
 
     /**
      * @return The main task for this process
+     *
+     * XXX: Rather than getting the main task and manipulating that,
+     * it should be possible to instead manipulate the proc - for
+     * instance asking the proc to notify of fork/exec/clone events.
+     * At present this is implemented by ProcBlockAction.
      */
-    public Task getMainTask() {
-	return (Task) taskPool.get(new TaskId(this.getPid()));
-    }
+    public abstract Task getMainTask();
   
     /**
      * Return the Proc's command line argument list

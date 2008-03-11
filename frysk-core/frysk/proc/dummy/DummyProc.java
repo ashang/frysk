@@ -42,6 +42,7 @@ package frysk.proc.dummy;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 
 public class DummyProc extends Proc {
     public DummyProc(DummyHost host, int pid) {
@@ -51,6 +52,10 @@ public class DummyProc extends Proc {
 	this(new DummyHost(), 42);
     }
   
+    public Task getMainTask() {
+	return null;
+    }
+
     public String getCommand() {
 	return "Foo";
     }

@@ -82,6 +82,7 @@ public class LinuxPtraceProc extends LiveProc {
 	this.stat = stat;
 	this.breakpoints = new BreakpointAddresses(this);
     }
+
     /**
      * Create a new, definitely attached, definitely running fork of
      * Task.
@@ -102,7 +103,20 @@ public class LinuxPtraceProc extends LiveProc {
     }
     private final HashMap tasks = new HashMap();
 
-    private Auxv[] auxv;
+    public Task getMainTask() {
+	if (mainTask == null) {
+	    if (tasks.size() == 0) {
+		// Detached, make up a main task.
+		mainTask = new LinuxPtraceTask(this, pid);
+	    } else {
+		// Hopefully attached, extract the main task.
+		mainTask = (LinuxPtraceTask)tasks.get(pid);
+	    }
+	}
+	return mainTask;
+    }
+    private LinuxPtraceTask mainTask;
+
     public Auxv[] getAuxv() {
 	if (auxv == null) {
 	    class BuildAuxv extends AuxvBuilder {
@@ -125,6 +139,7 @@ public class LinuxPtraceProc extends LiveProc {
 	}
 	return auxv;
     }
+    private Auxv[] auxv;
 
     private MemoryMap[] maps;
 

@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java (getMainTask()): Implement.
+
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProc.java: Update to match MemoryMap.

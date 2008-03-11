@@ -364,9 +364,9 @@ class LinuxCoreInfo {
     }
 
     /**
-     * Find and create the core tasks.
+     * Find and create the core tasks; return the main task.
      */
-    void constructTasks(LinuxCoreProc proc) {
+    LinuxCoreTask constructTasks(LinuxCoreProc proc) {
 	// Two methods of whether Floating Point note data exists.  In
 	// userland generated core-dumps there is no way to test if
 	// floating point data operations have actually occurred, so
@@ -376,7 +376,7 @@ class LinuxCoreInfo {
 	// note data is written per thread by analyzing to see if that
 	// thread has performed Floating Point operations. If it has,
 	// it will write NT_FPREGSET, and if it hasn't it won't.
-    
+	LinuxCoreTask mainTask = null;
 	if (elfFPRegs.length == elfTasks.length) {
 	    // The number of NT_FPREGSET note objects is equal to the
 	    // the number of NT_PRSTATUS note objects, then no do not
@@ -387,8 +387,11 @@ class LinuxCoreInfo {
 		ElfPrXFPRegSet xregSet = null;
 		if (elfXFPRegs.length > 0)
 		    xregSet = elfXFPRegs[i];
-		new LinuxCoreTask(proc, elfTasks[i], elfFPRegs[i],
-				  xregSet, isa);
+		LinuxCoreTask task = new LinuxCoreTask(proc, elfTasks[i],
+						       elfFPRegs[i], xregSet,
+						       isa);
+		if (task.getTid() == proc.getPid())
+		    mainTask = task;
 	    }
 	} else {
 	    // Otherwise add only NT_FPREGSET data if pr_fpvalid is >
@@ -398,19 +401,25 @@ class LinuxCoreInfo {
 	    // correctly.
 	    int fpCount = 0;
 	    for (int i = 0; i < elfTasks.length; i++) {
+		LinuxCoreTask task;
 		if (elfTasks[i].getPrFPValid() > 0) {
 		    // xfpregsets accompany fp registers on a 1:1
 		    // basis but only on some architectures.
 		    ElfPrXFPRegSet xregSet = null;
 		    if (elfXFPRegs.length > 0)
 			xregSet = elfXFPRegs[fpCount];
-		    new LinuxCoreTask(proc, elfTasks[i],
-				      elfFPRegs[fpCount],
-				      xregSet, isa);
+		    task = new LinuxCoreTask(proc, elfTasks[i],
+					     elfFPRegs[fpCount],
+					     xregSet, isa);
 		    fpCount++;
-		} else
-		    new LinuxCoreTask(proc, elfTasks[i],  null, null, isa);
+		} else {
+		    task = new LinuxCoreTask(proc, elfTasks[i],  null, null,
+					     isa);
+		}
+		if (task.getTid() == proc.getPid())
+		    mainTask = task;
 	    }
 	}
+	return mainTask;
     }
 }
