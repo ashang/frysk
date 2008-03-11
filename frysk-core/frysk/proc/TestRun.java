@@ -42,7 +42,7 @@ package frysk.proc;
 
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcTerminates;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
 
@@ -87,7 +87,7 @@ public class TestRun
     assertRunUntilStop("run \"rm\" to entry for tid");
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcTerminates(createdObserver.proc);
+    new StopEventLoopWhenProcTerminated(createdObserver.proc);
 
     // Run the event loop, cap it at 5 seconds.
     assertRunUntilStop("run \"rm\" to exit");
@@ -137,7 +137,7 @@ public class TestRun
     assertTrue("tmp file exists", tmpFile.stillExists());
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcTerminates(createdObserver.proc);
+    new StopEventLoopWhenProcTerminated(createdObserver.proc);
 
     // Unblock the attached task and resume the event loop. This
     // will allow the "rm" command to run to completion.

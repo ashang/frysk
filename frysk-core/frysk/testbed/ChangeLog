@@ -1,5 +1,10 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* StopEventLoopWhenProcTerminated.java: Rename
+	StopEventLoopWhenProcTerminates.java.
+	(StopEventLoopWhenProcTerminated(Offspring)): New.
+	* TestStopEventLoopWhenProcTerminates.java: Update.
+
 	* TestLib.java (assertRunToFindProc(ProcessIdentifier)): New.
 	* Offspring.java (assertRunToFindProc()): New.
 	(assertFindProcAndTasks()): Delete.

@@ -1,5 +1,9 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRun.java: Update to match StopEventLoopWhenProcTerminated.
+	* TestTaskForkedObserver.java: Do not use ProcCounter or
+	StopEventLoopWhenProcRemoved.
+
 	* TestFindProc.java (ProcCounter): Delete.
 	(doFindProc(SlaveOffspring)): Replace doFindProc(SlaveOffspring,int).
 

@@ -50,14 +50,14 @@ import frysk.sys.ProcessIdentifier;
 
 /**
  * An observer that stops the eventloop when the process with the
- * given pid terminates.
+ * given pid generates a terminated event.
  */
 
-public class StopEventLoopWhenProcTerminates extends TaskObserverBase
+public class StopEventLoopWhenProcTerminated extends TaskObserverBase
     implements TaskObserver.Terminated
 {
     private static final Log fine
-	= Log.fine(StopEventLoopWhenProcTerminates.class);
+	= Log.fine(StopEventLoopWhenProcTerminated.class);
 
     public boolean terminated;
     public Signal signal;
@@ -68,12 +68,16 @@ public class StopEventLoopWhenProcTerminates extends TaskObserverBase
 	return proc.toString();
     }
 
-    public StopEventLoopWhenProcTerminates(Proc proc) {
+    public StopEventLoopWhenProcTerminated(Proc proc) {
 	proc.getMainTask().requestAddTerminatedObserver(this);
     }
 
-    public StopEventLoopWhenProcTerminates(ProcessIdentifier pid) {
+    public StopEventLoopWhenProcTerminated(ProcessIdentifier pid) {
 	this(TestLib.assertRunToFindProc(pid));
+    }
+
+    public StopEventLoopWhenProcTerminated(Offspring offspring) {
+	this(offspring.assertRunToFindProc());
     }
 
     public Action updateTerminated(Task task, Signal signal, int status) {

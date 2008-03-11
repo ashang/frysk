@@ -59,8 +59,8 @@ public class TestStopEventLoopWhenProcTerminates extends TestLib {
 		hello, "world"
 	    });
 	fine.log("adding stopper");
-	StopEventLoopWhenProcTerminates stopper
-	    = new StopEventLoopWhenProcTerminates(daemon.getPid());
+	StopEventLoopWhenProcTerminated stopper
+	    = new StopEventLoopWhenProcTerminated(daemon.getPid());
 	fine.log("unblocking daemon");
 	daemon.requestUnblock();
 	assertRunUntilStop("running hello-world to end");
@@ -74,8 +74,8 @@ public class TestStopEventLoopWhenProcTerminates extends TestLib {
 		hello
 	    });
 	fine.log("adding stopper");
-	StopEventLoopWhenProcTerminates stopper
-	    = new StopEventLoopWhenProcTerminates(daemon.getPid());
+	StopEventLoopWhenProcTerminated stopper
+	    = new StopEventLoopWhenProcTerminated(daemon.getPid());
 	fine.log("unblocking daemon");
 	daemon.requestUnblock();
 	assertRunUntilStop("running hello-world to end");
