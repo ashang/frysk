@@ -1,3 +1,8 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* CompilerVersionFactory.java: Use LogFactory.
+	* TypeEntry.java: Ditto.
+
 2008-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoStackFactory.java: Added DEFAULT options.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ package frysk.debuginfo;
 
 import frysk.isa.ISA;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.scopes.SourceLocation;
 import frysk.value.Access;
 import frysk.value.ArrayType;
@@ -78,8 +79,8 @@ import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
 public class TypeEntry {
-    static protected Log fine = Log.fine(TypeEntry.class);
-    static protected Log finest = Log.finest(TypeEntry.class);
+    static protected Log fine = LogFactory.fine(TypeEntry.class);
+    static protected Log finest = LogFactory.finest(TypeEntry.class);
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 

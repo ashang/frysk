@@ -1,5 +1,7 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* StatState.java: Use LogFactory.
+
 	* TestLib.java (addToTearDown(Task)): New.
 	(addToTearDown(Proc)): New.
 	(setUp()): Check if Host.observableProcAddedXXX is null.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ import frysk.debuginfo.ValueUnavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.scopes.SourceLocation;
 
 /**
@@ -62,8 +63,8 @@ import frysk.scopes.SourceLocation;
 
 public class Variable extends ObjectDeclaration{
     
-    private static Log fine = Log.fine(Variable.class);
-    private static Log finest = Log.finest(Variable.class);
+    private static Log fine = LogFactory.fine(Variable.class);
+    private static Log finest = LogFactory.finest(Variable.class);
     
     private Type type;
     private final DwarfDie variableDie;

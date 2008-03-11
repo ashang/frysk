@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Use LogFactory.
+
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Signal.java-sh (kill, tkill): Add String name parameter.

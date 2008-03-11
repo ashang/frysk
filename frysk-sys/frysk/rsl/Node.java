@@ -77,7 +77,7 @@ public final class Node {
      * Package private; the root node.
      */
     Node() {
-	this(null, "<root>", new Setting(Level.NONE));
+	this(null, "<root>", new Setting(Level.DEFAULT));
     }
 
     public String toString() {

@@ -1,5 +1,7 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* CorefileByteBuffer.java: Use LogFactory.
+
 	* LinuxExeProc.java (getMainTask()): Implement.
 	* LinuxCoreProc.java (getMainTask()): Implement.
 	* LinuxCoreInfo.java (constructTasks(LinuxCoreInfo)): Return the

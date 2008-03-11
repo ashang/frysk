@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Cursor.java: Use LogFactory.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Unwind.java: Use frysk.rsl.

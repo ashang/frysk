@@ -57,6 +57,9 @@ public final class LogFactory {
     public static Node get(String path) {
 	return get(root, path);
     }
+    public static Log warning(String klass) {
+	return get(klass).get(Level.WARNING);
+    }
     public static Log fine(String klass) {
 	return get(klass).get(Level.FINE);
     }
@@ -80,6 +83,9 @@ public final class LogFactory {
      */
     public static Node get(Class klass) {
 	return get(root, klass);
+    }
+    public static Log warning(Class klass) {
+	return get(klass).get(Level.WARNING);
     }
     public static Log fine(Class klass) {
 	return get(klass).get(Level.FINE);

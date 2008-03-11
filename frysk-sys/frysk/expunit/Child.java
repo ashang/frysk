@@ -44,14 +44,15 @@ import frysk.sys.ProcessIdentifier;
 import frysk.sys.PseudoTerminal;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 /**
  * The child being waited on.
  */
 
 class Child {
-    static protected Log fine = Log.fine(Child.class);
-    static private Log finest = Log.finest(Child.class);
+    static protected Log fine = LogFactory.fine(Child.class);
+    static private Log finest = LogFactory.finest(Child.class);
 
     private final PseudoTerminal child;
     private final ProcessIdentifier pid;

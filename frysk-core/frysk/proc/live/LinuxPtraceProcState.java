@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.proc.Observation;
 
 /**
@@ -51,8 +52,8 @@ import frysk.proc.Observation;
  */
 
 abstract class LinuxPtraceProcState extends State {
-    private static final Log fine = Log.fine(LinuxPtraceProcState.class);
-    private static final Log finest = Log.finest(LinuxPtraceProcState.class);
+    private static final Log fine = LogFactory.fine(LinuxPtraceProcState.class);
+    private static final Log finest = LogFactory.finest(LinuxPtraceProcState.class);
 
     LinuxPtraceProcState(String state) {
 	super (state);

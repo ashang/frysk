@@ -103,16 +103,11 @@ public final class Log {
     }
 
     /**
-     * For convenience, grab the FINE logger.
+     * For convenience, since this is the most common case, grab the
+     * FINE logger.  For other loggers use LogFactory.
      */
     public static Log fine(Class klass) {
 	return LogFactory.fine(klass);
-    }
-    /**
-     * For convenience, grab the FINEST logger.
-     */
-    public static Log finest(Class klass) {
-	return LogFactory.finest(klass);
     }
 
     // Static?

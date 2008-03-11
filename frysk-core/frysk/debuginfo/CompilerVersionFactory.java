@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,11 +41,12 @@ package frysk.debuginfo;
 
 import java.util.HashMap;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 public class CompilerVersionFactory {
     private static HashMap compilerVersions = new HashMap();
-    protected static Log fine = Log.fine(CompilerVersionFactory.class);
-    protected static Log finest = Log.finest(CompilerVersionFactory.class);
+    protected static Log fine = LogFactory.fine(CompilerVersionFactory.class);
+    protected static Log finest = LogFactory.finest(CompilerVersionFactory.class);
 
     public static CompilerVersion getCompilerVersion(String compiler) {
 	if (compilerVersions.containsKey(compiler))

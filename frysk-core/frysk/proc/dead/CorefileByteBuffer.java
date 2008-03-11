@@ -49,6 +49,7 @@ import lib.dwfl.ElfException;
 import lib.dwfl.ElfPHeader;
 import inua.eio.ByteBuffer;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 public class CorefileByteBuffer extends ByteBuffer {
 
@@ -59,7 +60,7 @@ public class CorefileByteBuffer extends ByteBuffer {
   StatelessFile coreFileRaw = null;
   boolean fileOpen = false;
     
-  private static final Log finest = Log.finest(CorefileByteBuffer.class);
+  private static final Log finest = LogFactory.finest(CorefileByteBuffer.class);
 
   private CorefileByteBuffer(File file, long lowerExtreem, 
 			     long upperExtreem, 

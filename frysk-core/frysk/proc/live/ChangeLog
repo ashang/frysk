@@ -1,5 +1,7 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Use LogFactory.
+
 	* TestTaskObserverBlocked.java: Register offspring with
 	TearDownProcess.
 

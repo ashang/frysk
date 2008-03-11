@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Child.java: Use LogFinest.
+
 2008-02-08  Mark Wielaard  <mark@klomp.org>
 
 	* Child.java (expectMilliseconds): Pass miliseconds to
