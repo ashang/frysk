@@ -59,12 +59,12 @@ public class TestProcStopped extends TestLib {
 
     private void stopped(SlaveOffspring ackProc) {
 	ackProc.assertSendStop();
-	Proc proc = ackProc.assertFindProcAndTasks();
+	Proc proc = ackProc.assertRunToFindProc();
 	new ProcBlockAction(proc, new MyTester());
     }
 
     private void running(SlaveOffspring ackProc) {
-	Proc proc = ackProc.assertFindProcAndTasks();
+	Proc proc = ackProc.assertRunToFindProc();
 	new ProcBlockAction(proc, new MyTester());
     }
 

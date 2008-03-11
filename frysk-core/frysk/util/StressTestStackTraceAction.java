@@ -78,7 +78,7 @@ public class StressTestStackTraceAction extends TestLib {
       
     int threads = 2;
     FunitThreadsOffspring ackProc = new FunitThreadsOffspring(threads);
-    final Proc proc = ackProc.assertFindProcAndTasks();
+    final Proc proc = ackProc.assertRunToFindProc();
 
     PrintStackOptions options = new PrintStackOptions();
     options.setNumberOfFrames(20);

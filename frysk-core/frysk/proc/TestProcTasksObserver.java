@@ -61,7 +61,7 @@ public class TestProcTasksObserver extends TestLib {
      */
     public void manyExistingThread(SlaveOffspring ackProcess)
     {
-	final Proc proc = ackProcess.assertFindProcAndTasks();
+	final Proc proc = ackProcess.assertRunToFindProc();
 		
 	final int count = 4;
 			
@@ -90,7 +90,7 @@ public class TestProcTasksObserver extends TestLib {
     public void singleExistingClone(SlaveOffspring ackProcess)
     {
 	//Create Process
-	Proc proc = ackProcess.assertFindProcAndTasks();
+	Proc proc = ackProcess.assertRunToFindProc();
 		
 	ackProcess.assertSendAddCloneWaitForAcks();
 		
@@ -118,7 +118,7 @@ public class TestProcTasksObserver extends TestLib {
     public void singleExistingThread(SlaveOffspring ackProcess)
     {
 	//Create Process
-	Proc proc = ackProcess.assertFindProcAndTasks();
+	Proc proc = ackProcess.assertRunToFindProc();
 		
 	final int count = 1;
 
@@ -143,7 +143,7 @@ public class TestProcTasksObserver extends TestLib {
     public void doClone(SlaveOffspring ackProcess) {
 	//		Create Process
 		
-	Proc proc = ackProcess.assertFindProcAndTasks();
+	Proc proc = ackProcess.assertRunToFindProc();
 		
 	final int addcount = 1;
 	final int existcount = 1;
@@ -177,7 +177,7 @@ public class TestProcTasksObserver extends TestLib {
     public void delete(SlaveOffspring ackProcess) {
 	//		Create Process
 		
-	Proc proc = ackProcess.assertFindProcAndTasks();
+	Proc proc = ackProcess.assertRunToFindProc();
 		
 	final int delcount = 1;
 	final int existcount = 1;
@@ -215,7 +215,7 @@ public class TestProcTasksObserver extends TestLib {
     {
 	//Create Process
 		
-	Proc proc = ackProcess.assertFindProcAndTasks();
+	Proc proc = ackProcess.assertRunToFindProc();
 		
 	final int existingcount = 1;
 	final int addcount = 1;

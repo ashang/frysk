@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,56 +37,52 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.testbed;
 
-package frysk.proc;
+import frysk.proc.Proc;
+import frysk.rsl.Log;
+import frysk.proc.Manager;
+import frysk.proc.TaskObserver;
+import frysk.proc.Action;
+import frysk.isa.signals.Signal;
+import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
 
-import frysk.testbed.TestLib;
-import frysk.event.RequestStopEvent;
-import frysk.testbed.SlaveOffspring;
+/**
+ * An observer that stops the eventloop when the process with the
+ * given pid terminates.
+ */
 
-public class StressTestAbandon
-    extends TestLib
+public class StopEventLoopWhenProcTerminates extends TaskObserverBase
+    implements TaskObserver.Terminated
 {
-  
-  class Action implements ProcObserver.ProcAction
-  {
+    private static final Log fine
+	= Log.fine(StopEventLoopWhenProcTerminates.class);
+
+    public boolean terminated;
+    public Signal signal;
+    public int status;
+
     private Proc proc;
-
-    public Action(Proc proc)
-    {
-      this.proc = proc;
-    }
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
+    public String toString() {
+	return proc.toString();
     }
 
-    public void existingTask (Task task)
-    {
+    public StopEventLoopWhenProcTerminates(Proc proc) {
+	proc.getMainTask().requestAddTerminatedObserver(this);
     }
 
-    public void addFailed (Object observable, Throwable w)
-    {
+    public StopEventLoopWhenProcTerminates(ProcessIdentifier pid) {
+	this(TestLib.assertRunToFindProc(pid));
     }
 
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
-    
-  }
-    public void testStressAbandon () {
-	Proc proc = SlaveOffspring.createDaemon()
-	    .assertSendAddClonesWaitForAcks(99)
-	    .assertRunToFindProc();
-	new ProcBlockAction(proc, new Action(proc));
-	assertRunUntilStop("testStressAbandon");
+    public Action updateTerminated(Task task, Signal signal, int status) {
+	fine.log(this, "updateTerminated", task, "signal", signal, "status",
+		 status);
+	this.terminated = true;
+	this.signal = signal;
+	this.status = status;
+	Manager.eventLoop.requestStop();
+	return Action.CONTINUE;
     }
 }

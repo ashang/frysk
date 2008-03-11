@@ -1,5 +1,14 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* StressTestAbandon.java: Update to match Offspring.
+	* TestProcTasksObserver.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestProcForceDetach.java: Ditto.
+	* TestMapGet.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestAbandon.java: Ditto.
+	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.
+
 	* TestMemory.java: Delete.
 
 	* SyscallExaminer.java: Delete.

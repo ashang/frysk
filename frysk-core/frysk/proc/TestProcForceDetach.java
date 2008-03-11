@@ -50,7 +50,7 @@ public class TestProcForceDetach
 
   public void requestRemove(SlaveOffspring ackProc, int count)
   {
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     new ProcBlockAction(proc, new MyProcBlockAction(proc));
     assertRunUntilStop("test");
   }

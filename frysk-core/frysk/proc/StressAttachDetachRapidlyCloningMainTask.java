@@ -63,7 +63,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 
 	final int timeout = 20;
 
-	final Proc proc = new FunitThreadsOffspring(1000).assertFindProcAndTasks();
+	final Proc proc = new FunitThreadsOffspring(1000).assertRunToFindProc();
 
 	// Create a list of tasks.  Since the above is constantly
 	// creating new tasks (with the old ones exiting) it is almost

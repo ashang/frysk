@@ -113,7 +113,7 @@ public class TestProcGet
   public void testGetCommand ()
   {
     Offspring child = SlaveOffspring.createDaemon();
-    Proc childProc = child.assertFindProcAndTasks();
+    Proc childProc = child.assertRunToFindProc();
     assertEquals("value of child's getCommand()",
 		 SlaveOffspring.getExecutable().getName(),
                  childProc.getCommand());
@@ -126,7 +126,7 @@ public class TestProcGet
   {
       Offspring child = SlaveOffspring.createDaemon()
 	  .assertSendAddClonesWaitForAcks(1);
-    Proc proc = child.assertFindProcAndTasks(); // and tasks
+    Proc proc = child.assertRunToFindProc(); // and tasks
     List tasks = proc.getTasks();
 
     assertEquals("number of tasks", 2, tasks.size());
@@ -155,8 +155,8 @@ public class TestProcGet
     // Create two children. The refreshes have the side effect of
     // updating this processes proc list.
     Proc[] child = new Proc[] {
-                               SlaveOffspring.createChild().assertFindProcAndTasks(),
-                               SlaveOffspring.createChild().assertFindProcAndTasks() };
+	SlaveOffspring.createChild().assertRunToFindProc(),
+	SlaveOffspring.createChild().assertRunToFindProc() };
     Proc self = host.getSelf();
 
     assertEquals("number of children", 2, self.getChildren().size());
@@ -176,7 +176,7 @@ public class TestProcGet
 	// Create a process with a known set of arguments.
 	ExecCommand cmd = new ExecCommand();
 	ExecOffspring child = new ExecOffspring(cmd);
-	Proc proc = child.assertFindProcAndTasks();
+	Proc proc = child.assertRunToFindProc();
 	String[] cmdLine = proc.getCmdLine();
 	assertEquals("cmdLine.length", cmd.argv.length, cmdLine.length);
 	for (int i = 0; i < cmd.argv.length; i++) {
@@ -193,7 +193,7 @@ public class TestProcGet
 	ExecCommand cmd = new ExecCommand();
 	ExecOffspring child = new ExecOffspring(cmd);
 	String file = new File(cmd.argv[0]).getCanonicalPath();
-	Proc proc = child.assertFindProcAndTasks();
+	Proc proc = child.assertRunToFindProc();
 	assertEquals("exe", proc.getExe(), file);
     }
 }

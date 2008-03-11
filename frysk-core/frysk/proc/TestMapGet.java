@@ -123,7 +123,7 @@ public class TestMapGet
   {
     SlaveOffspring ackProc = SlaveOffspring.createChild();
     assertNotNull(ackProc);
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     assertNotNull(proc);
     return proc;
   }

@@ -245,7 +245,7 @@ public class TestExec
     // loop is kept running until ExecParentObserver .addedTo is
     // called indicating that the attach succeeded.
     ExecParentObserver execParentObserver = new ExecParentObserver();
-    Proc proc = child.assertFindProcAndTasks();
+    Proc proc = child.assertRunToFindProc();
     Task task = child.findTaskUsingRefresh(true);
     task.requestAddExecedObserver(execParentObserver);
     assertRunUntilStop("adding exec observer causing attach");
@@ -301,7 +301,7 @@ public class TestExec
     ExecCommand alias = new ExecCommand(ExecCommand.Executable.ALIAS);
     ExecOffspring child
 	= new ExecOffspring (new ExecCommand(1 /* one thread */, alias));
-    Proc proc = child.assertFindProcAndTasks();
+    Proc proc = child.assertRunToFindProc();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until execObserverParent .addedTo is

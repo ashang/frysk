@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxElfCorefile.java: Update to match Offspring.
+
 2008-02-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxElfCorefile.java (constructStackOnlyCore): Delete.

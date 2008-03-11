@@ -49,6 +49,7 @@ import frysk.junit.TestCase;
 import frysk.config.Config;
 import frysk.sys.Pid;
 import frysk.sys.SignalSet;
+import frysk.proc.FindProc;
 import frysk.sys.Signal;
 import frysk.sys.proc.Stat;
 import java.util.Observable;
@@ -161,6 +162,26 @@ public class TestLib extends TestCase {
      */
     static public boolean isDescendantOfMine (Proc proc) {
 	return isDescendantOf(Pid.get().intValue(), proc);
+    }
+
+    /**
+     * Run the event loop sufficient to find the specified process.
+     */
+    protected static Proc assertRunToFindProc(ProcessIdentifier pid) {
+	class ProcFinder implements FindProc {
+	    Proc proc;
+	    public void procFound(Proc p) {
+		proc = p;
+		Manager.eventLoop.requestStop();
+	    }
+	    public void procNotFound(int pid) {
+		TestCase.fail("Couldn't find the given proc " + pid);
+	    }
+	}
+	ProcFinder findProc = new ProcFinder();
+	Manager.host.requestProc(pid.intValue(), findProc);
+	assertRunUntilStop("looking for " + pid);
+	return findProc.proc;
     }
 
     /**

@@ -323,7 +323,7 @@ public class TestLinuxElfCorefile
   {
     SlaveOffspring ackProc = SlaveOffspring.createDaemon();
     assertNotNull(ackProc);
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     assertNotNull(proc);
     return proc;
   }

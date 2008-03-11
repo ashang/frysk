@@ -39,14 +39,11 @@
 
 package frysk.testbed;
 
-import frysk.proc.FindProc;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.Errno;
-import frysk.proc.Manager;
 import java.util.Iterator;
 import frysk.sys.Signal;
-import frysk.junit.TestCase;
 import frysk.sys.ProcessIdentifier;
 
 /**
@@ -82,23 +79,10 @@ public abstract class Offspring {
 	}
     }
     /**
-     * Find/return the child's Proc, polling /proc if necessary.
+     * Find/return the child's Proc by running the event-loop.
      */
-    public Proc assertFindProcAndTasks () {
-	class ProcFinder implements FindProc {
-	    Proc proc;
-	    public void procFound(Proc p) {
-		proc = p;
-		Manager.eventLoop.requestStop();
-	    }
-	    public void procNotFound(int pid) {
-		TestCase.fail("Couldn't find the given proc " + pid);
-	    }
-	}
-	ProcFinder findProc = new ProcFinder();
-	Manager.host.requestProc(getPid().intValue(), findProc);
-	Manager.eventLoop.run();
-	return findProc.proc;
+    public Proc assertRunToFindProc() {
+	return TestLib.assertRunToFindProc(getPid());
     }
     
     /**
@@ -106,7 +90,7 @@ public abstract class Offspring {
      * necessary.
      */
     public Task findTaskUsingRefresh (boolean mainTask) {
-	Proc proc = assertFindProcAndTasks();
+	Proc proc = assertRunToFindProc();
 	for (Iterator i = proc.getTasks().iterator(); i.hasNext();) {
 	    Task task = (Task) i.next();
 	    if (task.getTid() == proc.getPid()) {

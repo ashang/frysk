@@ -522,7 +522,7 @@ public class TestLinuxCore extends TestLib {
       // nothing but provide the symbols.
     LegacyOffspring ackProc = LegacyOffspring.createChild();
     assertNotNull(ackProc);
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     assertNotNull(proc);
     return proc;
   }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,56 +37,50 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.testbed;
 
-package frysk.proc;
+import frysk.rsl.Log;
+import frysk.isa.signals.StandardSignal;
+import frysk.config.Config;
 
-import frysk.testbed.TestLib;
-import frysk.event.RequestStopEvent;
-import frysk.testbed.SlaveOffspring;
+/**
+ * Test an observer that stops the eventloop when the process with the
+ * given pid terminates.
+ */
 
-public class StressTestAbandon
-    extends TestLib
-{
-  
-  class Action implements ProcObserver.ProcAction
-  {
-    private Proc proc;
+public class TestStopEventLoopWhenProcTerminates extends TestLib {
+    private static final Log fine
+	= Log.fine(TestStopEventLoopWhenProcTerminates.class);
+    private final String hello
+	= Config.getPkgLibFile("funit-hello").getAbsolutePath();
 
-    public Action(Proc proc)
-    {
-      this.proc = proc;
-    }
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
-    }
-
-    public void existingTask (Task task)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-    }
-
-    public void addedTo (Object observable)
-    {
+    public void testExit() {
+	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(new String[] {
+		hello, "world"
+	    });
+	fine.log("adding stopper");
+	StopEventLoopWhenProcTerminates stopper
+	    = new StopEventLoopWhenProcTerminates(daemon.getPid());
+	fine.log("unblocking daemon");
+	daemon.requestUnblock();
+	assertRunUntilStop("running hello-world to end");
+	assertTrue("stopper terminated", stopper.terminated);
+	assertNull("stopper signal", stopper.signal);
+	assertEquals("stopper status", 0, stopper.status);
     }
 
-    public void deletedFrom (Object observable)
-    {
-    }
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
-    
-  }
-    public void testStressAbandon () {
-	Proc proc = SlaveOffspring.createDaemon()
-	    .assertSendAddClonesWaitForAcks(99)
-	    .assertRunToFindProc();
-	new ProcBlockAction(proc, new Action(proc));
-	assertRunUntilStop("testStressAbandon");
+    public void testCrash() {
+	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(new String[] {
+		hello
+	    });
+	fine.log("adding stopper");
+	StopEventLoopWhenProcTerminates stopper
+	    = new StopEventLoopWhenProcTerminates(daemon.getPid());
+	fine.log("unblocking daemon");
+	daemon.requestUnblock();
+	assertRunUntilStop("running hello-world to end");
+	assertTrue("stopper terminated", stopper.terminated);
+	assertTrue("stopper signal",
+		   stopper.signal.equals(StandardSignal.SEGV));
     }
 }

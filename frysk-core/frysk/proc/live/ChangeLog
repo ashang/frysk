@@ -1,5 +1,8 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStopped.java: Update to match Offspring.
+	* TestRuntimeIsa.java: Ditto.
+
 	* LinuxPtraceProc.java (getMainTask()): Implement.
 
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
