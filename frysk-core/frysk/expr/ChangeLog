@@ -1,3 +1,8 @@
+2008-03-11  Teresa Thomas  <tthomas@redhat.com>
+
+	* CExprEvaluator.g: Handle CAST for char*.
+	* CExpr.g (typeCast): Add.	 
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* ScratchSymTab.java: Use frysk.config.
