@@ -45,7 +45,7 @@ import frysk.proc.dead.LinuxExeFactory;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysrootCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -137,7 +137,7 @@ public class LoadCommand extends ParameterizedCommand {
 			.createDebugInfoStackTrace(task);
 		cli.setTaskFrame(task, frame);
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
-		DwflCache.setSysroot(task, sysroot);
+		SysrootCache.setSysroot(task, sysroot);
 	    }
 	}
 	synchronized (cli) {

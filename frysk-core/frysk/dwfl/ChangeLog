@@ -1,3 +1,10 @@
+2008-03-11  Stan Cox  <scox@redhat.com>
+
+	* DwflCache.java (Mod.sysroot): Remove
+	(sysrootMap): Move to Sysroot.java.
+	(setSysroot): Likewise.
+	(getSysroot): Likewise.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestElfSectionCache.java: Use frysk.config.

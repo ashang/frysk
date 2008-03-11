@@ -56,6 +56,7 @@ import frysk.scopes.Subprogram;
 import frysk.scopes.Subroutine;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
+import frysk.sysroot.SysrootCache;
 
 public class DebugInfoFrame extends FrameDecorator {
 
@@ -175,7 +176,7 @@ public class DebugInfoFrame extends FrameDecorator {
   	    // be decremented by one.
   	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
   	    if (dwflLine != null) {
-  		File sysroot = DwflCache.getSysroot(this.getTask());
+  		File sysroot = SysrootCache.getSysroot(this.getTask());
   		File f = new File(dwflLine.getSourceFile());
   		if (! f.isAbsolute()) {
   		    // The file refers to a path relative to the

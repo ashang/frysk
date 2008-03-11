@@ -1,0 +1,7 @@
+2008-03-11  Stan Cox  <scox@redhat.com>
+
+	* SysrootCache.java: New file.
+	(getSysroot): Change all callers of DwflCache.getSysroot
+	to use this.
+	* Sysroot.java: New file.
+	* TestSysroot.java: New file.

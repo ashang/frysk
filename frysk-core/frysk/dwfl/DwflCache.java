@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 import frysk.rsl.Log;
+import frysk.sysroot.SysrootCache;
 import lib.dwfl.Dwfl;
 
 /**
@@ -60,11 +61,9 @@ public class DwflCache {
     static private class Mod {
 	final Dwfl dwfl;
 	int count;
-	File sysroot;
-	Mod(Dwfl dwfl, int count, File sysroot) {
+	Mod(Dwfl dwfl, int count) {
 	    this.dwfl = dwfl;
 	    this.count = count;
-	    this.sysroot = sysroot;
 	}
     }
 
@@ -72,11 +71,6 @@ public class DwflCache {
      * Map from a Task to its most recent Dwfl object.
      */
     private static WeakHashMap modMap = new WeakHashMap();
-
-    /**
-     * Map from a Task's executable to its sysroot. 
-     */  
-    private static WeakHashMap sysrootMap = new WeakHashMap();
 
     /**
      * Cache of all Dwfl objects.
@@ -136,17 +130,11 @@ public class DwflCache {
 	// If there is no dwfl for this task create one.
 	if (!modMap.containsKey(task)) {
 	    fine.log("creating new dwfl for task", task);
-	    String sysroot = (String)sysrootMap.get(task.getProc().getCommand());
-	    if (sysroot == null) {
-	    	sysroot = (String)sysrootMap.get("default");
-	    	if (sysroot == null)
-	    		sysroot = "/";
-	    }
-	    File sysrootFile = new File(sysroot);
+	    File sysrootFile = (File)SysrootCache.getSysroot(task);
 	    File relativeSysroot = getRelativeSysRoot(task.getProc().getExe(), sysrootFile);
 	    Dwfl dwfl = new Dwfl(relativeSysroot.getPath());
 	    DwflFactory.updateDwfl(dwfl, task);
-	    Mod mod = new Mod(dwfl, task.getMod(), sysrootFile);
+	    Mod mod = new Mod(dwfl, task.getMod());
 	    modMap.put(task, mod);
 
 	    // For cleanup, also save dwfl using Mod as a key (just need a
@@ -165,36 +153,6 @@ public class DwflCache {
 
 	fine.log("returning existing dwfl", mod.dwfl);
 	return mod.dwfl;
-    }
-
-    /**
-     * set the sysroot corresponding to a {@link frysk.proc.Task}. 
-     * 
-     * @param task is the task.
-     * @param sysroot is this task's sysroot.
-     */
-    public static void setSysroot(Task task, String sysroot) {
-	sysrootMap.put(task.getProc().getCommand(), sysroot);
-    }
-    
-    /**
-     * set the default sysroot
-     * 
-     * @param sysroot is the default special root directory
-     */
-    public static void setDefaultSysroot(String sysroot) {
-    sysrootMap.put("default", sysroot);
-    }
-    
-    /**
-     * return a sysroot File for a {@link frysk.proc.Task}.
-     * 
-     * @param task is the task.
-     * @return the sysroot file.
-     */
-    public static File getSysroot(Task task) {
-	Mod mod = (Mod) modMap.get(task);
-	return mod.sysroot;
     }
 
     public static void clear() {

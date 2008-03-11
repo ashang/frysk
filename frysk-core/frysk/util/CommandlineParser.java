@@ -50,7 +50,7 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.rsl.LogOption;
 import frysk.rsl.Log;
-import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysrootCache;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.dead.LinuxExeFactory;
 import frysk.proc.Proc;
@@ -134,7 +134,7 @@ public class CommandlineParser {
      * @param sysrootPath The special root directory
      */
     public void parseSysroot(String sysrootPath) {
-    DwflCache.setDefaultSysroot(sysrootPath);
+    SysrootCache.setDefaultSysroot(sysrootPath);
     }
 
     public String[] parse(String[] args) {

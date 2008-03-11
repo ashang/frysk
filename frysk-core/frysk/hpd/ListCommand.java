@@ -52,7 +52,7 @@ import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
-import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysrootCache;
 import frysk.proc.Task;
 
 /**
@@ -122,7 +122,7 @@ class ListCommand extends ParameterizedCommand {
                         }
 			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
 			    line = (int)funcDie.getDeclLine();
-			    File sysroot = DwflCache.getSysroot(frame.getTask());
+			    File sysroot = SysrootCache.getSysroot(frame.getTask());
 			    file = funcDie.getDeclFile();
 			    if (file.isAbsolute()) 
 				file = new File(sysroot.getPath(), file.getPath());
