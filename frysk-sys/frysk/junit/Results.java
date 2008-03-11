@@ -73,6 +73,12 @@ class Results extends ResultPrinter {
     private void addProblem(Test test, String name, String what, Throwable t) {
 	fine.log("---- addProblem ----", test, "---", name, "---", what,
 		 ":", t);
+	if (fine.logging()) {
+	    StackTraceElement[] stack = t.getStackTrace();
+	    for (int i = 0; i < stack.length; i++) {
+		fine.log(stack[i].toString());
+	    }
+	}
 	// If a problem was previously recorded, move it to the
 	// unresolved set.
 	if (result != Result.PASS) {
