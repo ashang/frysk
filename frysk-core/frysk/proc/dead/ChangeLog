@@ -1,5 +1,8 @@
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreInfo.java: Update to match MemoryMap.
+	* LinuxExeFactory.java: Ditto.
+	
 	* LinuxCoreInfo.java (addEnhancedMapData): Use MemoryMapFactory.
 	
 	* SOLibMapBuilder.java: Move to frysk.solib.

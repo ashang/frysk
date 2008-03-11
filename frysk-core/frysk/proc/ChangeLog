@@ -1,3 +1,9 @@
+2008-03-10  Andrew Cagney  <cagney@redhat.com>
+
+	* MemoryMap.java (pathnameOffset): Delete.
+	(pathnameLength): Delete.
+	* TestMapGet.java: Update.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (requestCreateAttachedProc(...)): Add File exe arg.

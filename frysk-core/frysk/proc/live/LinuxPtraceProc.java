@@ -146,13 +146,12 @@ public class LinuxPtraceProc extends LiveProc {
 		    int inode, int pathnameOffset, int pathnameLength) {
 	
 		byte[] mapFilename = new byte[pathnameLength];
-		System.arraycopy(mapsLocalArray, pathnameOffset, mapFilename, 0,
-			pathnameLength);
+		System.arraycopy(mapsLocalArray, pathnameOffset, mapFilename,
+				 0, pathnameLength);
 		
 		MemoryMap map = new MemoryMap(addressLow, addressHigh,
 			permRead, permWrite, permExecute, shared, offset,
-			devMajor, devMinor, inode, pathnameOffset,
-			pathnameLength, new String(mapFilename));
+			devMajor, devMinor, inode, new String(mapFilename));
 		mapsList.add(map);
 	    }
 	}

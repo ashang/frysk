@@ -228,7 +228,7 @@ class LinuxCoreInfo {
 				   map.permRead, map.permWrite,
 				   map.permExecute, false,
 				   map.solibOffset,
-				   -1, -1, -1, -1, -1,
+				   -1, -1, -1,
 				   map.name));
 	}
 	MemoryMap[] memoryMaps = new MemoryMap[maps.size()];

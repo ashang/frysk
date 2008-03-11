@@ -64,7 +64,7 @@ public class LinuxExeFactory {
 				     long offset, String name, long align) {
 		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
 					       permWrite, permExecute, false,
-					       offset, -1, -1, -1, -1, -1,
+					       offset, -1, -1, -1,
 					       exeFile.getAbsolutePath()));
 		}
 		MemoryMap[] getMemoryMaps() {

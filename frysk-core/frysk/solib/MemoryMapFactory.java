@@ -56,8 +56,7 @@ public class MemoryMapFactory {
 				   permRead, permWrite, permExecute,
 				   false, // shared
 				   offset,
-				   0, 0, 0, // major/minor
-				   0, 0, // path offset/length
+				   0, 0, 0, // major/minor/inode
 				   name));
 	}
     }
