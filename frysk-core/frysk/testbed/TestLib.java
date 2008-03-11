@@ -42,6 +42,7 @@ package frysk.testbed;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
@@ -184,6 +185,15 @@ public class TestLib extends TestCase {
 	return findProc.proc;
     }
 
+    protected static void addToTearDown(Task task) {
+	fine.log("addToTearDown", task);
+	TearDownProcess.add(ProcessIdentifierFactory.create(task.getTid()));
+    }
+    protected static void addToTearDown(Proc proc) {
+	fine.log("addToTearDown", proc);
+	TearDownProcess.add(ProcessIdentifierFactory.create(proc.getPid()));
+    }
+
     /**
      * The host being used by the current test.
      */
@@ -203,27 +213,26 @@ public class TestLib extends TestCase {
 	// directly registers its process. That is to ensure that
 	// children that never get entered into the process tree also
 	// get registered with TearDownProcess.
-	host.observableProcAddedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Proc proc = (Proc) obj;
-		    if (isChildOfMine(proc)) {
-			TearDownProcess.add
-			    (ProcessIdentifierFactory.create(proc.getPid()));
-			return;
-		    }
-		    Proc parent = proc.getParent();
-		    if (parent != null) {
-			ProcessIdentifier parentPid
-			    = ProcessIdentifierFactory.create(proc.getParent()
-							      .getPid());
-			if (TearDownProcess.contains(parentPid)) {
-			    TearDownProcess.add(ProcessIdentifierFactory
-						.create(proc.getPid()));
+	if (host.observableProcAddedXXX != null)
+	    host.observableProcAddedXXX.addObserver(new Observer() {
+		    public void update (Observable o, Object obj) {
+			Proc proc = (Proc) obj;
+			if (isChildOfMine(proc)) {
+			    addToTearDown(proc);
 			    return;
 			}
+			Proc parent = proc.getParent();
+			if (parent != null) {
+			    ProcessIdentifier parentPid
+				= ProcessIdentifierFactory.create(proc.getParent()
+								  .getPid());
+			    if (TearDownProcess.contains(parentPid)) {
+				addToTearDown(proc);
+				return;
+			    }
+			}
 		    }
-		}
-	    });
+		});
 	fine.log(this, "<<<<<<<<<<<<<<<< end setUp");
     }
 

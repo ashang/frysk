@@ -1,5 +1,8 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java: Register offspring with
+	TearDownProcess.
+
 	* TestProcStopped.java: Update to match Offspring.
 	* TestRuntimeIsa.java: Ditto.
 

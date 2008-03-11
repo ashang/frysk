@@ -1,5 +1,9 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (addToTearDown(Task)): New.
+	(addToTearDown(Proc)): New.
+	(setUp()): Check if Host.observableProcAddedXXX is null.
+	
 	* ProcCounter.java: Delete.
 
 	* StopEventLoopWhenProcTerminated.java: Rename

@@ -80,12 +80,12 @@ public class TestTaskObserverBlocked extends TestLib {
     {
       TaskSet attachedTasks = new TaskSet();
 
-      public Action updateAttached (Task task)
-      {
-        attachedTasks.add(task);
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
+	public Action updateAttached(Task task) {
+	    addToTearDown(task);
+	    attachedTasks.add(task);
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
     }
     BlockAttached blockAttached = new BlockAttached();
 
@@ -194,26 +194,26 @@ public class TestTaskObserverBlocked extends TestLib {
       return Action.BLOCK;
     }
 
-    protected Action spawnedOffspring (Task parent, Task offspring)
-    {
-      fine.log(this, "spawnedOffspring");
-      assertInState(SPAWN_PARENT);
-      nextState(SPAWN_OFFSPRING);
-      this.offspring = offspring;
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-
-    /**
-     * Officially attached to Task.
-     */
-    public Action updateAttached (Task task)
-    {
-      assertInState(OBSERVER_ADDED_TO_CHILD);
-      nextState(CHILD_ATTACHED);
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
+      protected Action spawnedOffspring(Task parent, Task offspring) {
+	  fine.log(this, "spawnedOffspring");
+	  addToTearDown(offspring);
+	  assertInState(SPAWN_PARENT);
+	  nextState(SPAWN_OFFSPRING);
+	  this.offspring = offspring;
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+      }
+      
+      /**
+       * Officially attached to Task.
+       */
+      public Action updateAttached(Task task) {
+	  addToTearDown(task);
+	  assertInState(OBSERVER_ADDED_TO_CHILD);
+	  nextState(CHILD_ATTACHED);
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+      }
 
     /**
      * Create a new daemon process, attach to it's spawn observer (forked or
@@ -415,6 +415,7 @@ public class TestTaskObserverBlocked extends TestLib {
 		return Action.CONTINUE;
 	    }
 	    public Action updateForkedOffspring (Task parent, Task offspring) {
+		addToTearDown(offspring);
 		offspring.requestUnblock(this);
 		return Action.BLOCK;
 	    }
@@ -471,11 +472,11 @@ public class TestTaskObserverBlocked extends TestLib {
         return Action.CONTINUE;
       }
 
-      public Action updateForkedOffspring (Task parent, Task offspring)
-      {
-        offspring.requestUnblock(this);
-        offspring.requestAddForkedObserver(this);
-        return Action.BLOCK;
+      public Action updateForkedOffspring (Task parent, Task offspring) {
+	  addToTearDown(offspring);
+	  offspring.requestUnblock(this);
+	  offspring.requestAddForkedObserver(this);
+	  return Action.BLOCK;
       }
     }
     UnblockAdd observer = new UnblockAdd();
