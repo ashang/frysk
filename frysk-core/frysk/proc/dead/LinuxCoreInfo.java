@@ -39,7 +39,6 @@
 
 package frysk.proc.dead;
 
-import frysk.solib.SOLibMapBuilder;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.File;
@@ -59,9 +58,9 @@ import frysk.rsl.Log;
 import frysk.proc.Auxv;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.proc.MemoryMap;
-import java.util.Iterator;
 import frysk.solib.LinkMapFactory;
 import frysk.solib.LinkMap;
+import frysk.solib.MemoryMapFactory;
 
 /**
  * Extract from a core file all the information needed to construct
@@ -325,47 +324,21 @@ class LinuxCoreInfo {
 	    // still being used for things like the exe path.
 	    return;
 
-	// From the list of solibs in the linkamp,  build
-	// maps for each one.
-	class BuildSOMaps extends SOLibMapBuilder {
-	    List list = new LinkedList();
-	    public void buildMap (long addrLow, long addrHigh, 
-				  boolean permRead, boolean permWrite,
-				  boolean permExecute, long offset, 
-				  String name, long align) {
-		list.add(new MapAddressHeader(addrLow, addrHigh, permRead,
-					      permWrite, permExecute,
-					      0, offset, 0,0, name, align));
-	    }
-	}
-
-	BuildSOMaps SOMaps = new BuildSOMaps();
-	for (int i = 0; i < linkMaps.length; i++) {
-	    LinkMap singleLinkMap = linkMaps[i];
-	    if ((!singleLinkMap.name.equals(""))
-		&& (!singleLinkMap.name.equals("[vdso]")))
-		SOMaps.construct(new File(singleLinkMap.name),
-				 singleLinkMap.l_addr);
-	    if (singleLinkMap.name.equals("[vdso]"))
-		SOMaps.buildMap(singleLinkMap.l_addr,0,true,true,true,0,singleLinkMap.name,0x1000);
-	}
-
-
-	// Add in case for executables maps.
-	SOMaps.construct(exeElf, exeFile, 0);
+	MemoryMap[] memoryMaps
+	    = MemoryMapFactory.constructMemoryMaps(exeElf, exeFile, linkMaps);
 
 	// Reconcile maps.
-	for (Iterator i = SOMaps.list.iterator(); i.hasNext(); ) {
-	    MapAddressHeader localMap = (MapAddressHeader) i.next();
+	for (int i = 0; i < memoryMaps.length; i++) {
+	    MemoryMap localMap = memoryMaps[i];
 	    for (int j = 0; j < metaData.length; j++) {
 		MapAddressHeader map = metaData[j];
-		if ((map.vaddr == localMap.vaddr)
-		    || ((map.vaddr > localMap.vaddr)
-			&& (map.vaddr<localMap.vaddr_end))) {
+		if ((map.vaddr == localMap.addressLow)
+		    || ((map.vaddr > localMap.addressLow)
+			&& (map.vaddr<localMap.addressHigh))) {
 		    if (map.vaddr_end == 0) {
 			map.vaddr_end = ((map.vaddr + map.memSize) + 0x1000 -1) &~ (0x1000-1);
 		    }
-		    map.solibOffset = localMap.solibOffset;
+		    map.solibOffset = localMap.offset;
 		    map.name = localMap.name;
 		}
 	    }

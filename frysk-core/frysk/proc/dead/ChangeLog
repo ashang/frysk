@@ -1,5 +1,7 @@
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxCoreInfo.java (addEnhancedMapData): Use MemoryMapFactory.
+	
 	* SOLibMapBuilder.java: Move to frysk.solib.
 	* LinuxExeFactory.java: Update.
 	* LinuxCoreInfo.java: Update.
