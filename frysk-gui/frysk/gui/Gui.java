@@ -478,11 +478,10 @@ public class Gui implements LifeCycleListener, Saveable {
 	 * found in logging.properties
 	 */
 	private static void setupCoreLogging() {
-		// Get Core logger
-
-	        logger = LogManager.getLogManager().getLogger("frysk");
-		Handler fileHandler
-		  = EventLogger.getFileHandler("logs/", "frysk_core_event.log");
+	    // Get Core logger; ensure it is up and running.
+	    logger = EventLogger.getLogger();
+	    Handler fileHandler
+		= EventLogger.getFileHandler("logs/", "frysk_core_event.log");
 		Handler consoleHandler = new ConsoleHandler();
 		Handler guiHandler = new CoreDebugHandler();
 		logger.addHandler(fileHandler);
