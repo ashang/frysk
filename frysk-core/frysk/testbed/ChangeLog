@@ -1,5 +1,8 @@
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
+	* SignalWaiter.java (assertRunUntilSignal()): Include message in
+	assert.
+
 	* TestLib.java (setUp()): Do not use Host.observableProcAddedXXX.
 
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
