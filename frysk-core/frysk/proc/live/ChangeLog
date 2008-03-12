@@ -1,5 +1,9 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverCode.java: Do not use
+	Host.requestCreateAttachedProc and
+	StopEventLoopWhenChildProcRemoved.
+
 	* LinuxPtraceProcState.java: Use LogFactory.
 
 	* TestTaskObserverBlocked.java: Register offspring with
