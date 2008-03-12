@@ -85,6 +85,72 @@ code_descriptor_trap (struct cursor *c, struct dwarf_loc *eip_loc_pointer)
   return 1;
 }
 
+// A CALL instruction starts with 0xFF.
+static int
+is_call_instr_at (struct cursor *c, unw_word_t addr)
+{
+  int ret;
+  unw_word_t instr;
+  ret = dwarf_get (&c->dwarf, DWARF_LOC (addr, 0), &instr);
+  return ret >= 0 && ((instr & 0xff000000) == 0xff000000);
+}
+
+// Checks whether this looks like a plt entry like cursor and returns
+// the stack offset where the return address can be found, or -1 if
+// not detected (also tries to make sure this is the inner most frame).
+// When this function returns positively (zero included) addr will
+// contain the return address.
+static int
+init_stack_based_ret (struct cursor *c, unw_word_t *addr)
+{
+  // See if this looks "clean", everything in actual registers
+  // which indicates this is most likely an inner most frame just
+  // initted.
+  int ret;
+  unw_word_t ip, cfa;
+  ret = dwarf_get (&c->dwarf, c->dwarf.loc[EIP], &ip);
+  if (ret < 0)
+    return ret;
+
+  ret = dwarf_get (&c->dwarf, c->dwarf.loc[ESP], &cfa);
+  if (ret < 0)
+    return ret;
+  
+  if (c->sigcontext_format == X86_SCF_NONE
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EAX])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[ECX])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EDX])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EBX])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[ESP])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EBP])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[ESI])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EDI])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EIP])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[EFLAGS])
+      && DWARF_IS_REG_LOC(c->dwarf.loc[TRAPNO])
+      && ip == c->dwarf.ip && cfa == c->dwarf.cfa)
+    {
+      // See if one of the top 3 elements on the stack contains a
+      // return address.
+      int i;
+      for (i = 0; i <= 8; i += 4)
+	{
+	  // fprintf(stderr, "trying %d\n", i);
+	  ret = dwarf_get (&c->dwarf, DWARF_LOC (c->dwarf.cfa + i, 0), addr);
+	  if (ret < 0)
+	    return ret;
+
+	  // fprintf(stderr, "addr at %d: 0x%x\n", i, *addr);
+	  // Sanity check the address, not too low, and must
+	  // come from a call instruction.
+	  if (*addr > 0 && is_call_instr_at(c, (*addr) - 5))
+	    return i;
+	}
+    }
+
+  return -1;
+}
+
 PROTECTED int
 unw_step (unw_cursor_t *cursor)
 {
@@ -92,6 +158,7 @@ unw_step (unw_cursor_t *cursor)
   int ret, i;
   struct dwarf_loc eip_loc;
   int eip_loc_set = 0;
+  unw_word_t addr;
 
   Debug (1, "(cursor=%p, ip=0x%08x)\n", c, (unsigned) c->dwarf.ip);
 
@@ -201,6 +268,16 @@ unw_step (unw_cursor_t *cursor)
 	  c->dwarf.loc[EFLAGS] = DWARF_NULL_LOC;
 	  c->dwarf.loc[TRAPNO] = DWARF_NULL_LOC;
 	  c->dwarf.loc[ST0] = DWARF_NULL_LOC;
+	}
+      else if((ret = init_stack_based_ret(c, &addr)) >= 0)
+	{
+	  // fprintf(stderr, "init_stack_based_ret() %d (0x%x)\n", ret, addr);
+	  c->dwarf.cfa += ret;
+	  c->dwarf.loc[ESP] = DWARF_LOC (c->dwarf.cfa, 0);
+	  c->dwarf.loc[EIP] = DWARF_LOC (addr, 0);
+	  c->dwarf.ret_addr_column = EIP;
+	  c->dwarf.ip = addr;
+	  return 1;
 	}
       else
 	{
