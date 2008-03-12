@@ -41,6 +41,8 @@ package frysk.sys.proc;
 
 import gnu.gcj.RawData;
 import frysk.sys.ProcessIdentifier;
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 /**
  * Scan the <tt>/proc</tt>, or <tt>/proc/</tt>pid<tt>/task</tt>
@@ -48,6 +50,8 @@ import frysk.sys.ProcessIdentifier;
  * encountered.
  */
 public abstract class ProcBuilder {
+    private static final Log warning = LogFactory.warning(ProcBuilder.class);
+
     /**
      * Iterate over the <tt>/proc</tt>pid<tt>/task</tt> directory
      * notifying ProcBuilder of each "interesting" entry.  Use
@@ -61,7 +65,7 @@ public abstract class ProcBuilder {
 	if (dir == null)
 	    return false;
 	try {
-	    scan (dir);
+	    scan(dir, pid, warning);
 	}
 	finally {
 	    close (dir);
@@ -85,6 +89,6 @@ public abstract class ProcBuilder {
      * directory.  Move to frysk.sys.Dir?
      */
     private native RawData open(int pid);
-    private native void scan(RawData dir);
+    private native void scan(RawData dir, int pid, Log warning);
     private native void close(RawData dir);
 }

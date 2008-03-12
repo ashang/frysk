@@ -1,3 +1,9 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/ProcBuilder.cxx (ProcBuilder::scan): Add warnings when PID
+	is bogus.
+	* ProcBuilder.java (warning): Add.
+
 2008-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Stat.java (toString()): New.
