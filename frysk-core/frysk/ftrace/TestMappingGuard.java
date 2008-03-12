@@ -43,10 +43,12 @@ import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.testbed.*;
-
-import java.util.*;
-import java.util.regex.*;
+import frysk.testbed.TestLib;
+import java.util.ArrayList;
+import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
+import java.util.regex.Pattern;
+import java.util.Iterator;
 
 /**
  * This is a test for basic ltrace capabilities.
@@ -95,7 +97,7 @@ public class TestMappingGuard
 	MappingGuard.requestAddMappingObserver(task, observer);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 

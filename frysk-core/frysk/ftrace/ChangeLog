@@ -1,3 +1,8 @@
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestMappingGuard.java: Use StopEventLoopWhenProcTerminated.
+	* TestLtrace.java: Ditto.
+
 2008-03-10  Petr Machata  <pmachata@redhat.com>
 
 	* MappingGuard.java: Make both mapping guard terminating observers.

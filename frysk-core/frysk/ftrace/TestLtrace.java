@@ -42,10 +42,14 @@ package frysk.ftrace;
 import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Task;
-import frysk.testbed.*;
-
-import java.util.*;
-import java.util.regex.*;
+import frysk.testbed.TestLib;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.LinkedList;
+import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
+import java.util.regex.Pattern;
 
 /**
  * This is a test for basic ltrace capabilities.
@@ -252,7 +256,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, mappingObserver);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -358,7 +362,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, mappingObserver);
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -440,7 +444,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -465,7 +469,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(observerCreator));
 	assertRunUntilStop("add mapping observer");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -497,7 +501,7 @@ public class TestLtrace
 	}
 	assertRunUntilStop("add mapping guards");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
@@ -524,7 +528,7 @@ public class TestLtrace
 	MappingGuard.requestAddMappingObserver(task, new GenericMappingObserver(controller));
 	assertRunUntilStop("add mapping guards");
 
-	new StopEventLoopWhenProcRemoved(child);
+	new StopEventLoopWhenProcTerminated(child);
 	child.requestRemoveBlock();
 	assertRunUntilStop("run child until exit");
 
