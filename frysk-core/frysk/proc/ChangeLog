@@ -1,3 +1,8 @@
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverInstructionSigReturn.java: Register tasks with
+	TearDownProcess.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestInstructions.java: Add task to tearDown.

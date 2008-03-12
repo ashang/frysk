@@ -107,13 +107,13 @@ public class TestTaskObserverInstructionSigReturn
     // ignored
   }
 
-  // TaskObserver.Attached interface
-  public Action updateAttached(Task task)
-  {
-    this.task = task;
-    Manager.eventLoop.requestStop();
-    return Action.BLOCK;
-  }
+    // TaskObserver.Attached interface
+    public Action updateAttached(Task task) {
+	addToTearDown(task);
+	this.task = task;
+	Manager.eventLoop.requestStop();
+	return Action.BLOCK;
+    }
 
   // TaskObserver.Instruction interface
   public Action updateExecuted(Task task)
