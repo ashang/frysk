@@ -157,6 +157,7 @@ public class TestTaskObserverInstruction extends TestLib
     {
       this.task = task;
       task.requestAddInstructionObserver(instr);
+      addToTearDown(task);
       return Action.BLOCK;
     }
     

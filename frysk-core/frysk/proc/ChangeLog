@@ -1,5 +1,8 @@
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestInstructions.java: Add task to tearDown.
+	* TestTaskObserverInstruction.java: Ditto.
+
 	* TestRun.java: Update to match StopEventLoopWhenProcTerminated.
 	* TestTaskForkedObserver.java: Do not use ProcCounter or
 	StopEventLoopWhenProcRemoved.
