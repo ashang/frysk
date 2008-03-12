@@ -1,3 +1,8 @@
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java (addProc(ProcessIdentifier,LinuxPtraceProc)):
+	Do not notify observableProcAddedXXX.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverCode.java: Do not use

@@ -1,5 +1,7 @@
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (observableProcAddedXXX): Delete.
+
 	* TestTaskObserverInstruction.java
 	(testFirstInstructionSteppingEngine()):	Delete; move to
 	frysk.stepping.TestFirstInstruction.

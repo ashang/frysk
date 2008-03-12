@@ -53,8 +53,6 @@ import frysk.sys.SignalSet;
 import frysk.proc.FindProc;
 import frysk.sys.Signal;
 import frysk.sys.proc.Stat;
-import java.util.Observable;
-import java.util.Observer;
 import frysk.rsl.Log;
 
 /**
@@ -203,36 +201,6 @@ public class TestLib extends TestCase {
 	fine.log(this, "<<<<<<<<<<<<<<<< start setUp");
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX();
-	// Detect all test processes added to the process tree,
-	// registering each with TearDownProcess list. Look both for
-	// children of this process, and children of any processes
-	// already marked to be killed. The latter is to catch
-	// children of children, such as daemons.
-	//
-	// Note that, in addition to this, the Child code also
-	// directly registers its process. That is to ensure that
-	// children that never get entered into the process tree also
-	// get registered with TearDownProcess.
-	if (host.observableProcAddedXXX != null)
-	    host.observableProcAddedXXX.addObserver(new Observer() {
-		    public void update (Observable o, Object obj) {
-			Proc proc = (Proc) obj;
-			if (isChildOfMine(proc)) {
-			    addToTearDown(proc);
-			    return;
-			}
-			Proc parent = proc.getParent();
-			if (parent != null) {
-			    ProcessIdentifier parentPid
-				= ProcessIdentifierFactory.create(proc.getParent()
-								  .getPid());
-			    if (TearDownProcess.contains(parentPid)) {
-				addToTearDown(proc);
-				return;
-			    }
-			}
-		    }
-		});
 	fine.log(this, "<<<<<<<<<<<<<<<< end setUp");
     }
 

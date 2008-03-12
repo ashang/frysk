@@ -99,10 +99,6 @@ public class LinuxPtraceHost extends LiveHost {
     }
     void addProc(ProcessIdentifier pid, LinuxPtraceProc proc) {
 	procs.put(pid, proc);
-	// FIXME: Code looking for procs shouldn't be parked on
-	// observer, rather the code should be using
-	// Host.requestRefresh.
-	observableProcAddedXXX.notify(proc);
     }
     void removeProc(ProcessIdentifier pid) {
 	procs.remove(pid);

@@ -170,15 +170,6 @@ public abstract class Host implements Comparable {
 	}
     }
 
-    /**
-     * A process has been added.  Possible reasons include a process
-     * refresh, and a fork.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableProcAddedXXX = new ObservableXXX();
-
     /*
      * An existing process has been removed.  Possible reasons include
      * the process is no longer listed in the system process table
