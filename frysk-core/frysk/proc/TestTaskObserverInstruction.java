@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,10 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Observable;
-import java.util.Observer;
-import frysk.stepping.SteppingEngine;
-import frysk.stepping.TaskStepEngine;
 import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
@@ -140,7 +136,7 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("InstructionObserver hit", instr.hit == 2);
   }
 
-  class StepAttachedObserver implements TaskObserver.Attached
+  private class StepAttachedObserver implements TaskObserver.Attached
   {
     private final InstructionObserver instr;
 
@@ -172,45 +168,7 @@ public class TestTaskObserverInstruction extends TestLib
     
   }
 
-  private AttachedObserver ao;
-  private SteppingEngine steppingEngine;
-  private LockObserver lock;
-  
-  public void testFirstInstructionSteppingEngine ()
-  {
-    lock = new LockObserver();
-    steppingEngine = new SteppingEngine();
-    steppingEngine.addObserver(lock);
-    ao = new AttachedObserver();
-    String[] cmd = new String[1];
-    cmd[0] = getExecPath ("funit-rt-stepper");
-    Manager.host.requestCreateAttachedProc("/dev/null", "/dev/null", "/dev/null", cmd, ao);
-    assertRunUntilStop("Creating attached process");
-  }
-
-  protected class AttachedObserver implements TaskObserver.Attached
-  {
-    public void addedTo (Object o){ }
-    
-    public Action updateAttached (Task task)
-    {
-      Proc proc = task.getProc();
-      steppingEngine.addProc(proc);
-      return Action.BLOCK;
-    }
-    
-    public void addFailed  (Object observable, Throwable w)
-    {
-      System.err.println("addFailed: " + observable + " cause: " + w);
-    }
-    
-    public void deletedFrom (Object o)
-    {
-      steppingEngine.stepInstruction((Task) o);
-    }
-  }
-  
-  static class InstructionObserver implements TaskObserver.Instruction
+  private static class InstructionObserver implements TaskObserver.Instruction
   {
     boolean added;
     boolean deleted;
@@ -240,25 +198,4 @@ public class TestTaskObserverInstruction extends TestLib
     }
   }
   
-  private boolean flag = true;
-  
-  private class LockObserver implements Observer
-  {
-    public void update (Observable o, Object arg)
-    {
-      TaskStepEngine tse = (TaskStepEngine) arg;
-      if (! tse.getState().isStopped())
-        return;
-      
-      if (flag)
-        {
-          flag = false;
-          tse.getTask().requestDeleteAttachedObserver(ao);
-        }
-      else
-        {
-          Manager.eventLoop.requestStop();
-        }
-    }
-  }
 }

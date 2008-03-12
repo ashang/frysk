@@ -1,5 +1,9 @@
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverInstruction.java
+	(testFirstInstructionSteppingEngine()):	Delete; move to
+	frysk.stepping.TestFirstInstruction.
+
 	* TestTaskObserverInstructionSigReturn.java: Register tasks with
 	TearDownProcess.
 
