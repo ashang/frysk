@@ -1,5 +1,7 @@
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskCounter.java: Delete.
+
 	* SignalWaiter.java (assertRunUntilSignal()): Include message in
 	assert.
 

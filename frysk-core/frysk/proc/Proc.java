@@ -330,7 +330,6 @@ public abstract class Proc implements Comparable {
      */
     void add(Task task) {
 	taskPool.put(task.getTaskId(), task);
-	host.observableTaskAddedXXX.notify(task);
     }
 
     /**
@@ -338,7 +337,6 @@ public abstract class Proc implements Comparable {
      */
     protected void remove(Task task) {
 	fine.log(this, "remove(Task) -- within this Proc");
-	host.observableTaskRemovedXXX.notify(task);
 	taskPool.remove(task.getTaskId());
 	host.remove(task);
     }

@@ -1,5 +1,9 @@
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (observableTaskRemovedXXX): Delete.
+	(observableTaskAddedXXX): Delete.
+	* Proc.java: Update.
+	
 	* Host.java (observableProcAddedXXX): Delete.
 
 	* TestTaskObserverInstruction.java
