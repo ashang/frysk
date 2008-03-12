@@ -84,14 +84,14 @@ public class TestLog extends TestLib {
 	get("the.lower.right.hand.side");
 	// set a level
 	set("the.lower.left", Level.FINE);
-	checkLevel("the", Level.NONE);
-	checkLevel("the.lower", Level.NONE);
+	checkLevel("the", Level.DEFAULT);
+	checkLevel("the.lower", Level.DEFAULT);
 	checkLevel("the.lower.left", Level.FINE);
 	checkLevel("the.lower.left.hand", Level.FINE);
 	checkLevel("the.lower.left.hand.side", Level.FINE);
-	checkLevel("the.lower.right", Level.NONE);
-	checkLevel("the.lower.right.hand", Level.NONE);
-	checkLevel("the.lower.right.hand.side", Level.NONE);
+	checkLevel("the.lower.right", Level.DEFAULT);
+	checkLevel("the.lower.right.hand", Level.DEFAULT);
+	checkLevel("the.lower.right.hand.side", Level.DEFAULT);
     }
 
     public void testRootLevelFINE() {
@@ -106,7 +106,7 @@ public class TestLog extends TestLib {
 	set("this", Level.FINE);
 	checkLevel("this.level", Level.FINE);
 	checkLevel("this", Level.FINE);
-	checkLevel("", Level.NONE);
+	checkLevel("", Level.DEFAULT);
     }
     
     public void testSetSuperThenPackageGetsPackage() {
@@ -125,5 +125,6 @@ public class TestLog extends TestLib {
 	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
 	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
 	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
+	assertEquals("DEFAULT", Level.DEFAULT, Level.WARNING);
     }
 }

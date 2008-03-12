@@ -55,20 +55,20 @@ public class TestOptions extends TestLib {
     }
 
     public void testOptionFINE() {
-	checkLevel("", Level.NONE);
+	checkLevel("", Level.DEFAULT);
 	parse("FINE");
 	checkLevel("", Level.FINE);
     }
 
     public void testOptionSubFINE() {
-	checkLevel("the", Level.NONE);
+	checkLevel("the", Level.DEFAULT);
 	parse("the=FINE");
 	checkLevel("the", Level.FINE);
     }
 
     public void testOptionCommaOption() {
-	checkLevel("lhs", Level.NONE);
-	checkLevel("rhs", Level.NONE);
+	checkLevel("lhs", Level.DEFAULT);
+	checkLevel("rhs", Level.DEFAULT);
 	parse("lhs=FINE,rhs=FINEST");
 	checkLevel("lhs", Level.FINE);
 	checkLevel("rhs", Level.FINEST);
@@ -76,7 +76,7 @@ public class TestOptions extends TestLib {
     }
 
     public void testOptionPackage() {
-	checkLevel("frysk", Level.NONE);
+	checkLevel("frysk", Level.DEFAULT);
 	parse("frysk");
 	checkLevel("frysk", Level.FINE);
     }
