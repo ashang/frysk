@@ -1,5 +1,8 @@
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskClonedObserver.java: Use
+	StopEventLoopWhenProcTerminated.
+
 	* TestTaskSyscallObserver.java: Use
 	StopEventLoopWhenProcTerminated.
 

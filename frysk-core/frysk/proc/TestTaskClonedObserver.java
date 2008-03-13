@@ -41,7 +41,7 @@
 package frysk.proc;
 
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
@@ -92,7 +92,7 @@ public class TestTaskClonedObserver
 	    Integer.toString(fibCount)
 	});
 
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
 
     child.getMainTask().requestAddClonedObserver(cloneCounter);
     child.requestRemoveBlock();
