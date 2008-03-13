@@ -162,42 +162,48 @@ javadoc: all
 			-subpackages frysk:lib:inua:jline:junit:gnu \
 		; \
 	done
-
-# Since javadoc re-generates all the files, changing their
-# last-modified time (even when the contents don't change), rsync-a
-# must push a mod-time on every file.  Avoid that cost by ignoring the
-# mod-time and instead using --checksum; while pulling all the
-# checksums is expensive it isn't as expensive as pushing every file's
-# mod-time.
-
-.PHONY: upload-javadoc
-upload-javadoc:
-	rsync \
-		--fuzzy \
+
+UPLOAD_FLAGS =	--fuzzy \
 		--delete-during \
 		--ignore-times \
-		--perms \
-		--checksum \
 		--recursive \
 		--links \
 		--itemize-changes \
-		--stats \
+		--stats
+
+# Since the documentation generation process re-generates all the
+# files, changing their last-modified time (even when the contents
+# don't change), rsync-a is forced to upload a mod-time on every file.
+# Avoid that cost by ignoring the mod-time and instead using
+# --checksum; while pulling all the checksums is expensive it isn't as
+# expensive as pushing every file's mod-time.
+
+UPLOAD_FLAGS += --checksum
+
+# Explicitly specify the file permissions using --chmod.  This ensures
+# that uploaded files are group writable so that others can do
+# updates; and directories are SGID so that group membership
+# propogates down (fixed in later rsync releases).  Also explicitly
+# specify --perms so that the --chmod permission is used, and not
+# overwriden by the remote remote UMASK (this can also lead to
+# permission denied warnings when trying to set the permission of
+# directories you don't own, just live with that).
+
+UPLOAD_FLAGS += --chmod ug=rwX,o=rX,Dg+s --perms
+
+UPLOAD = echo "Don't worry too much about directory permission warnings" ; \
+	 rsync $(UPLOAD_FLAGS)
+
+.PHONY: upload-javadoc
+upload-javadoc:
+	$(UPLOAD) \
 		javadoc/public javadoc/private \
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/javadoc
 CLEANFILES += javadoc
 
 .PHONY: upload-manpages
 upload-manpages:
-	rsync \
-		--fuzzy \
-		--delete-during \
-		--ignore-times \
-		--perms \
-		--checksum \
-		--recursive \
-		--links \
-		--itemize-changes \
-		--stats \
+	$(UPLOAD) \
 		manpages/ \
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/manpages
 

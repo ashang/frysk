@@ -1,3 +1,9 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (UPLOAD, UPLOAD_FLAGS): Define; include --chmod
+	option and comment about --perms.
+	(upload-manpages, upload-javadoc): Use.
+
 2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am (upload-manpages): New .PHONY target using rsync.
