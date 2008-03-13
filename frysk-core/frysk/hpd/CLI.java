@@ -332,7 +332,9 @@ public class CLI {
     }
 
     void addMessage(String msg, int type) {
-        addMessage(new Message(msg, type));
+	synchronized (messages) {
+	    addMessage(new Message(msg, type));
+	}
     }
 
     private void flushMessages() {

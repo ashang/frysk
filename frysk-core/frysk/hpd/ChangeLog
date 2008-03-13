@@ -1,3 +1,8 @@
+2008-03-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Synchronize message adding when type specified.
+	* LoadCommand.java: Use message logger instead of direct print.
+
 2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestActionsCommand: Use tighter expect regular expressions.
