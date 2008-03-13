@@ -108,7 +108,7 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
   GElf_Word sizeless_shndx = SHN_UNDEF;
 
   /* Keep track of the lowest address a relevant sizeless symbol could have.  */
-  GElf_Addr min_label = addr;
+  GElf_Addr min_label = 0;
 
   /* Look through the symbol table for a matching symbol.  */
   for (int i = 1; i < syments; ++i)
@@ -150,16 +150,26 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 			 st_size.  If no symbol with proper size includes
 			 the address, we'll use the closest one that is in
 			 the same section as ADDR.  */
-		      sizeless_sym = sym;
-		      sizeless_shndx = shndx;
-		      sizeless_name = name;
+                      if (sizeless_name == NULL
+                          || sizeless_sym.st_value < sym.st_value
+                          || (sizeless_sym.st_value == sym.st_value
+                              && strcmp(name, sizeless_name) < 0))
+                        {
+                          sizeless_sym = sym;
+                          sizeless_shndx = shndx;
+                          sizeless_name = name;
+                        }
 		    }
 		}
 	      /* When the beginning of its range is no closer,
-		 the end of its range might be.  */
+		 the end of its range might be.
+                 If symbols are identical, choose the first one in
+		 alphabetical order */
 	      else if (sym.st_size != 0
 		       && closest_sym->st_value == sym.st_value
-		       && closest_sym->st_size > sym.st_size)
+		       && (closest_sym->st_size > sym.st_size
+                           || (closest_sym->st_size == sym.st_size
+                               && strcmp(name, closest_name) < 0)))
 		{
 		  *closest_sym = sym;
 		  closest_shndx = shndx;

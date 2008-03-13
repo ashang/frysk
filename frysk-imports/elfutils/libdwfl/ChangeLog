@@ -1,3 +1,9 @@
+2008-03-13  Tim Moore  <timoore@redhat.com>
+
+	* dwfl_module_addrsym.c (dwfl_module_addrsym): Start min_label
+	from 0 to allow sizeless symbols below the address. Choose the
+	best sizeless symbol.
+
 2008-02-19  Roland McGrath  <roland@redhat.com>
 
 	* relocate.c (relocate_section): Check for an unhandled relocation

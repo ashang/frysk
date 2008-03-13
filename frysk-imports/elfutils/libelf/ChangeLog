@@ -1,3 +1,8 @@
+2008-03-13  Tim Moore  <timoore@redhat.com>
+
+	* elf_getdata_rawchunk.c (elf_getdata_rawchunk): Cast offset and
+	size computation to uint64_t.
+
 2008-02-19  Roland McGrath  <roland@redhat.com>
 
 	* elf.h: Update from glibc.
