@@ -39,9 +39,9 @@
 
 package frysk.debuginfo;
 
-public class ObjectDeclaratioinNotFoundException extends RuntimeException {
+public class ObjectDeclarationNotFoundException extends RuntimeException {
 
-    public ObjectDeclaratioinNotFoundException(String name) {
+    public ObjectDeclarationNotFoundException(String name) {
 	super("Object "+ name + " was not found");
     }
 

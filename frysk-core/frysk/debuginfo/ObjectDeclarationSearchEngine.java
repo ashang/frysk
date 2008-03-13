@@ -92,7 +92,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	    scope = scope.getOuter();
 	}
 	
-	throw new ObjectDeclaratioinNotFoundException(name);
+	throw new ObjectDeclarationNotFoundException(name);
     }
 
     public Type getType(Variable variable) {

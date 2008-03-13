@@ -1,3 +1,9 @@
+2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* ObjectDeclarationNotFoundException.java: Renamed.
+	* TestObjectDeclarationSearchEngine.java: Updated.
+	* ObjectDeclarationSearchEngine.java: Updated.
+
 2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java: Fixed typo.
