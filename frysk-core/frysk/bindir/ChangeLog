@@ -1,3 +1,7 @@
+2008-03-13  Teresa Thomas  <tthomas@redhat.com>
+
+	* fstack.java: Refactor to use ProcStopUtil.
+
 2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* fcatch.xml: Fixed URL.

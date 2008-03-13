@@ -40,141 +40,114 @@
 package frysk.bindir;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
+
+import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
-import frysk.event.RequestStopEvent;
-import frysk.proc.Manager;
+import frysk.event.ProcEvent;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcCoreAction;
-import frysk.util.CommandlineParser;
-import frysk.util.StacktraceAction;
+import frysk.proc.Task;
+import frysk.rsl.Log;
+import frysk.stack.StackFactory;
+import frysk.util.ProcStopUtil;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
 public final class fstack {
 
-  private static StacktraceAction stacker;
-
-  private static CommandlineParser parser;
-
-  private static PrintWriter printWriter = new PrintWriter(System.out);
-  
+  private static PrintWriter printWriter = new PrintWriter(System.out);  
   static PrintStackOptions options = new PrintStackOptions();
-  
-  private static class Stacker extends StacktraceAction
-  {
-
-    Proc proc;
-    public Stacker (PrintWriter printWriter, Proc theProc, Event theEvent,PrintStackOptions options)
-    {
-      super(printWriter, theProc, theEvent, options);
-      this.proc = theProc;
-    }
-
-    //@Override
-    public void addFailed (Object observable, Throwable w)
-    {
-      w.printStackTrace();
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-
-      try
-        {
-          // Wait for eventLoop to finish.
-          Manager.eventLoop.join();
-        }
-      catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        }
-      System.exit(1);
-    } 
-  }
-  
-  private static class AbandonPrintEvent implements Event
-  {
-    private Proc proc;
-    
-    AbandonPrintEvent(Proc proc)
-    {
-      this.proc = proc;
-    }
-    public void execute ()
-    {
-      proc.requestAbandonAndRunEvent(new Event()
-    {
-
-      public void execute ()
-      {
-	  Manager.eventLoop.requestStop();
-	  stacker.flush();
-      }
-    });
-    }
-    
-  }
-  
-  private static class PrintEvent implements Event
-  {
-    public void execute()
-    {
-      Manager.eventLoop.requestStop();
-      stacker.flush();
-    }
-  }
-  
-    private static void stackCore(Proc proc) {
-	stacker = new Stacker(printWriter, proc, new PrintEvent(), options);
-	new ProcCoreAction(proc, stacker);
-	Manager.eventLoop.run();
-    }
-  
-    private static void stackPid(Proc proc) {
-	stacker = new Stacker(printWriter, proc, new AbandonPrintEvent(proc), options);
-	new ProcBlockAction(proc, stacker);
-	Manager.eventLoop.run();
-    }
+  private static final Log fine = Log.fine(fstack.class);
   
   public static void main (String[] args)
   {
+      ProcStopUtil fstack = new ProcStopUtil("fstack", args, 
+                                              new StackerEvent());
+      fstack.setUsage("Usage: fstack <PID> || fstack <COREFILE> [<EXEFILE>]");   
+      addOptions (fstack);
+      fstack.execute();
+  }
+  
+  /**
+   * Implements a ProcEvent for core file creation.
+   */
+  private static class StackerEvent implements ProcEvent {
+      public void executeLive(Proc proc) {
+          fine.log(this, "printTasks");
+          printTasks(proc);
+          proc.requestAbandonAndRunEvent(new Event()
+          {
+              public void execute ()
+              {   
+                  printWriter.flush();
+              }
+          });
+      }
 
-      parser = new CommandlineParser("fstack") {
-	      //@Override
-	      public void parseCores(Proc[] cores) {
-		  for (int i = 0; i < cores.length; i++)
-		      stackCore(cores[i]);
-	      }
-	      //@Override
-	      public void parsePids(Proc[] procs) {
-		  for (int i = 0; i < procs.length; i++)
-		      stackPid(procs[i]);
-	      }
-	  };
+      public void executeDead(Proc proc) {
+          fine.log(this, "printTasks");
+          printTasks(proc);
+          printWriter.flush();
+      }     
+  }
+  
+  private static void printTasks(Proc proc) {
+      
+      Task[] tasks = (Task[]) proc.getTasks().toArray
+      (new Task[proc.getTasks().size()]);
 
-      parser.add(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +
-      		" -n all to print all frames.", "<number of frames>") {
-	  public void parsed(String arg) throws OptionException {
-	      if(arg.equals("all")){
-		  options.setNumberOfFrames(0);
-	      }else{
-		  options.setNumberOfFrames(Integer.parseInt(arg));
-		  return;
-	      }
-	  }
+      TreeMap sortedTasks = new TreeMap();
+      for (int i=0; i<tasks.length; i++)
+          sortedTasks.put(new Integer(tasks[i].getTid()), tasks[i]);
+
+      Iterator iter = sortedTasks.values().iterator();
+      while (iter.hasNext())
+      {
+          Task task =  (Task) iter.next();
+
+          if(options.elfOnly()){
+              StackFactory.printTaskStackTrace(printWriter,task,options);
+          }else{
+              if(options.printVirtualFrames()){
+                  DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,options);
+              }else{
+                  DebugInfoStackFactory.printTaskStackTrace(printWriter,task,options);
+              }
+          }
+          printWriter.println();
+      }
+  }
+  
+  /**
+   * Add options to fstack.
+   */
+  private static void addOptions (ProcStopUtil fstack) {
+      fstack.addOption(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +
+                                  " -n all to print all frames.", "<number of frames>") {
+          public void parsed(String arg) throws OptionException {
+              if(arg.equals("all")){
+                  options.setNumberOfFrames(0);
+              }else{
+                  options.setNumberOfFrames(Integer.parseInt(arg));
+                  return;
+              }
+          }
       });
  
-      parser.add(new Option("fullpath", 'f', "print full path." +
-  		"-f prints full path") {
-	  public void parsed(String arg) throws OptionException {
-	        options.setPrintFullpath(true);
-	  }
+      fstack.addOption(new Option("fullpath", 'f', "print full path." +
+                                  "-f prints full path") {
+          public void parsed(String arg) throws OptionException {
+                options.setPrintFullpath(true);
+          }
       });
 
 
-    parser.add(new Option("all", 'a', "print all information that can currently be retrieved" +
-                          "about the stack\n" +
-                          "this is equivalent to -p functions,params,scopes,fullpath"){
+      fstack.addOption(new Option("all", 'a', "print all information that can currently be retrieved" +
+                                  "about the stack\n" +
+                                  "this is equivalent to -p functions,params,scopes,fullpath"){
 
                 public void parsed (String argument) throws OptionException
                 {
@@ -185,21 +158,21 @@ public final class fstack {
                 }
               });
     
-    parser.add(new Option(
-			"virtual",
-			'v',
-			"Includes virtual frames in the stack trace.\n" +
-			"Virtual frames are artificial frames corresponding" +
-			" to calls to inlined functions") {
+      fstack.addOption(new Option(
+                        "virtual",
+                        'v',
+                        "Includes virtual frames in the stack trace.\n" +
+                        "Virtual frames are artificial frames corresponding" +
+                        " to calls to inlined functions") {
 
-		    public void parsed(String argument) throws OptionException {
-			options.setPrintVirtualFrames(true);
-			options.setElfOnly(false);
-		    }
-		});
+                    public void parsed(String argument) throws OptionException {
+                        options.setPrintVirtualFrames(true);
+                        options.setElfOnly(false);
+                    }
+                });
 
 
-    parser.add(new Option("common", 'c', "print commonly used debug information:" +
+      fstack.addOption(new Option("common", 'c', "print commonly used debug information:" +
                           "this is equivalent to fstack -v -p functions,params,fullpath"){
 
                 public void parsed (String argument) throws OptionException
@@ -212,7 +185,7 @@ public final class fstack {
                 }
     });
               
-    parser.add(new Option("print", 'p', "itmes to print. Possible items:\n" +
+      fstack.addOption(new Option("print", 'p', "itmes to print. Possible items:\n" +
                 "functions : print function names using debug information\n" +
                 "scopes : print variables declared in each scope within the " +
                 "function.\n" +
@@ -249,10 +222,8 @@ public final class fstack {
               options.setElfOnly(false);
               options.setPrintFullpath(true);
             }
-            
           }
       }
-    });
-    parser.parse(args);    
+      }); 
   }
 }
