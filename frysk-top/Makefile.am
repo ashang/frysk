@@ -186,6 +186,25 @@ upload-javadoc:
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/javadoc
 CLEANFILES += javadoc
 
+.PHONY: upload-manpages
+upload-manpages:
+	rsync \
+		--fuzzy \
+		--delete-during \
+		--ignore-times \
+		--perms \
+		--checksum \
+		--recursive \
+		--links \
+		--itemize-changes \
+		--stats \
+		manpages/ \
+		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/manpages
+
+.PHONY: upload-docs
+upload-docs: upload-manpages upload-javadoc
+	true
+
 # Generate DOXYGEN documentation.
 
 DOXYFILE = doxygen/Doxyfile
