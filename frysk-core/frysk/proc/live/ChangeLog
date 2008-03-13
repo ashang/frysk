@@ -1,5 +1,8 @@
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java: Use
+	StopEventLoopWhenProcTerminated.
+
 	* LinuxPtraceTaskState.java (warning): New; use instead of
 	System.out.println().
 
