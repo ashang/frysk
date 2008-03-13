@@ -6,6 +6,9 @@
 
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestExec.java: Use StopEventLoopWhenProcTerminated; inline
+	StopEventLoopWhenProcRemoved.
+
 	* TestTaskClonedObserver.java: Use
 	StopEventLoopWhenProcTerminated.
 

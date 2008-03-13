@@ -1,3 +1,7 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* StopEventLoopWhenProcRemoved.java: Delete.
+
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskCounter.java: Delete.
