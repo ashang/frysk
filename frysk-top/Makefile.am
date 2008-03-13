@@ -54,9 +54,10 @@ SUBDIRS = \
 SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%/frysk,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%/frysk,$(SUBDIRS)) \
-	$(srcdir)/frysk-imports/lib \
-	$(srcdir)/frysk-imports/inua \
-	$(top_builddir)/frysk-imports/inua \
+	$(srcdir)/frysk-sys/lib \
+	$(top_builddir)/frysk-sys/lib \
+	$(srcdir)/frysk-sys/inua \
+	$(top_builddir)/frysk-sys/inua \
 	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
 	$(srcdir)/frysk-imports/jline/src/jline \
 	$(srcdir)/frysk-imports/junit/src/junit \
@@ -67,7 +68,7 @@ SOURCEDIRS = \
 
 
 # Generate JAVADOC documentation.
-JAVADOC = gjdoc
+JAVADOC = javadoc
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: all
@@ -84,6 +85,7 @@ javadoc: all
 				cd $$d ; \
 				find $$b \
 				-path '*/*dir/*' -prune \
+				-path '*/*tmp/*' -prune \
 				-o -name '[A-Za-z]*\.java' -print \
 				-o -name 'package.html' -print \
 				-o -path '*/doc-files/*.jpg' -print \
@@ -100,16 +102,10 @@ javadoc: all
 				| xargs rm \
 				;; \
 		esac ; \
-		case $$scope in \
-			public ) reflection=-reflection ;; \
-			private ) reflection= ;; \
-		esac ; \
 		jg=http://developer.gnome.org/doc/API/java-gnome ; \
 		CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
 			$(JAVADOC) \
 			-$$scope \
-			$${reflection} \
-			-validhtml \
 			-link http://developer.classpath.org/doc/ \
 			-link $${jg}/glib-java-0.4.0/api/ \
 			-link $${jg}/cairo-java-1.0.6/api/ \
@@ -129,7 +125,7 @@ javadoc: all
 			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
 			-group "Native Bindings" 'lib*' \
 			-sourcepath javadoc/source/$$scope \
-			-all \
+			-subpackages frysk:lib:inua:jline:junit:gnu \
 		; \
 	done
 

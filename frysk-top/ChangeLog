@@ -1,3 +1,11 @@
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am (SOURCEDIRS): Remove frysk-imports subdirs, replace
+	with frysk-sys subdirs.
+	(JAVADOC): Define as javadoc.
+	(javadoc): Prune tmp dirs. Don't use reflection, no -validhtml,
+	replace -all with -subpackages frysk:lib:inua:jline:junit:gnu.
+	
 2007-12-19  Andrew Cagney  <cagney@redhat.com>
 
 	* classpath.in: Exclude duplicated ChangeLog only include .java
