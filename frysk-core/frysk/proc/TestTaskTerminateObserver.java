@@ -42,7 +42,6 @@ package frysk.proc;
 import frysk.sys.Pid;
 import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SynchronizedOffspring;
@@ -59,9 +58,13 @@ public class TestTaskTerminateObserver
     /**
      * Save the Terminating, and Terminated values as they pass by.
      */
-    class Terminate extends TaskObserverBase
+    private class Terminate extends TaskObserverBase
 	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
+	private final boolean stopOnTerminatingEvent;
+	Terminate(boolean stopOnTerminatingEvent) {
+	    this.stopOnTerminatingEvent = stopOnTerminatingEvent;
+	}
 	int terminating = INVALID;
 	int terminated = INVALID;
 	public Action updateTerminating(Task task, Signal signal, int value) {
@@ -70,6 +73,8 @@ public class TestTaskTerminateObserver
 	    } else {
 		terminating = value;
 	    }
+	    if (stopOnTerminatingEvent)
+		Manager.eventLoop.requestStop();
 	    return Action.CONTINUE;
 	}
 	public Action updateTerminated(Task task, Signal signal, int value) {
@@ -78,6 +83,7 @@ public class TestTaskTerminateObserver
 	    } else {
 		terminated = value;
 	    }
+	    Manager.eventLoop.requestStop();
 	    return Action.CONTINUE;
 	}
     }
@@ -93,12 +99,15 @@ public class TestTaskTerminateObserver
 		Integer.toString(expected)
 	    });
 	
-	// Bail once it has exited.
-	new StopEventLoopWhenProcRemoved(child);
-	
-	// Set up an observer that watches for both Terminating and
-	// Terminated events.
-	Terminate terminate = new Terminate();
+	// Set up an observer that watches for both Terminating and/or
+	// Terminated events; and requests a stop when the last
+	// expected event arrives.
+	if (terminated == INVALID && terminating == INVALID) {
+	    // Must watch at least one; otherwise won't know when to
+	    // stop the test!
+	    fail("test-case botch");
+	}
+	Terminate terminate = new Terminate(terminated == INVALID);
 	if (terminated != INVALID) {
 	    child.getMainTask().requestAddTerminatedObserver(terminate);
 	}
@@ -188,35 +197,19 @@ public class TestTaskTerminateObserver
 	terminated(- frysk.sys.Signal.HUP.intValue());
     }
 
-    class TerminatingCounter extends TaskObserverBase
-	implements TaskObserver.Terminating
-    {
-	int count;
-	public void addedTo (Object o) {
-	    Manager.eventLoop.requestStop();
-	}
-	public Action updateTerminating(Task task, Signal signal, int value) {
-	    count++;
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
-	}
-    }
-
     /**
      * Check that a process with a task, that has exited, but not yet
      * been joined (i.e., in the 'X' state) can be attached and than
      * followed through to its termination.
      */
     public void testAttachToUnJoinedTask () {
-	final int timeout = 5; // XXX: Should be constant in TestLib.
-
 	SynchronizedOffspring daemon = new SynchronizedOffspring
 	    (SynchronizedOffspring.START_ACK,
 	     new String[]{
 		getExecPath ("funit-threadexit"),
 		Integer.toString(Pid.get().intValue()),
 		Integer.toString(SynchronizedOffspring.START_ACK.intValue()),
-		Integer.toString(timeout), // Seconds
+		Integer.toString(getTimeoutSeconds()), // Seconds
 	    });
 
 	// Find the main task, and get a terminate observer bound to
@@ -231,11 +224,27 @@ public class TestTaskTerminateObserver
 	// the way through to being removed so that both terminating
 	// and terminated events are seen by this test.
 	daemon.signal(frysk.sys.Signal.TERM);
-	new StopEventLoopWhenProcRemoved(daemon);
 	assertRunUntilStop("terminate process");
 
 	// Check that there was a terminate event.
 	assertEquals("Number of terminating processes", 1,
 		     terminatingCounter.count);
     }
+
+    private static class TerminatingCounter
+	extends TaskObserverBase
+	implements TaskObserver.Terminating
+    {
+	int count;
+	public void addedTo (Object o) {
+	    Manager.eventLoop.requestStop();
+	}
+	public Action updateTerminating(Task task, Signal signal, int value) {
+	    count++;
+	    task.requestUnblock(this);
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
+    }
+
 }

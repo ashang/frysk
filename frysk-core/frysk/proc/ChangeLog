@@ -1,5 +1,8 @@
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java: Do not use
+	StopEventLoopWhenProcRemoved.
+
 	* TestProcGet.java: Use StopEventLoopWhenProcTerminated.
 
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
