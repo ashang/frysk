@@ -1,3 +1,10 @@
+2008-03-13  Tim Moore  <timoore@redhat.com>
+
+	* cni/Dwfl.cxx: Add declaration for elfutils'
+	elf_from_remote_memory.
+	* cni/Elf.cxx (elf_get_raw_data): Use new elf_getdata_rawchunk
+	function.
+
 2008-03-04  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/Dwfl.cxx (dwfl_frysk_proc_find_elf): Document 

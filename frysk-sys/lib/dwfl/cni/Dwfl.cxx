@@ -56,6 +56,19 @@
 
 #include "inua/eio/ByteBuffer.h"
 
+// Suck in elf_from_remote_memory from elfutils
+
+extern "C"
+{
+    extern ::Elf *elf_from_remote_memory (GElf_Addr ehdr_vma,
+                                          GElf_Addr *loadbasep,
+                                          ssize_t (*read_memory) (void *arg,
+                                                                  void *data,
+                                                                  GElf_Addr address,
+                                                                  size_t minread,
+                                                                  size_t maxread),
+                                          void *arg);
+}
 #define DWFL_POINTER (::Dwfl *) this->pointer
 
 static ssize_t

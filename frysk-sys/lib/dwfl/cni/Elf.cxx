@@ -39,6 +39,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <libelf.h>
 #include <gelf.h>
 #include <string.h>
 #include <sys/types.h>
@@ -389,11 +390,10 @@ lib::dwfl::Elf::elf_cntl (jint command)
 
 lib::dwfl::ElfData* lib::dwfl::Elf::elf_get_raw_data (jlong offset, jlong size)
 {
-  char *mem = gelf_rawchunk((::Elf*) this->pointer,offset,size);
-  jbyteArray bytes = JvNewByteArray(size);
-  memcpy(elements(bytes),mem,size);
-  lib::dwfl::ElfData *data = new lib::dwfl::ElfData(bytes,this);
-  gelf_freechunk((::Elf*) this->pointer,mem);
+  ::Elf_Data* chunk = elf_getdata_rawchunk((::Elf*) this->pointer, offset, size,
+                                           ELF_T_BYTE);
+  lib::dwfl::ElfData *data = new lib::dwfl::ElfData((jlong)chunk, this);
+  // chunk will be freed by libelf at elf_end.
   return data;
 }
 
