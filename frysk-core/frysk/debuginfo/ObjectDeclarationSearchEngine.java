@@ -63,7 +63,7 @@ import frysk.value.Variable;
 /**
  * This engine implements the c++ scoping rules and uses when searching for
  * a variable by name:
- * 1. Search the inner-most scope containing the current pc indeicated by the
+ * 1. Search the inner-most scope containing the current pc indicated by the
  * given frame, and return the first encounter. 
  *
  */

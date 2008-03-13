@@ -1,3 +1,7 @@
+2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java: Fixed typo.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* CompilerVersionFactory.java: Use LogFactory.
