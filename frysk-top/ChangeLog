@@ -1,5 +1,11 @@
 2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
+	* Makefile.am (XMLSOURCES): New list of tools xml docbook files.
+	(TEMPLATE): New standard html template file.
+	(manpages): New .PHONY target.
+
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
 	* Makefile.am (SOURCEDIRS): Remove frysk-imports subdirs, replace
 	with frysk-sys subdirs.
 	(JAVADOC): Define as javadoc.
