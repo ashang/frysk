@@ -256,15 +256,11 @@ public class TestTaskObserver
     /** {@link #detachExitingTask} */
     public void testDetachExitingMainTask ()
     {
-	if (unresolvedOnUtrace(3737))
-	    return;
 	detachExitingTask (0, true);
     }
     /** {@link #detachExitingTask} */
     public void testDetachExitingOtherTask ()
     {
-	if (unresolvedOnUtrace(3737))
-	    return;
 	detachExitingTask (1, false);
     }
 

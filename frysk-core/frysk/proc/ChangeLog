@@ -1,3 +1,9 @@
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestTaskObserver.java (testDetachExitingMainTask): Enabled
+	already fixed test for bug #3737.
+	(detachExitingTask): Likewise.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskClonedObserver.java: Use
