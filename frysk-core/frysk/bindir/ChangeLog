@@ -1,3 +1,15 @@
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fcatch.xml: Fixed URL.
+	* fdebuginfo.xml: Likewise.
+	* fdebugrpm.xml: Likewise.
+	* ferror.xml: Likewise.
+	* fexe.xml: Likewise.
+	* fstack.xml: Likewise.
+	* fstep.xml: Likewise.
+	* ftrace.xml: Likewise.
+	* fhpd.xml: Put refpurpose on one line for easy sed parsing.
+
 2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* TestFcatch.java (testFcatchFollowsPATH): New test
@@ -25,10 +37,10 @@
 	* TestFerror.java: Added test for regext argument matching.
 
 2008-03-06  Phil Muldoon  <pmuldoon@redhat.com>
- 
-       * ferror.java (main): Update option text.
-       (parsed): Do not store argument. Compile into pattern.
-       (updateSyscallEnter): Use Matcher instead of contains. 
+
+	* ferror.java (main): Update option text.
+	(parsed): Do not store argument. Compile into pattern.
+	(updateSyscallEnter): Use Matcher instead of contains. 
 
 2008-03-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
