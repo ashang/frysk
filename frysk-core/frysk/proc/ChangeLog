@@ -1,5 +1,8 @@
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java: Use
+	StopEventLoopWhenProcTerminated.
+
 	* TestTaskTerminateObserver.java: Do not use
 	StopEventLoopWhenProcRemoved.
 
