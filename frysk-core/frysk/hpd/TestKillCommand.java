@@ -40,10 +40,10 @@
 package frysk.hpd;
 
 import frysk.config.Config;
+import frysk.testbed.SlaveOffspring;
 
 /**
- * This class tests the "load" command basics of both loading a correct
- * executable and trying to load a non-existent executable.
+ * This class tests the "kill" command basics.
  */
 
 public class TestKillCommand extends TestLib {
@@ -151,21 +151,64 @@ public class TestKillCommand extends TestLib {
 	e.sendCommandExpectPrompt("kill", "Killing process.*");
 	/* Adding the quit/Quitting lines causes the following stack trace:
 	
-	frysk.expunit.EndOfFileException: end-of-file; expecting:  <<Quitting\.\.\..*>>; buffer <<Exception in thread "main" java.lang.RuntimeException: {frysk.proc.live.LinuxPtraceTask@2fa6f255,pid=26391,tid=26392,state=StartClonedTask.blockedOffspring} in state "StartClonedTask.blockedOffspring" did not handle handleTerminatedEvent
-	   at frysk.proc.live.State.unhandled(State.java:67)
-	   at frysk.proc.live.LinuxPtraceTaskState.handleTerminatedEvent(LinuxPtraceTaskState.java:73)
-	   at frysk.proc.live.LinuxPtraceTask.processTerminatedEvent(LinuxPtraceTask.java:233)
-	   at frysk.proc.live.LinuxWaitBuilder.terminated(LinuxWaitBuilder.java:200)
-	   at frysk.sys.Wait.wait(Wait.cxx:586)
-	   at frysk.sys.Wait.wait(Wait.java:125)
-	   at frysk.event.WaitEventLoop.block(WaitEventLoop.java:87)
-	   at frysk.event.EventLoop.runEventLoop(EventLoop.java:377)
-	   at frysk.event.EventLoop.run(EventLoop.java:487)
-	   at frysk.bindir.fhpd.main(fhpd.java:171) */
+	1) testLoadKill(frysk.hpd.TestKillCommand)frysk.expunit.EndOfFileException: end-of-file; expecting:  <<Quitting\.\.\..*>>; buffer <<quit
+java.lang.NullPointerException
+   at frysk.stepping.SteppingEngine$SteppingObserver.updateExecuted(SteppingEngine.java:1052)
+   at frysk.proc.live.LinuxPtraceProc$13.add(LinuxPtraceProc.java:690)
+   at frysk.proc.live.LinuxPtraceTaskState$StartClonedTask.handleAddObservation(LinuxPtraceTaskState.java:648)
+   at frysk.proc.live.LinuxPtraceTask.handleAddObservation(LinuxPtraceTask.java:418)
+   at frysk.proc.live.TaskObservation.handleAdd(TaskObservation.java:87)
+   at frysk.proc.live.LinuxPtraceProcState$3.handleAddObservation(LinuxPtraceProcState.java:413)
+   at frysk.proc.live.LinuxPtraceProc.handleAddObservation(LinuxPtraceProc.java:426)
+   at frysk.proc.live.LinuxPtraceProc$13.execute(LinuxPtraceProc.java:676)
+   at frysk.event.EventLoop.runEventLoop(EventLoop.java:365)
+   at frysk.event.EventLoop.run(EventLoop.java:482)
+   at frysk.bindir.fhpd.main(fhpd.java:181)
+>>
+   at frysk.expunit.Child.expectMilliseconds(Child.java:161)
+   at frysk.expunit.Expect.expect(Expect.java:158)
+   at frysk.expunit.Expect.expect(Expect.java:167)
+   at frysk.expunit.Expect.expect(Expect.java:176)
+   at frysk.hpd.TestKillCommand.testLoadKill(TestKillCommand.java:170)
+   at frysk.junit.Runner.runCases(Runner.java:197)
+   at frysk.junit.Runner.runTestCases(Runner.java:424)
+   at TestRunner.main(TestRunner.java:63) */
 
 	//e.send("quit\n");
 	//e.expect("Quitting\\.\\.\\..*");
 	e.close();
+    }
+    
+    /**
+     * Test killing of a single proc using the PID
+     */
+    public void testKillByPID() {
+	SlaveOffspring newProc = SlaveOffspring.createDaemon();
+	int pid = newProc.getPid().intValue();
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("attach " + pid, "Attached to process " + pid + ".*");
+	e.sendCommandExpectPrompt("kill " + pid, "Killing process " + pid + ".*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.sendCommandExpectPrompt("kill " + pid, "PID " + pid + " could not be found.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
+    
+    public void testKillError() {
+	SlaveOffspring newProc = SlaveOffspring.createDaemon();
+	int pid = newProc.getPid().intValue();
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("attach " + pid, "Attached to process " + pid + ".*");
+	e.sendCommandExpectPrompt("kill abc", "Error: PID entered is not an integer.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
+    
+    public void testKillErrorTwo() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("kill a b c", "Too many parameters.*");
     }
     
 }

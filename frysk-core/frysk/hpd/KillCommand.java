@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,11 +39,9 @@
 
 package frysk.hpd;
 
-//import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -53,54 +51,102 @@ import java.util.List;
  */
 
 public class KillCommand extends ParameterizedCommand {
-    private static String full = "kill the processes that are currently in " +
-    	"the current target set.  The processes are then reloaded and then " +
-    	"ready to be run again.";
+    private static String full = "kill [PID]\n" + 
+	"kill the processes that are currently in " +
+    	"the current target set or kill a specific PID.  If kill is run " +
+    	"without parameters, all processes in the current target set are " +
+    	"killed and then reloaded and are then ready to be run again.";
+    
+    Map saveProcs = new HashMap();
 
     KillCommand() {
-	super("kill the current targetset", "kill", full);
+	super("kill the current targetset or kill a specific PID", "kill", full);
     }
 
     public void interpret(CLI cli, Input cmd, Object options) {
 	
-	Map saveProcs = new HashMap();
-	saveProcs = new TreeMap();
+	if (cmd.size() > 2)
+	    throw new InvalidCommandException("Too many parameters");
+	    
+	switch (cmd.size()) {
+	
+	case 0:
+	
+	    killProc(-1, cli);
+	    cli.outWriter.flush();
+	    
+	    synchronized (cli) {
+		// Clear the running procs set
+		cli.runningProcs.clear();
+		// Clear the stepping engine structures
+		cli.steppingEngine.clear();
+		// Add back in the stepping observer for cli
+		cli.steppingEngine.addObserver(cli.steppingObserver);
+	    }
+	    // Now loop through and re-load all of the killed procs
+	    Iterator bar = saveProcs.keySet().iterator();
+	    while (bar.hasNext()) {
+		Integer procId = (Integer) bar.next();
+		String cmdline = (String) saveProcs.get(procId);
+		cli.taskID = procId.intValue();
+		cli.execCommand("load " + cmdline + "\n");
+	    }
+	    cli.taskID = -1;
+	    break;
+	
+	// This is the case where a PID was entered
+	case 1:
+	    int pid;
+	    try {
+		pid = Integer.parseInt(cmd.parameter(0));
+	    } catch (NumberFormatException e) {
+		cli.addMessage("PID entered is not an integer", Message.TYPE_ERROR);
+		return;
+	    }
+	    if (!killProc(pid, cli))
+		cli.addMessage("PID " + pid + " could not be found", Message.TYPE_ERROR);
+	}
+    }
+	
+    /**
+     * killProc will kill all Procs or just the Proc specified by the PID
+     * passed to it.
+     * 
+     * @param pid
+     *                is an int containing the PID that should be killed, if
+     *                pid < 0, kill all the PIDs frysk in targetset, else just
+     *                kill the process of the specified PID.
+     * @param cli
+     *                is the current command line interface object
+     */
+	
+    boolean killProc(int pid, CLI cli) {
 	int procPID = 0;
 	Iterator foo = cli.targetset.getTaskData();
 	while (foo.hasNext()) {
 	    TaskData taskData = (TaskData) foo.next();
 	    Task task = taskData.getTask();
 	    Proc proc = task.getProc();
-	    if (proc.getPid() != procPID) {
-		cli.outWriter.println("Killing process " + proc.getPid()
-				      + " that was created from "
-				      + proc.getExe());
+	    if ((proc.getPid() != procPID && pid < 0) ||
+		    proc.getPid() == pid) {
+		cli.addMessage("Killing process " + proc.getPid()
+			+ " that was created from " + proc.getExe(),
+			Message.TYPE_NORMAL);
+		cli.outWriter.flush();
 		// Save the procs we are killing so we can re-load them later
-		saveProcs.put(new Integer(taskData.getParentID()),
-			      proc.getExe());
+		saveProcs.put(new Integer(taskData.getParentID()), proc
+			.getExe());
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();
+		if ((pid > 0))
+		    return true;
 	    }
 	}
-	
-	synchronized (cli) {
-	    // Clear the running procs set
-	    cli.runningProcs.clear();
-	    // Clear the stepping engine structures
-	    cli.steppingEngine.clear();
-	    // Add back in the stepping observer for cli
-	    cli.steppingEngine.addObserver(cli.steppingObserver);
-	}
-	// Now loop through and re-load all of the killed procs
-	Iterator bar = saveProcs.keySet().iterator();
-	while (bar.hasNext()) {
-	    Integer procId = (Integer) bar.next();
-	    String cmdline = (String) saveProcs.get(procId);
-	    cli.taskID = procId.intValue();
-	    cli.execCommand("load " + cmdline + "\n");
-	}
-	cli.taskID = -1;
+	// If we got to here and pid > 0 then we did not find that PID
+	if (pid > 0)
+	    return false;
+	return true;
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {

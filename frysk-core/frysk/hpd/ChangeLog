@@ -2,6 +2,9 @@
 
 	* CLI.java: Synchronize message adding when type specified.
 	* LoadCommand.java: Use message logger instead of direct print.
+	
+	* KillCommand.java: Add ability to kill by PID.
+	* TestKillCommand.java: Add test for above.
 
 2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
 
