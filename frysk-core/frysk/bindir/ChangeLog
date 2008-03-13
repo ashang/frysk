@@ -1,3 +1,8 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* TestFstack.java (getCanonicalAbsRootSrcDir): New. Use instead of 
+	Config.getRootSrcDir.
+
 2008-03-13  Teresa Thomas  <tthomas@redhat.com>
 
 	* fstack.java: Refactor to use ProcStopUtil.

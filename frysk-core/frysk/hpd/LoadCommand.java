@@ -45,7 +45,7 @@ import frysk.proc.dead.LinuxExeFactory;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.sysroot.SysrootCache;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -107,9 +107,11 @@ public class LoadCommand extends ParameterizedCommand {
 	}
 	Proc exeProc;
 	if (o.executable != null) {
+	    SysRootCache.setSysroot(o.executable, o.sysroot);
 	    exeProc = LinuxExeFactory.createProc
 		(new File(o.executable), cmd.stringArrayValue());
 	} else {
+	    SysRootCache.setSysroot(cmd.stringArrayValue()[0], o.sysroot);
 	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue());
 	}
 
@@ -137,7 +139,6 @@ public class LoadCommand extends ParameterizedCommand {
 			.createDebugInfoStackTrace(task);
 		cli.setTaskFrame(task, frame);
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
-		SysrootCache.setSysroot(task, sysroot);
 	    }
 	}
 	synchronized (cli) {

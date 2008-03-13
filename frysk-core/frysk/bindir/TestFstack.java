@@ -40,6 +40,7 @@
 package frysk.bindir;
 
 import java.io.File;
+import java.io.IOException;
 
 import frysk.config.Config;
 import frysk.testbed.CorefileFactory;
@@ -71,6 +72,14 @@ public class TestFstack extends TestLib {
 	return new TearDownExpect(argv);
     }
 
+    private String getCanonicalAbsRootSrcDir () {
+	try {
+	    return new File(Config.getAbsRootSrcDir()).getCanonicalPath();
+	} catch (IOException e) {
+	    return Config.getAbsRootSrcDir();
+	}
+    }
+    
     public void testBackTrace () {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[0]);
 	// Just look for main.
@@ -102,7 +111,7 @@ public class TestFstack extends TestLib {
     public void testBackTraceWithFullpath () {
 	TearDownExpect e = fstack("funit-stack-outlined",
 				  new String[] { "--print", "fullpath" });
-        e.expect (Config.getRootSrcDir()
+        e.expect (getCanonicalAbsRootSrcDir()
 		  + ".*"
 		  + "funit-stack-outlined"
 		  + ".c#");
@@ -112,7 +121,7 @@ public class TestFstack extends TestLib {
 	TearDownExpect e = fstack("funit-stack-outlined",
 				  new String[] { "-a" });
 	e.expect("\\#0 .* in third\\(int arg3\\)"
-		 + ".*" + Config.getRootSrcDir()
+		 + ".*" + getCanonicalAbsRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#" 
 		 + ".*int var3.*");
 	e.expect("\\#1");
@@ -122,7 +131,7 @@ public class TestFstack extends TestLib {
 	TearDownExpect e = fstack("funit-stack-outlined",
 				  new String[] { "-c" });
 	e.expect("\\#0 .* in third\\(int arg3\\)"
-		 + ".*" + Config.getRootSrcDir()
+		 + ".*" + getCanonicalAbsRootSrcDir()
 		 + ".*" + "funit-stack-outlined" + "\\.c#");
 	e.expect("\\#1");
   }

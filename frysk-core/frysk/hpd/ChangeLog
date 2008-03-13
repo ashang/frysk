@@ -1,3 +1,7 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (interpret): Use SysRoot.
+
 2008-03-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* CLI.java: Synchronize message adding when type specified.

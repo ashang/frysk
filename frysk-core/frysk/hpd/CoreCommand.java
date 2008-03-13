@@ -46,7 +46,7 @@ import java.util.List;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.sysroot.SysrootCache;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.Task;
 import frysk.proc.dead.LinuxCoreFactory;
 import java.io.IOException;
@@ -136,7 +136,7 @@ public class CoreCommand extends ParameterizedCommand {
 		.createVirtualStackTrace(task);
 	    cli.setTaskFrame(task, frame);
 	    cli.setTaskDebugInfo(task, new DebugInfo(frame));
-	    SysrootCache.setSysroot(task, sysroot);
+	    SysRootCache.setSysroot(task, sysroot);
 	}
 	// Finally, done.
 	synchronized (cli) {

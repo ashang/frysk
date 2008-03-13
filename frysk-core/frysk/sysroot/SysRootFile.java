@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,62 +37,51 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.dead;
+package frysk.sysroot;
 
 import java.io.File;
-import java.util.List;
-import java.util.LinkedList;
-import lib.dwfl.Elf;
-import lib.dwfl.ElfCommand;
-import lib.dwfl.ElfEHeader;
-import frysk.proc.MemoryMap;
-import frysk.rsl.Log;
-import frysk.solib.SOLibMapBuilder;
-import frysk.sysroot.SysRoot;
-import frysk.sysroot.SysRootCache;
+import java.io.IOException;
 
-public class LinuxExeFactory {
-    private static final Log fine = Log.fine(LinuxExeFactory.class);
+public class SysRootFile {
+    private File sysRoot;
+    private File file;
 
-    public static DeadProc createProc(final File exeFile, String[] args) {
-	Elf exeElf = null;
-	try {
-	    exeElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
-	    ElfEHeader eHeader = exeElf.getEHeader();
-	    class BuildExeMaps extends SOLibMapBuilder {
-		private final List metaData = new LinkedList();
-		public void buildMap(long addrLow, long addrHigh, boolean permRead,
-				     boolean permWrite, boolean permExecute,
-				     long offset, String name, long align) {
-		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
-					       permWrite, permExecute, false,
-					       offset, -1, -1, -1,
-					       exeFile.getAbsolutePath()));
-		}
-		MemoryMap[] getMemoryMaps() {
-		    MemoryMap[] memoryMaps = new MemoryMap[metaData.size()];
-		    metaData.toArray(memoryMaps);
-		    return memoryMaps;
-		}
-	    }
-	    BuildExeMaps SOMaps = new BuildExeMaps();
-	    // Add in case for executables maps.
-	    SOMaps.construct(exeFile, 0);
-	    
-	    LinuxExeHost host
-		= new LinuxExeHost(exeFile, eHeader, SOMaps.getMemoryMaps(),
-				   args);
-	    return host.getProc();
-	} finally {
-	    if (exeElf != null)
-		exeElf.close();
-	}
+    public SysRootFile (File sysRoot, File file) {
+	if (sysRoot.getPath().length() > 1 && file.getPath().startsWith(sysRoot.getPath()))
+	    this.file = new File(file.getPath().substring(sysRoot.getPath().length()));
+	else
+	    this.file = file;
+	this.sysRoot = sysRoot;
+    }
+    
+    /**
+     * Get the root directory for this SysRoot File.
+     * @return the root directory
+     */
+    File getSysRoot () {
+	return sysRoot;
     }
 
-    public static DeadProc createProc(String[] args) {
-	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
-	File exe = sysRoot.getPathViaSysRoot(args[0]).getSysRootedFile();
-	fine.log("createProc exe", exe);
-	return createProc(exe, args);
+    /**
+     * Get the file within the SysRoot for this SysRoot File.
+     * @return the file.
+     */
+    File getFile () {
+	return file;
+    }
+
+    /**
+     * Get the absolute file, including the SysRoot, for this SysRoot File.
+     * @return the absolute file.
+     */
+    public File getSysRootedFile () {
+	try {
+	    if (file.getPath().startsWith("/"))
+		return new File(sysRoot, file.getPath()).getCanonicalFile();
+	    else
+		return file;
+	} catch (IOException e) {
+	    return null;
+	}
     }
 }

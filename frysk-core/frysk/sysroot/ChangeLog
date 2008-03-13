@@ -1,3 +1,10 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* SysRootFile.java: New.
+	* SysRoot.java: Renamed from Sysroot.java.  Changed to use SysRootFile.
+	* TestSysRoot.java: Renamed from TestSysroot.java.  Changed to use SysRootFile.
+	* SysRootCache.java: Renamed from SysrootCache.java. Change all callers.
+
 2008-03-11  Stan Cox  <scox@redhat.com>
 
 	* SysrootCache.java: New file.

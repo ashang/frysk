@@ -1,3 +1,7 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* CommandlineParser.java (parseSysRoot): Make private.
+
 2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* ProcRunUtil.java (.parseCommand): Pass template proc

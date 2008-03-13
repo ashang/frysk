@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.sysroot.SysrootCache;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.Proc;
 import frysk.proc.Manager;
 import frysk.proc.FindProc;
@@ -126,7 +126,7 @@ public class AttachCommand extends ParameterizedCommand {
     }
 
     public static void attach(Proc proc, CLI cli, String sysroot) {
-	SysrootCache.setSysroot(proc.getMainTask(), sysroot);
+	SysRootCache.setSysroot(proc.getMainTask(), sysroot);
 	cli.doAttach(proc, false);
     }
 

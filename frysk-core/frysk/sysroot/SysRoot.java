@@ -40,36 +40,16 @@
 package frysk.sysroot;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
- * Map from a Task's executable to its sysroot special root directory.
+ * Map from a Task's executable to its special root directory.
  */  
 
-public class Sysroot {
-    File sysrootFile;
+public class SysRoot {
+    private File sysRoot;
 
-    public Sysroot (File path) {
-	sysrootFile = path;
-    }
-
-    /**
-     * return a pathname of an executable.
-     * 
-     * @param pathname
-     *		is the executable.
-     * @return this executable's pathname, searched for on $PATH
-     */
-    public File getPathViaDefaultRoot (String pathname) {
-        String pathVar = System.getenv("PATH");
-        return findExe(pathVar, "/", pathname);
-    }
-    
-    /**
-     * return a pathname of an executable.  Used only for testing.
-     */
-    File getPathViaDefaultRoot (String pathname, String pathVar) {
-	return findExe(pathVar, "/", pathname);
+    public SysRoot (File path) {
+	sysRoot = path;
     }
 
     /**
@@ -80,39 +60,16 @@ public class Sysroot {
      * @return this executable's pathname, searched for on $PATH in the special 
      * 		root directory.
      */
-    public File getPathViaSysroot (String pathname) {
+    public SysRootFile getPathViaSysRoot (String pathname) {
         String pathVar = System.getenv("PATH");
-        return findExe(pathVar, sysrootFile.getPath(), pathname);
+        return new SysRootFile(sysRoot, findExe(pathVar, pathname));
     }
     
     /**
-     * return a pathname of an executable in a sysroot.  Used only for testing.
+     * return a pathname of an executable in a system root.  Used only for testing.
      */
-    File getPathViaSysroot (String pathname, String pathVar) {
-        return findExe(pathVar, sysrootFile.getPath(), pathname);
-    }
-
-    /**
-     * return a pathname of an executable's source.
-     * 
-     * @param pathname
-     *		is the executable's compilation directory.
-     * @param file
-     *		this executable's source name.
-     * @return the pathname of the executable's source.
-     */
-    public File getSourcePathViaDefaultRoot (File compilationDir, File f) {
-	try {
-	    if (! f.isAbsolute()) {
-		// The file refers to a path relative to the
-		// compilation directory, so prepend that directory path.
-		return new File(compilationDir.getPath(), f.getPath()).getCanonicalFile();
-	    }
-	    else
-		return new File(f.getPath()).getCanonicalFile();
-	} catch (IOException e) {
-	    return f;
-    	} 
+    SysRootFile getPathViaSysRoot (String pathname, String pathVar) {
+        return new SysRootFile(sysRoot, findExe(pathVar, pathname));
     }
 
     /**
@@ -125,22 +82,16 @@ public class Sysroot {
      * @return the pathname of the executable's source searched for in the
      *		special root directory.
      */
-    public File getSourcePathViaSysroot (File compilationDir, File f) {
-	try {
-	    if (! f.isAbsolute()) {
-		// The file refers to a path relative to the
-		// compilation directory, so prepend that directory path.
-		File parent = new File(sysrootFile.getPath(), compilationDir.getPath());
-		return new File(parent, f.getPath()).getCanonicalFile();
-	    }
-	    else
-		return new File(sysrootFile.getPath(), f.getPath()).getCanonicalFile();
-	} catch (IOException e) {
-	    return f;
-	}
+    public SysRootFile getSourcePathViaSysRoot (File compilationDir, File f) {
+	if (! f.isAbsolute())
+	    // The file refers to a path relative to the
+	    // compilation directory, so prepend that directory path.
+	    return new SysRootFile(sysRoot, new File(compilationDir, f.getPath()));
+	else
+	    return new SysRootFile(sysRoot, f);
     }
 
-    private static File findExe(String pathVar, String sysrootFile, String arg0) {
+    private File findExe(String pathVar, String arg0) {
         if (pathVar == null) {
             return new File(arg0);
         }
@@ -155,11 +106,11 @@ public class Sysroot {
         }
 
         for (int i = 0; i < path.length; i++) {
-            File file = new File(new File(sysrootFile, path[i]), arg0);
+            File file = new File(new File(sysRoot.getPath(), path[i]), arg0);
             if (file.exists()) {
-                return file;
+                return new File(path[i], arg0);
             }
         }
-        return new File(arg0); // punt
+        return new File(arg0);
     }
 }

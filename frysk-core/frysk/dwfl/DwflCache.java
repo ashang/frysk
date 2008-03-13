@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 import frysk.rsl.Log;
-import frysk.sysroot.SysrootCache;
+import frysk.sysroot.SysRootCache;
 import lib.dwfl.Dwfl;
 
 /**
@@ -130,7 +130,7 @@ public class DwflCache {
 	// If there is no dwfl for this task create one.
 	if (!modMap.containsKey(task)) {
 	    fine.log("creating new dwfl for task", task);
-	    File sysrootFile = (File)SysrootCache.getSysroot(task);
+	    File sysrootFile = (File)SysRootCache.getSysRoot(task);
 	    File relativeSysroot = getRelativeSysRoot(task.getProc().getExe(), sysrootFile);
 	    Dwfl dwfl = new Dwfl(relativeSysroot.getPath());
 	    DwflFactory.updateDwfl(dwfl, task);

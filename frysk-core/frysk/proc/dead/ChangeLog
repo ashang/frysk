@@ -1,3 +1,8 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* LinuxExeFactory.java (findExe): Move to SysRoot.findExe.
+	(createProc): Use it.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* CorefileByteBuffer.java: Use LogFactory.

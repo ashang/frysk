@@ -1,3 +1,7 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoFrame.java (getLine): Use SysRoot.
+
 2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* ObjectDeclarationNotFoundException.java: Renamed.

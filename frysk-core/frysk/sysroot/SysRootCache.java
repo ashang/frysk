@@ -44,41 +44,41 @@ import java.util.WeakHashMap;
 import frysk.proc.Task;
 
 /**
- * Map from a Task's executable to its sysroot special root directory.
+ * Map from a Task's executable to its special root directory.
  */
 
-public class SysrootCache {
+public class SysRootCache {
 
-    private static WeakHashMap sysrootMap = new WeakHashMap();
+    private static WeakHashMap sysRootMap = new WeakHashMap();
 
     /**
      * return a sysroot File corresponding to an executable.
      * 
      * @param pathname
-     *                is the pathname of the executable.
+     *		is the pathname of the executable.
      * @return this executable's special root directory.
      */
-    public static File getSysroot(String pathname) {
-	File sysrootFile = (File)sysrootMap.get(new File(pathname).getName());
+    public static File getSysRoot(String pathname) {
+	File sysrootFile = (File)sysRootMap.get(new File(pathname).getName());
 	if (sysrootFile == null) {
-	    sysrootFile = (File) sysrootMap.get("default");
+	    sysrootFile = (File) sysRootMap.get("default");
 	    if (sysrootFile == null)
 		sysrootFile = new File("/");
 	}
 	return sysrootFile;
     }
     
-    public static File getSysroot(Task task) {
-	return getSysroot(task.getProc().getCommand());
+    public static File getSysRoot(Task task) {
+	return getSysRoot(task.getProc().getCommand());
     }
 
     /**
      * set the sysroot corresponding to an executable.
      * 
      * @param pathname
-     *                is the pathname of the executable.
+     *		is the pathname of the executable.
      * @param sysroot
-     *                is this task's special root directory.
+     *		is this task's special root directory.
      */
     public static void setSysroot(String pathname, String sysroot) {
 	File sysrootFile;
@@ -86,16 +86,16 @@ public class SysrootCache {
 	    sysrootFile = new File(sysroot);
 	else
 	    sysrootFile = null;
-	sysrootMap.put(new File(pathname).getName(), sysrootFile);
+	sysRootMap.put(new File(pathname).getName(), sysrootFile);
     }
 
     /**
      * set the sysroot corresponding to an executable.
      * 
      * @param task
-     *                is the task corresponding to the executable.
+     *		is the task corresponding to the executable.
      * @param sysroot
-     *                is this task's special root directory.
+     *		is this task's special root directory.
      */
     public static void setSysroot(Task task, String sysroot) {
 	setSysroot(task.getProc().getCommand(), sysroot);
@@ -105,7 +105,7 @@ public class SysrootCache {
      * set the default sysroot
      * 
      * @param sysroot
-     *                is the default special root directory.
+     *		is the default special root directory.
      */
     public static void setDefaultSysroot(String sysroot) {
 	File sysrootFile;
@@ -113,7 +113,7 @@ public class SysrootCache {
 	    sysrootFile = new File(sysroot);
 	else
 	    sysrootFile = null;
-	sysrootMap.put("default", sysrootFile);
+	sysRootMap.put("default", sysrootFile);
     }
 
 }
