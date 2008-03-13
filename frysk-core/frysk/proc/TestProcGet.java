@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.ExecOffspring;
 import frysk.testbed.ExecCommand;
@@ -76,7 +76,7 @@ public class TestProcGet
 	    "/dev/null"
 	});
 
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     // Grab the AUXV from the process sitting at its entry point.
     Auxv[] auxv = child.getMainTask().getProc().getAuxv();
     assertNotNull("captured AUXV", auxv);
