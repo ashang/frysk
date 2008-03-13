@@ -1,3 +1,10 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (prefixTimeAndPid()): For WARNING/INFO, include level.
+	* LogFactory.java (info(Class)): New.
+	(info(String)): New.
+	* Level.mkenum (INFO): New; make default.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestOptions.java: Use Level.DEFAULT.

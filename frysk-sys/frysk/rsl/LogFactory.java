@@ -60,6 +60,9 @@ public final class LogFactory {
     public static Log warning(String klass) {
 	return get(klass).get(Level.WARNING);
     }
+    public static Log info(String klass) {
+	return get(klass).get(Level.INFO);
+    }
     public static Log fine(String klass) {
 	return get(klass).get(Level.FINE);
     }
@@ -86,6 +89,9 @@ public final class LogFactory {
     }
     public static Log warning(Class klass) {
 	return get(klass).get(Level.WARNING);
+    }
+    public static Log info(Class klass) {
+	return get(klass).get(Level.INFO);
     }
     public static Log fine(Class klass) {
 	return get(klass).get(Level.FINE);

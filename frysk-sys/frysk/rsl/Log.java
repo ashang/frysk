@@ -126,6 +126,12 @@ public final class Log {
     private static final long startTime = System.currentTimeMillis();
 
     private void prefixTimeAndPid() {
+	if (level.compareTo(Level.DEFAULT) <= 0) {
+	    // Prefix user visible log messages with the severity; but
+	    // leave it off debugging messages.
+	    out.print(level.toPrint());
+	    out.print(": ");
+	}
 	long time = System.currentTimeMillis() - startTime;
 	long millis = time % 1000;
 	time = time / 1000;
