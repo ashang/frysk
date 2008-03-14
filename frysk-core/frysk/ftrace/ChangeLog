@@ -1,3 +1,8 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java (ProcRemovedObserver): Re-implement as a Terminated
+	observer.
+
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestMappingGuard.java: Use StopEventLoopWhenProcTerminated.
