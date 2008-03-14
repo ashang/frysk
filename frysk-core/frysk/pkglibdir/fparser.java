@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.bindir;
+package frysk.pkglibdir;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMImage;

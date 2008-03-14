@@ -1,3 +1,8 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* manpages.sh: New.
+	* frysk.xml: New.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.java-in: Use frysk.config.

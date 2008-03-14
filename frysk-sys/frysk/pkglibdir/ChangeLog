@@ -1,3 +1,8 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* fsystest.xml: Cite frysk(7), update url.
+	* funit-procmask.xml: Ditto.
+
 2007-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-procmask.xml: New.

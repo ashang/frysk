@@ -1,3 +1,8 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk-common/frysk.7): New target.
+	(manpages): Move code to frysk-common/manpages.sh.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (UPLOAD, UPLOAD_FLAGS): Define; include --chmod

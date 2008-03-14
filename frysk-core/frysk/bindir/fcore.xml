@@ -52,7 +52,7 @@
 
   <refentryinfo>
     <title>fcore</title>
-    <date>November 14 2006</date>
+    <date>March 14 2008</date>
   </refentryinfo>
   
   <refmeta>
@@ -172,7 +172,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8) fcatch(1) fhpd(1) fstack(1) fstep(1) ftrace(1)</para>
+    <para>frysk(8)</para>
   </refsect1>
   
   <!-- refsect1>
@@ -192,8 +192,7 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http://sources.redhat.com/frysk">
-    http://sources.redhat.com/frysk </ulink></para>
+    <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
   <!-- refsect1>
