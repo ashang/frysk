@@ -1,5 +1,9 @@
 2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
 
+	* CLI.java (flushMessages): Make comment a javadoc comment.
+
+2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
+
 	* CLI.java (flushMessages): Make public and document for usage
 	in fhpd.
 

@@ -337,9 +337,11 @@ public class CLI {
 	}
     }
 
-    // Makes sure that all messages for the user by commands through
-    // addMessage() are displayed. Normally called after an update event
-    // or when a command has been executed before displaying a prompt.
+  /**
+   * Makes sure that all messages for the user by commands through
+   * addMessage() are displayed. Normally called after an update event
+   * or when a command has been executed before displaying a prompt.
+   */
     public void flushMessages() {
 	synchronized (messages) {
 	    for (Iterator iter = messages.iterator(); iter.hasNext();) {
