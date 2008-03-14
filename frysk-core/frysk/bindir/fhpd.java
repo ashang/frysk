@@ -139,6 +139,10 @@ public class fhpd {
 		LoadCommand.load(command, cli);
 	    }
 
+	    // Make sure any messages logged by the Attach or Load commands
+	    // are displayed to the user before the first prompt.
+	    cli.flushMessages();
+
 	    try {
 		do {
 		    line = reader.readLine(cli.getPrompt());

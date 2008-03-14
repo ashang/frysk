@@ -1,3 +1,8 @@
+2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fhpd.java (CommandLine.run): Make sure all messages are flushed
+	before first prompt.
+
 2008-03-13  Stan Cox  <scox@redhat.com>
 
 	* TestFstack.java (getCanonicalAbsRootSrcDir): New. Use instead of 
