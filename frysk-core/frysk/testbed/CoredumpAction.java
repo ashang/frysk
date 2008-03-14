@@ -175,7 +175,7 @@ public class CoredumpAction implements ProcObserver.ProcAction {
      */
     private void abandonCoreDump(Exception e) {
 	proc.requestAbandon();
-	proc.observableDetached.addObserver(new Observer() {
+	proc.observableDetachedXXX.addObserver(new Observer() {
 
 	    public void update(Observable o, Object arg) {
 		Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));

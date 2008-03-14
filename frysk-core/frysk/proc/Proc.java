@@ -226,7 +226,7 @@ public abstract class Proc implements Comparable {
     public void requestAbandonAndRunEvent(final Event e) {
 	fine.log(this, "abandonAndRunEvent");
 	requestAbandon();
-	observableDetached.addObserver(new Observer() {
+	observableDetachedXXX.addObserver(new Observer() {
 		public void update(Observable o, Object arg) {
 		    Manager.eventLoop.add(e);
 		}
@@ -368,18 +368,16 @@ public abstract class Proc implements Comparable {
     public abstract Auxv[] getAuxv();
 
     /**
-     * The process has transitioned to the attached state. XXX: Should
-     * be made private and instead accessor methods added. Should more
-     * formally define the observable and the event.
+     * XXX: Clients should look at the updateRemoved() observer and
+     * use that to determine when they are attached or detached.
      */
-    public ObservableXXX observableAttached = new ObservableXXX();
+    public ObservableXXX observableAttachedXXX = new ObservableXXX();
 
     /**
-     * The process has transitioned to the detached. XXX: Should be
-     * made private and instead accessor methods added. Should more
-     * formally define the observable and the event.
+     * XXX: Clients should look at the updateRemoved() observer and
+     * use that to determine when they are attached or detached.
      */
-    public ObservableXXX observableDetached = new ObservableXXX();
+    public ObservableXXX observableDetachedXXX = new ObservableXXX();
 
     public String toString() {
 	return ("{" + super.toString()

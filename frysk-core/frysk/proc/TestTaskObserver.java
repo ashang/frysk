@@ -125,12 +125,12 @@ public class TestTaskObserver
 	// the process reports back that the attach occurred.
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestAddAttachedObserver (attachedObserver);
-	tasks[0].getProc().observableAttached.addObserver (new Observer ()
+	tasks[0].getProc().observableAttachedXXX.addObserver (new Observer ()
 	    {
 		Proc proc = tasks[0].getProc();
 		public void update (Observable obj, Object arg)
 		{
-		    proc.observableAttached.deleteObserver (this);
+		    proc.observableAttachedXXX.deleteObserver (this);
 		    Manager.eventLoop.requestStop ();
 		}
 	    });
@@ -163,12 +163,12 @@ public class TestTaskObserver
 	// detached.
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestDeleteAttachedObserver (attachedObserver);
-	tasks[0].getProc().observableDetached.addObserver (new Observer ()
+	tasks[0].getProc().observableDetachedXXX.addObserver (new Observer ()
 	    {
 		Proc proc = tasks[0].getProc();
 		public void update (Observable obj, Object arg)
 		{
-		    proc.observableAttached.deleteObserver (this);
+		    proc.observableAttachedXXX.deleteObserver (this);
 		    Manager.eventLoop.requestStop ();
 		}
 	    });

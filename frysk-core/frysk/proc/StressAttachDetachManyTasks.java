@@ -79,12 +79,12 @@ public class StressAttachDetachManyTasks
 
 	// The main task never dies so at least it will have been
 	// successfully attached.
-	proc.observableDetached.addObserver (new Observer ()
+	proc.observableDetachedXXX.addObserver (new Observer ()
 	    {
 		Proc p = proc;
 		public void update (Observable obj, Object arg)
 		{
-		    p.observableAttached.deleteObserver (this);
+		    p.observableAttachedXXX.deleteObserver(this);
 		    Manager.eventLoop.requestStop ();
 		}
 	    });

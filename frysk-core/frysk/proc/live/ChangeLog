@@ -1,5 +1,7 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Update to match Proc.
+
 	* LinuxPtraceHost.java: Do not call Host.remove(Proc).
 	* LinuxPtraceTaskState.java: Ditto.
 

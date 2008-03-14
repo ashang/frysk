@@ -131,12 +131,12 @@ public class TestTaskObserverDetach extends TestLib {
 	    task.requestDeleteSignaledObserver (this);
 
 	    // Run the event-loop out waiting for the final detach.
-	    task.getProc().observableDetached.addObserver (new Observer ()
+	    task.getProc().observableDetachedXXX.addObserver (new Observer ()
 		{
 		    Proc proc = task.getProc();
 		    public void update (Observable obj, Object arg)
 		    {
-			proc.observableAttached.deleteObserver (this);
+			proc.observableAttachedXXX.deleteObserver (this);
 			Manager.eventLoop.requestStop ();
 		    }
 		});

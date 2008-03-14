@@ -185,7 +185,7 @@ abstract class LinuxPtraceProcState extends State {
 		LinuxPtraceTask t = (LinuxPtraceTask) i.next ();
 		t.performContinue ();
 	    }
-	    proc.observableAttached.notify (proc);
+	    proc.observableAttachedXXX.notify (proc);
 	    return running;
 	}
 	/**
@@ -354,7 +354,7 @@ abstract class LinuxPtraceProcState extends State {
 		// Still more tasks to detach.
 		return this;
 	    // All done, notify.
-	    proc.observableDetached.notify (proc);
+	    proc.observableDetachedXXX.notify (proc);
 	    return detached;
 	}
 	LinuxPtraceProcState handleTaskDetachCompleted (LinuxPtraceProc proc, LinuxPtraceTask task,

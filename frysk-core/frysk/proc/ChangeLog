@@ -1,5 +1,11 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (observableAttachedXXX): Rename observableAttached.
+	(observableDetachedXXX): Rename observableDetached.
+	* StressAttachDetachRapidlyCloningMainTask.java: Update.
+	* StressAttachDetachManyTasks.java: Update.
+	* TestTaskObserverDetach.java: Update.
+
 	* Host.java (observableProcRemovedXXX): Delete.
 	(remove(Proc)): Delete.
 	(ObservableXXX): Delete.
