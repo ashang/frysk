@@ -41,8 +41,6 @@ package frysk.proc;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
 import frysk.rsl.Log;
 
 /**
@@ -62,27 +60,6 @@ public abstract class Host implements Comparable {
 	fine.log(this, "Host");
     }
   
-    // Maintain a collection of all known Tasks.
-
-    // There's no new task observer here.  It's the responsibility of
-    // the PROC, and not the MANAGER, to notify OBSERVERs of new
-    // THREAD events.  That way its possible for the client to observe
-    // things on a per-PROC basis.
-
-    Map taskPool = new HashMap();
-    void add(Task task) {
-	fine.log(this, "add Task");
-	taskPool.put(task.getTaskId(), task);
-    }
-    void remove(Task task) {
-	fine.log(this, "remove Task");
-	taskPool.remove(task.getTaskId());
-    }
-    void removeTasks(Collection c) {
-	fine.log(this, "removeTasks Collection");
-	taskPool.values().removeAll(c);
-    }
-	
     /**
      * Find a specifc process from its Id.
      */

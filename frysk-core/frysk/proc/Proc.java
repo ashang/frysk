@@ -338,7 +338,6 @@ public abstract class Proc implements Comparable {
     protected void remove(Task task) {
 	fine.log(this, "remove(Task) -- within this Proc");
 	taskPool.remove(task.getTaskId());
-	host.remove(task);
     }
 
     /**
@@ -352,7 +351,6 @@ public abstract class Proc implements Comparable {
 	new_tasks = (HashMap) ((HashMap) taskPool).clone();
 	new_tasks.values().remove(task);
 	taskPool.values().removeAll(new_tasks.values());
-	host.removeTasks(new_tasks.values());
     }
 
     /**

@@ -1,5 +1,12 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (taskPool): Delete.
+	(add(Task)): Delete.
+	(remove(Task)): Delete.
+	(removeTasks(Collection)): Delete.
+	* Task.java: Update.
+	* Proc.java: Update.
+
 	* Proc.java (observableAttachedXXX): Rename observableAttached.
 	(observableDetachedXXX): Rename observableDetached.
 	* StressAttachDetachRapidlyCloningMainTask.java: Update.

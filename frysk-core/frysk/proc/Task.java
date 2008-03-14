@@ -126,7 +126,6 @@ public abstract class Task {
 	this.creator = creator;
 	this.id = new TaskId(pid);
 	proc.add(this);
-	proc.getHost().add(this);
     }
 
     /**
