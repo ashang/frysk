@@ -1,5 +1,7 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (retain(Task)): Delete.
+	
 	* Host.java (taskPool): Delete.
 	(add(Task)): Delete.
 	(remove(Task)): Delete.

@@ -341,19 +341,6 @@ public abstract class Proc implements Comparable {
     }
 
     /**
-     * Remove all but Task from this Proc.
-     *
-     * XXX: Should not be public.
-     */
-    public void retain(Task task) {
-	fine.log(this, "retain(Task) -- remove all but task");
-	HashMap new_tasks = new HashMap();
-	new_tasks = (HashMap) ((HashMap) taskPool).clone();
-	new_tasks.values().remove(task);
-	taskPool.values().removeAll(new_tasks.values());
-    }
-
-    /**
      * Return this Proc's Task's as a list.
      */
     public LinkedList getTasks() {
