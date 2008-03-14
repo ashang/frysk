@@ -1,3 +1,8 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java (testTaskBlockExec()): Use
+	StopEventLoopWhenProcTerminated.
+
 2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestTaskObserver.java (testDetachExitingMainTask): Enabled

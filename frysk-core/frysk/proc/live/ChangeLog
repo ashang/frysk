@@ -1,3 +1,11 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTaskState.java: Don't remove non-exec tasks; already
+	deleted.
+	* LinuxWaitBuilder.java (execEvent(ProcessIdentifier)): Kill off
+	non-exec tasks.
+	* LinuxPtraceProc.java (getAllTasks()): New.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverBlocked.java: Use

@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import java.util.HashSet;
+import java.util.Set;
 import frysk.proc.Action;
 import frysk.sys.proc.Exe;
 import frysk.proc.Proc;
@@ -100,6 +102,9 @@ public class LinuxPtraceProc extends LiveProc {
     void removeTask(LinuxPtraceTask task) {
 	tasks.remove(task.tid);
 	remove(task);
+    }
+    Set getAllTasks() {
+	return new HashSet(tasks.values());
     }
     private final HashMap tasks = new HashMap();
 

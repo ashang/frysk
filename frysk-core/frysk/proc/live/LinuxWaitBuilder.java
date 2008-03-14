@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import java.util.Set;
+import java.util.Iterator;
 import frysk.event.Event;
 import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
@@ -157,8 +159,19 @@ class LinuxWaitBuilder implements WaitBuilder {
     }
     
     public void execEvent(ProcessIdentifier pid) {
-        LinuxPtraceTask task = get(pid, "execEvent");
-        task.processExecedEvent();
+        LinuxPtraceTask execingTask = get(pid, "execEvent");
+	// On linux an exec event implicitly kills off all of the
+	// processes other tasks; need to do that explicitly; there's
+	// no "terminating" event as, by this point, the tasks are
+	// totally gone.
+	Set tasks = ((LinuxPtraceProc)execingTask.getProc()).getAllTasks();
+	tasks.remove(execingTask);
+	for (Iterator i = tasks.iterator(); i.hasNext(); ) {
+	    LinuxPtraceTask doa = (LinuxPtraceTask) i.next();
+	    doa.processTerminatedEvent(null, 0);
+	}
+	// Finally notify the exec.
+        execingTask.processExecedEvent();
     }
     
     public void disappeared(ProcessIdentifier pid, Throwable w) {
