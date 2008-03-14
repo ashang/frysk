@@ -106,7 +106,7 @@ public class TestStackTraceAction extends TestLib {
                     + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\).*\n"
                     + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n\n";
 
-    final Proc proc = ackProc.assertFindProcAndTasks();
+    final Proc proc = ackProc.assertRunToFindProc();
 
     StacktraceAction stacker;
     

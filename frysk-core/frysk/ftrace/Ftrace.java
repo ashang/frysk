@@ -252,8 +252,16 @@ public class Ftrace
 	observationRequested(task);
 
 	if (ftraceController != null || traceMmapUnmap) {
-	    MappingGuard.requestAddMappingObserver
-		(task, new MyMappingObserver(ftraceController));
+	    MyMappingObserver o = new MyMappingObserver(ftraceController);
+
+	    // Presumably the user would like to see mappings and
+	    // unmappings as precisely as possible, and all of them.
+	    // Use syscall-based observer in that case.
+	    if (traceMmapUnmap)
+		MappingGuard.requestAddSyscallBasedMappingObserver(task, o);
+	    else
+		MappingGuard.requestAddMappingObserver(task, o);
+
 	    observationRequested(task);
 	}
 
@@ -644,10 +652,15 @@ public class Ftrace
 	    return (TracePointWorkingSet)drivers.get(mapping.path);
 	}
 
+	private boolean processMappedPart(MemoryMapping.Part part) {
+	    // Ignore non-executable mappings.
+	    // Ignore mappedPart messages if we don't trace symbols.
+	    return part.permExecute && this.tracingController != null;
+	}
+
 	public Action updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
 	{
-	    // Ignore non-executable mappings.
-	    if (!part.permExecute)
+	    if (!processMappedPart(part))
 		return Action.CONTINUE;
 
 	    TracePointWorkingSet driver = getDriver(task, mapping);
@@ -666,8 +679,7 @@ public class Ftrace
 
 	public Action updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
 	{
-	    // Ignore non-executable unmappings.
-	    if (!part.permExecute)
+	    if (!processMappedPart(part))
 		return Action.CONTINUE;
 
 	    TracePointWorkingSet driver = getDriver(task, mapping);

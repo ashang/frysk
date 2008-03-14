@@ -1,3 +1,42 @@
+2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fhpd.java (CommandLine.run): Make sure all messages are flushed
+	before first prompt.
+
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* TestFstack.java (getCanonicalAbsRootSrcDir): New. Use instead of 
+	Config.getRootSrcDir.
+
+2008-03-13  Teresa Thomas  <tthomas@redhat.com>
+
+	* fstack.java: Refactor to use ProcStopUtil.
+
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fcatch.xml: Fixed URL.
+	* fdebuginfo.xml: Likewise.
+	* fdebugrpm.xml: Likewise.
+	* ferror.xml: Likewise.
+	* fexe.xml: Likewise.
+	* fstack.xml: Likewise.
+	* fstep.xml: Likewise.
+	* ftrace.xml: Likewise.
+	* fhpd.xml: Put refpurpose on one line for easy sed parsing.
+
+2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* TestFcatch.java (testFcatchFollowsPATH): New test
+	
+2008-03-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFcatch.java (testFcatchFollowsForks): enabled
+	and corrected test.
+
+2008-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fcatch.java: Moved the bulk of the code to FCatch.
+
 2008-03-07  Teresa Thomas  <tthomas@redhat.com>
 
 	* fhpd.java (main): Add event to handle SIGINT.
@@ -12,10 +51,10 @@
 	* TestFerror.java: Added test for regext argument matching.
 
 2008-03-06  Phil Muldoon  <pmuldoon@redhat.com>
- 
-       * ferror.java (main): Update option text.
-       (parsed): Do not store argument. Compile into pattern.
-       (updateSyscallEnter): Use Matcher instead of contains. 
+
+	* ferror.java (main): Update option text.
+	(parsed): Do not store argument. Compile into pattern.
+	(updateSyscallEnter): Use Matcher instead of contains. 
 
 2008-03-06  Sami Wagiaalla  <swagiaal@redhat.com>
 

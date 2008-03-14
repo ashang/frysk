@@ -37,12 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc;
 
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.ExecOffspring;
 import frysk.testbed.ExecCommand;
@@ -110,7 +109,7 @@ public class TestExec
     assertTrue("tmp file exists", tmpFile.stillExists());
 
     // Unblock the process, let it exit.
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     task.requestUnblock(execBlockCounter);
     assertRunUntilStop("wait for exec program exit");
 
@@ -150,6 +149,19 @@ public class TestExec
 		 mainTask.getProc().getTasks().size());
 
     // Set things up to stop once the exec task exits.
+    class StopEventLoopWhenProcRemoved implements java.util.Observer {
+	private int pid;
+	StopEventLoopWhenProcRemoved(ExecOffspring pid) {
+	    this.pid = pid.getPid().intValue();
+	    Manager.host.observableProcRemovedXXX.addObserver(this);
+	}
+	public void update(java.util.Observable o, Object obj) {
+	    Proc proc = (Proc) obj;
+	    if (proc.getPid() == this.pid) {
+		Manager.eventLoop.requestStop();
+	    }
+	}
+    }
     new StopEventLoopWhenProcRemoved(child);
     mainTask.requestUnblock(execBlockCounter);
     assertRunUntilStop("wait for exec program exit");
@@ -245,7 +257,7 @@ public class TestExec
     // loop is kept running until ExecParentObserver .addedTo is
     // called indicating that the attach succeeded.
     ExecParentObserver execParentObserver = new ExecParentObserver();
-    Proc proc = child.assertFindProcAndTasks();
+    Proc proc = child.assertRunToFindProc();
     Task task = child.findTaskUsingRefresh(true);
     task.requestAddExecedObserver(execParentObserver);
     assertRunUntilStop("adding exec observer causing attach");
@@ -301,7 +313,7 @@ public class TestExec
     ExecCommand alias = new ExecCommand(ExecCommand.Executable.ALIAS);
     ExecOffspring child
 	= new ExecOffspring (new ExecCommand(1 /* one thread */, alias));
-    Proc proc = child.assertFindProcAndTasks();
+    Proc proc = child.assertRunToFindProc();
 
     // Attach to the process using the exec observer. The event
     // loop is kept running until execObserverParent .addedTo is

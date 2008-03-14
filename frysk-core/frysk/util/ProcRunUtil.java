@@ -39,7 +39,6 @@
 
 package frysk.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -101,21 +100,7 @@ public class ProcRunUtil {
 
 	    // @Override
 	    public void parseCommand(Proc command) {
-
-		//Exctact arguments and executable from give Proc object
-		ArrayList commandAndArguments;
-		String[] line = command.getCmdLine();
-		commandAndArguments = new ArrayList();
-		for (int i = 0; i < line.length; i++){
-		    commandAndArguments.add(line[i]);
-		}
-		
-		//Create a live process using the extracted command.
-		// attachedObserver will handle adding of the remaining
-		// observers.
-		Manager.host.requestCreateAttachedProc(
-			(String[]) commandAndArguments.toArray(new String[0]),
-			attachedObserver);
+		Manager.host.requestCreateAttachedProc(command, attachedObserver);
 	    }
 	};
 

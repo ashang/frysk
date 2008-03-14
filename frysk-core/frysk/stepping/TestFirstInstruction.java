@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,50 +37,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+package frysk.stepping;
 
-import java.util.Observer;
 import java.util.Observable;
-import frysk.proc.Proc;
-import frysk.rsl.Log;
+import java.util.Observer;
+import frysk.testbed.TestLib;
 import frysk.proc.Manager;
-import frysk.sys.ProcessIdentifier;
-import frysk.sys.ProcessIdentifierFactory;
+import frysk.proc.TaskObserver;
+import frysk.testbed.TaskObserverBase;
+import frysk.proc.Action;
+import frysk.proc.Task;
+import frysk.proc.Proc;
 
-/**
- * An observer that stops the eventloop when the process with the
- * given pid is removed.
- */
-public class StopEventLoopWhenProcRemoved implements Observer {
-    private static final Log fine
-	= Log.fine(StopEventLoopWhenProcRemoved.class);
+public class TestFirstInstruction extends TestLib {
 
-    public boolean p;
-
-    private ProcessIdentifier pid;
-
-    public StopEventLoopWhenProcRemoved(ProcessIdentifier pid) {
-	this.pid = pid;
-	Manager.host.observableProcRemovedXXX.addObserver(this);
-    }
-    public StopEventLoopWhenProcRemoved(Offspring pid) {
-	this(pid.getPid());
-    }
-    public StopEventLoopWhenProcRemoved(Proc proc) {
-	this(ProcessIdentifierFactory.create(proc.getPid()));
+    private AttachedObserver ao;
+    private SteppingEngine steppingEngine;
+    private LockObserver lock;
+  
+    public void testFirstInstructionSteppingEngine() {
+	lock = new LockObserver();
+	steppingEngine = new SteppingEngine();
+	steppingEngine.addObserver(lock);
+	ao = new AttachedObserver();
+	String[] cmd = new String[1];
+	cmd[0] = getExecPath ("funit-rt-stepper");
+	Manager.host.requestCreateAttachedProc("/dev/null", "/dev/null", "/dev/null", cmd, ao);
+	assertRunUntilStop("Creating attached process");
     }
 
-    public void update (Observable o, Object obj) {
-	Proc proc = (Proc) obj;
-	if (proc.getPid() == this.pid.intValue()) {
-	    // Shut things down.
-	    fine.log(this, "update", proc,
-		     "has been removed stopping event loop");
-	    Manager.eventLoop.requestStop();
-	    p = true;
-	} else {
-	    fine.log(this, "update", proc,
-		     "has been removed NOT stopping event loop");
+    private class AttachedObserver
+	extends TaskObserverBase
+	implements TaskObserver.Attached
+    {
+	public Action updateAttached(Task task) {
+	    addToTearDown(task);
+	    Proc proc = task.getProc();
+	    steppingEngine.addProc(proc);
+	    return Action.BLOCK;
+	}
+	public void deletedFrom(Object o) {
+	    steppingEngine.stepInstruction((Task) o);
+	}
+    }
+  
+    private class LockObserver implements Observer {
+	private boolean flag = true;
+	public void update (Observable o, Object arg) {
+	    TaskStepEngine tse = (TaskStepEngine) arg;
+	    if (! tse.getState().isStopped())
+		return;
+      
+	    if (flag) {
+		flag = false;
+		tse.getTask().requestDeleteAttachedObserver(ao);
+	    } else {
+		Manager.eventLoop.requestStop();
+	    }
 	}
     }
 }

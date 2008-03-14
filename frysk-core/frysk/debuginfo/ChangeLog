@@ -1,3 +1,26 @@
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoFrame.java (getLine): Use SysRoot.
+
+2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* ObjectDeclarationNotFoundException.java: Renamed.
+	* TestObjectDeclarationSearchEngine.java: Updated.
+	* ObjectDeclarationSearchEngine.java: Updated.
+
+2008-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java: Fixed typo.
+
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* CompilerVersionFactory.java: Use LogFactory.
+	* TypeEntry.java: Ditto.
+
+2008-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoStackFactory.java: Added DEFAULT options.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java: Use frysk.config.

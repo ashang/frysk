@@ -103,16 +103,11 @@ public final class Log {
     }
 
     /**
-     * For convenience, grab the FINE logger.
+     * For convenience, since this is the most common case, grab the
+     * FINE logger.  For other loggers use LogFactory.
      */
     public static Log fine(Class klass) {
 	return LogFactory.fine(klass);
-    }
-    /**
-     * For convenience, grab the FINEST logger.
-     */
-    public static Log finest(Class klass) {
-	return LogFactory.finest(klass);
     }
 
     // Static?
@@ -131,6 +126,12 @@ public final class Log {
     private static final long startTime = System.currentTimeMillis();
 
     private void prefixTimeAndPid() {
+	if (level.compareTo(Level.DEFAULT) <= 0) {
+	    // Prefix user visible log messages with the severity; but
+	    // leave it off debugging messages.
+	    out.print(level.toPrint());
+	    out.print(": ");
+	}
 	long time = System.currentTimeMillis() - startTime;
 	long millis = time % 1000;
 	time = time / 1000;

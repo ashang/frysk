@@ -56,6 +56,8 @@ import frysk.scopes.Subprogram;
 import frysk.scopes.Subroutine;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
+import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootCache;
 
 public class DebugInfoFrame extends FrameDecorator {
 
@@ -168,6 +170,7 @@ public class DebugInfoFrame extends FrameDecorator {
     public SourceLocation getLine() {
 	if (this.line == null) {
 	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
+	    SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(this.getTask()));
   	    // The innermost frame and frames which were
   	    // interrupted during execution use their PC to get
   	    // the line in source. All other frames have their PC
@@ -175,17 +178,9 @@ public class DebugInfoFrame extends FrameDecorator {
   	    // be decremented by one.
   	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
   	    if (dwflLine != null) {
-  		File sysroot = DwflCache.getSysroot(this.getTask());
-  		File f = new File(dwflLine.getSourceFile());
-  		if (! f.isAbsolute()) {
-  		    // The file refers to a path relative to the
-  		    // compilation directory; so prepend the path to
-  		    // that directory in front of it.
-  		    File parent = new File(sysroot, dwflLine.getCompilationDir());
-  		    f = new File(parent, dwflLine.getSourceFile());
-		}
-  		else
-  		    f = new File(sysroot, f.getPath());
+  		File f = sysRoot.getSourcePathViaSysRoot
+		  (new File(dwflLine.getCompilationDir()), 
+		   new File(dwflLine.getSourceFile())).getSysRootedFile();
   		this.line = new SourceLocation(f, dwflLine.getLineNum(),
 				     dwflLine.getColumn());
 	    }

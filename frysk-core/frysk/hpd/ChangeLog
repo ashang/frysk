@@ -1,3 +1,20 @@
+2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* CLI.java (flushMessages): Make public and document for usage
+	in fhpd.
+
+2008-03-13  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (interpret): Use SysRoot.
+
+2008-03-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Synchronize message adding when type specified.
+	* LoadCommand.java: Use message logger instead of direct print.
+	
+	* KillCommand.java: Add ability to kill by PID.
+	* TestKillCommand.java: Add test for above.
+
 2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestActionsCommand: Use tighter expect regular expressions.

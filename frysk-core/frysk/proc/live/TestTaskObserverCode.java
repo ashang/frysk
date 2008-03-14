@@ -65,7 +65,7 @@ import frysk.proc.MemoryMap;
 import java.util.Collection;
 import java.util.Arrays;
 import java.util.Iterator;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import lib.dwfl.ElfException;
 import java.util.ArrayList;
 import lib.dwfl.Elf;
@@ -418,14 +418,8 @@ public class TestTaskObserverCode extends TestLib
 	for (int i = 1; i < argc + 1; i++)
 	    command[i] = Integer.toString(i);
 
-	AttachedObserver ao = new AttachedObserver();
-	Manager.host.requestCreateAttachedProc("/dev/null",
-					       "/dev/null",
-					       "/dev/null", command, ao);
-	assertRunUntilStop("attach then block");
-	assertTrue("AttachedObserver got Task", ao.task != null);
-	
-	task = ao.task;
+	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(command);
+	task = daemon.getMainTask();
 	
 	long address = getGlobalLabelAddress(label);
 	CodeObserver code = new CodeObserver(task, address);
@@ -433,7 +427,7 @@ public class TestTaskObserverCode extends TestLib
 	assertRunUntilStop("add breakpoint observer");
 	
 	// Delete and unblock
-	task.requestDeleteAttachedObserver(ao);
+	daemon.requestRemoveBlock();
 	assertRunUntilStop("wait for breakpoint hit");
 	
 	SignaledObserver so = new SignaledObserver();
@@ -910,7 +904,7 @@ public class TestTaskObserverCode extends TestLib
     task.requestAddTerminatingObserver(terminatingObserver);
     assertRunUntilStop("add terminating observer");
 
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run \"fork\" until exit");
     assertTrue("breakpoint hit", code1.hit);

@@ -62,9 +62,7 @@
 
   <refnamediv>
     <refname>fhpd</refname>
-    <refpurpose>
-    The Frysk Debugger.
-    </refpurpose>
+    <refpurpose>The Frysk Debugger</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

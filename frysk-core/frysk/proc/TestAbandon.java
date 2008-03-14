@@ -213,7 +213,7 @@ public class TestAbandon
     ackProc.findTaskUsingRefresh(true).requestAddInstructionObserver(
                                                                      testObserver);
 
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     proc.getMainTask().requestDeleteInstructionObserver(testObserver);
 
     proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
@@ -324,7 +324,7 @@ public class TestAbandon
     ackProc.findTaskUsingRefresh(true).requestAddInstructionObserver(
                                                                      testObserver);
 
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
 
     proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
 
@@ -342,7 +342,7 @@ public class TestAbandon
     ackProc.findTaskUsingRefresh(true).requestAddInstructionObserver(
                                                                      testObserver);
 
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
 
     proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
 

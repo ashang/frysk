@@ -45,7 +45,7 @@ import frysk.proc.dead.LinuxExeFactory;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import java.util.List;
@@ -107,9 +107,11 @@ public class LoadCommand extends ParameterizedCommand {
 	}
 	Proc exeProc;
 	if (o.executable != null) {
+	    SysRootCache.setSysroot(o.executable, o.sysroot);
 	    exeProc = LinuxExeFactory.createProc
 		(new File(o.executable), cmd.stringArrayValue());
 	} else {
+	    SysRootCache.setSysroot(cmd.stringArrayValue()[0], o.sysroot);
 	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue());
 	}
 
@@ -137,14 +139,13 @@ public class LoadCommand extends ParameterizedCommand {
 			.createDebugInfoStackTrace(task);
 		cli.setTaskFrame(task, frame);
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
-		DwflCache.setSysroot(task, sysroot);
 	    }
 	}
 	synchronized (cli) {
 	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
 
-	cli.outWriter.println("Loaded executable file: " + exeProc.getExe());
+	cli.addMessage("Loaded executable file: " + exeProc.getExe(), Message.TYPE_NORMAL);
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

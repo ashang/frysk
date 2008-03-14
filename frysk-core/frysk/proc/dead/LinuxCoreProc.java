@@ -42,18 +42,24 @@ package frysk.proc.dead;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.rsl.Log;
+import frysk.proc.Task;
 
 public class LinuxCoreProc extends DeadProc {
     private static final Log fine = Log.fine(LinuxCoreProc.class);
   
     private final LinuxCoreInfo info;
+    private final LinuxCoreTask mainTask;
 
     LinuxCoreProc(LinuxCoreHost host, LinuxCoreInfo info) {
 	super(host, null, info.prpsInfo.getPrPid());
 	fine.log(this, "LinuxCoreProc host", host, "info", info);
 	this.info = info;
-	info.constructTasks(this);
+	this.mainTask = info.constructTasks(this);
     }	
+
+    public Task getMainTask() {
+	return mainTask;
+    }
 
     public String getCommand() {
 	String command = info.prpsInfo.getPrFname();

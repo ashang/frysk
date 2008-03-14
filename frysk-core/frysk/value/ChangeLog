@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Variable.java: Use LogFactory.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPointer.java (testConstCharPointer()): New.

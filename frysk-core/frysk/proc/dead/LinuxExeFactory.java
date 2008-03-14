@@ -47,6 +47,9 @@ import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
 import frysk.rsl.Log;
+import frysk.solib.SOLibMapBuilder;
+import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootCache;
 
 public class LinuxExeFactory {
     private static final Log fine = Log.fine(LinuxExeFactory.class);
@@ -63,7 +66,7 @@ public class LinuxExeFactory {
 				     long offset, String name, long align) {
 		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
 					       permWrite, permExecute, false,
-					       offset, -1, -1, -1, -1, -1,
+					       offset, -1, -1, -1,
 					       exeFile.getAbsolutePath()));
 		}
 		MemoryMap[] getMemoryMaps() {
@@ -86,33 +89,9 @@ public class LinuxExeFactory {
 	}
     }
 
-    private static File findExe(String arg0) {
-	if (arg0.startsWith("/")) {
-	    return new File(arg0);
-	}
-
-	String pathVar = System.getenv("PATH");
-	if (pathVar == null) {
-	    return new File(arg0);
-	}
-	
-	String[] path = pathVar.split(":");
-	if (path == null) {
-	    return new File(arg0);
-	}
-	fine.log("createProc $PATH", path);
-
-	for (int i = 0; i < path.length; i++) {
-	    File file = new File(path[i], arg0);
-	    if (file.exists()) {
-		return file;
-	    }
-	}
-	return new File(arg0); // punt
-    }
-
     public static DeadProc createProc(String[] args) {
-	File exe = findExe(args[0]);
+	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
+	File exe = sysRoot.getPathViaSysRoot(args[0]).getSysRootedFile();
 	fine.log("createProc exe", exe);
 	return createProc(exe, args);
     }

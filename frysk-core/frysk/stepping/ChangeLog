@@ -1,3 +1,8 @@
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFirstInstruction.java: Extract from
+	frysk.proc.TestTaskObserverInstruction.java.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSteppingEngine.java: Use frysk.config.

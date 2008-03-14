@@ -176,7 +176,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	try {
 	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
 	    assertTrue("Exception was not thrown", false);
-	} catch (ObjectDeclaratioinNotFoundException e) {
+	} catch (ObjectDeclarationNotFoundException e) {
 	    // exception was thrown
 	}
 	

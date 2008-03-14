@@ -1,3 +1,7 @@
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-memory.c: Delete.
+
 2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-libfunccall.c: New test program for TestLibFunctionStepFrame.

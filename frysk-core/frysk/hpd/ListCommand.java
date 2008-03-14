@@ -50,9 +50,12 @@ import frysk.scopes.SourceLocation;
 import java.util.Iterator;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
+import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfo;
 import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.Task;
 
 /**
@@ -121,11 +124,17 @@ class ListCommand extends ParameterizedCommand {
 				.getSymbolDie(cmd.parameter(0));
                         }
 			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
-			    line = (int)funcDie.getDeclLine();
-			    File sysroot = DwflCache.getSysroot(frame.getTask());
-			    file = funcDie.getDeclFile();
-			    if (file.isAbsolute()) 
-				file = new File(sysroot.getPath(), file.getPath());
+		            DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
+		            .getSourceLine(frame.getAdjustedAddress());
+		            if (dwflLine != null) {
+				SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(frame.getTask()));
+		                file = sysRoot.getSourcePathViaSysRoot
+				    (new File(dwflLine.getCompilationDir()),
+				     funcDie.getDeclFile()).getSysRootedFile();
+		            }
+		            else
+		        	file = funcDie.getDeclFile();
+		            line = (int)funcDie.getDeclLine();
 			}
 			else {
 			    cli.addMessage("function " + cmd.parameter(0) + " not found.",

@@ -43,12 +43,14 @@ import lib.dwfl.ElfEHeader;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import java.io.File;
+import frysk.proc.Task;
 
 public class LinuxExeProc extends DeadProc {
 
     private final MemoryMap[] memoryMaps;
     private final String[] argv;
     private final File exeFile;
+    private final LinuxExeTask mainTask;
 
     public LinuxExeProc(LinuxExeHost host, File exeFile, ElfEHeader eHeader,
 			MemoryMap[] memoryMaps, String[] argv) {
@@ -56,7 +58,11 @@ public class LinuxExeProc extends DeadProc {
 	this.exeFile = exeFile;
 	this.memoryMaps = memoryMaps;
 	this.argv = argv;
-	new LinuxExeTask(this, eHeader, memoryMaps);
+	this.mainTask = new LinuxExeTask(this, eHeader, memoryMaps);
+    }
+
+    public Task getMainTask() {
+	return mainTask;
     }
 
     public Auxv[] getAuxv() {

@@ -1,3 +1,37 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* StopEventLoopWhenProcRemoved.java: Delete.
+
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskCounter.java: Delete.
+
+	* SignalWaiter.java (assertRunUntilSignal()): Include message in
+	assert.
+
+	* TestLib.java (setUp()): Do not use Host.observableProcAddedXXX.
+
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* StatState.java: Use LogFactory.
+
+	* TestLib.java (addToTearDown(Task)): New.
+	(addToTearDown(Proc)): New.
+	(setUp()): Check if Host.observableProcAddedXXX is null.
+	
+	* ProcCounter.java: Delete.
+
+	* StopEventLoopWhenProcTerminated.java: Rename
+	StopEventLoopWhenProcTerminates.java.
+	(StopEventLoopWhenProcTerminated(Offspring)): New.
+	* TestStopEventLoopWhenProcTerminates.java: Update.
+
+	* TestLib.java (assertRunToFindProc(ProcessIdentifier)): New.
+	* Offspring.java (assertRunToFindProc()): New.
+	(assertFindProcAndTasks()): Delete.
+	* StopEventLoopWhenProcTerminates.java: New.
+	* TestStopEventLoopWhenProcTerminates.java: New.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Use frysk.config.

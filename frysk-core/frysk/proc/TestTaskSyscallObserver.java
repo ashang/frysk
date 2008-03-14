@@ -54,7 +54,7 @@ import frysk.sys.Pid;
 import frysk.sys.Signal;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.IsaTestbed;
@@ -260,9 +260,7 @@ public class TestTaskSyscallObserver extends TestLib {
     child.getMainTask().requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
-    // XXX: This is wrong; the task isn't a child so this will
-    // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
@@ -343,9 +341,6 @@ public class TestTaskSyscallObserver extends TestLib {
    */
   public void testSyscalls ()
   {
-    // if (unresolved (2245))
-    // return;
-
     // Create program making syscalls
     DaemonBlockedAtEntry child
 	= new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-syscalls"));
@@ -356,9 +351,7 @@ public class TestTaskSyscallObserver extends TestLib {
     child.getMainTask().requestAddSyscallsObserver(syscallObserver);
     assertRunUntilStop("add SyscallObserver");
 
-    // XXX: This is wrong; the task isn't a child so this will
-    // never work. What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     child.requestRemoveBlock();
     assertRunUntilStop("run until program exits");
 
@@ -424,7 +417,7 @@ public class TestTaskSyscallObserver extends TestLib {
       // Create program making syscalls
       DaemonBlockedAtEntry child
 	  = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-syscalls"));
-      new StopEventLoopWhenProcRemoved(child);
+      new StopEventLoopWhenProcTerminated(child);
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
                                                                       child.getMainTask());
@@ -578,12 +571,10 @@ public class TestTaskSyscallObserver extends TestLib {
    */
   public void testSyscallInterrupt ()
   {
-    // if (unresolved (2245))
-    // return;
     PipeReadChild prc = new PipeReadChild(false);
 
     TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid().intValue());
-    new StopEventLoopWhenProcRemoved(prc.getPid());
+    new StopEventLoopWhenProcTerminated(prc.getPid());
 
     assertRunUntilStop("run \"syscallint\" until exit");
     assertEquals("read enter events", 1, t.readEnter);
@@ -601,7 +592,7 @@ public class TestTaskSyscallObserver extends TestLib {
     PipeReadChild prc = new PipeReadChild(true);
 
     TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid().intValue());
-    new StopEventLoopWhenProcRemoved(prc.getPid());
+    new StopEventLoopWhenProcTerminated(prc.getPid());
 
     assertRunUntilStop("run \"syscallint\" with restart until exit");
     assertEquals("restart read enter events", 2, t.readEnter);

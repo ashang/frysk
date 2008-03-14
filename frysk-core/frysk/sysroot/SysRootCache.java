@@ -1,6 +1,5 @@
 // This file is part of the program FRYSK.
-//
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,65 +36,84 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.testbed;
+package frysk.sysroot;
 
-import java.util.LinkedList;
-import java.util.Observer;
-import java.util.Observable;
-import frysk.proc.Proc;
-import frysk.proc.Manager;
+import java.io.File;
+import java.util.WeakHashMap;
+
+import frysk.proc.Task;
 
 /**
- * Observer that counts the number of processes added and removed.
- * Automaticaly registers itself.
+ * Map from a Task's executable to its special root directory.
  */
 
-public class ProcCounter
-{
-    // Base count.
-    public final LinkedList added = new LinkedList();
+public class SysRootCache {
 
-    public final LinkedList removed = new LinkedList();
+    private static WeakHashMap sysRootMap = new WeakHashMap();
 
     /**
-     * Process root; only count descendants of this.
+     * return a sysroot File corresponding to an executable.
+     * 
+     * @param pathname
+     *		is the pathname of the executable.
+     * @return this executable's special root directory.
      */
-    private final int root;
-
-    /**
-     * Create a new ProcCounter counting processes added and
-     * removed. If descendantsOnly, only count children of this
-     * process.
-     */
-    public ProcCounter (int root) {
-	this.root = root;
-	// Set up observers to count proc add and delete events.
-	Manager.host.observableProcAddedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Proc proc = (Proc) obj;
-		    if (ProcCounter.this.root > 0
-			&& !TestLib.isDescendantOf(ProcCounter.this.root,
-						   proc))
-			return;
-		    added.add(proc);
-		}
-	    });
-	Manager.host.observableProcRemovedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Proc proc = (Proc) obj;
-		    if (ProcCounter.this.root > 0
-			&& !TestLib.isDescendantOf(ProcCounter.this.root,
-						   proc))
-			return;
-		    removed.add(proc);
-		}
-	    });
+    public static File getSysRoot(String pathname) {
+	File sysrootFile = (File)sysRootMap.get(new File(pathname).getName());
+	if (sysrootFile == null) {
+	    sysrootFile = (File) sysRootMap.get("default");
+	    if (sysrootFile == null)
+		sysrootFile = new File("/");
+	}
+	return sysrootFile;
     }
-	
-    /**
-     * Count all Proc's added and removed.
-     */
-    public ProcCounter() {
-	this(0);
+    
+    public static File getSysRoot(Task task) {
+	return getSysRoot(task.getProc().getCommand());
     }
+
+    /**
+     * set the sysroot corresponding to an executable.
+     * 
+     * @param pathname
+     *		is the pathname of the executable.
+     * @param sysroot
+     *		is this task's special root directory.
+     */
+    public static void setSysroot(String pathname, String sysroot) {
+	File sysrootFile;
+	if (sysroot != null)
+	    sysrootFile = new File(sysroot);
+	else
+	    sysrootFile = null;
+	sysRootMap.put(new File(pathname).getName(), sysrootFile);
+    }
+
+    /**
+     * set the sysroot corresponding to an executable.
+     * 
+     * @param task
+     *		is the task corresponding to the executable.
+     * @param sysroot
+     *		is this task's special root directory.
+     */
+    public static void setSysroot(Task task, String sysroot) {
+	setSysroot(task.getProc().getCommand(), sysroot);
+    }
+
+    /**
+     * set the default sysroot
+     * 
+     * @param sysroot
+     *		is the default special root directory.
+     */
+    public static void setDefaultSysroot(String sysroot) {
+	File sysrootFile;
+	if (sysroot != null)
+	    sysrootFile = new File(sysroot);
+	else
+	    sysrootFile = null;
+	sysRootMap.put("default", sysrootFile);
+    }
+
 }

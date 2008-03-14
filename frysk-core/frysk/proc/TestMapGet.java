@@ -109,10 +109,6 @@ public class TestMapGet
 		     testMaps[i].devMinor, devMinor);
 	assertEquals("Testing inode  map " + i,
 		     testMaps[i].inode, inode);
-	assertEquals("Testing pathnameOffset  map " + i,
-		     testMaps[i].pathnameOffset, pathnameOffset);
-	assertEquals("Testing pathnameLength  map " + i,
-		     testMaps[i].pathnameLength, pathnameLength);	
 	i++;
       }
     }
@@ -127,7 +123,7 @@ public class TestMapGet
   {
     SlaveOffspring ackProc = SlaveOffspring.createChild();
     assertNotNull(ackProc);
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
     assertNotNull(proc);
     return proc;
   }

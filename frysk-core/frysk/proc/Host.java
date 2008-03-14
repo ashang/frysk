@@ -170,15 +170,6 @@ public abstract class Host implements Comparable {
 	}
     }
 
-    /**
-     * A process has been added.  Possible reasons include a process
-     * refresh, and a fork.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableProcAddedXXX = new ObservableXXX();
-
     /*
      * An existing process has been removed.  Possible reasons include
      * the process is no longer listed in the system process table
@@ -188,24 +179,6 @@ public abstract class Host implements Comparable {
      * Should more formally define the observable and the event.
      */
     public ObservableXXX observableProcRemovedXXX = new ObservableXXX();
-
-    /**
-     * Notify of the addition of a task attached to this process.
-     *
-     * This event indicates the presence of the task, not that it is
-     * attached or detached.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableTaskAddedXXX = new ObservableXXX();
-    /**
-     * Notify of the removal of a task attached to this process.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX();
 
     /**
      * Return the process corresponding to this running frysk instance

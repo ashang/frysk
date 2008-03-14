@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ package frysk.stack;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
@@ -192,7 +193,22 @@ public abstract class Frame {
 	    return "Unknown";
 	}
     }
-  
+
+    /**
+     * Returns a plain string representation if this frame.
+     * This is similar to the result of calling <code>toPrint()</code>
+     * with both printParameters and fullPaths set to false.
+     */
+    public String toString() {
+         StringWriter sw = new StringWriter();
+         PrintWriter pw = new PrintWriter(sw);
+         pw.print(this.getClass().getName());
+         pw.print('[');
+         toPrint(pw, false, false);
+         pw.print(']');
+         pw.flush();
+         return sw.toString();
+    }
 
     /**
      * Extracts OFFSET:LENGTH bytes of REGISTER storing them from

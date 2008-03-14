@@ -42,7 +42,7 @@ package frysk.proc.live;
 import frysk.rsl.Log;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.Fibonacci;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
@@ -80,12 +80,12 @@ public class TestTaskObserverBlocked extends TestLib {
     {
       TaskSet attachedTasks = new TaskSet();
 
-      public Action updateAttached (Task task)
-      {
-        attachedTasks.add(task);
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
+	public Action updateAttached(Task task) {
+	    addToTearDown(task);
+	    attachedTasks.add(task);
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
     }
     BlockAttached blockAttached = new BlockAttached();
 
@@ -194,26 +194,26 @@ public class TestTaskObserverBlocked extends TestLib {
       return Action.BLOCK;
     }
 
-    protected Action spawnedOffspring (Task parent, Task offspring)
-    {
-      fine.log(this, "spawnedOffspring");
-      assertInState(SPAWN_PARENT);
-      nextState(SPAWN_OFFSPRING);
-      this.offspring = offspring;
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-
-    /**
-     * Officially attached to Task.
-     */
-    public Action updateAttached (Task task)
-    {
-      assertInState(OBSERVER_ADDED_TO_CHILD);
-      nextState(CHILD_ATTACHED);
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
+      protected Action spawnedOffspring(Task parent, Task offspring) {
+	  fine.log(this, "spawnedOffspring");
+	  addToTearDown(offspring);
+	  assertInState(SPAWN_PARENT);
+	  nextState(SPAWN_OFFSPRING);
+	  this.offspring = offspring;
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+      }
+      
+      /**
+       * Officially attached to Task.
+       */
+      public Action updateAttached(Task task) {
+	  addToTearDown(task);
+	  assertInState(OBSERVER_ADDED_TO_CHILD);
+	  nextState(CHILD_ATTACHED);
+	  Manager.eventLoop.requestStop();
+	  return Action.BLOCK;
+      }
 
     /**
      * Create a new daemon process, attach to it's spawn observer (forked or
@@ -415,6 +415,7 @@ public class TestTaskObserverBlocked extends TestLib {
 		return Action.CONTINUE;
 	    }
 	    public Action updateForkedOffspring (Task parent, Task offspring) {
+		addToTearDown(offspring);
 		offspring.requestUnblock(this);
 		return Action.BLOCK;
 	    }
@@ -471,11 +472,11 @@ public class TestTaskObserverBlocked extends TestLib {
         return Action.CONTINUE;
       }
 
-      public Action updateForkedOffspring (Task parent, Task offspring)
-      {
-        offspring.requestUnblock(this);
-        offspring.requestAddForkedObserver(this);
-        return Action.BLOCK;
+      public Action updateForkedOffspring (Task parent, Task offspring) {
+	  addToTearDown(offspring);
+	  offspring.requestUnblock(this);
+	  offspring.requestAddForkedObserver(this);
+	  return Action.BLOCK;
       }
     }
     UnblockAdd observer = new UnblockAdd();
@@ -524,15 +525,14 @@ public class TestTaskObserverBlocked extends TestLib {
       // An object that, when the child process exits, both sets
       // a flag to record that event, and requests that the
       // event loop stop.
-      StopEventLoopWhenProcRemoved childRemoved
-	  = new StopEventLoopWhenProcRemoved(child);
+      StopEventLoopWhenProcTerminated childRemoved
+	  = new StopEventLoopWhenProcTerminated(child);
 
       // Repeatedly run the event loop until the child exits
       // (every time there is a spawn the event loop will stop).
       int spawnCount = 0;
       int loopCount = 0;
-      while (loopCount <= fib.getCallCount() && ! childRemoved.p)
-        {
+      while (loopCount <= fib.getCallCount() && ! childRemoved.terminated) {
           loopCount++;
           assertRunUntilStop("run \"fibonacci\" until stop, number "
                              + spawnCount + " of " + fib.getCallCount());
@@ -547,7 +547,7 @@ public class TestTaskObserverBlocked extends TestLib {
                    addedCount());
       assertEquals("number of times spawnObserver deleted", 0, deletedCount());
       assertEquals("Number of spawns", fib.getCallCount() - 1, spawnCount);
-      assertTrue("child exited", childRemoved.p);
+      assertTrue("child exited", childRemoved.terminated);
       assertTrue("at least two iterations of the spawn loop", loopCount > 2);
     }
   }

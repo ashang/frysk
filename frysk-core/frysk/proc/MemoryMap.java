@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,30 +58,24 @@ public class MemoryMap
   public final int devMajor;
   public final int devMinor;
   public final int inode;       
-  public final int pathnameOffset;
-  public final int pathnameLength; 
   public final String name;
 
   public MemoryMap(long addressLow, long addressHigh,
-	     boolean permRead, boolean permWrite,
-	     boolean permExecute, boolean shared,
-	     long offset, int devMajor, int devMinor,
-	     int inode, int pathnameOffset,
-	     int pathnameLength, String name)
-  {
-    this.addressLow = addressLow;
-    this.addressHigh = addressHigh;
-    this.permRead = permRead;
-    this.permWrite = permWrite;
-    this.permExecute = permExecute;
-    this.shared = shared;
-    this.offset = offset;
-    this.devMajor = devMajor;
-    this.devMinor = devMinor;
-    this.inode = inode;
-    this.pathnameOffset = pathnameOffset;
-    this.pathnameLength = pathnameLength;
-    this.name = name;
+		   boolean permRead, boolean permWrite,
+		   boolean permExecute, boolean shared,
+		   long offset, int devMajor, int devMinor,
+		   int inode, String name) {
+      this.addressLow = addressLow;
+      this.addressHigh = addressHigh;
+      this.permRead = permRead;
+      this.permWrite = permWrite;
+      this.permExecute = permExecute;
+      this.shared = shared;
+      this.offset = offset;
+      this.devMajor = devMajor;
+      this.devMinor = devMinor;
+      this.inode = inode;
+      this.name = name;
   }
 
   public String toString()

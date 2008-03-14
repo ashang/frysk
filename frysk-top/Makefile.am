@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@ SUBDIRS = \
 SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%/frysk,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%/frysk,$(SUBDIRS)) \
-	$(srcdir)/frysk-imports/lib \
-	$(srcdir)/frysk-imports/inua \
-	$(top_builddir)/frysk-imports/inua \
+	$(srcdir)/frysk-sys/lib \
+	$(top_builddir)/frysk-sys/lib \
+	$(srcdir)/frysk-sys/inua \
+	$(top_builddir)/frysk-sys/inua \
 	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
 	$(srcdir)/frysk-imports/jline/src/jline \
 	$(srcdir)/frysk-imports/junit/src/junit \
@@ -66,8 +67,42 @@ SOURCEDIRS = \
 	$(empty)
 
 
+# Generate html manpages
+# Use same xml sources, but generate html.
+# html is always put in index.html in output dir, so rename.
+# Use template file and just put in title, logo and a list of utils + href.
+# Replace ./ with ../ relative references (manpages is one dir down).
+XMLSOURCES = $(srcdir)/frysk-core/frysk/bindir/*.xml
+TEMPLATE = $(srcdir)/htdocs/template.html
+.PHONY: manpages
+manpages: XMLSOURCES
+	rm -rf manpages
+	mkdir manpages
+	sed -n '0,/<!-- start title -->/$ p' $(TEMPLATE) > tmp.index.$@.html
+	echo "<h1>Frysk Utilities</h1>" >> tmp.index.$@.html
+	sed -n '/<!-- end title -->/,/<!-- start logo -->/ p' $(TEMPLATE) >> tmp.index.$@.html
+	echo '<img src="./fryskbiglogo.png" alt="Frysk logo" style="margin-left:8px;">' >> tmp.index.$@.html
+	sed -n '/<!-- end logo -->/,/<!-- start text -->/ p' $(TEMPLATE) >> tmp.index.$@.html
+	for xmlfile in $(XMLSOURCES) ; do \
+		name=`basename $$xmlfile .xml`; \
+		echo "Generating man webpage for $$name" ; \
+		$(XMLTO) -o manpages html $$xmlfile ; \
+		mv manpages/index.html manpages/$${name}.html ; \
+		echo -n "<li><tt><a href='" >> tmp.index.$@.html ; \
+		echo -n $${name}.html >> tmp.index.$@.html ; \
+		echo -n "'>" >> tmp.index.$@.html ; \
+		echo -n $$name >> tmp.index.$@.html ; \
+		echo "</tt></a>" >> tmp.index.$@.html ; \
+		sed -n '/<refpurpose>\(.*\)<\/refpurpose>/ p' $$xmlfile \
+			| sed -n 's/refpurpose/i/g p' >> tmp.index.$@.html ; \
+		echo "</li>" >> tmp.index.$@.html ; \
+	done
+	sed -n '/<!-- end text -->/,$$ p' $(TEMPLATE) >> tmp.index.$@.html
+	sed -i 's/"\.\//"\.\.\//g' tmp.index.$@.html
+	mv tmp.index.$@.html manpages/index.html
+
 # Generate JAVADOC documentation.
-JAVADOC = gjdoc
+JAVADOC = javadoc
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: all
@@ -84,6 +119,7 @@ javadoc: all
 				cd $$d ; \
 				find $$b \
 				-path '*/*dir/*' -prune \
+				-path '*/*tmp/*' -prune \
 				-o -name '[A-Za-z]*\.java' -print \
 				-o -name 'package.html' -print \
 				-o -path '*/doc-files/*.jpg' -print \
@@ -100,16 +136,10 @@ javadoc: all
 				| xargs rm \
 				;; \
 		esac ; \
-		case $$scope in \
-			public ) reflection=-reflection ;; \
-			private ) reflection= ;; \
-		esac ; \
 		jg=http://developer.gnome.org/doc/API/java-gnome ; \
 		CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
 			$(JAVADOC) \
 			-$$scope \
-			$${reflection} \
-			-validhtml \
 			-link http://developer.classpath.org/doc/ \
 			-link $${jg}/glib-java-0.4.0/api/ \
 			-link $${jg}/cairo-java-1.0.6/api/ \
@@ -129,32 +159,57 @@ javadoc: all
 			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
 			-group "Native Bindings" 'lib*' \
 			-sourcepath javadoc/source/$$scope \
-			-all \
+			-subpackages frysk:lib:inua:jline:junit:gnu \
 		; \
 	done
-
-# Since javadoc re-generates all the files, changing their
-# last-modified time (even when the contents don't change), rsync-a
-# must push a mod-time on every file.  Avoid that cost by ignoring the
-# mod-time and instead using --checksum; while pulling all the
-# checksums is expensive it isn't as expensive as pushing every file's
-# mod-time.
-
-.PHONY: upload-javadoc
-upload-javadoc:
-	rsync \
-		--fuzzy \
+
+UPLOAD_FLAGS =	--fuzzy \
 		--delete-during \
 		--ignore-times \
-		--perms \
-		--checksum \
 		--recursive \
 		--links \
 		--itemize-changes \
-		--stats \
+		--stats
+
+# Since the documentation generation process re-generates all the
+# files, changing their last-modified time (even when the contents
+# don't change), rsync-a is forced to upload a mod-time on every file.
+# Avoid that cost by ignoring the mod-time and instead using
+# --checksum; while pulling all the checksums is expensive it isn't as
+# expensive as pushing every file's mod-time.
+
+UPLOAD_FLAGS += --checksum
+
+# Explicitly specify the file permissions using --chmod.  This ensures
+# that uploaded files are group writable so that others can do
+# updates; and directories are SGID so that group membership
+# propogates down (fixed in later rsync releases).  Also explicitly
+# specify --perms so that the --chmod permission is used, and not
+# overwriden by the remote remote UMASK (this can also lead to
+# permission denied warnings when trying to set the permission of
+# directories you don't own, just live with that).
+
+UPLOAD_FLAGS += --chmod ug=rwX,o=rX,Dg+s --perms
+
+UPLOAD = echo "Don't worry too much about directory permission warnings" ; \
+	 rsync $(UPLOAD_FLAGS)
+
+.PHONY: upload-javadoc
+upload-javadoc:
+	$(UPLOAD) \
 		javadoc/public javadoc/private \
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/javadoc
 CLEANFILES += javadoc
+
+.PHONY: upload-manpages
+upload-manpages:
+	$(UPLOAD) \
+		manpages/ \
+		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/manpages
+
+.PHONY: upload-docs
+upload-docs: upload-manpages upload-javadoc
+	true
 
 # Generate DOXYGEN documentation.
 

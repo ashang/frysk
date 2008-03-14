@@ -47,6 +47,7 @@ import frysk.sys.Signal;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.SignalBuilder;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 
 public class TestTearDownProcess
     extends TestCase
@@ -66,6 +67,24 @@ public class TestTearDownProcess
 	TearDownProcess.add(pid);
 	TearDownProcess.tearDown ();
 	assertGone(pid);
+    }
+
+    public void testInvalidPid() {
+	ProcessIdentifier zero = ProcessIdentifierFactory.create(0);
+	try {
+	    TearDownProcess.add(zero);
+	    fail("add of zero should not succeed");
+	} catch (RuntimeException e) {
+	}
+    }
+
+    public void testInitPid() {
+	ProcessIdentifier init = ProcessIdentifierFactory.create(1);
+	try {
+	    TearDownProcess.add(init);
+	    fail("add of init should not succeed");
+	} catch (RuntimeException e) {
+	}
     }
 
     public void testForkPtraceAttached() {

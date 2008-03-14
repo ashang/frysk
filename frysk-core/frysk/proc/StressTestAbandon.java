@@ -85,7 +85,7 @@ public class StressTestAbandon
     public void testStressAbandon () {
 	Proc proc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(99)
-	    .assertFindProcAndTasks();
+	    .assertRunToFindProc();
 	new ProcBlockAction(proc, new Action(proc));
 	assertRunUntilStop("testStressAbandon");
     }

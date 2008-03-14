@@ -41,10 +41,11 @@ package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 public class Cursor {
-    private static final Log fine = Log.fine(Cursor.class);
-    private static final Log finest = Log.finest(Cursor.class);
+    private static final Log fine = LogFactory.fine(Cursor.class);
+    private static final Log finest = LogFactory.finest(Cursor.class);
 
     final RawDataManaged cursor; 
     final Unwind unwinder;

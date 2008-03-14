@@ -40,13 +40,13 @@
 package lib.unwind;
 
 import frysk.rsl.Log;
-
+import frysk.rsl.LogFactory;
 import gnu.gcj.RawDataManaged;
 import gnu.gcj.RawData;
 
 public abstract class Unwind {
-    static final Log fine = Log.fine(Unwind.class);
-    static final Log finest = Log.finest(Unwind.class);
+    static final Log fine = LogFactory.fine(Unwind.class);
+    static final Log finest = LogFactory.finest(Unwind.class);
   
     abstract RawDataManaged initRemote(AddressSpace addressSpace);
      

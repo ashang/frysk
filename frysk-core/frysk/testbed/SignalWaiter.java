@@ -105,13 +105,14 @@ public final class SignalWaiter extends TestCase {
      * Runs the EventLoop until all specified signals have been
      * received.
      */
-    public void assertRunUntilSignaled ()
-    {
+    public void assertRunUntilSignaled() {
 	// Run the event loop.
 	while (outstanding.size() > 0) {
-	    fine.log(this, "start: outstanding", outstanding);
-	    assertTrue (eventLoop.runPolling (getTimeoutMilliseconds()));
-	    fine.log(this, "stop: outstanding", outstanding);
+	    fine.log(this, "start; outstanding", outstanding);
+	    assertTrue("run until signal: " + reason
+		       + "; outstanding: " + outstanding,
+		       eventLoop.runPolling(getTimeoutMilliseconds()));
+	    fine.log(this, "stop; outstanding", outstanding);
 	}
     }
 }

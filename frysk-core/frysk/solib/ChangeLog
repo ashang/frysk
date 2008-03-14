@@ -1,0 +1,19 @@
+2008-03-10  Andrew Cagney  <cagney@redhat.com>
+
+	* MemoryMapFactory.java: Update to match MemoryMap.
+	
+	* MemoryMapFactory.java: Extract from frysk.proc.dead.LinuxCoreInfo.
+
+	* SOLibMapBuilder.java: Move to here from frysk.proc.dead.
+
+	* LinkMap.java: Extract from frysk.proc.dead.LinuxCoreInfo.
+	* LinkMapFactory.java: Ditto.
+	* DynamicSegment.java: Ditto.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

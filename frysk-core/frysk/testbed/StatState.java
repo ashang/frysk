@@ -43,6 +43,7 @@ import frysk.proc.Manager;
 import frysk.junit.TestCase;
 import frysk.sys.proc.Stat;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.event.TimerEvent;
 import frysk.proc.Task;
 import frysk.sys.ProcessIdentifier;
@@ -53,8 +54,8 @@ import frysk.sys.ProcessIdentifierFactory;
  */
 
 public class StatState {
-    private final static Log fine = Log.fine(StatState.class);
-    private final static Log finest = Log.finest(StatState.class);
+    private final static Log fine = LogFactory.fine(StatState.class);
+    private final static Log finest = LogFactory.finest(StatState.class);
 
     private final char state;
     private StatState(char state) {

@@ -73,6 +73,10 @@ public class EventLogger
 	LogManager.getLogManager().addLogger(logger);
     }
 	
+    public static Logger getLogger() {
+	return logger;
+    }
+
     static private class EventFormatter extends Formatter {
 	private EventFormatter() {
 	    super();

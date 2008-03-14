@@ -1,3 +1,13 @@
+2008-03-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestLibFunctionStepFrame.java: Mark only unresolved on x86_64
+	and ppc. Only check first 24 steps (bug #5917). Tighter check for
+	main and foo order.
+	
+2008-03-12  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Frame.java (toString): New method.
+	
 2008-03-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLibFunctionStepFrame.java: New test for bug #5259.

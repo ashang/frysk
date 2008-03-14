@@ -1,3 +1,21 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (prefixTimeAndPid()): For WARNING/INFO, include level.
+	* LogFactory.java (info(Class)): New.
+	(info(String)): New.
+	* Level.mkenum (INFO): New; make default.
+
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestOptions.java: Use Level.DEFAULT.
+	* TestLog.java: Ditto.
+
+	* Log.java (finest(Class)): Delete.
+	* LogFactory.java (warning(String)): New.
+	(warning(Class)): New.
+	* Level.mkenum (WARNING, DEFAULT): Add.
+	* Node.java: Default to Level.DEFAULT.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (dump(Object)): Add missing else.

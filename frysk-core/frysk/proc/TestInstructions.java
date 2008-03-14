@@ -319,6 +319,7 @@ public class TestInstructions
     {
       this.task = task;
       Manager.eventLoop.requestStop();
+      addToTearDown(task);
       return Action.BLOCK;
     }
     

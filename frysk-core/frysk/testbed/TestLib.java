@@ -42,6 +42,7 @@ package frysk.testbed;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
@@ -49,10 +50,9 @@ import frysk.junit.TestCase;
 import frysk.config.Config;
 import frysk.sys.Pid;
 import frysk.sys.SignalSet;
+import frysk.proc.FindProc;
 import frysk.sys.Signal;
 import frysk.sys.proc.Stat;
-import java.util.Observable;
-import java.util.Observer;
 import frysk.rsl.Log;
 
 /**
@@ -164,6 +164,35 @@ public class TestLib extends TestCase {
     }
 
     /**
+     * Run the event loop sufficient to find the specified process.
+     */
+    protected static Proc assertRunToFindProc(ProcessIdentifier pid) {
+	class ProcFinder implements FindProc {
+	    Proc proc;
+	    public void procFound(Proc p) {
+		proc = p;
+		Manager.eventLoop.requestStop();
+	    }
+	    public void procNotFound(int pid) {
+		TestCase.fail("Couldn't find the given proc " + pid);
+	    }
+	}
+	ProcFinder findProc = new ProcFinder();
+	Manager.host.requestProc(pid.intValue(), findProc);
+	assertRunUntilStop("looking for " + pid);
+	return findProc.proc;
+    }
+
+    protected static void addToTearDown(Task task) {
+	fine.log("addToTearDown", task);
+	TearDownProcess.add(ProcessIdentifierFactory.create(task.getTid()));
+    }
+    protected static void addToTearDown(Proc proc) {
+	fine.log("addToTearDown", proc);
+	TearDownProcess.add(ProcessIdentifierFactory.create(proc.getPid()));
+    }
+
+    /**
      * The host being used by the current test.
      */
     protected Host host;
@@ -172,37 +201,6 @@ public class TestLib extends TestCase {
 	fine.log(this, "<<<<<<<<<<<<<<<< start setUp");
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX();
-	// Detect all test processes added to the process tree,
-	// registering each with TearDownProcess list. Look both for
-	// children of this process, and children of any processes
-	// already marked to be killed. The latter is to catch
-	// children of children, such as daemons.
-	//
-	// Note that, in addition to this, the Child code also
-	// directly registers its process. That is to ensure that
-	// children that never get entered into the process tree also
-	// get registered with TearDownProcess.
-	host.observableProcAddedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Proc proc = (Proc) obj;
-		    if (isChildOfMine(proc)) {
-			TearDownProcess.add
-			    (ProcessIdentifierFactory.create(proc.getPid()));
-			return;
-		    }
-		    Proc parent = proc.getParent();
-		    if (parent != null) {
-			ProcessIdentifier parentPid
-			    = ProcessIdentifierFactory.create(proc.getParent()
-							      .getPid());
-			if (TearDownProcess.contains(parentPid)) {
-			    TearDownProcess.add(ProcessIdentifierFactory
-						.create(proc.getPid()));
-			    return;
-			}
-		    }
-		}
-	    });
 	fine.log(this, "<<<<<<<<<<<<<<<< end setUp");
     }
 

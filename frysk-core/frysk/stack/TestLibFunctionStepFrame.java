@@ -67,7 +67,7 @@ public class TestLibFunctionStepFrame
 {
   public void testStepIntoLibFunctionCall()
   {
-    if (unresolved(5259))
+    if (unresolvedOnx8664(5259) || unresolvedOnPPC(5259))
       return;
 
     String source = Config.getRootSrcDir()
@@ -116,7 +116,7 @@ public class TestLibFunctionStepFrame
     // We are at the first plt intruction (for the first time).
     long firstPLTAddress = task.getPC();
     Frame frame = StackFactory.createFrame(task);
-    assertFooAndMainOuterFrames("At first PLT address", frame);
+    assertFooAndMainOuterFrames("First entry in PLT", frame);
 
     // Count your steps. And bail out when there are too many.
     int steps = 1;
@@ -125,12 +125,15 @@ public class TestLibFunctionStepFrame
     while (currentPC != addressLast && steps < 1000)
       {
 	task.requestUnblock(this);
-	assertRunUntilStop("Do step: " + steps);
+	assertRunUntilStop("Do step: "
+			   + (seenSecondCall ? "second" : "")
+			   + steps);
 
 	currentPC = task.getPC();
 	if (currentPC == address2)
 	  {
 	    seenSecondCall = true;
+	    steps = 1;
 	    // When we step we should be at the first PLTAddress again.
 	    // One step and we should be at the first PLT instruction.
 	    task.requestUnblock(this);
@@ -139,14 +142,18 @@ public class TestLibFunctionStepFrame
 	    assertEquals("Second time in PLT", currentPC, firstPLTAddress);
 
 	    frame = StackFactory.createFrame(task);
-	    assertFooAndMainOuterFrames("Second time in PLT", frame);
+	    assertFooAndMainOuterFrames("Second entry in PLT", frame);
 	  }
-	else if (currentPC != addressLast)
+	else if (currentPC != addressLast && steps < 24)
 	  {
+	    // Only check first 24
 	    frame = StackFactory.createFrame(task);
-	    assertFooAndMainOuterFrames("Stepping, #" + steps
+	    assertFooAndMainOuterFrames("Stepping "
+					+ (seenSecondCall ? "second" : "")
+					+ ", #" + steps
 					+ " through (plt) call", frame);
 	  }
+	steps++;
       }
 
     assertTrue("less than a thousand steps", steps < 1000);
@@ -167,6 +174,7 @@ public class TestLibFunctionStepFrame
     assertTrue(message + " first inner frame should not be foo or main", ok);
 
     boolean foo_seen = false;
+    boolean main_seen = false;
     Frame outer = frame.getOuter();
     while (ok && outer != null)
       {
@@ -186,7 +194,11 @@ public class TestLibFunctionStepFrame
 
 	boolean sym_is_main = name.indexOf("main") != -1;
 	if (foo_seen && sym_is_main)
-	  break;
+	  {
+	    // Hurray done!
+	    main_seen = true;
+	    break;
+	  }
 
 	if (! foo_seen && sym_is_main)
 	  {
@@ -199,7 +211,7 @@ public class TestLibFunctionStepFrame
 	outer = outer.getOuter();
       }
 
-    ok = outer != null;
+    ok = ok && foo_seen && main_seen && outer != null;
     if (! ok)
       printBacktrace(frame);
     assertTrue(message

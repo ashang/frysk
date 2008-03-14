@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.io.File;
 import lib.dwfl.Elf;
-import lib.dwfl.ElfSection;
 import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfData;
@@ -59,7 +58,9 @@ import frysk.rsl.Log;
 import frysk.proc.Auxv;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.proc.MemoryMap;
-import java.util.Iterator;
+import frysk.solib.LinkMapFactory;
+import frysk.solib.LinkMap;
+import frysk.solib.MemoryMapFactory;
 
 /**
  * Extract from a core file all the information needed to construct
@@ -227,7 +228,7 @@ class LinuxCoreInfo {
 				   map.permRead, map.permWrite,
 				   map.permExecute, false,
 				   map.solibOffset,
-				   -1, -1, -1, -1, -1,
+				   -1, -1, -1,
 				   map.name));
 	}
 	MemoryMap[] memoryMaps = new MemoryMap[maps.size()];
@@ -305,11 +306,7 @@ class LinuxCoreInfo {
     private static void addEnhancedMapData(File coreFile, File exeFile,
 					   MapAddressHeader[] metaData,
 					   Elf exeElf, Auxv[] auxv) {
-	fine.log("constructEnhancedMapMetadata");
-
-	// Find Dynamic Segment
-	DynamicSegmentTuple dynamicTuple
-	    = getDynamicSegmentAddress(auxv, exeElf);
+	fine.log("addEnhancedMapData");
 
 	// Create a temporary, noncache resetting view into the
 	// corefile memory so that the link-map table can be
@@ -317,275 +314,35 @@ class LinuxCoreInfo {
 	CorefileByteBuffer tempMemory = new CorefileByteBuffer(coreFile,
 							       metaData);
     
-	// From that segment address, find linkmap table.
-	long linkmapAddress = getLinkmapAddress(tempMemory, dynamicTuple);
-
-	// No link map, hence no libraries have so far been loaded
-	// (core was taken while the program was at the entry point or
-	// shortly after).  This is ok, the executable is still being
-	// used for things like the exe path.
-	if (linkmapAddress == 0)
+	LinkMap[] linkMaps = LinkMapFactory.extractLinkMaps(exeElf, exeFile,
+							    tempMemory, auxv);
+	fine.log("linkMaps", linkMaps);
+	if (linkMaps == null)
+	    // No link map, hence no libraries have so far been loaded
+	    // (core was taken while the program was at the entry
+	    // point or shortly after).  This is ok, the executable is
+	    // still being used for things like the exe path.
 	    return;
 
-	// Edge case: Save interp name as it is not included the
-	// linkmap as it is loaded by the kernel.
-	String interpName = getExeInterpreterName(exeElf);
-
-	// Edge case: Get interp address so when we traverse the
-	// linkmap it can be paired with its name
-	long interpAddr = getExeInterpreterAddress(exeElf); 
-
-	// Build the link-map table from the link-map table address
-	fine.log("Building linkmap");
-	class BuildLinkMap extends LinkmapBuilder {
-	    List list = new LinkedList();
-	    public void buildMap(long l_addr, long l_ld, long saddr,
-				 String name) {
-		fine.log("New linkmap item: l_addr", l_addr,
-			 "l_ld", l_ld, "s_addr", l_addr, "name", name);
-		list.add(new Linkmap(l_addr, l_ld, saddr, name));
-	    }
-	}
-	BuildLinkMap linkMap = new BuildLinkMap();
-	linkMap.construct(linkmapAddress, tempMemory);
-	for (Iterator i = linkMap.list.iterator(); i.hasNext(); ) {
-	    Linkmap tempMap = (Linkmap) i.next();
-	    if (tempMap.s_addr == interpAddr) {
-		fine.log("Found interpretator at linkmap address",
-			 tempMap.s_addr);
-		tempMap.name = interpName;
-	    }
-	}
-
-	// From the list of solibs in the linkamp,  build
-	// maps for each one.
-	class BuildSOMaps extends SOLibMapBuilder {
-	    List list = new LinkedList();
-	    public void buildMap (long addrLow, long addrHigh, 
-				  boolean permRead, boolean permWrite,
-				  boolean permExecute, long offset, 
-				  String name, long align) {
-		list.add(new MapAddressHeader(addrLow, addrHigh, permRead,
-					      permWrite, permExecute,
-					      0, offset, 0,0, name, align));
-	    }
-	}
-
-	BuildSOMaps SOMaps = new BuildSOMaps();
-	for (Iterator i = linkMap.list.iterator(); i.hasNext(); ) {
-	    Linkmap singleLinkMap = (Linkmap) i.next();
-	    if ((!singleLinkMap.name.equals("")) && (!singleLinkMap.name.equals("[vdso]")))
-		SOMaps.construct(new File(singleLinkMap.name),
-				 singleLinkMap.l_addr);
-	    if (singleLinkMap.name.equals("[vdso]"))
-		SOMaps.buildMap(singleLinkMap.l_addr,0,true,true,true,0,singleLinkMap.name,0x1000);
-	}
-
-
-	// Add in case for executables maps.
-	SOMaps.construct(exeElf, exeFile, 0);
+	MemoryMap[] memoryMaps
+	    = MemoryMapFactory.constructMemoryMaps(exeElf, exeFile, linkMaps);
 
 	// Reconcile maps.
-	for (Iterator i = SOMaps.list.iterator(); i.hasNext(); ) {
-	    MapAddressHeader localMap = (MapAddressHeader) i.next();
+	for (int i = 0; i < memoryMaps.length; i++) {
+	    MemoryMap localMap = memoryMaps[i];
 	    for (int j = 0; j < metaData.length; j++) {
 		MapAddressHeader map = metaData[j];
-		if ((map.vaddr == localMap.vaddr)
-		    || ((map.vaddr > localMap.vaddr)
-			&& (map.vaddr<localMap.vaddr_end))) {
+		if ((map.vaddr == localMap.addressLow)
+		    || ((map.vaddr > localMap.addressLow)
+			&& (map.vaddr<localMap.addressHigh))) {
 		    if (map.vaddr_end == 0) {
 			map.vaddr_end = ((map.vaddr + map.memSize) + 0x1000 -1) &~ (0x1000-1);
 		    }
-		    map.solibOffset = localMap.solibOffset;
+		    map.solibOffset = localMap.offset;
 		    map.name = localMap.name;
 		}
 	    }
 	}
-    }
-
-    /**
-     * Helper function to return the backing core file's dynamic
-     * segment address and size
-     */
-    private static DynamicSegmentTuple getDynamicSegmentAddress(Auxv[] auxv,
-								Elf exeElf) {
-	fine.log("getDynamicSegmentAddress");
-	// If we do not have an executable, we cannot find the dynamic
-	// segment in the corefile.
-	long coreEntryPoint = getCorefileEntryPoint(auxv);
-	long exeEntryPoint = getExeEntryPoint(exeElf);
-	DynamicSegmentTuple exeDynamicTuple
-	    = getExeDynamicSegmentAddress(exeElf);
-
-	// Calculate relocated segment address, if necessary.
-	if (exeDynamicTuple != null)
-	    exeDynamicTuple.addr = exeDynamicTuple.addr + 
-		coreEntryPoint - exeEntryPoint;
-    
-	fine.log("getDynamicSegmentAddress tuple",
-		 exeDynamicTuple.addr, "size", exeDynamicTuple.size);
-	return exeDynamicTuple;
-    
-    }
-
-    /**
-     * Helper function to find the backing executable's dynamic
-     * address and size
-     **/
-    private static DynamicSegmentTuple getExeDynamicSegmentAddress(Elf exeElf) {
-    	fine.log("getExeDynamicSegmentAddress");
-	DynamicSegmentTuple exeDynamicAddr = null;
-	ElfEHeader eHeader = exeElf.getEHeader();
-	// Find dynamic segment by iterating through program segment
-	// headers
-	for (int headerCount = 0; headerCount < eHeader.phnum; headerCount++) {
-	    ElfPHeader pHeader = exeElf.getPHeader(headerCount);
-	    // Found the dynamic section
-	    if (pHeader.type == ElfPHeader.PTYPE_DYNAMIC) {
-		exeDynamicAddr = new DynamicSegmentTuple(pHeader.vaddr,
-							 pHeader.filesz);
-		break;
-	    }
-	}
-	fine.log("getDynamicExeSegmentAddress tuple",
-		 exeDynamicAddr.addr, "size", exeDynamicAddr.size);
-	return exeDynamicAddr;
-    }
-
-    /**
-     * Helper function to locate the link map table in the 
-     * core file. This is located in the dynamic segment table
-     * at the address specified by the DT_DEBUG field.
-     */
-    private static long getLinkmapAddress(CorefileByteBuffer internalMem,
-					  DynamicSegmentTuple tuple) {
-	fine.log("getLinkmapAddress");
-	final int DT_DEBUG = 21;
-	if (tuple == null) {
-	    fine.log("Dynamic segment is null, linkmap set to 0");
-	    return 0;
-
-	}
-
-	long dynSegmentEndAddress = tuple.addr + tuple.size;
-	long dtDebugAddress = 0;
-	long actualAddress = 0;
-	long dtTest;
-
-	// Position the core-file's memory at the corefile's dynamic
-	// segment.
-	internalMem.position(tuple.addr);
-
-	// find DT_DEBUG field in table. The tabke is two
-	// words. One is the DT_ tag and the other
-	// is the address of that DT_ tag table type.
-	while (internalMem.position() < dynSegmentEndAddress) {
-	    // Get tag and test if it is DT_DEBUG
-	    dtTest = internalMem.getUWord();
-	    if (dtTest == DT_DEBUG) {
-		// If it is record the address in the 
-		// next word.
-		dtDebugAddress = internalMem.getUWord();
-		break;
-	    }
-	
-	    // Otherwise, move on.
-	    internalMem.getUWord();
-	}
-
-	if (dtDebugAddress != 0) {
-	    // Go to address that DT_DEBUG tag 
-	    // specified.
-	    internalMem.position(dtDebugAddress);
-
-	    // discard first word at that address;
-	    internalMem.getInt();
-	    long pos = internalMem.position();
-	    int wordSize = internalMem.wordSize();
-	    if (pos % wordSize > 0)
-		pos = (pos - (pos % wordSize))+wordSize;
-	
-	    internalMem.position(pos);
-	    actualAddress = internalMem.getUWord();
-	}
-
-	fine.log("Linkmap address is", actualAddress);
-	return actualAddress;
-    }
-
-    /**
-     * Helper function to locate and report the backing Executables
-     * entry point
-     */
-    private static long getExeEntryPoint(Elf exeElf) {
-	ElfEHeader eHeader = exeElf.getEHeader();
-	if (eHeader == null)
-	    throw new RuntimeException("executable is not elf");
-	return eHeader.entry;
-    }
-
-    /**
-     * Helper function to locate and report the backing Executables
-     * interpeters address.
-     */
-    private static long getExeInterpreterAddress(Elf exeElf) {
-	fine.log("getExeInterpreterAddress");
-	long interpreterAddress = 0;
-	ElfEHeader eHeader = exeElf.getEHeader();
-	// Find .interp segment by passing through progream segment
-	// header
-	for (int headerCount = 0; headerCount < eHeader.phnum; headerCount++) {
-	    ElfPHeader pHeader = exeElf.getPHeader(headerCount);
-	    if (pHeader.type == ElfPHeader.PTYPE_INTERP) {
-		interpreterAddress = pHeader.vaddr;
-		break;
-	    }
-	}
-	fine.log("Interpreter Addr", interpreterAddress);
-	return interpreterAddress;
-    }
-
-    /**
-     * Helper function to locate and report the backing Executables
-     * interpeters name
-     */
-    private static String getExeInterpreterName(Elf exeElf) {
-	fine.log("getExeInterpreterName");
-	String interpName = "";
-	ElfEHeader eHeader = exeElf.getEHeader();
-	// Find .interp segment by passing through progream segment
-	// header
-	for (int headerCount = 0; headerCount < eHeader.phnum; headerCount++) {
-	    ElfPHeader pHeader = exeElf.getPHeader(headerCount);
-	    if (pHeader.type == ElfPHeader.PTYPE_INTERP) {
-		ElfSection interpSection = exeElf.getSection((long)headerCount);
-		ElfData data = interpSection.getData();
-		interpName = new String(data.getBytes());
-		interpName = interpName.trim();
-		break;
-	    }
-	}
-	fine.log("Interpreter name", interpName);
-	return interpName;
-    }
-
-    /**
-     * Helper function to locate and report the backing corefile's
-     * entry point
-     */
-    private static long getCorefileEntryPoint(Auxv[] auxv) {
-	fine.log("getCorefileEntryPoint");
-	// Need auxv data
-	long entryPoint = 0;
-	// Find the Auxv ENTRY data
-	for (int i = 0; i < auxv.length; i++) {
-	    if (auxv[i].type == inua.elf.AT.ENTRY) {
-		entryPoint = auxv[i].val;
-		break;
-	    }
-	}
-	fine.log("Corefile Entrypoint", entryPoint);
-	return entryPoint;
     }
 
     /**
@@ -606,36 +363,10 @@ class LinuxCoreInfo {
 	return vdsoEntryPoint;
     }
 
-
-
-    // Private class to hold Dynamic Segment address tuple
-    private static class DynamicSegmentTuple {
-	long addr = 0;
-	long size = 0;
-	public DynamicSegmentTuple(long addr, long size) {
-	    this.addr = addr;
-	    this.size = size;
-	}
-    }
-
-    private static class Linkmap {
-	long l_addr = 0;
-	long l_dyn = 0;
-	long s_addr = 0;
-	String name = "";
-	Linkmap(long l_addr, long l_dyn, long s_addr, String name) {
-	    this.l_addr = l_addr;
-	    this.l_dyn = l_dyn;
-	    this.s_addr = s_addr;
-	    this.name = name;
-	}
-    }
-
-
     /**
-     * Find and create the core tasks.
+     * Find and create the core tasks; return the main task.
      */
-    void constructTasks(LinuxCoreProc proc) {
+    LinuxCoreTask constructTasks(LinuxCoreProc proc) {
 	// Two methods of whether Floating Point note data exists.  In
 	// userland generated core-dumps there is no way to test if
 	// floating point data operations have actually occurred, so
@@ -645,7 +376,7 @@ class LinuxCoreInfo {
 	// note data is written per thread by analyzing to see if that
 	// thread has performed Floating Point operations. If it has,
 	// it will write NT_FPREGSET, and if it hasn't it won't.
-    
+	LinuxCoreTask mainTask = null;
 	if (elfFPRegs.length == elfTasks.length) {
 	    // The number of NT_FPREGSET note objects is equal to the
 	    // the number of NT_PRSTATUS note objects, then no do not
@@ -656,8 +387,11 @@ class LinuxCoreInfo {
 		ElfPrXFPRegSet xregSet = null;
 		if (elfXFPRegs.length > 0)
 		    xregSet = elfXFPRegs[i];
-		new LinuxCoreTask(proc, elfTasks[i], elfFPRegs[i],
-				  xregSet, isa);
+		LinuxCoreTask task = new LinuxCoreTask(proc, elfTasks[i],
+						       elfFPRegs[i], xregSet,
+						       isa);
+		if (task.getTid() == proc.getPid())
+		    mainTask = task;
 	    }
 	} else {
 	    // Otherwise add only NT_FPREGSET data if pr_fpvalid is >
@@ -667,19 +401,25 @@ class LinuxCoreInfo {
 	    // correctly.
 	    int fpCount = 0;
 	    for (int i = 0; i < elfTasks.length; i++) {
+		LinuxCoreTask task;
 		if (elfTasks[i].getPrFPValid() > 0) {
 		    // xfpregsets accompany fp registers on a 1:1
 		    // basis but only on some architectures.
 		    ElfPrXFPRegSet xregSet = null;
 		    if (elfXFPRegs.length > 0)
 			xregSet = elfXFPRegs[fpCount];
-		    new LinuxCoreTask(proc, elfTasks[i],
-				      elfFPRegs[fpCount],
-				      xregSet, isa);
+		    task = new LinuxCoreTask(proc, elfTasks[i],
+					     elfFPRegs[fpCount],
+					     xregSet, isa);
 		    fpCount++;
-		} else
-		    new LinuxCoreTask(proc, elfTasks[i],  null, null, isa);
+		} else {
+		    task = new LinuxCoreTask(proc, elfTasks[i],  null, null,
+					     isa);
+		}
+		if (task.getTid() == proc.getPid())
+		    mainTask = task;
 	    }
 	}
+	return mainTask;
     }
 }

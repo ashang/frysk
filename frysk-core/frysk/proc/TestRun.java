@@ -41,12 +41,10 @@
 package frysk.proc;
 
 import frysk.testbed.TearDownFile;
-import frysk.testbed.ProcCounter;
 import frysk.testbed.TestLib;
-import frysk.testbed.StopEventLoopWhenProcRemoved;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
 import frysk.testbed.TaskSet;
 import frysk.testbed.TaskObserverBase;
-import frysk.sys.Pid;
 
 /**
  * Check that a program can be run to completion. A scratch file is
@@ -64,10 +62,6 @@ public class TestRun
   {
     TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
-
-    // Add an observer that counts the number of proc create
-    // events.
-    ProcCounter procCounter = new ProcCounter(Pid.get().intValue());
 
     // Observe TaskObserver.Attached events; when any occur indicate
     // that the curresponding task should continue.
@@ -93,13 +87,10 @@ public class TestRun
     assertRunUntilStop("run \"rm\" to entry for tid");
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcRemoved(createdObserver.proc);
+    new StopEventLoopWhenProcTerminated(createdObserver.proc);
 
     // Run the event loop, cap it at 5 seconds.
     assertRunUntilStop("run \"rm\" to exit");
-
-    assertEquals("processes added", 1, procCounter.added.size());
-    assertEquals("processes removed", 1, procCounter.removed.size());
     assertFalse("the file exists", tmpFile.stillExists());
   }
 
@@ -146,7 +137,7 @@ public class TestRun
     assertTrue("tmp file exists", tmpFile.stillExists());
 
     // Once the proc destroyed has been seen stop the event loop.
-    new StopEventLoopWhenProcRemoved(createdObserver.proc);
+    new StopEventLoopWhenProcTerminated(createdObserver.proc);
 
     // Unblock the attached task and resume the event loop. This
     // will allow the "rm" command to run to completion.

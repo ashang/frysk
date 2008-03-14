@@ -49,6 +49,8 @@
 #include "frysk/sys/proc/ProcBuilder.h"
 #include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/ProcessIdentifierFactory.h"
+#include "frysk/rsl/Log.h"
+#include "frysk/rsl/cni/Log.hxx"
 
 gnu::gcj::RawData*
 frysk::sys::proc::ProcBuilder::open (jint pid)
@@ -68,9 +70,11 @@ frysk::sys::proc::ProcBuilder::open (jint pid)
 }
 
 void
-frysk::sys::proc::ProcBuilder::scan (gnu::gcj::RawData* rawData)
+frysk::sys::proc::ProcBuilder::scan(gnu::gcj::RawData* rawData, jint pid,
+				    frysk::rsl::Log* warning)
 {
   DIR* proc = (DIR*) rawData;
+  int bad = 1; // something non-ve or 0.
 
   while (true) {
 
@@ -79,14 +83,27 @@ frysk::sys::proc::ProcBuilder::scan (gnu::gcj::RawData* rawData)
     if (dirent == NULL)
       break;
 
-    // Get the pid, skip if non-numeric.
+    // Scan the pid, skip if non-numeric.
     char* end = NULL;
     int id = strtol (dirent->d_name, &end, 10);
     if (end == dirent->d_name)
       continue;
 
-    build(frysk::sys::ProcessIdentifierFactory::create(id));
+    // Seems some kernels return a dirent containing bad (e.g., 0) or
+    // even random entries; report them and then throw an error.
+    if (bad <= 0) {
+      logf(warning, "/proc/%d/task contained bad pid: %d; skipping %d",
+	   (int)pid, bad, id);
+    } else if (id <= 0) {
+      bad = id;
+      logf(warning, "/proc/%d/task contains bad pid: %d", (int)pid, id);
+    } else {
+      build(frysk::sys::ProcessIdentifierFactory::create(id));
+    }
   }
+
+  if (bad <= 0)
+    throwRuntimeException("/proc/$$/task contains bad pid", "pid", bad);
 }
 
 void

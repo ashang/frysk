@@ -111,7 +111,7 @@ public class TestRuntimeIsa extends TestLib {
 
   public void testAttachedCreateChild() {
       SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-      Proc proc = ackProc.assertFindProcAndTasks();
+      Proc proc = ackProc.assertRunToFindProc();
       assertNotNull("child has an isa at start", proc.getMainTask().getISA());
       ackProc.assertSendAddForkWaitForAcks();
       Proc child = (Proc) proc.getChildren().iterator().next();
@@ -124,7 +124,7 @@ public class TestRuntimeIsa extends TestLib {
   public void testAttachedCreateAttachedChild ()
   {
     SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
 
     class ForkedObserver
         extends TaskObserverBase
@@ -157,7 +157,7 @@ public class TestRuntimeIsa extends TestLib {
   public void testAttachedCreateAttachedClone()
   {
     SlaveOffspring ackProc = SlaveOffspring.createAttachedChild();
-    Proc proc = ackProc.assertFindProcAndTasks();
+    Proc proc = ackProc.assertRunToFindProc();
 
     class ClonedObserver
         extends TaskObserverBase
@@ -189,7 +189,7 @@ public class TestRuntimeIsa extends TestLib {
 
     public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain() {
 	SlaveOffspring ackProc = SlaveOffspring.createChild();
-	Proc proc = ackProc.assertFindProcAndTasks();
+	Proc proc = ackProc.assertRunToFindProc();
 	Task task = proc.getMainTask();
 	AttachedObserver attacher = new AttachedObserver();
 	task.requestAddAttachedObserver(attacher);

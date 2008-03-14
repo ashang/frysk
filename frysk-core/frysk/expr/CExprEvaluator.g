@@ -85,6 +85,8 @@ header
     import frysk.value.SignedType;
     import frysk.value.UnsignedType;
     import frysk.value.FloatingPointType;
+    import frysk.value.PointerType;
+    import frysk.value.CharType;
     import frysk.value.Value;
     import frysk.expr.ExprSymTab;
     import inua.eio.ByteOrder;
@@ -102,6 +104,8 @@ options {
     ArithmeticType longType;
     ArithmeticType intType;
     ArithmeticType shortType;
+    CharType charType;
+    PointerType charPointerType;
     FloatingPointType doubleType;
     FloatingPointType floatType;
     private ExprSymTab exprSymTab;
@@ -111,11 +115,13 @@ options {
         shortType = new SignedType("short", ByteOrder.LITTLE_ENDIAN, 2);
         intType = new SignedType("int", ByteOrder.LITTLE_ENDIAN, 4);
         longType = new SignedType("long", ByteOrder.LITTLE_ENDIAN, exprSymTab.getWordSize());
-        floatType = new FloatingPointType("false", ByteOrder.LITTLE_ENDIAN, 4);
+        floatType = new FloatingPointType("float", ByteOrder.LITTLE_ENDIAN, 4);
         doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
+        charType = new CharType("char", ByteOrder.LITTLE_ENDIAN, 1, true);
+        charPointerType = new PointerType("char*", ByteOrder.LITTLE_ENDIAN, 
+                                          exprSymTab.getWordSize(), charType);
     }
 }
-
 
 primitiveType
     :   "boolean"
@@ -127,6 +133,10 @@ primitiveType
     |   "float"
     |   "double"
     ;
+        
+typeCast
+    :   primitiveType (STAR)?
+    ;        
 
 identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
@@ -345,7 +355,7 @@ expr returns [Value returnVar=null]
                         exprSymTab.getWordSize())
                         .bitWiseOrEqual(v1, v2);
         }
-    |   #(CAST pt:primitiveType v2=expr) { 
+    |   #(CAST pt:typeCast v2=expr) { 	         
 	    if(pt.getText().compareTo("long") == 0) {
 	      returnVar = longType.createValue(0);
               returnVar.assign(v2);
@@ -366,6 +376,13 @@ expr returns [Value returnVar=null]
 	      returnVar = floatType.createValue(0.0);
               returnVar.assign(v2);
 	      }
+	    // XXX: Implement casts for other pointer types as well
+	    else if(v2.getType().getName().compareTo("*") ==  0) {
+	      if (pt.getText().compareTo("char") == 0) {	  
+	        returnVar = new Value(charPointerType);
+            returnVar.assign(v2);
+	      }
+	    }  
 	    else returnVar = v2;
         }
     |   #(EXPR_LIST v1=expr) {

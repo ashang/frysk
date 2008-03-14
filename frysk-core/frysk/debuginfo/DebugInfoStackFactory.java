@@ -51,6 +51,13 @@ import frysk.stack.StackFactory;
  */
 public class DebugInfoStackFactory {
 
+    public static final PrintStackOptions DEFAULT = new PrintStackOptions();
+    static{
+	DEFAULT.setPrintParameters(true);
+	DEFAULT.setPrintFullpath(false);
+	DEFAULT.setPrintScopes(false);
+	DEFAULT.setPrintVirtualFrames(true);
+    }
     /**
      * Create an ABI stack backtrace, make the simpler debug-info
      * methods.

@@ -65,7 +65,8 @@ class MappingGuard
     private static final Map guardsForTask = new HashMap();
 
     private static abstract class MappingGuardB
-	implements TaskObserver
+	implements TaskObserver,
+		   TaskObserver.Terminating
     {
 	private final Map observers = new HashMap(); // HashMap<MappingObserver, Integer>
 	protected final Task task;
@@ -110,6 +111,7 @@ class MappingGuard
 
 	protected MappingGuardB(Task task) {
 	    this.task = task;
+	    task.requestAddTerminatingObserver(this);
 	}
 
     	public synchronized void addedTo (final Object observable)
@@ -160,6 +162,12 @@ class MappingGuard
 		    if (oit.action(ob) == Action.BLOCK)
 			task.bogusUseOfInternalBlockersVariableFIXME().add(ob);
 	    }
+	}
+
+	public Action updateTerminating(Task task, Signal signal, int value) {
+	    logger.log(Level.FINE, "The task is terminating.");
+	    updateMapping(task, true);
+	    return Action.CONTINUE;
 	}
 
 
@@ -319,27 +327,19 @@ class MappingGuard
 
     private static class DebugStateMappingGuard
 	extends MappingGuardB
-	implements TaskObserver.Code,
-		   TaskObserver.Terminating
+	implements TaskObserver.Code
     {
 	private long address;
 	public DebugStateMappingGuard(Task task, long address) {
 	    super(task);
 	    this.address = address;
 	    task.requestAddCodeObserver(this, address);
-	    task.requestAddTerminatingObserver(this);
 	}
 
 	public Action updateHit (Task task, long address)
 	{
 	    logger.log(Level.FINE, "Mapping guard hit.");
 	    updateMapping(task, false);
-	    return Action.CONTINUE;
-	}
-
-	public Action updateTerminating(Task task, Signal signal, int value) {
-	    logger.log(Level.FINE, "The task is terminating.");
-	    updateMapping(task, true);
 	    return Action.CONTINUE;
 	}
 
@@ -428,15 +428,21 @@ class MappingGuard
 	return new DebugStateMappingGuard(task, fin);
     }
 
-    public static void requestAddMappingObserver(Task task, MappingObserver observer) {
+    private static void requestAddMappingObserver(Task task, MappingObserver observer,
+						  boolean preferDebugstate) {
 	MappingGuardB guard;
 	synchronized (MappingGuard.class) {
 	    guard = (MappingGuardB)guardsForTask.get(task);
 	    if (guard == null) {
-		if (enableDebugstateObserver)
+		// Admitedly this is ugly, but I don't think it pays
+		// off to invent some fancy OO way of doing the same
+		// when we have just two guard types in hand.
+		if (enableDebugstateObserver && preferDebugstate)
 		    guard = setupDebugStateObserver(task);
 		if (guard == null && enableSyscallObserver)
 		    guard = new SyscallMappingGuard(task);
+		if (guard == null && enableSyscallObserver && !preferDebugstate)
+		    guard = setupDebugStateObserver(task);
 
 		if (guard != null)
 		    guardsForTask.put(task, guard);
@@ -445,6 +451,14 @@ class MappingGuard
 	    }
 	}
 	guard.addObserver(observer);
+    }
+
+    public static void requestAddMappingObserver(Task task, MappingObserver observer) {
+	requestAddMappingObserver(task, observer, true);
+    }
+
+    public static void requestAddSyscallBasedMappingObserver(Task task, MappingObserver observer) {
+	requestAddMappingObserver(task, observer, false);
     }
 
     public static void requestDeleteMappingObserver(Task task, MappingObserver observer) {

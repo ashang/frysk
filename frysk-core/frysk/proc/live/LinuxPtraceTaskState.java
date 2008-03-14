@@ -48,13 +48,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 /**
  * A Linux Task's State tracked using PTRACE.
  */
 
 class LinuxPtraceTaskState extends State {
-    private static final Log fine = Log.fine(LinuxPtraceTaskState.class);
+    private static final Log fine = LogFactory.fine(LinuxPtraceTaskState.class);
+    private static final Log warning = LogFactory.warning(LinuxPtraceTaskState.class);
 
     LinuxPtraceTaskState(String state) {
 	super(state);
@@ -800,12 +802,11 @@ class LinuxPtraceTaskState extends State {
 						Signal signal) {
 	    if (signal == Signal.STOP) {
 		Collection pendingObservations = task.pendingObservations;
-		// XXX Real stop event! - Do we want observers here?
-		// What state should the task be after being stopped?
 		if (pendingObservations.isEmpty()) {
-		    fine.log("Unhandled real stop event for task", task);
-		    System.out.println("Unhandled real stop event for task: "
-				       + task);
+		    // XXX Real stop event! - Do we want observers
+		    // here?  What state should the task be after
+		    // being stopped?
+		    warning.log("Unexpected stop event for task", task);
 		}
 		Iterator it = pendingObservations.iterator();
 		while (it.hasNext()) {

@@ -1,3 +1,76 @@
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestTaskObserver.java (testDetachExitingMainTask): Enabled
+	already fixed test for bug #3737.
+	(detachExitingTask): Likewise.
+
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java: Use StopEventLoopWhenProcTerminated; inline
+	StopEventLoopWhenProcRemoved.
+
+	* TestTaskClonedObserver.java: Use
+	StopEventLoopWhenProcTerminated.
+
+	* TestTaskSyscallObserver.java: Use
+	StopEventLoopWhenProcTerminated.
+
+	* TestTaskTerminateObserver.java: Do not use
+	StopEventLoopWhenProcRemoved.
+
+	* TestProcGet.java: Use StopEventLoopWhenProcTerminated.
+
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (observableTaskRemovedXXX): Delete.
+	(observableTaskAddedXXX): Delete.
+	* Proc.java: Update.
+	
+	* Host.java (observableProcAddedXXX): Delete.
+
+	* TestTaskObserverInstruction.java
+	(testFirstInstructionSteppingEngine()):	Delete; move to
+	frysk.stepping.TestFirstInstruction.
+
+	* TestTaskObserverInstructionSigReturn.java: Register tasks with
+	TearDownProcess.
+
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestInstructions.java: Add task to tearDown.
+	* TestTaskObserverInstruction.java: Ditto.
+
+	* TestRun.java: Update to match StopEventLoopWhenProcTerminated.
+	* TestTaskForkedObserver.java: Do not use ProcCounter or
+	StopEventLoopWhenProcRemoved.
+
+	* TestFindProc.java (ProcCounter): Delete.
+	(doFindProc(SlaveOffspring)): Replace doFindProc(SlaveOffspring,int).
+
+	* TestRun.java: Do not use ProcCounter.  Use
+	StopEventLoopWhenProcTerminates.
+
+	* StressTestAbandon.java: Update to match Offspring.
+	* TestProcTasksObserver.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestProcForceDetach.java: Ditto.
+	* TestMapGet.java: Ditto.
+	* TestExec.java: Ditto.
+	* TestAbandon.java: Ditto.
+	* StressAttachDetachRapidlyCloningMainTask.java: Ditto.
+
+	* TestMemory.java: Delete.
+
+	* SyscallExaminer.java: Delete.
+
+	* Proc.java (getMainTask()): Make abstract.
+
+2008-03-10  Andrew Cagney  <cagney@redhat.com>
+
+	* MemoryMap.java (pathnameOffset): Delete.
+	(pathnameLength): Delete.
+	* TestMapGet.java: Update.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (requestCreateAttachedProc(...)): Add File exe arg.

@@ -50,7 +50,7 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.rsl.LogOption;
 import frysk.rsl.Log;
-import frysk.dwfl.DwflCache;
+import frysk.sysroot.SysRootCache;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.proc.dead.LinuxExeFactory;
 import frysk.proc.Proc;
@@ -86,7 +86,7 @@ public class CommandlineParser {
 	    });
 	add(new Option("sysroot", "special root directory", "Path of special root directory") {
 		public void parsed(String arg) throws OptionException {
-		    parseSysroot(arg);
+		    parseSysRoot(arg);
 		}
 	    });
     }
@@ -133,8 +133,8 @@ public class CommandlineParser {
      * 
      * @param sysrootPath The special root directory
      */
-    public void parseSysroot(String sysrootPath) {
-    DwflCache.setDefaultSysroot(sysrootPath);
+    private void parseSysRoot(String sysrootPath) {
+	SysRootCache.setDefaultSysroot(sysrootPath);
     }
 
     public String[] parse(String[] args) {

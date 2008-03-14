@@ -103,16 +103,16 @@ public class Signal implements Comparable {
      * Deliver SIG to process PID.
      */
     public void kill(ProcessIdentifier pid) {
-	kill(pid.intValue(), this.intValue());
+	kill(pid.intValue(), this.intValue(), this.name);
     }
-    private static native void kill(int pid, int signum);
+    private static native void kill(int pid, int signum, String name);
     /**
      * Deliver SIGNAL to task (or thread) LWP.
      */
     public final void tkill(ProcessIdentifier lwp) {
-	tkill(lwp.intValue(), this.intValue());
+	tkill(lwp.intValue(), this.intValue(), this.name);
     }
-    private static native void tkill(int lwp, int signum);
+    private static native void tkill(int lwp, int signum, String name);
 
     /**
      * Momentarialy sets the signal handler for Sig to SIGIGN so that

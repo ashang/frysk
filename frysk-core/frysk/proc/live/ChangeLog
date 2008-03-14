@@ -1,3 +1,36 @@
+2008-03-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverBlocked.java: Use
+	StopEventLoopWhenProcTerminated.
+
+	* LinuxPtraceTaskState.java (warning): New; use instead of
+	System.out.println().
+
+2008-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java (addProc(ProcessIdentifier,LinuxPtraceProc)):
+	Do not notify observableProcAddedXXX.
+
+2008-03-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverCode.java: Do not use
+	Host.requestCreateAttachedProc and
+	StopEventLoopWhenChildProcRemoved.
+
+	* LinuxPtraceProcState.java: Use LogFactory.
+
+	* TestTaskObserverBlocked.java: Register offspring with
+	TearDownProcess.
+
+	* TestProcStopped.java: Update to match Offspring.
+	* TestRuntimeIsa.java: Ditto.
+
+	* LinuxPtraceProc.java (getMainTask()): Implement.
+
+2008-03-10  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java: Update to match MemoryMap.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java: Update to match Host.

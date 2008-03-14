@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,18 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.solib;
 
-public class ObjectDeclaratioinNotFoundException extends RuntimeException {
-
-    public ObjectDeclaratioinNotFoundException(String name) {
-	super("Object "+ name + " was not found");
+public class LinkMap {
+    public final long l_addr;
+    public final long l_dyn;
+    public final long s_addr;
+    public final String name;
+    LinkMap(long l_addr, long l_dyn, long s_addr, String name) {
+	this.l_addr = l_addr;
+	this.l_dyn = l_dyn;
+	this.s_addr = s_addr;
+	this.name = name;
     }
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-  
+    public String toString() {
+	return ("l_addr=0x" + Long.toHexString(l_addr)
+		+ ",dyn=0x" + Long.toHexString(l_dyn)
+		+ ",s_addr=0x" + Long.toHexString(s_addr)
+		+ ",name=" + name);
+    }
 }

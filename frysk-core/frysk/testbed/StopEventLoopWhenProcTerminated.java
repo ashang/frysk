@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,67 +39,54 @@
 
 package frysk.testbed;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Observer;
-import java.util.Observable;
-import frysk.proc.Task;
+import frysk.proc.Proc;
+import frysk.rsl.Log;
 import frysk.proc.Manager;
+import frysk.proc.TaskObserver;
+import frysk.proc.Action;
+import frysk.isa.signals.Signal;
+import frysk.proc.Task;
+import frysk.sys.ProcessIdentifier;
 
 /**
- * Observer that counts the number of tasks <em>frysk</em> reports
- * as added and removed to the system.. This automatically wires
- * itself in using the Proc's procAdded observer.
+ * An observer that stops the eventloop when the process with the
+ * given pid generates a terminated event.
  */
 
-public class TaskCounter {
-    /**
-     * List of tasks added.
-     */
-    public final List added = new LinkedList();
+public class StopEventLoopWhenProcTerminated extends TaskObserverBase
+    implements TaskObserver.Terminated
+{
+    private static final Log fine
+	= Log.fine(StopEventLoopWhenProcTerminated.class);
 
-    /**
-     * List of tasks removed.
-     */
-    public final List removed = new LinkedList();
+    public boolean terminated;
+    public Signal signal;
+    public int status;
 
-    /**
-     * Only count descendants of this process?
-     */
-    private boolean descendantsOnly;
-
-    /**
-     * Create a task counter that monitors task added and removed
-     * events. If descendantsOnly, limit the count to tasks
-     * belonging to descendant processes.
-     */
-    public TaskCounter (boolean descendantsOnly) {
-	this.descendantsOnly = descendantsOnly;
-	Manager.host.observableTaskAddedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Task task = (Task) obj;
-		    if (TaskCounter.this.descendantsOnly
-			&& ! TestLib.isDescendantOfMine(task.getProc()))
-			return;
-		    added.add(task);
-		}
-	    });
-	Manager.host.observableTaskRemovedXXX.addObserver(new Observer() {
-		public void update (Observable o, Object obj) {
-		    Task task = (Task) obj;
-		    if (TaskCounter.this.descendantsOnly
-			&& ! TestLib.isDescendantOfMine(task.getProc()))
-			return;
-		    removed.add(task);
-		}
-	    });
+    private Proc proc;
+    public String toString() {
+	return proc.toString();
     }
-	
-    /**
-     * Create a task counter that counts all task add and removed
-     * events.
-     */
-    public TaskCounter () {
-	this(false);
+
+    public StopEventLoopWhenProcTerminated(Proc proc) {
+	proc.getMainTask().requestAddTerminatedObserver(this);
+    }
+
+    public StopEventLoopWhenProcTerminated(ProcessIdentifier pid) {
+	this(TestLib.assertRunToFindProc(pid));
+    }
+
+    public StopEventLoopWhenProcTerminated(Offspring offspring) {
+	this(offspring.assertRunToFindProc());
+    }
+
+    public Action updateTerminated(Task task, Signal signal, int status) {
+	fine.log(this, "updateTerminated", task, "signal", signal, "status",
+		 status);
+	this.terminated = true;
+	this.signal = signal;
+	this.status = status;
+	Manager.eventLoop.requestStop();
+	return Action.CONTINUE;
     }
 }

@@ -40,6 +40,7 @@
 package frysk.sys;
 
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 /**
  * Wait for an event from either a process, task, or all processes and
@@ -55,7 +56,7 @@ public final class Wait {
 	// Seems that when calling a native static methods this isn't
 	// initialized, force it.
 	if (fine == null)
-	    fine = Log.fine(Wait.class);
+	    fine = LogFactory.fine(Wait.class);
 	return fine;
     }
     private static Log fine;
@@ -67,7 +68,7 @@ public final class Wait {
 	// Seems that when calling a native static methods this isn't
 	// initialized, force it.
 	if (finest == null)
-	    finest = Log.finest(Wait.class);
+	    finest = LogFactory.finest(Wait.class);
 	return finest;
     }
     private static Log finest;
