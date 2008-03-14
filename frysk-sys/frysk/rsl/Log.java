@@ -382,9 +382,9 @@ public final class Log {
 	    return;
 	prefix().print(p1).print(p2).suffix();
     }
+    // Disambiguate log(String,String) which could be either
+    // log(Object,String) or log(String,Object).
     public void log(String p1, String p2) {
-	// Needed to disambiguate log(String,String) which could be
-	// either log(Object,String) or log(String,Object).
 	log(p1, (Object)p2);
     }
 
@@ -416,10 +416,19 @@ public final class Log {
 	    return;
 	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
     }
+    public void log(String p1, Object p2, String p3, int p4) {
+	if (!logging)
+	    return;
+	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
+    }
     public void log(String p1, Object p2, String p3, Object p4) {
 	if (!logging)
 	    return;
 	prefix().print(p1).print(p2).print(p3).print(p4).suffix();
+    }
+    // Disambiguate log(String,String,String,String).
+    public void log(String p1, String p2, String p3, String p4) {
+	log(p1, (Object)p2, p3, (Object)p4);
     }
 
     // static 6 parameters

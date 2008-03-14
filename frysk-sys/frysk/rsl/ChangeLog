@@ -1,5 +1,8 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Log.java (log(String,String,String,String)): New.
+	* Log.java (log(String,Object,String,int)): New.
+
 	* TestLog.java (testDefault()): New.
 
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
