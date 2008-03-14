@@ -130,6 +130,8 @@ public class TestSymbol
 	symbolTest(5, "global_in_global", true, true);
     }
     public void testLocalInGlobal() {
+        if (unresolved(5941))
+            return;
 	symbolTest(6, "local_in_global", true, true);
     }
     public void testGlobalInLocal() {
@@ -147,9 +149,13 @@ public class TestSymbol
     }
 
     public void testNoSymbolAfterGlobal() {
+        if (unresolved(5941))
+            return;
 	symbolTest(11, unknown, false, false);
     }
     public void testNoSymbolAfterLocal() {
+        if (unresolved(5941))
+            return;
 	symbolTest(12, unknown, false, false);
     }
 
@@ -177,6 +183,8 @@ public class TestSymbol
 	symbolTest(19, "small_global_at_large_global", true, true);
     }
     public void testSmallLocalAtLargeGlobal() {
+        if (unresolved(5941))
+            return;
 	symbolTest(20, "small_local_at_large_global", true, true);
     }
     public void testSmallGlobalAtLargeLocal() {
@@ -187,9 +195,13 @@ public class TestSymbol
     }
 
     public void testAfterGlobalContiningSize0() {
+        if (unresolved(5941))
+            return;
 	symbolTest(23, unknown, false, false);
     }
     public void testAfterLocalContiningSize0() {
+        if (unresolved(5941))
+            return;
 	symbolTest(24, unknown, false, false);
     }
 }
