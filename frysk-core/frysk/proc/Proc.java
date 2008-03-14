@@ -50,7 +50,6 @@ import java.util.Observer;
 import java.util.Set;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
-import frysk.util.CountDownLatch;
 import frysk.event.Event;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
@@ -62,8 +61,6 @@ import frysk.rsl.Log;
 public abstract class Proc implements Comparable {
     private static final Log fine = Log.fine(Proc.class);
 
-    private CountDownLatch quitLatch;
-  
     /**
      * If known, due to the tracing of a fork, the Task that created
      * this process.
@@ -197,15 +194,6 @@ public abstract class Proc implements Comparable {
 	// FIXME: Should be handled by lower-level code.
 	ProcessIdentifier pid = ProcessIdentifierFactory.create(this.getPid());
 	Signal.KILL.kill(pid);
-	// Throw the countDown on the queue so that the command
-	// thread will wait until events provoked by Signal.kill()
-	// are handled.
-	this.quitLatch = new CountDownLatch(1);
-	Manager.eventLoop.add(new Event() {
-		public void execute() {
-		    quitLatch.countDown();
-		}
-	    });
     }
 
     /**
