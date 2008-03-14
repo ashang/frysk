@@ -1,3 +1,7 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* UnloadCommand.java: Do not call Host.remove(Proc).
+
 2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
 
 	* CLI.java (flushMessages): Make comment a javadoc comment.

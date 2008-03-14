@@ -200,7 +200,6 @@ public class LinuxPtraceHost extends LiveHost {
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?
 	    proc.performRemoval();
-	    remove(proc);
 	}
 	return procChanges;
     }

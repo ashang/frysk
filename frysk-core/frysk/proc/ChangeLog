@@ -1,5 +1,9 @@
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (observableProcRemovedXXX): Delete.
+	(remove(Proc)): Delete.
+	(ObservableXXX): Delete.
+
 	* TestExec.java (testTaskBlockExec()): Use
 	StopEventLoopWhenProcTerminated.
 

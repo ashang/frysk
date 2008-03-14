@@ -43,7 +43,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Observable; // XXX: Temporary.
 import frysk.rsl.Log;
 
 /**
@@ -84,14 +83,6 @@ public abstract class Host implements Comparable {
 	taskPool.values().removeAll(c);
     }
 	
-    /**
-     * XXX: Should not be public.
-     */
-    public void remove(Proc proc) {
-	fine.log(this, "remove Proc");
-	observableProcRemovedXXX.notify(proc);
-    }
-
     /**
      * Find a specifc process from its Id.
      */
@@ -158,27 +149,6 @@ public abstract class Host implements Comparable {
 				  template.getCmdLine(),
 				  attachedObserver);
     }					  
-
-    /**
-     * XXX: Temporary until .observable's are converted to
-     * .requestAddObserver.
-     */
-    public static class ObservableXXX extends Observable {
-	public void notify(Object o) {
-	    setChanged();
-	    notifyObservers(o);
-	}
-    }
-
-    /*
-     * An existing process has been removed.  Possible reasons include
-     * the process is no longer listed in the system process table
-     * (and presumably has exited).
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableProcRemovedXXX = new ObservableXXX();
 
     /**
      * Return the process corresponding to this running frysk instance
