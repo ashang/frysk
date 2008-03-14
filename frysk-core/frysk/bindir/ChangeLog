@@ -1,5 +1,10 @@
 2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
 
+	* fdebuginfo.xml: Fix ulink.
+	* fdebugrpm.xml: Likewise.
+
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
+
 	* fhpd.java (CommandLine.run): Make sure all messages are flushed
 	before first prompt.
 
