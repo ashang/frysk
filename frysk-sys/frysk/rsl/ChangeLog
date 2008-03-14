@@ -1,3 +1,7 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLog.java (testDefault()): New.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (prefixTimeAndPid()): For WARNING/INFO, include level.
