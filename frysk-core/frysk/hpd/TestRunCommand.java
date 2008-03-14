@@ -53,7 +53,7 @@ public class TestRunCommand extends TestLib {
     public void testRunCommand() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-	"Loaded executable file.*");
+	"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("run ",
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	try { Thread.sleep(1000); } catch (Exception e) {}
@@ -73,7 +73,7 @@ public class TestRunCommand extends TestLib {
 	    return;
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath() + "\n");
-	e.expect("Loaded executable file.*" + prompt);
+	e.expect("\\[0\\.0\\] Loaded executable file.*" + prompt);
 	e.send("run\n");
 	e.expect("Attached to process ([0-9]+).*");
 	e.expect("Running process ([0-9]+).*" + prompt);
@@ -91,7 +91,7 @@ public class TestRunCommand extends TestLib {
 	//try { Thread.sleep(1000); } catch (Exception e) {}
 	e.send("run\n");
 	e.expect(".*Killing process ([0-9])+.*");
-	e.expect("Loaded executable file.*");
+	e.expect("\\[0\\.0\\] Loaded executable file.*");
 	e.expect("Attached to process ([0-9])+.*");
 	e.expect("Running process ([0-9])+.*");
 	//e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*" +
@@ -106,7 +106,7 @@ public class TestRunCommand extends TestLib {
 	e = new HpdTestbed();
 	String[] param = { "-testing", "parameter2", "-g"};
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
-	"Loaded executable file.*");
+	"\\[0\\.0\\] Loaded executable file.*");
 	String parameters = "";
 	for (int i = 0; i < param.length; i++) {
 	    parameters = parameters + param[i] + " ";
@@ -157,9 +157,9 @@ public class TestRunCommand extends TestLib {
 	    return;
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
-	"Loaded executable file.*");
+	"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-	"Loaded executable file.*");
+	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 	"\\[1\\.0\\]\t\t0*\\t0.*");
 	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*Attached to process ([0-9]+).*" +
@@ -169,7 +169,7 @@ public class TestRunCommand extends TestLib {
 	//	"Running process ([0-9]+).*");
 	e.send("run\n");
 	e.expect("Killing process ([0-9]+).*");
-	e.expect("Loaded executable file.*");
+	e.expect("\\[1\\.0\\] Loaded executable file.*");
 	e.expect("Attached to process ([0-9]+).*");
 	e.expect("Running process ([0-9]+).*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[1\\.0\\]\t\t([0-9]+)\t([0-9]+).*" +

@@ -1,3 +1,10 @@
+2008-03-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* LoadCommand.java:  Add target set to output line.
+	* TestLoadCommand.java: Add test for above.
+	* TestRunCommand.java: Ditto.
+	* TestStartCommand.java: Ditto.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* UnloadCommand.java: Do not call Host.remove(Proc).

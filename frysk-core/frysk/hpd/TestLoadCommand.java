@@ -51,7 +51,7 @@ public class TestLoadCommand extends TestLib {
 	e = new HpdTestbed();
 	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
 		+ "\n");
-	e.expect("Loaded executable file.*");
+	e.expect("\\[0\\.0\\] Loaded executable file.*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
@@ -67,10 +67,10 @@ public class TestLoadCommand extends TestLib {
     public void testLoadStart() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
-		"Loaded executable file.*");
+		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
-		"Loaded executable file.*");
+		"\\[1\\.0] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 		"\\[1\\.0\\]\t\t0*\\t0.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
@@ -83,9 +83,9 @@ public class TestLoadCommand extends TestLib {
     public void testLoadRunRun() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-		"Loaded executable file.*");
+		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-		"Loaded executable file.*");
+		"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
@@ -103,9 +103,9 @@ public class TestLoadCommand extends TestLib {
     public void testLoadDisplay() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-		"Loaded executable file.*");
+		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
-		"Loaded executable file.*");
+		"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load", "Target set.*\\[0\\.0\\].*\\[1\\.0\\].*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
