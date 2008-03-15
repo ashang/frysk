@@ -96,7 +96,7 @@ public class DebugInfo {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
+	TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
 	if (bias == null)
 	    throw new RuntimeException("No symbol table is available.");
 	DwarfDie die = bias.die;
@@ -112,13 +112,13 @@ public class DebugInfo {
 		result.append("extern ");
 	    switch (varDie.getTag().hashCode()) {
             case DwTag.SUBPROGRAM_: {
-		Value value = typeEntry.getSubprogramValue(varDie);
+		Value value = typeFactory.getSubprogramValue(varDie);
 		result.append(value.getType().toPrint());
 		break;
             }
             case DwTag.TYPEDEF_:
             case DwTag.STRUCTURE_TYPE_: {
-		Type type = typeEntry.getType(varDie.getType());
+		Type type = typeFactory.getType(varDie.getType());
 		result.append(type.toPrint());
 		break;
             }
@@ -126,7 +126,7 @@ public class DebugInfo {
 		result.append(varDie + " " + varDie.getName());
 	    }
         } else {
-	    Type type = typeEntry.getType(varDie.getType());
+	    Type type = typeFactory.getType(varDie.getType());
 	    if (varDie.getAttrBoolean(DwAt.EXTERNAL))
 		result.append("extern ");
 

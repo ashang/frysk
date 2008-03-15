@@ -43,16 +43,12 @@
 
 package frysk.scopes;
 
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import lib.dwfl.DwarfDie;
 
 
-public class LexicalBlock extends Scope
-{
-
-  public LexicalBlock (DwarfDie die, TypeEntry typeEntry)
-  {
-    super(die, typeEntry);
-  }
-     
+public class LexicalBlock extends Scope {
+    public LexicalBlock(DwarfDie die, TypeFactory typeFactory) {
+	super(die, typeFactory);
+    }
 }

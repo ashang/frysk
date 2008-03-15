@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import frysk.value.ObjectDeclaration;
 import frysk.value.FunctionType;
 import frysk.value.Variable;
@@ -67,8 +67,8 @@ public class Subprogram extends Subroutine
     
     private String name;
     
-    public Subprogram(DwarfDie die, TypeEntry typeEntry) {
-	super(die, typeEntry);
+    public Subprogram(DwarfDie die, TypeFactory typeFactory) {
+	super(die, typeFactory);
 	this.name = die.getName();
 
 	parameters = new LinkedList();

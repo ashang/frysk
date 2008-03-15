@@ -47,7 +47,7 @@ import os,sys
 
 class j:
     def open(self):
-        self.name = "TestTypeEntry"
+        self.name = "TestTypeFactory"
     def write(self,str):
         print str
     def prologue(self,):
@@ -76,7 +76,7 @@ public class %s extends TestLib {
         Task task;
 	DwarfDie die;
 	DwarfDie[] allDies;
-	TypeEntry typeEntry;
+	TypeFactory typeFactory;
 	String testName;
 
 	TypeTestbed(String executable, String testName) {
@@ -87,7 +87,7 @@ public class %s extends TestLib {
 	    DwflDieBias bias = dwfl.getCompilationUnit(pc);
 	    die = bias.die;
 	    allDies = die.getScopes(pc - bias.bias);
-	    typeEntry = new TypeEntry(frame.getTask().getISA());
+	    typeFactory = new TypeFactory(frame.getTask().getISA());
 	    this.testName = testName;
 	}
 ''' % (self.name))
@@ -100,7 +100,7 @@ public class %s extends TestLib {
 	    if (varDie == null)
 		System.out.println("Error: Cannot find " + symbol);
 	    assertNotNull(varDie);
-	    varType = typeEntry.getType(varDie.getType());
+	    varType = typeFactory.getType(varDie.getType());
 	    assertNotNull(varType);
 	    // System.out.println("Expect: " + symbol + "\\n'" +
 	    //    expected + "'\\nGot:\\n'" + varType.toPrint());
@@ -175,7 +175,7 @@ if (len (sys.argv) == 1):
     usage()
 for t in sys.argv:
     if (t == "-help"):
-        print "Builds TestTypeEntry*.java from input files, using annotations"
+        print "Builds TestTypeFactory*.java from input files, using annotations"
         print "in the input files to describe the data type to be tested."
         print "e.g. Given:"
         print "static struct {"

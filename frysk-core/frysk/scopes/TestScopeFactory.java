@@ -42,7 +42,7 @@ package frysk.scopes;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.stack.Frame;
@@ -62,15 +62,15 @@ public class TestScopeFactory
       DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
       DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
 
-      TypeEntry typeEntry = new TypeEntry(frame.getTask().getISA());
+      TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
       
-      Scope scope1 = ScopeFactory.theFactory.getScope(scopes[0], typeEntry);
-      Scope scope2 = ScopeFactory.theFactory.getScope(scopes[1], typeEntry);
-      Scope scope3 = ScopeFactory.theFactory.getScope(scopes[2], typeEntry);
+      Scope scope1 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
+      Scope scope2 = ScopeFactory.theFactory.getScope(scopes[1], typeFactory);
+      Scope scope3 = ScopeFactory.theFactory.getScope(scopes[2], typeFactory);
       
-      Scope scope4 = ScopeFactory.theFactory.getScope(scopes[0], typeEntry);
-      Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1], typeEntry);
-      Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2], typeEntry);
+      Scope scope4 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
+      Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1], typeFactory);
+      Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2], typeFactory);
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
       assertTrue("InlinedSubroutine scope" , scope2 instanceof Subroutine && ((Subroutine)scope2).isInlined());

@@ -47,7 +47,7 @@ import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.LocationExpression;
 import frysk.debuginfo.PieceLocation;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import frysk.debuginfo.ValueUnavailableException;
 import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
@@ -99,8 +99,8 @@ public class Variable extends ObjectDeclaration{
 	fine.log(this, "Entering getType, ISA: ", isa);
 	
 	if(this.type == null){
-	    TypeEntry typeEntry = new TypeEntry(isa);
-	    this.type = typeEntry.getType(variableDie);
+	    TypeFactory typeFactory = new TypeFactory(isa);
+	    this.type = typeFactory.getType(variableDie);
 	}
 	
 	finest.log(this, "Leaving getType, type: ", type);

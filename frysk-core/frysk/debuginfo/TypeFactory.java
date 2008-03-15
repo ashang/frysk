@@ -78,17 +78,17 @@ import lib.dwfl.DwAttributeNotFoundException;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 
-public class TypeEntry {
-    static protected Log fine = LogFactory.fine(TypeEntry.class);
-    static protected Log finest = LogFactory.finest(TypeEntry.class);
+public class TypeFactory {
+    static protected Log fine = LogFactory.fine(TypeFactory.class);
+    static protected Log finest = LogFactory.finest(TypeFactory.class);
     private final ByteOrder byteorder;
     private final HashMap dieHash;
 
-    public TypeEntry(ISA isa) {
-	fine.log(this, "Creating TypeEntry, ISA: ", isa);
+    public TypeFactory(ISA isa) {
+	fine.log(this, "Creating TypeFactory, ISA: ", isa);
 	this.byteorder = isa.order();
 	this.dieHash = new HashMap();
-	finest.log(this, "Finished creating TypeEntry");
+	finest.log(this, "Finished creating TypeFactory");
     }
 
     private int getByteSize(DwarfDie die) {

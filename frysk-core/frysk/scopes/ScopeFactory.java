@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import java.util.HashMap;
 
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 
 public class ScopeFactory {
 
@@ -55,7 +55,7 @@ public class ScopeFactory {
 	this.scopes = new HashMap();
     }
 
-    public Scope getScope(DwarfDie die, TypeEntry typeEntry) {
+    public Scope getScope(DwarfDie die, TypeFactory typeFactory) {
 	// this uses the object as a key so if 
 	// a second DwarfDie object is created that refers
 	// to the same underlying die it will not match.
@@ -66,22 +66,22 @@ public class ScopeFactory {
  	Scope scope = (Scope) scopes.get(die);
 	
 	if (scope == null) {
-	    scope = createScope(die, typeEntry);
+	    scope = createScope(die, typeFactory);
 	    this.scopes.put(die, scope);
 	}
 	return scope;
     }
 
-    private Scope createScope(DwarfDie die, TypeEntry typeEntry) {
+    private Scope createScope(DwarfDie die, TypeFactory typeFactory) {
 
 	switch (die.getTag().hashCode()) {
 	
 	case DwTag.INLINED_SUBROUTINE_:
 	case DwTag.SUBPROGRAM_:
-	    return new Subprogram(die, typeEntry);
+	    return new Subprogram(die, typeFactory);
 
 	case DwTag.LEXICAL_BLOCK_:
-	    return new LexicalBlock(die, typeEntry);
+	    return new LexicalBlock(die, typeFactory);
 	case DwTag.COMPILE_UNIT_:
 	case DwTag.MODULE_:
 	case DwTag.WITH_STMT_:
@@ -90,7 +90,7 @@ public class ScopeFactory {
 	case DwTag.ENTRY_POINT_:
 	case DwTag.NAMESPACE_:
 	case DwTag.IMPORTED_UNIT_:
-	    return new Scope(die, typeEntry);
+	    return new Scope(die, typeFactory);
 	default:
 	    throw new IllegalArgumentException("The given die ["+die + ": " + die.getTag()+"]is not a scope die");
 	}
