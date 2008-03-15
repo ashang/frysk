@@ -39,6 +39,10 @@
 
 package frysk.proc.dead;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import frysk.rsl.Log;
 
 /**
@@ -79,5 +83,32 @@ class InterpreterFactory {
 	    fine.log("interpreter", i, "is", interpreter[i]);
 	}
 	return interpreter;
+    }
+
+    private static String firstLine(File file) {
+	String line = null;
+	BufferedReader reader = null;
+	try {
+	    reader = new BufferedReader(new FileReader(file));
+	    line = reader.readLine();
+	    reader.close();
+	} catch (IOException io) {
+	    if (reader != null) {
+		try {
+		    reader.close();
+		} catch (IOException e) {
+		    // don't care
+		}
+	    }
+	}
+	return line;
+    }
+
+    static String[] parse(File file, String[] args) {
+	String line = firstLine(file);
+	if (line != null)
+	    return parse(line, args);
+	else
+	    return null;
     }
 }

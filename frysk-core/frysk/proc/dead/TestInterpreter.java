@@ -40,6 +40,7 @@
 package frysk.proc.dead;
 
 import frysk.junit.TestCase;
+import frysk.config.Config;
 
 /**
  * Test the interpreter parser.
@@ -86,6 +87,15 @@ public class TestInterpreter extends TestCase {
 	assertEquals("args",
 		     new String[] { "program", "arg", "script", "param" },
 		     InterpreterFactory.parse("#!  program  arg  ",
+					      new String[] {
+						  "script", "param"
+					      }));
+    }
+
+    public void testFile() {
+	assertEquals("args",
+		     new String[] { "/bin/sh", "script", "param" },
+		     InterpreterFactory.parse(Config.getBinFile("fdebugrpm"),
 					      new String[] {
 						  "script", "param"
 					      }));
