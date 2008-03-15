@@ -39,10 +39,8 @@
 
 package frysk.proc;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
@@ -195,7 +193,6 @@ public abstract class Proc implements Comparable {
     public void requestAbandon() {
 	fine.log(this, "abandon");
 	performDetach();
-	observations.clear();
     }
 
     /**
@@ -221,38 +218,6 @@ public abstract class Proc implements Comparable {
     public abstract void requestRefresh();
 
     protected abstract void performDetach();
-
-    /**
-     * The set of observations that currently apply to this task.
-     * Note that this is a Collection that may contain the same
-     * Observer object multiple times (for possible different
-     * observations).
-     */
-    private Collection observations = new LinkedList();
-
-    public boolean addObservation(Object o) {
-	return observations.add(o);
-    }
-
-    public boolean removeObservation(Object o) {
-	return observations.remove(o);
-    }
-
-    public int observationsSize() {
-	return observations.size();
-    }
-
-    public Iterator observationsIterator() {
-	return observations.iterator();
-    }
-
-    public void requestUnblock(TaskObserver observerArg) {
-	Iterator iter = getTasks().iterator();
-	while (iter.hasNext()) {
-	    Task task =(Task) iter.next();
-	    task.requestUnblock(observerArg);
-	}
-    }
 
     /**
      * Table of this processes child processes.

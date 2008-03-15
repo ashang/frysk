@@ -1,5 +1,12 @@
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProc.java (observations): Move from Proc.
+	(addObservation(Object)): Ditto.
+	(removeObservation(Object)): Ditto.
+	(observationsSize(Object)): Ditto.
+	(observationsIterator(Object)): Ditto.
+	(requestUnblock(Object)): Ditto.
+
 	* LiveTask.java: Update to match Task.java.
 	* LinuxPtraceTask.java: Ditto.
 

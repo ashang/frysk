@@ -1,5 +1,12 @@
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (observations): Move to LinuxPtraceProc.
+	(addObservation(Object)): Ditto.
+	(removeObservation(Object)): Ditto.
+	(observationsSize(Object)): Ditto.
+	(observationsIterator(Object)): Ditto.
+	(requestUnblock(Object)): Ditto.
+	
 	* Proc.java (creator): Delete.
 	(Proc(int,Proc,Host)): Replace Proc(int,Proc,Host,Task).
 
