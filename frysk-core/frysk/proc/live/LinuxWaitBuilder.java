@@ -125,10 +125,10 @@ class LinuxWaitBuilder implements WaitBuilder {
         // what happened. Note that hot on the heels of this event is
         // a clone.stopped event, and the clone Task must be created
         // before that event arrives.
-        LinuxPtraceTask task = get(pid, "cloneEvent");
+        LinuxPtraceTask cloningTask = get(pid, "cloneEvent");
         // Create an attached, and running, clone of TASK.
-        LinuxPtraceTask clone = new LinuxPtraceTask(task, clonePid);
-        task.processClonedEvent(clone);
+        LinuxPtraceTask clonedTask = new LinuxPtraceTask(cloningTask, clonePid);
+        cloningTask.processClonedEvent(clonedTask);
 	attemptDeliveringFsckedKernelEvents();
     }
 
@@ -138,13 +138,13 @@ class LinuxWaitBuilder implements WaitBuilder {
         // happened. Note that hot on the heels of this fork event is
         // the child's stop event, the fork Proc must be created
         // before that event arrives.
-        LinuxPtraceTask task = get(pid, "forkEvent");
+        LinuxPtraceTask forkingTask = get(pid, "forkEvent");
         // Create an attached and running fork of TASK.
-        LinuxPtraceProc forkProc = new LinuxPtraceProc(task, fork);
-        // The main task.
-        Task forkTask;
-	forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
-        task.processForkedEvent(forkTask);
+        LinuxPtraceProc forkedProc = new LinuxPtraceProc(forkingTask, fork);
+        // The forked proc's only and main task.
+        Task forkedTask = new LinuxPtraceTask(forkingTask, forkedProc,
+					      (TaskObserver.Attached) null);
+        forkingTask.processForkedEvent(forkedTask);
 	attemptDeliveringFsckedKernelEvents ();
     }
     
