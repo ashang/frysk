@@ -62,12 +62,6 @@ public abstract class Proc implements Comparable {
     private static final Log fine = Log.fine(Proc.class);
 
     /**
-     * If known, due to the tracing of a fork, the Task that created
-     * this process.
-     */
-    final Task creator;
-
-    /**
      * XXX: This should not be public.
      */
     public Proc parent;
@@ -142,11 +136,10 @@ public abstract class Proc implements Comparable {
      * Create a new Proc skeleton. Since PARENT could be NULL,
      * explicitly specify the HOST.
      */
-    private Proc(int pid, Proc parent, Host host, Task creator) {
+    private Proc(int pid, Proc parent, Host host) {
 	this.host = host;
 	this.pid = pid;
 	this.parent = parent;
-	this.creator = creator;
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add(this);
@@ -157,7 +150,7 @@ public abstract class Proc implements Comparable {
      * NULL, explicitly specify the HOST.
      */
     protected Proc(Host host, Proc parent, int pid) {
-	this(pid, parent, host, null);
+	this(pid, parent, host);
 	fine.log(this, "new - create unattached running proc");
     }
 
@@ -171,8 +164,8 @@ public abstract class Proc implements Comparable {
      * a Task, while it has the Observable, it doesn't have the
      * containing proc.
      */
-    protected Proc(Task task, int fork) {
-	this(fork, task.getProc(), task.getProc().getHost(), task);
+    protected Proc(Task forkingTask, int fork) {
+	this(fork, forkingTask.getProc(), forkingTask.getProc().getHost());
 	fine.log(this, "new - create attached running proc");
     }
 
