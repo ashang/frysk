@@ -1,5 +1,11 @@
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* InterpreterFactory.java: Convert IOException into RuntimeException.
+	* TestLinuxExe.java (testScript()): New.
+	* LinuxExeFactory.java (createInterpreterProc(File,String[])): New.
+	(createElfProc(File,String[])): New.
+	(createProc(File,String[])): Use.
+	
 	* InterpreterFactory.java (parse(File,String[])): New.
 	* TestInterpreter.java (testFile()): New.
 

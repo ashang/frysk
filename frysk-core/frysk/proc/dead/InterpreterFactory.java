@@ -100,6 +100,7 @@ class InterpreterFactory {
 		    // don't care
 		}
 	    }
+	    throw new RuntimeException(io.getMessage());
 	}
 	return line;
     }

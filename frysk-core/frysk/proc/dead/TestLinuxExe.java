@@ -103,4 +103,12 @@ public class TestLinuxExe extends TestLib {
 	    });
 	assertRunUntilStop("find proc");
     }
+
+    public void testScript() {
+	Proc proc = LinuxExeFactory.createProc(new String[] {
+		Config.getBinFile("fdebugrpm").getPath(),
+		"arg"
+	    });
+	assertEquals("exe", "/bin/sh", proc.getExe());
+    }
 }
