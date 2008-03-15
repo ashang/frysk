@@ -1,3 +1,10 @@
+2008-03-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (creator): Delete.
+	(getCreator()): Delete.
+	(Task(int,Proc)): Replace Task(int,Proc,Task).
+	(Task(Proc)): Replace Task(Proc,TaskObserver.Attached).
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java (quitLatch): Delete.

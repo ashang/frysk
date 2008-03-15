@@ -1,5 +1,8 @@
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LiveTask.java: Update to match Task.java.
+	* LinuxPtraceTask.java: Ditto.
+
 	* LinuxPtraceTask.java (LinuxPtraceTask(LinuxPtraceTask,
 	LinuxPtraceProc,Attached)): Add LinuxPtraceTask parameter.	
 	(notifyClonedOffspring(), notifyForkedOffspring()): Simplify.

@@ -106,7 +106,7 @@ public class LinuxPtraceTask extends LiveTask {
     public LinuxPtraceTask(LinuxPtraceTask forkingTask,
 			   LinuxPtraceProc proc,
 			   TaskObserver.Attached attached) {
-	super(proc, attached);
+	super(proc);
 	this.creator = forkingTask;
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	((LinuxPtraceProc)proc).addTask(this);
