@@ -1,5 +1,11 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcObserver.java (ProcAction): Move to ...
+	* ProcBlockObserver.java: ... here; new interface.
+	* StressTestAbandon.java: Update.
+	* ProcBlockAction.java: Update.
+	* TestProcForceDetach.java: Update.
+
 	* ProcCoreAction.java: Delete.
 
 	* HostObserver.java: Delete.

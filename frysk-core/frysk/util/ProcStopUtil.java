@@ -44,7 +44,7 @@ import frysk.event.ProcEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.util.CommandlineParser;
 import gnu.classpath.tools.getopt.Option;
@@ -124,9 +124,7 @@ public class ProcStopUtil {
 	}
     }
     
-    private static class UtilAction 
-    implements ProcObserver.ProcAction 
-    {
+    private static class UtilAction implements ProcBlockObserver {
 	protected Proc proc;
 	private Event event;
 

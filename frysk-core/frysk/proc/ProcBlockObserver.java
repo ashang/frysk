@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,33 +41,23 @@
 package frysk.proc;
 
 /**
- * Interface for receiving updates on {@link frysk.proc.Proc}.
+ * An interface perform a one time check of all tasks while each is in
+ * the blocked state.
  */
-public interface ProcObserver
-    extends Observer
-{
-
-  /**
-   * Called to deliver a list of existing tasks to the client.
-   */
-  void existingTask (Task task);
-
-  /**
-   * An interface for clients to correctly know about all tasks of a Proc.
-   */
-  public interface ProcTasks
-      extends ProcObserver
-  {
+public interface ProcBlockObserver extends Observer {
 
     /**
-     * Called when the observed process clones a new task.
+     * Called to deliver a list of existing tasks to the client.
      */
-    void taskAdded (Task task);
+    void existingTask (Task task);
 
     /**
-     * Called when one of the tasks of a process exits.
+     * Called when all the tasks have been handled.
      */
-    void taskRemoved (Task task);
-
-  }
+    void allExistingTasksCompleted();
+      
+    /**
+     * Called when attempting to bind to a specific task fails.
+     */
+    void taskAddFailed(Object task, Throwable w);
 }

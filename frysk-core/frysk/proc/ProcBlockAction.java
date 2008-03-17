@@ -61,7 +61,7 @@ import frysk.proc.dead.LinuxCoreFactory;
 public class ProcBlockAction {
     private static final Log fine = Log.fine(ProcBlockAction.class);
 
-  private ProcObserver.ProcAction action;
+    private ProcBlockObserver action;
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
 
   private boolean isMainTaskAdded = false;
@@ -140,7 +140,7 @@ public class ProcBlockAction {
      * 
      * @param theProc a non-null Process.
      */
-    public ProcBlockAction(Proc theProc, ProcObserver.ProcAction action) {
+    public ProcBlockAction(Proc theProc, ProcBlockObserver action) {
 	fine.log(this, "new");
 	proc = theProc;
 	this.action = action;

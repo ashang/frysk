@@ -51,12 +51,12 @@ import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.stack.StackFactory;
 import frysk.sys.Signal;
 
-public abstract class StacktraceAction implements ProcObserver.ProcAction {
+public abstract class StacktraceAction implements ProcBlockObserver {
     private static final Log fine = Log.fine(StacktraceAction.class);
 
   public void addedTo (Object observable)

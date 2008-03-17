@@ -44,7 +44,7 @@ import frysk.proc.TaskAttachedObserverXXX;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockObserver;
 import lib.dwfl.Dwfl;
 import java.util.Iterator;
 import lib.dwfl.DwflModule;
@@ -622,7 +622,7 @@ public class TestLinuxCore extends TestLib {
     /**
      * Apply a core-file to a proc-block-action.
      */
-    private void actionCoreProc(Proc proc, ProcObserver.ProcAction action) {
+    private void actionCoreProc(Proc proc, ProcBlockObserver action) {
 	for (Iterator i = proc.getTasks().iterator(); i.hasNext(); ) {
 	    Task task = (Task) i.next();
 	    action.existingTask(task);

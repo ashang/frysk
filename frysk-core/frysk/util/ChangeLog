@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* StacktraceAction.java: Implement ProcBlockObserver.
+	* ProcStopUtil.java (UtilAction): Ditto.
+
 	* TestStackTraceAction.java (testCore()): Delete; tested by core
 	code.
 

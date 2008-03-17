@@ -50,7 +50,7 @@ import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.ProcBlockAction;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
@@ -146,7 +146,7 @@ public class TestProcStopped extends TestLib {
 	assertRunUntilStop("testRunningAttached");
     }
 
-    public class MyTester implements ProcObserver.ProcAction {   
+    public class MyTester implements ProcBlockObserver {   
 	public void existingTask(Task task) {
 	}
 	public void deletedFrom(Object observable) {

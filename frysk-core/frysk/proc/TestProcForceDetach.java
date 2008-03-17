@@ -79,42 +79,25 @@ public class TestProcForceDetach
 	requestRemove(ackProc, 3);
     }
 
-  class MyProcBlockAction
-      implements ProcObserver.ProcAction
-  {
-    private Proc proc;
-    
-    public MyProcBlockAction (Proc theProc)
-    {
-      this.proc = theProc;
-    }
-
-    public void existingTask (Task task)
-    {
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+    private class MyProcBlockAction implements ProcBlockObserver {
+	private Proc proc;
+	public MyProcBlockAction(Proc theProc) {
+	    this.proc = theProc;
+	}
+	public void existingTask(Task task) {
+	}
+	public void deletedFrom(Object observable) {
+	}
+	public void allExistingTasksCompleted() {
+	    proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+	}
+	public void addFailed(Object observable, Throwable w) {
+	    fail("Proc add failed: " + w.getMessage());
+	}
+	public void addedTo(Object observable) {
+	}
+	public void taskAddFailed(Object task, Throwable w) {
+	}
 
     }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      fail("Proc add failed: " + w.getMessage());
-    }
-
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
-
-  }
 }

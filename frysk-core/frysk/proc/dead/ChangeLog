@@ -1,5 +1,7 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLinuxCore.java: Use ProcBlockAction.
+	
 	* TestLinuxCore.java (actionCoreProc()): New; replace
 	ProcCoreAction.
 

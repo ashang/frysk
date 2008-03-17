@@ -1,5 +1,7 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStopped.java: Use ProcBlockObserver.
+
 	* LinuxPtraceHost.java: Update; using TaskAttachedObserverXXX.
 	* TestTaskObserverCode.java: Ditto.
 	* TestTaskObserverBlocked.java: Ditto.

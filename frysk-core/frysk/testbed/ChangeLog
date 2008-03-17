@@ -1,5 +1,7 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* CoredumpAction.java: Extend ProcBlockObserver.
+
 	* OffspringType.java: Update; using TaskAttachedObserverXXX.
 
 2008-03-14  Andrew Cagney  <cagney@redhat.com>

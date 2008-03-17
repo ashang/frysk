@@ -48,7 +48,7 @@ import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.sys.Signal;
 import frysk.isa.corefiles.LinuxElfCorefile;
@@ -63,7 +63,7 @@ import frysk.isa.corefiles.LinuxElfCorefileFactory;
  * 
  */
 
-public class CoredumpAction implements ProcObserver.ProcAction {
+public class CoredumpAction implements ProcBlockObserver {
     private static final Log fine = Log.fine(CoredumpAction.class);
 
     private String filename = "core";

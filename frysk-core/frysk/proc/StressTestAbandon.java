@@ -48,40 +48,27 @@ public class StressTestAbandon
     extends TestLib
 {
   
-  class Action implements ProcObserver.ProcAction
-  {
-    private Proc proc;
-
-    public Action(Proc proc)
-    {
-      this.proc = proc;
-    }
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
-    }
-
-    public void existingTask (Task task)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-    }
-
-    public void addedTo (Object observable)
-    {
+    private class Action implements ProcBlockObserver {
+	private Proc proc;
+	public Action(Proc proc) {
+	    this.proc = proc;
+	}
+	public void allExistingTasksCompleted() {
+	    proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+	}
+	public void existingTask(Task task) {
+	}
+	public void addFailed(Object observable, Throwable w) {
+	}
+	public void addedTo(Object observable) {
+	}
+	public void deletedFrom(Object observable) {
+	}
+	public void taskAddFailed(Object task, Throwable w) {
+	}
+	
     }
 
-    public void deletedFrom (Object observable)
-    {
-    }
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
-    
-  }
     public void testStressAbandon () {
 	Proc proc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(99)
