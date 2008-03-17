@@ -125,6 +125,9 @@ public class TestLog extends TestLib {
 	assertTrue("NONE < FINE", Level.NONE.compareTo(Level.FINE) < 0);
 	assertTrue("FINE > NONE", Level.FINE.compareTo(Level.NONE) > 0);
 	assertTrue("NONE == NONE", Level.NONE.compareTo(Level.NONE) == 0);
-	assertEquals("DEFAULT", Level.DEFAULT, Level.WARNING);
+    }
+
+    public void testDefault() {
+	assertEquals("DEFAULT", Level.DEFAULT, Level.INFO);
     }
 }

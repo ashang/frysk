@@ -1,3 +1,35 @@
+2008-03-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java (observations): Move from Proc.
+	(addObservation(Object)): Ditto.
+	(removeObservation(Object)): Ditto.
+	(observationsSize(Object)): Ditto.
+	(observationsIterator(Object)): Ditto.
+	(requestUnblock(Object)): Ditto.
+
+	* LiveTask.java: Update to match Task.java.
+	* LinuxPtraceTask.java: Ditto.
+
+	* LinuxPtraceTask.java (LinuxPtraceTask(LinuxPtraceTask,
+	LinuxPtraceProc,Attached)): Add LinuxPtraceTask parameter.	
+	(notifyClonedOffspring(), notifyForkedOffspring()): Simplify.
+	* LinuxPtraceHost.java: Update.
+	* LinuxWaitBuilder.java (forkEvent(ProcessIdentifier,ProcessIdentifier))
+	(cloneEvent(ProcessIdentifier,ProcessIdentifier)): Update; clean-up.
+
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProcState.java: Update to match Proc.
+
+	* LinuxPtraceHost.java: Do not call Host.remove(Proc).
+	* LinuxPtraceTaskState.java: Ditto.
+
+	* LinuxPtraceTaskState.java: Don't remove non-exec tasks; already
+	deleted.
+	* LinuxWaitBuilder.java (execEvent(ProcessIdentifier)): Kill off
+	non-exec tasks.
+	* LinuxPtraceProc.java (getAllTasks()): New.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverBlocked.java: Use

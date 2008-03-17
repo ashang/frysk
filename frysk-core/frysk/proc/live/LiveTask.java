@@ -42,7 +42,6 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import frysk.proc.Task;
 import frysk.proc.Proc;
-import frysk.proc.TaskObserver.Attached;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 
@@ -71,8 +70,8 @@ abstract class LiveTask extends Task {
     /**
      * New attached child.
      */
-    LiveTask(LiveProc proc, Attached attached) {
-	super(proc, attached);
+    LiveTask(LiveProc proc) {
+	super(proc);
 	tid = ProcessIdentifierFactory.create(proc.getPid());
     }
 

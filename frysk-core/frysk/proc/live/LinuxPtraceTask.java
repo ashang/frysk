@@ -74,12 +74,14 @@ import frysk.rsl.Log;
 
 public class LinuxPtraceTask extends LiveTask {
     private static final Log fine = Log.fine(LinuxPtraceTask.class);
+    private final LinuxPtraceTask creator;
 
     /**
      * Create a new unattached Task.
      */
     public LinuxPtraceTask(Proc proc, ProcessIdentifier pid) {
 	super(proc, pid);
+	this.creator = null; // not known.
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	((LinuxPtraceProc)proc).addTask(this);
 	newState = LinuxPtraceTaskState.detachedState();
@@ -88,20 +90,24 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * Create a new attached clone of Task.
      */
-    public LinuxPtraceTask(Task task, ProcessIdentifier clone) {
-	// XXX: shouldn't need to grub around in the old task's state.
-	super(task, clone);
+    public LinuxPtraceTask(LinuxPtraceTask cloningTask,
+			   ProcessIdentifier clone) {
+	super(cloningTask, clone);
+	this.creator = cloningTask;
 	((LinuxPtraceHost)getProc().getHost()).putTask(tid, this);
-	((LinuxPtraceProc)task.getProc()).addTask(this);
-	newState = LinuxPtraceTaskState.clonedState(((LinuxPtraceTask)task).getState ());
+	((LinuxPtraceProc)cloningTask.getProc()).addTask(this);
+	// XXX: shouldn't need to grub around in the old task's state.
+	newState = LinuxPtraceTaskState.clonedState(cloningTask.getState());
 	this.watchpoints = new WatchpointAddresses(this);
     }
     /**
      * Create a new attached main Task of Proc.
      */
-    public LinuxPtraceTask(LinuxPtraceProc proc,
+    public LinuxPtraceTask(LinuxPtraceTask forkingTask,
+			   LinuxPtraceProc proc,
 			   TaskObserver.Attached attached) {
-	super(proc, attached);
+	super(proc);
+	this.creator = forkingTask;
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	((LinuxPtraceProc)proc).addTask(this);
 	newState = LinuxPtraceTaskState.mainState();
@@ -516,8 +522,8 @@ public class LinuxPtraceTask extends LiveTask {
      */
     int notifyClonedOffspring() {
 	fine.log(this, "notifyClonedOffspring");
-	LinuxPtraceTask creator = (LinuxPtraceTask)this.getCreator();
-	for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();) {
+	for (Iterator i = creator.clonedObservers.iterator();
+	     i.hasNext();) {
 	    TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
 	    if (observer.updateClonedOffspring(creator, this) == Action.BLOCK) {
 		blockers.add(observer);
@@ -616,8 +622,8 @@ public class LinuxPtraceTask extends LiveTask {
      * created using fork, is sitting at the first instruction.
      */
     int notifyForkedOffspring() {
-	LinuxPtraceTask creator = (LinuxPtraceTask)this.getCreator();
-	for (Iterator i = creator.forkedObservers.iterator(); i.hasNext();) {
+	for (Iterator i = creator.forkedObservers.iterator();
+	     i.hasNext();) {
 	    TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
 	    if (observer.updateForkedOffspring(creator, this) == Action.BLOCK) {
 		blockers.add(observer);

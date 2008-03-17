@@ -41,7 +41,7 @@ package frysk.scopes;
 
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import frysk.value.EnumType;
 import frysk.value.ObjectDeclaration;
 
@@ -51,14 +51,14 @@ public class Enumeration {
     DwarfDie die;
     EnumType enumType;
     
-    Enumeration(DwarfDie die, TypeEntry typeEntry){
+    Enumeration(DwarfDie die, TypeFactory typeFactory){
 	if(die.getTag() != DwTag.ENUMERATION_TYPE){
 	    throw new RuntimeException("Given die is not of type ENUMERATION_TYPE");
 	}
 	
 	this.die = die;
 	
-	this.enumType = (EnumType) typeEntry.getType(die);
+	this.enumType = (EnumType) typeFactory.getType(die);
 	
     }
     

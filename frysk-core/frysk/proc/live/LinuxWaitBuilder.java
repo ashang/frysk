@@ -39,6 +39,8 @@
 
 package frysk.proc.live;
 
+import java.util.Set;
+import java.util.Iterator;
 import frysk.event.Event;
 import frysk.sys.Signal;
 import frysk.sys.WaitBuilder;
@@ -123,10 +125,10 @@ class LinuxWaitBuilder implements WaitBuilder {
         // what happened. Note that hot on the heels of this event is
         // a clone.stopped event, and the clone Task must be created
         // before that event arrives.
-        LinuxPtraceTask task = get(pid, "cloneEvent");
+        LinuxPtraceTask cloningTask = get(pid, "cloneEvent");
         // Create an attached, and running, clone of TASK.
-        LinuxPtraceTask clone = new LinuxPtraceTask(task, clonePid);
-        task.processClonedEvent(clone);
+        LinuxPtraceTask clonedTask = new LinuxPtraceTask(cloningTask, clonePid);
+        cloningTask.processClonedEvent(clonedTask);
 	attemptDeliveringFsckedKernelEvents();
     }
 
@@ -136,13 +138,13 @@ class LinuxWaitBuilder implements WaitBuilder {
         // happened. Note that hot on the heels of this fork event is
         // the child's stop event, the fork Proc must be created
         // before that event arrives.
-        LinuxPtraceTask task = get(pid, "forkEvent");
+        LinuxPtraceTask forkingTask = get(pid, "forkEvent");
         // Create an attached and running fork of TASK.
-        LinuxPtraceProc forkProc = new LinuxPtraceProc(task, fork);
-        // The main task.
-        Task forkTask;
-	forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
-        task.processForkedEvent(forkTask);
+        LinuxPtraceProc forkedProc = new LinuxPtraceProc(forkingTask, fork);
+        // The forked proc's only and main task.
+        Task forkedTask = new LinuxPtraceTask(forkingTask, forkedProc,
+					      (TaskObserver.Attached) null);
+        forkingTask.processForkedEvent(forkedTask);
 	attemptDeliveringFsckedKernelEvents ();
     }
     
@@ -157,8 +159,19 @@ class LinuxWaitBuilder implements WaitBuilder {
     }
     
     public void execEvent(ProcessIdentifier pid) {
-        LinuxPtraceTask task = get(pid, "execEvent");
-        task.processExecedEvent();
+        LinuxPtraceTask execingTask = get(pid, "execEvent");
+	// On linux an exec event implicitly kills off all of the
+	// processes other tasks; need to do that explicitly; there's
+	// no "terminating" event as, by this point, the tasks are
+	// totally gone.
+	Set tasks = ((LinuxPtraceProc)execingTask.getProc()).getAllTasks();
+	tasks.remove(execingTask);
+	for (Iterator i = tasks.iterator(); i.hasNext(); ) {
+	    LinuxPtraceTask doa = (LinuxPtraceTask) i.next();
+	    doa.processTerminatedEvent(null, 0);
+	}
+	// Finally notify the exec.
+        execingTask.processExecedEvent();
     }
     
     public void disappeared(ProcessIdentifier pid, Throwable w) {

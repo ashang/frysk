@@ -136,13 +136,6 @@ public class UnloadCommand extends ParameterizedCommand {
      * 
      */
     private void removeAllProcs(HashMap procMap, CLI cli) {
-	Set procSet = procMap.entrySet();
-	Iterator foo = procSet.iterator();
-	while (foo.hasNext()) {
-	    Map.Entry me = (Map.Entry) foo.next();
-	    Proc proc = (Proc) me.getKey();
-	    proc.getHost().remove(proc);
-	}
 	synchronized (cli) {
 	    procMap.clear();
 	}

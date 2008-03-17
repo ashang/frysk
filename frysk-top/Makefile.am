@@ -72,35 +72,24 @@ SOURCEDIRS = \
 # html is always put in index.html in output dir, so rename.
 # Use template file and just put in title, logo and a list of utils + href.
 # Replace ./ with ../ relative references (manpages is one dir down).
-XMLSOURCES = $(srcdir)/frysk-core/frysk/bindir/*.xml
 TEMPLATE = $(srcdir)/htdocs/template.html
 .PHONY: manpages
-manpages: XMLSOURCES
+manpages:
 	rm -rf manpages
-	mkdir manpages
-	sed -n '0,/<!-- start title -->/$ p' $(TEMPLATE) > tmp.index.$@.html
-	echo "<h1>Frysk Utilities</h1>" >> tmp.index.$@.html
-	sed -n '/<!-- end title -->/,/<!-- start logo -->/ p' $(TEMPLATE) >> tmp.index.$@.html
-	echo '<img src="./fryskbiglogo.png" alt="Frysk logo" style="margin-left:8px;">' >> tmp.index.$@.html
-	sed -n '/<!-- end logo -->/,/<!-- start text -->/ p' $(TEMPLATE) >> tmp.index.$@.html
-	for xmlfile in $(XMLSOURCES) ; do \
-		name=`basename $$xmlfile .xml`; \
-		echo "Generating man webpage for $$name" ; \
-		$(XMLTO) -o manpages html $$xmlfile ; \
-		mv manpages/index.html manpages/$${name}.html ; \
-		echo -n "<li><tt><a href='" >> tmp.index.$@.html ; \
-		echo -n $${name}.html >> tmp.index.$@.html ; \
-		echo -n "'>" >> tmp.index.$@.html ; \
-		echo -n $$name >> tmp.index.$@.html ; \
-		echo "</tt></a>" >> tmp.index.$@.html ; \
-		sed -n '/<refpurpose>\(.*\)<\/refpurpose>/ p' $$xmlfile \
-			| sed -n 's/refpurpose/i/g p' >> tmp.index.$@.html ; \
-		echo "</li>" >> tmp.index.$@.html ; \
-	done
-	sed -n '/<!-- end text -->/,$$ p' $(TEMPLATE) >> tmp.index.$@.html
-	sed -i 's/"\.\//"\.\.\//g' tmp.index.$@.html
-	mv tmp.index.$@.html manpages/index.html
-
+	mkdir -p manpages
+	XMLTO=$(XMLTO) \
+	sh $(srcdir)/frysk-common/manpages.sh \
+		$(TEMPLATE) \
+		-"Overview" \
+		$(srcdir)/frysk-common/frysk.xml \
+		-"Command Line Utilities" \
+		$(srcdir)/frysk-core/frysk/bindir/*.xml \
+		-"GNOME Interface" \
+		$(srcdir)/frysk-gui/frysk/bindir/*.xml \
+		-"Test framework" \
+		$(srcdir)/*/frysk/pkglibdir/*.xml
+	mv manpages/index.new manpages/index.html
+
 # Generate JAVADOC documentation.
 JAVADOC = javadoc
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
@@ -247,3 +236,11 @@ eclipse/.settings/%.prefs: frysk-top/%.prefs.in
 	mkdir -p `dirname $@`
 	$(SUBST)
 	chmod u+w $@
+
+man_MANS += frysk-common/frysk.7
+CLEANFILES += frysk-common/frysk.7
+frysk-common/frysk.7: frysk-common/frysk.xml
+	mkdir -p `dirname $@`
+	$(SUBST_SED) < $< > $@.tmp
+	$(XMLTO) -o `dirname $@` man $@.tmp
+	rm -f $@.tmp

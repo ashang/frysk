@@ -149,20 +149,7 @@ public class TestExec
 		 mainTask.getProc().getTasks().size());
 
     // Set things up to stop once the exec task exits.
-    class StopEventLoopWhenProcRemoved implements java.util.Observer {
-	private int pid;
-	StopEventLoopWhenProcRemoved(ExecOffspring pid) {
-	    this.pid = pid.getPid().intValue();
-	    Manager.host.observableProcRemovedXXX.addObserver(this);
-	}
-	public void update(java.util.Observable o, Object obj) {
-	    Proc proc = (Proc) obj;
-	    if (proc.getPid() == this.pid) {
-		Manager.eventLoop.requestStop();
-	    }
-	}
-    }
-    new StopEventLoopWhenProcRemoved(child);
+    new StopEventLoopWhenProcTerminated(child);
     mainTask.requestUnblock(execBlockCounter);
     assertRunUntilStop("wait for exec program exit");
 

@@ -66,11 +66,11 @@ public class DebugInfoFrame extends FrameDecorator {
 
     private LinkedList inlinedSubprograms;
 
-    private final TypeEntry typeEntry;
+    private final TypeFactory typeFactory;
     
     protected DebugInfoFrame(FrameDecorator inner, Frame decorated) {
 	super(inner, decorated);
-	this.typeEntry = new TypeEntry(getTask().getISA());
+	this.typeFactory = new TypeFactory(getTask().getISA());
     }
 
     public final Subprogram getSubprogram ()
@@ -101,7 +101,7 @@ public class DebugInfoFrame extends FrameDecorator {
 		}
 
 		scopes = scopes[0].getScopesDie();
-		scope = ScopeFactory.theFactory.getScope(scopes[0], typeEntry);
+		scope = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
 		Scope tempScope = scope;
 		
 		if (tempScope instanceof Subprogram && !(((Subprogram)tempScope).isInlined()) && subprogram == null) {
@@ -110,7 +110,7 @@ public class DebugInfoFrame extends FrameDecorator {
 		    
 		Scope outer = null;
 		for (int i = 1; i < scopes.length; i++) {
-		    outer = ScopeFactory.theFactory.getScope(scopes[i], typeEntry);
+		    outer = ScopeFactory.theFactory.getScope(scopes[i], typeFactory);
 		    tempScope.setOuter(outer);
 		    tempScope = outer;
 		    
@@ -149,7 +149,7 @@ public class DebugInfoFrame extends FrameDecorator {
             scopes = scopes[0].getScopesDie();
             
             for (int i = 0; i < scopes.length; i++) {
-        	Scope scope = ScopeFactory.theFactory.getScope(scopes[i], typeEntry);
+        	Scope scope = ScopeFactory.theFactory.getScope(scopes[i], typeFactory);
         	if(scope instanceof Subprogram && ((Subprogram)scope).isInlined()){
         	    inlinedSubprograms.add(scope);
         	}

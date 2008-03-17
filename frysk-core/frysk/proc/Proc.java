@@ -39,10 +39,8 @@
 
 package frysk.proc;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
@@ -50,7 +48,6 @@ import java.util.Observer;
 import java.util.Set;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
-import frysk.util.CountDownLatch;
 import frysk.event.Event;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
@@ -61,14 +58,6 @@ import frysk.rsl.Log;
 
 public abstract class Proc implements Comparable {
     private static final Log fine = Log.fine(Proc.class);
-
-    private CountDownLatch quitLatch;
-  
-    /**
-     * If known, due to the tracing of a fork, the Task that created
-     * this process.
-     */
-    final Task creator;
 
     /**
      * XXX: This should not be public.
@@ -145,11 +134,10 @@ public abstract class Proc implements Comparable {
      * Create a new Proc skeleton. Since PARENT could be NULL,
      * explicitly specify the HOST.
      */
-    private Proc(int pid, Proc parent, Host host, Task creator) {
+    private Proc(int pid, Proc parent, Host host) {
 	this.host = host;
 	this.pid = pid;
 	this.parent = parent;
-	this.creator = creator;
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add(this);
@@ -160,7 +148,7 @@ public abstract class Proc implements Comparable {
      * NULL, explicitly specify the HOST.
      */
     protected Proc(Host host, Proc parent, int pid) {
-	this(pid, parent, host, null);
+	this(pid, parent, host);
 	fine.log(this, "new - create unattached running proc");
     }
 
@@ -174,8 +162,8 @@ public abstract class Proc implements Comparable {
      * a Task, while it has the Observable, it doesn't have the
      * containing proc.
      */
-    protected Proc(Task task, int fork) {
-	this(fork, task.getProc(), task.getProc().getHost(), task);
+    protected Proc(Task forkingTask, int fork) {
+	this(fork, forkingTask.getProc(), forkingTask.getProc().getHost());
 	fine.log(this, "new - create attached running proc");
     }
 
@@ -197,15 +185,6 @@ public abstract class Proc implements Comparable {
 	// FIXME: Should be handled by lower-level code.
 	ProcessIdentifier pid = ProcessIdentifierFactory.create(this.getPid());
 	Signal.KILL.kill(pid);
-	// Throw the countDown on the queue so that the command
-	// thread will wait until events provoked by Signal.kill()
-	// are handled.
-	this.quitLatch = new CountDownLatch(1);
-	Manager.eventLoop.add(new Event() {
-		public void execute() {
-		    quitLatch.countDown();
-		}
-	    });
     }
 
     /**
@@ -214,7 +193,6 @@ public abstract class Proc implements Comparable {
     public void requestAbandon() {
 	fine.log(this, "abandon");
 	performDetach();
-	observations.clear();
     }
 
     /**
@@ -226,7 +204,7 @@ public abstract class Proc implements Comparable {
     public void requestAbandonAndRunEvent(final Event e) {
 	fine.log(this, "abandonAndRunEvent");
 	requestAbandon();
-	observableDetached.addObserver(new Observer() {
+	observableDetachedXXX.addObserver(new Observer() {
 		public void update(Observable o, Object arg) {
 		    Manager.eventLoop.add(e);
 		}
@@ -240,38 +218,6 @@ public abstract class Proc implements Comparable {
     public abstract void requestRefresh();
 
     protected abstract void performDetach();
-
-    /**
-     * The set of observations that currently apply to this task.
-     * Note that this is a Collection that may contain the same
-     * Observer object multiple times (for possible different
-     * observations).
-     */
-    private Collection observations = new LinkedList();
-
-    public boolean addObservation(Object o) {
-	return observations.add(o);
-    }
-
-    public boolean removeObservation(Object o) {
-	return observations.remove(o);
-    }
-
-    public int observationsSize() {
-	return observations.size();
-    }
-
-    public Iterator observationsIterator() {
-	return observations.iterator();
-    }
-
-    public void requestUnblock(TaskObserver observerArg) {
-	Iterator iter = getTasks().iterator();
-	while (iter.hasNext()) {
-	    Task task =(Task) iter.next();
-	    task.requestUnblock(observerArg);
-	}
-    }
 
     /**
      * Table of this processes child processes.
@@ -338,21 +284,6 @@ public abstract class Proc implements Comparable {
     protected void remove(Task task) {
 	fine.log(this, "remove(Task) -- within this Proc");
 	taskPool.remove(task.getTaskId());
-	host.remove(task);
-    }
-
-    /**
-     * Remove all but Task from this Proc.
-     *
-     * XXX: Should not be public.
-     */
-    public void retain(Task task) {
-	fine.log(this, "retain(Task) -- remove all but task");
-	HashMap new_tasks = new HashMap();
-	new_tasks = (HashMap) ((HashMap) taskPool).clone();
-	new_tasks.values().remove(task);
-	taskPool.values().removeAll(new_tasks.values());
-	host.removeTasks(new_tasks.values());
     }
 
     /**
@@ -368,18 +299,16 @@ public abstract class Proc implements Comparable {
     public abstract Auxv[] getAuxv();
 
     /**
-     * The process has transitioned to the attached state. XXX: Should
-     * be made private and instead accessor methods added. Should more
-     * formally define the observable and the event.
+     * XXX: Clients should look at the updateRemoved() observer and
+     * use that to determine when they are attached or detached.
      */
-    public ObservableXXX observableAttached = new ObservableXXX();
+    public ObservableXXX observableAttachedXXX = new ObservableXXX();
 
     /**
-     * The process has transitioned to the detached. XXX: Should be
-     * made private and instead accessor methods added. Should more
-     * formally define the observable and the event.
+     * XXX: Clients should look at the updateRemoved() observer and
+     * use that to determine when they are attached or detached.
      */
-    public ObservableXXX observableDetached = new ObservableXXX();
+    public ObservableXXX observableDetachedXXX = new ObservableXXX();
 
     public String toString() {
 	return ("{" + super.toString()

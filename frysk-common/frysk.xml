@@ -4,7 +4,7 @@
 
  This file is part of the program FRYSK.
 
- Copyright 2006, 2008, Red Hat Inc.
+ Copyright 2008, Red Hat Inc.
 
  FRYSK is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by
@@ -48,111 +48,57 @@
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="ferror">
+<refentry id="frysk">
 
   <refentryinfo>
-    <title>ferror</title>
+    <title>fhpd</title>
     <date>March 14 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>ferror</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>frysk</refentrytitle>
+    <manvolnum>7</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>ferror</refname>
-    <refpurpose> print stack trace when the given error is printed by the traced program</refpurpose>
+    <refname>frysk</refname>
+    <refpurpose>The Frysk Debugging, Tracing, and Monitoring Tool Suite</refpurpose>
   </refnamediv>
-  
-  <refsynopsisdiv>
-    <cmdsynopsis>
-      <command>ferror -e "ERROR" -- [EXECUTABLE|PID] [ARGS]</command>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
-    </cmdsynopsis>
-  </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>ferror</function> Using the Frysk back end it runs an application and waits for the process to output the given error string, then produces a stack trace at that point</para>
+    <para>The Frysk Tool Suite provides a collection of command line
+    and gnome utilities for the debugging, tracing, and monitoring of
+    user programs.</para>
 
-    <!-- variablelist>
-      <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
-	<listitem>
-          <para> Description of option. </para>
-          
-        </listitem>
-      </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <refsect1>
-    <title>EXAMPLE</title>
-    <screen>ferror -e "No such file or directory" -- ls fake</screen>
-  </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(7)</para>
+    <para>
+funit(8)
+fauxv(1)
+fcatch(1)
+fcore(1)
+fdebuginfo(1)
+ferror(1)
+fexe(1)
+fhpd(1)
+fmaps(1)
+fparser(1)
+fstack(1)
+fstep(1)
+ftrace(1)
+fdebugrpm(1)
+    </para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
+    <para>Report bugs to 
+    <ulink url="http://sourceware.org/frysk"></ulink>
+    </para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>

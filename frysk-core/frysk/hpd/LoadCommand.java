@@ -145,7 +145,8 @@ public class LoadCommand extends ParameterizedCommand {
 	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
 	}
 
-	cli.addMessage("Loaded executable file: " + exeProc.getExe(), Message.TYPE_NORMAL);
+	cli.addMessage("[" + procID + ".0] Loaded executable file: " + 
+		exeProc.getExe(), Message.TYPE_NORMAL);
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

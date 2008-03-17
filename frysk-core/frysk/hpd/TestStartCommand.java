@@ -53,7 +53,7 @@ public class TestStartCommand extends TestLib {
     public void testStartCommand() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-		"Loaded executable file.*");
+		"\\[0\\.0] Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("where", "[0.0].*");
 	e.send("quit\n");
@@ -71,7 +71,7 @@ public class TestStartCommand extends TestLib {
 	e = new HpdTestbed();
 	String[] param = { "teststart", "parameter2start", "-g"};
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
-	"Loaded executable file.*");
+	"\\[0\\.0\\] Loaded executable file.*");
 	String parameters = "";
 	for (int i = 0; i < param.length; i++) {
 	    parameters = parameters + param[i] + " ";

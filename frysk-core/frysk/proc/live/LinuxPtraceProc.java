@@ -39,6 +39,10 @@
 
 package frysk.proc.live;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 import frysk.proc.Action;
 import frysk.sys.proc.Exe;
 import frysk.proc.Proc;
@@ -100,6 +104,9 @@ public class LinuxPtraceProc extends LiveProc {
     void removeTask(LinuxPtraceTask task) {
 	tasks.remove(task.tid);
 	remove(task);
+    }
+    Set getAllTasks() {
+	return new HashSet(tasks.values());
     }
     private final HashMap tasks = new HashMap();
 
@@ -714,6 +721,39 @@ public class LinuxPtraceProc extends LiveProc {
 		}
 	    };
 	Manager.eventLoop.add(to);
+    }
+
+
+    /**
+     * The set of observations that currently apply to this task.
+     * Note that this is a Collection that may contain the same
+     * Observer object multiple times (for possible different
+     * observations).
+     */
+    private final Collection observations = new LinkedList();
+
+    boolean addObservation(Object o) {
+	return observations.add(o);
+    }
+
+    boolean removeObservation(Object o) {
+	return observations.remove(o);
+    }
+
+    int observationsSize() {
+	return observations.size();
+    }
+
+    Iterator observationsIterator() {
+	return observations.iterator();
+    }
+
+    void requestUnblock(TaskObserver observerArg) {
+	Iterator iter = getTasks().iterator();
+	while (iter.hasNext()) {
+	    Task task =(Task) iter.next();
+	    task.requestUnblock(observerArg);
+	}
     }
 
     /**

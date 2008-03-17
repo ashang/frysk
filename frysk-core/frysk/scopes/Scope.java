@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ import java.util.LinkedList;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Variable;
 
@@ -81,12 +81,12 @@ public class Scope
 
     LinkedList collections;
     
-    final TypeEntry typeEntry;
+    final TypeFactory typeFactory;
     
-  public Scope(DwarfDie die, TypeEntry typeEntry){
+  public Scope(DwarfDie die, TypeFactory typeFactory){
       this.die = die;
       this.scopes = new LinkedList();
-      this.typeEntry = typeEntry;
+      this.typeFactory = typeFactory;
   }
   
   public Scope getOuter(){
@@ -135,7 +135,7 @@ public class Scope
 	  while(die != null){
 		      
 	      if(die.getTag().equals(DwTag.ENUMERATION_TYPE)){
-		  this.collections.add(new Enumeration(die, typeEntry));
+		  this.collections.add(new Enumeration(die, typeFactory));
 	      }
 
 	      die = die.getSibling();

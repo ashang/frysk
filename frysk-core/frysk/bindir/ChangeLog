@@ -1,4 +1,27 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.xml: New.
+	* fparser.xml, fparser.java: Move to frysk.pkglibdir.
+	* fauxv.xml: Cite frysk(7), simplify url.
+	* fcatch.xml: Ditto.
+	* fcore.xml: Ditto.
+	* fdebuginfo.xml: Ditto.
+	* fdebugrpm.xml: Ditto.
+	* ferror.xml: Ditto.
+	* fexe.xml: Ditto.
+	* fhpd.xml: Ditto.
+	* fmaps.xml: Ditto.
+	* fparser.xml: Ditto.
+	* fstack.xml: Ditto.
+	* fstep.xml: Ditto.
+	* ftrace.xml: Ditto.
+
 2008-03-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fdebuginfo.xml: Fix ulink.
+	* fdebugrpm.xml: Likewise.
+
+2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* fhpd.java (CommandLine.run): Make sure all messages are flushed
 	before first prompt.

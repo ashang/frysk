@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,43 +37,79 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.proc.dead;
 
-import lib.dwfl.DwarfDie;
-import frysk.debuginfo.TypeFactory;
-import frysk.value.CompositeType;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import frysk.rsl.Log;
 
 /**
- * A Composite object is a scope to wich a function can belong:
- * So either a Struct or a class.
- * This represents all the static information about that object.
+ * Given a String lifted from the start of a file and an ARGV,
+ * transform it into an ARGV suitable for invoking a #! interpreter.
  */
-public class Composite extends Scope {
+class InterpreterFactory {
+    private static final Log fine = Log.fine(InterpreterFactory.class);
 
-    CompositeType compositeType;
-    
-    public Composite(DwarfDie die, TypeFactory typeFactory) {
-	super(die, typeFactory);
-	this.compositeType = (CompositeType) typeFactory.getType(die);
+    /**
+     * Parse FILE (taken from the head of a shell file) and args
+     * transforming them into a script invocation.
+     */
+    static String[] parse(String file, String[] args) {
+	fine.log("file", file);
+	if (!file.startsWith("#!"))
+	    return null;
+	String[] fields = file.replaceFirst("#! *", "").split(" +");
+	fine.log("fields", fields);
+	String[] interpreter;
+	int start;
+	if (fields.length == 1) {
+	    // #!interpreter
+	    interpreter = new String[args.length + 1];
+	    interpreter[0] = fields[0];
+	    fine.log("interpreter", interpreter[0]);
+	    start = 1;
+	} else {
+	    // #!interpreter option
+	    interpreter = new String[args.length + 2];
+	    interpreter[0] = fields[0];
+	    interpreter[1] = fields[1];
+	    fine.log("interpreter", interpreter[0], "options", interpreter[1]);
+	    start = 2;
+	}
+	for (int i = 0; i < args.length; i++) {
+	    interpreter[i + start] = args[i];
+	    fine.log("interpreter", i, "is", interpreter[i]);
+	}
+	return interpreter;
     }
-    
-    public String getName(){
-	return this.getDie().getName();
+
+    private static String firstLine(File file) {
+	String line = null;
+	BufferedReader reader = null;
+	try {
+	    reader = new BufferedReader(new FileReader(file));
+	    line = reader.readLine();
+	    reader.close();
+	} catch (IOException io) {
+	    if (reader != null) {
+		try {
+		    reader.close();
+		} catch (IOException e) {
+		    // don't care
+		}
+	    }
+	    throw new RuntimeException(io.getMessage());
+	}
+	return line;
     }
-    
-    public Type getType(){
-	return this.compositeType;
+
+    static String[] parse(File file, String[] args) {
+	String line = firstLine(file);
+	if (line != null)
+	    return parse(line, args);
+	else
+	    return null;
     }
-    
-    public ObjectDeclaration getDeclaredObjectByName(String name) {
-	ObjectDeclaration objectDeclaration;
-	
-	objectDeclaration = this.compositeType.getDeclaredObjectByName(name);
-	
-	return objectDeclaration;
-    }
-	 
-    
 }

@@ -56,12 +56,37 @@ public abstract class Task {
     private static final Log fine = Log.fine(Task.class);
 
     /**
-     * If known, as a result of tracing clone or fork, the task that
-     * created this task.
+     * Create a new Task skeleton.
      */
-    private final Task creator;
-    public Task getCreator() {
-	return creator;
+    private Task(int pid, Proc proc) {
+	this.proc = proc;
+	this.tid = pid;
+	this.id = new TaskId(pid);
+	proc.add(this);
+    }
+
+    /**
+     * Create a new unattached Task.
+     */
+    protected Task(Proc proc, int pid) {
+	this(pid, proc);
+	fine.log("new -- create unattached");
+    }
+
+    /**
+     * Create a new attached CLONE of TASK.
+     */
+    protected Task(Task cloningTask, int clone) {
+	this(clone, cloningTask.getProc());
+	fine.log(this, "new -- create attached clone");
+    }
+
+    /**
+     * Create a newly created and attached main Task of Proc that is
+     * the result of a fork.
+     */
+    protected Task(Proc proc) {
+	this(proc.getPid(), proc);
     }
 
     /**
@@ -116,47 +141,6 @@ public abstract class Task {
 	return proc;
     }
     private final Proc proc;
-
-    /**
-     * Create a new Task skeleton.
-     */
-    private Task(int pid, Proc proc, Task creator) {
-	this.proc = proc;
-	this.tid = pid;
-	this.creator = creator;
-	this.id = new TaskId(pid);
-	proc.add(this);
-	proc.getHost().add(this);
-    }
-
-    /**
-     * Create a new unattached Task.
-     */
-    protected Task(Proc proc, int pid) {
-	this(pid, proc, null);
-	fine.log("new -- create unattached");
-    }
-
-    /**
-     * Create a new attached CLONE of TASK.
-     */
-    protected Task(Task task, int clone) {
-	this(clone, task.proc, task);
-	fine.log(this, "new -- create attached clone");
-    }
-
-    /**
-     * Create a new attached main Task of Proc. If Attached observer
-     * is specified assume it should be attached, otherwize, assume
-     * that, as soon as the task stops, it should be detached. Note
-     * the chicken-egg problem here: to add the initial observation
-     * the Proc needs the Task (which has the Observable).
-     * Conversely, for a Task, while it has the Observable, it doesn't
-     * have the containing proc.
-     */
-    protected Task(Proc proc, TaskObserver.Attached attached) {
-	this(proc.getPid(), proc, proc.creator);
-    }
 
     public class TaskEventObservable extends java.util.Observable {
 	protected void notify(Object o) {

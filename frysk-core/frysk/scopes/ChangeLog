@@ -1,3 +1,14 @@
+2008-03-15  Andrew Cagney  <cagney@redhat.com>
+
+	* ScopeFactory.java: Update; TypeEntry -> TypeFactory.
+	* TestScopeFactory.java: Update.
+	* Subroutine.java: Ditto.
+	* LexicalBlock.java: Ditto.
+	* Enumeration.java: Ditto.
+	* Composite.java: Ditto.
+	* Scope.java: Ditto.
+	* Subprogram.java: Ditto.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDie.java: Use frysk.config.

@@ -94,8 +94,8 @@ installcheck-local: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
 
-# Create executables for type tests for TestTypeEntry.java.
-frysk/debuginfo/TestTypeEntry.java: frysk/pkglibdir/funit-type-entry.c
+# Create executables for type tests for TestTypeFactory.java.
+frysk/debuginfo/TestTypeFactory.java: frysk/pkglibdir/funit-type-entry.c
 
 # Executable without debug_frame and without eh_frame for Frame tests.
 # Note that this depends on both being available by default because

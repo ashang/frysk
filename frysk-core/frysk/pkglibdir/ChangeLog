@@ -1,3 +1,11 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* fparser.xml, fparser.java: Move to here from frysk.bindir.
+	* funit-threads.xml: Cite frysk(7); update url.
+	* funit-slave.xml: Ditto.
+	* funit-exit.xml: Ditto.
+	* funit-exec.xml: Ditto.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-memory.c: Delete.

@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.ftrace;
 
 import frysk.proc.Action;
@@ -53,11 +52,10 @@ import inua.util.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.Iterator;
-import java.util.logging.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Ftrace
 {
@@ -265,7 +263,8 @@ public class Ftrace
 	    observationRequested(task);
 	}
 
-	Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(proc));
+	new ProcRemovedObserver(proc);
+
 	reporter.eventSingle(task, "attached " + proc.getExe());
 	++numProcesses;
     }
@@ -374,26 +373,27 @@ public class Ftrace
 
 
     /**
-     * An observer to stop the eventloop when the traced process exits.
+     * An observer to stop the eventloop when the traced process
+     * exits.
      */
     private class ProcRemovedObserver
-	implements Observer
+	implements TaskObserver.Terminated
     {
-	int pid;
-
 	ProcRemovedObserver (Proc proc) {
-	    this.pid = proc.getPid();
+	    proc.getMainTask().requestAddTerminatedObserver(this);
 	}
 
-	public void update (Observable o, Object object) {
-	    Proc proc = (Proc) object;
-	    if (proc.getPid() == this.pid) {
-		synchronized (Ftrace.this) {
-		    --numProcesses;
-		    if (numProcesses == 0)
-			Manager.eventLoop.requestStop();
-		}
+	public void addedTo (Object observable)	{}
+	public void addFailed (Object observable, Throwable arg1) {}
+	public void deletedFrom (Object observable) {}
+
+	public Action updateTerminated(Task task, Signal signal, int status) {
+	    synchronized (Ftrace.this) {
+		--numProcesses;
+		if (numProcesses == 0)
+		    Manager.eventLoop.requestStop();
 	    }
+	    return Action.CONTINUE;
 	}
     }
 

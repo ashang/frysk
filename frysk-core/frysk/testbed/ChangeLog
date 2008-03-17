@@ -1,3 +1,7 @@
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* CoredumpAction.java: Update to match Proc.
+
 2008-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* StopEventLoopWhenProcRemoved.java: Delete.

@@ -92,12 +92,12 @@ public class StressAttachDetachRapidlyCloningMainTask
 	for (int i = 0; i < tasks.length; i++) {
 	    tasks[i].requestAddAttachedObserver (canFailObserver);
 	}
-	proc.observableAttached.addObserver (new Observer ()
+	proc.observableAttachedXXX.addObserver (new Observer ()
 	    {
 		Proc p = proc;
 		public void update (Observable obj, Object arg)
 		{
-		    p.observableAttached.deleteObserver (this);
+		    p.observableAttachedXXX.deleteObserver (this);
 		    Manager.eventLoop.requestStop ();
 		}
 	    });
@@ -110,12 +110,12 @@ public class StressAttachDetachRapidlyCloningMainTask
 	for (int i = 0; i < tasks.length; i++) {
 	    tasks[i].requestDeleteAttachedObserver (canFailObserver);
 	}
-	proc.observableDetached.addObserver (new Observer ()
+	proc.observableDetachedXXX.addObserver (new Observer ()
 	    {
 		Proc p = proc;
 		public void update (Observable obj, Object arg)
 		{
-		    p.observableAttached.deleteObserver (this);
+		    p.observableAttachedXXX.deleteObserver (this);
 		    Manager.eventLoop.requestStop ();
 		}
 	    });

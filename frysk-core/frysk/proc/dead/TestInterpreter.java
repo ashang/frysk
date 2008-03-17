@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,43 +37,67 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.scopes;
+package frysk.proc.dead;
 
-import lib.dwfl.DwarfDie;
-import frysk.debuginfo.TypeFactory;
-import frysk.value.CompositeType;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
+import frysk.junit.TestCase;
+import frysk.config.Config;
 
 /**
- * A Composite object is a scope to wich a function can belong:
- * So either a Struct or a class.
- * This represents all the static information about that object.
+ * Test the interpreter parser.
  */
-public class Composite extends Scope {
+public class TestInterpreter extends TestCase {
 
-    CompositeType compositeType;
-    
-    public Composite(DwarfDie die, TypeFactory typeFactory) {
-	super(die, typeFactory);
-	this.compositeType = (CompositeType) typeFactory.getType(die);
+    public void testFileScript() {
+	assertEquals("args",
+		     new String[] { "program", "script" },
+		     InterpreterFactory.parse("#!program",
+					      new String[] {
+						  "script"
+					      }));
     }
-    
-    public String getName(){
-	return this.getDie().getName();
+
+    public void testFileArgScript() {
+	assertEquals("args",
+		     new String[] { "program", "arg", "script" },
+		     InterpreterFactory.parse("#!program  arg",
+					      new String[] {
+						  "script"
+					      }));
     }
-    
-    public Type getType(){
-	return this.compositeType;
+
+    public void testFileScriptParam() {
+	assertEquals("args",
+		     new String[] { "program", "script", "param" },
+		     InterpreterFactory.parse("#!program",
+					      new String[] {
+						  "script", "param"
+					      }));
     }
-    
-    public ObjectDeclaration getDeclaredObjectByName(String name) {
-	ObjectDeclaration objectDeclaration;
-	
-	objectDeclaration = this.compositeType.getDeclaredObjectByName(name);
-	
-	return objectDeclaration;
+
+    public void testFileArgScriptParam() {
+	assertEquals("args",
+		     new String[] { "program", "arg", "script", "param" },
+		     InterpreterFactory.parse("#!program arg",
+					      new String[] {
+						  "script", "param"
+					      }));
     }
-	 
-    
+
+    public void testSpaces() {
+	assertEquals("args",
+		     new String[] { "program", "arg", "script", "param" },
+		     InterpreterFactory.parse("#!  program  arg  ",
+					      new String[] {
+						  "script", "param"
+					      }));
+    }
+
+    public void testFile() {
+	assertEquals("args",
+		     new String[] { "/bin/sh", "script", "param" },
+		     InterpreterFactory.parse(Config.getBinFile("fdebugrpm"),
+					      new String[] {
+						  "script", "param"
+					      }));
+    }
 }

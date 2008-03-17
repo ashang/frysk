@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 
 package frysk.scopes;
 
-import frysk.debuginfo.TypeEntry;
+import frysk.debuginfo.TypeFactory;
 import lib.dwfl.DwAt;
 import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
@@ -53,8 +53,8 @@ public class Subroutine extends Scope {
 
     Composite struct;
     
-    public Subroutine(DwarfDie die, TypeEntry typeEntry) {
-	super(die, typeEntry);
+    public Subroutine(DwarfDie die, TypeFactory typeFactory) {
+	super(die, typeFactory);
     }
 
     /**
@@ -73,7 +73,7 @@ public class Subroutine extends Scope {
 	    DwarfDie[] scopes = die.getScopesDie();
 	    for (int i = 0; i < scopes.length; i++) {
 		if (scopes[i].getTag().equals(DwTag.STRUCTURE_TYPE)) {
-		    this.struct = new Composite(scopes[i], typeEntry);
+		    this.struct = new Composite(scopes[i], typeFactory);
 		}
 	    }
 	}

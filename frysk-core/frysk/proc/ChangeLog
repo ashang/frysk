@@ -1,3 +1,46 @@
+2008-03-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java (observations): Move to LinuxPtraceProc.
+	(addObservation(Object)): Ditto.
+	(removeObservation(Object)): Ditto.
+	(observationsSize(Object)): Ditto.
+	(observationsIterator(Object)): Ditto.
+	(requestUnblock(Object)): Ditto.
+	
+	* Proc.java (creator): Delete.
+	(Proc(int,Proc,Host)): Replace Proc(int,Proc,Host,Task).
+
+	* Task.java (creator): Delete.
+	(getCreator()): Delete.
+	(Task(int,Proc)): Replace Task(int,Proc,Task).
+	(Task(Proc)): Replace Task(Proc,TaskObserver.Attached).
+
+2008-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java (quitLatch): Delete.
+	
+	* Proc.java (retain(Task)): Delete.
+	
+	* Host.java (taskPool): Delete.
+	(add(Task)): Delete.
+	(remove(Task)): Delete.
+	(removeTasks(Collection)): Delete.
+	* Task.java: Update.
+	* Proc.java: Update.
+
+	* Proc.java (observableAttachedXXX): Rename observableAttached.
+	(observableDetachedXXX): Rename observableDetached.
+	* StressAttachDetachRapidlyCloningMainTask.java: Update.
+	* StressAttachDetachManyTasks.java: Update.
+	* TestTaskObserverDetach.java: Update.
+
+	* Host.java (observableProcRemovedXXX): Delete.
+	(remove(Proc)): Delete.
+	(ObservableXXX): Delete.
+
+	* TestExec.java (testTaskBlockExec()): Use
+	StopEventLoopWhenProcTerminated.
+
 2008-03-13  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestTaskObserver.java (testDetachExitingMainTask): Enabled

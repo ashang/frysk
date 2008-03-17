@@ -168,7 +168,6 @@ class LinuxPtraceTaskState extends State {
 	// A process with no tasks is dead ...?
 	if (task.getProc().getTasks().size() == 0) {
 	    task.getProc().parent.remove(task.getProc());
-	    task.getProc().getHost().remove(task.getProc());
 	}
     }
 
@@ -861,22 +860,21 @@ class LinuxPtraceTaskState extends State {
 	}
 	LinuxPtraceTaskState handleExecedEvent(LinuxPtraceTask task) {
 	    fine.log("handleExecedEvent", task); 
-	    // Remove all tasks, retaining just this one.
-	    ((LinuxPtraceProc)task.getProc()).retain(task);
 	    ((LinuxPtraceProc)task.getProc()).getStat().scan(task.tid);
 
 	    // All breakpoints have been erased.  We need to
 	    // explicitly tell those attached to the current Task.
 	    ((LinuxPtraceProc)task.getProc()).breakpoints.removeAllCodeObservers();
-	    Iterator it = task.codeObservers.iterator();
-	    while (it.hasNext())
-		((TaskObserver.Code) it.next()).deletedFrom(task);
+	    for (Iterator i = task.codeObservers.iterator(); i.hasNext(); ) {
+		TaskObserver.Code codeObserver = (TaskObserver.Code) i.next();
+		codeObserver.deletedFrom(task);
+	    }
 
 	    // XXX - Do we really need to remove all?
 	    // Remove just the code observers?
-	    it = task.pendingObservations.iterator();
-	    while (it.hasNext())
-		((TaskObservation) it.next()).delete();
+	    for (Iterator i = task.pendingObservations.iterator(); i.hasNext(); ) {
+		((TaskObservation) i.next()).delete();
+	    }
 
 	    if (task.notifyExeced() > 0) {
 		return (task.syscallObservers.numberOfObservers() > 0

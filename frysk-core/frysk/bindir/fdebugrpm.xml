@@ -4,7 +4,7 @@
 
  This file is part of the program FRYSK.
 
- Copyright 2007, Red Hat Inc.
+ Copyright 2007, 2008, Red Hat Inc.
 
  FRYSK is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 
   <refentryinfo>
     <title>fdebugrpm</title>
-    <date>July 27 2007</date>
+    <date>March 14 2008</date>
   </refentryinfo>
   
   <refmeta>
@@ -144,7 +144,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>fdebuginfo(1)</para>
+    <para>frysk(7) fdebuginfo(1)</para>
   </refsect1>
   
   <!-- refsect1>
@@ -164,8 +164,7 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http://sources.redhat.com/fdebugrpm">
-    http://sources.redhat.com/fdebugrpm/ </ulink>. </para>
+    <para>Report bugs to <ulink url="http://sourceware.org/frysk/"/></para>
   </refsect1>
   
   <!-- refsect1>

@@ -43,6 +43,8 @@ import java.io.File;
 import java.util.List;
 import java.util.LinkedList;
 import lib.dwfl.Elf;
+import lib.dwfl.ElfException;
+import lib.dwfl.ElfFileException;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
@@ -54,7 +56,10 @@ import frysk.sysroot.SysRootCache;
 public class LinuxExeFactory {
     private static final Log fine = Log.fine(LinuxExeFactory.class);
 
-    public static DeadProc createProc(final File exeFile, String[] args) {
+    /**
+     * Attempt to create an elf proc, throw an exception if it fails.
+     */
+    private static DeadProc createElfProc(final File exeFile, String[] args) {
 	Elf exeElf = null;
 	try {
 	    exeElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
@@ -83,10 +88,42 @@ public class LinuxExeFactory {
 		= new LinuxExeHost(exeFile, eHeader, SOMaps.getMemoryMaps(),
 				   args);
 	    return host.getProc();
+	} catch (ElfFileException e) {
+	    // File I/O is just bad; re-throw (need to catch it as
+	    // ElfFileException is a sub-class of ElfException).
+	    throw e;
+	} catch (ElfException e) {
+	    // Bad elf is ok; anything else is not.
+	    return null;
 	} finally {
 	    if (exeElf != null)
 		exeElf.close();
 	}
+    }
+
+    /**
+     * Attempt to create an interpreter proc (for instance for a script).
+     */
+    private static DeadProc createInterpreterProc(File exeFile, String[] args) {
+	String[] interpreterArgs = InterpreterFactory.parse(exeFile, args);
+	if (interpreterArgs == null)
+	    return null;
+	fine.log("createInterpProc", interpreterArgs);
+	// FIXME: This is bogus; needs to find the interpreter file
+	// within the context of the sysroot; that means passing in
+	// the SysRoot as a parameter.
+	return createElfProc(new File(interpreterArgs[0]), interpreterArgs);
+    }
+
+    public static DeadProc createProc(File exeFile, String[] args) {
+	DeadProc proc;
+	proc = createElfProc(exeFile, args);
+	if (proc != null)
+	    return proc;
+	proc = createInterpreterProc(exeFile, args);
+	if (proc != null)
+	    return proc;
+	throw new RuntimeException("Not an executable: " + exeFile);
     }
 
     public static DeadProc createProc(String[] args) {
