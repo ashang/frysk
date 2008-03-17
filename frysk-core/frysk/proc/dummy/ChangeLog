@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DummyProc.java (requestRefresh()): Delete.
+	(sendRefresh()): Delete.
+
 	* DummyHost.java: Update; using TaskAttachedObserverXXX.
 	* DummyTask.java: Ditto.
 

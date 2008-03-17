@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (requestRefresh()): Delete.
+	(sendRefresh()): Make concrete.
+
 	* ProcObserver.java (ProcAction): Move to ...
 	* ProcBlockObserver.java: ... here; new interface.
 	* StressTestAbandon.java: Update.

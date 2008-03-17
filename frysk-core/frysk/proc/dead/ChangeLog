@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* DeadProc.java (requestRefresh()): Delete.
+	(sendRefresh()): Delete.
+
 	* TestLinuxCore.java: Use ProcBlockAction.
 	
 	* TestLinuxCore.java (actionCoreProc()): New; replace

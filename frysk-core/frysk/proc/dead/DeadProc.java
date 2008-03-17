@@ -63,17 +63,6 @@ public abstract class DeadProc extends Proc {
 	return "dead";
     }
   
-    /**
-     * Request that the Proc's task list be refreshed using system
-     * tables.
-     */
-    public void requestRefresh() {
-	fine.log(this, "requestRefresh");
-    }
-    public void sendRefresh() {
-	fine.log(this, "sendRefresh");
-    }
-
     protected void performDetach() {
 	fine.log(this, "performDetach");
 	// XXX: Fake out for now. What kind of observers would you put

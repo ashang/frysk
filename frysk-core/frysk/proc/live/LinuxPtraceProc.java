@@ -339,19 +339,6 @@ public class LinuxPtraceProc extends LiveProc {
     }
   
     /**
-     * Request that the Proc's task list be refreshed using system
-     * tables.
-     */
-    public void requestRefresh() {
-	fine.log(this, "requestRefresh");
-	Manager.eventLoop.add(new ProcEvent() {
-		public void execute() {
-		    newState = oldState().handleRefresh(LinuxPtraceProc.this);
-		}
-	    });
-    }
-
-    /**
      * (Internal) Tell the process that is no longer listed in the
      * system table remove itself.
      *

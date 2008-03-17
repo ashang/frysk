@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java (handleRefresh(LinuxPtraceProc)): Delete.
+	* LinuxPtraceProc.java (requestRefresh()): Delete.
+
 	* TestProcStopped.java: Use ProcBlockObserver.
 
 	* LinuxPtraceHost.java: Update; using TaskAttachedObserverXXX.

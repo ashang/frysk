@@ -71,8 +71,6 @@ public class DummyProc extends Proc {
     public String[] getCmdLine() {
 	return null;
     }
-    public void sendRefresh() {
-    }
     public MemoryMap[] getMaps () {
         return null;
     }
@@ -81,9 +79,6 @@ public class DummyProc extends Proc {
     }
     protected String getStateFIXME() {
 	return "<dummy>";
-    }
-    public void requestRefresh() {
-	throw new RuntimeException("oops!");
     }
     protected void performDetach() {
 	throw new RuntimeException("oops!");

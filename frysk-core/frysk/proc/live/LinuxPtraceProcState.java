@@ -61,9 +61,6 @@ abstract class LinuxPtraceProcState extends State {
     LinuxPtraceProcState handleRemoval(LinuxPtraceProc proc) {
 	throw unhandled(proc, "handleRemoval");
     }
-    LinuxPtraceProcState handleRefresh(LinuxPtraceProc proc) {
-	throw unhandled(proc, "handleRefresh");
-    }
     LinuxPtraceProcState handleTaskAttachCompleted(LinuxPtraceProc proc, LinuxPtraceTask task) {
 	throw unhandled(proc, "handleTaskAttachCompleted");
     }
@@ -104,11 +101,6 @@ abstract class LinuxPtraceProcState extends State {
      */
     private static final LinuxPtraceProcState detached = new LinuxPtraceProcState ("detached")
 	{
-	    LinuxPtraceProcState handleRefresh(LinuxPtraceProc proc) {
-		fine.log("handleRefresh", proc); 
-		proc.sendRefresh ();
-		return detached;
-	    }
 	    LinuxPtraceProcState handleRemoval(LinuxPtraceProc proc) {
 		fine.log("handleRemoval", proc); 
 		// XXX: What about a dieing proc's tasks, have a

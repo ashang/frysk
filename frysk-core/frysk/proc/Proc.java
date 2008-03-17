@@ -167,8 +167,11 @@ public abstract class Proc implements Comparable {
 	fine.log(this, "new - create attached running proc");
     }
 
-    /** XXX: Should not be public.  */
-    public abstract void sendRefresh();
+    /** XXX: Should not be public; should be frysk.proc.live
+     * private.  */
+    public void sendRefresh() {
+	fine.log(this, "sendRefresh");
+    }
 
     /**
      * Return the current state as a string.
@@ -210,12 +213,6 @@ public abstract class Proc implements Comparable {
 		}
 	    });
     }
-
-    /**
-     * Request that the Proc's task list be refreshed using system
-     * tables.
-     */
-    public abstract void requestRefresh();
 
     protected abstract void performDetach();
 
