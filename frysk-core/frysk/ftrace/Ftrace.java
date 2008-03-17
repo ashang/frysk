@@ -54,14 +54,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import frysk.proc.TaskAttachedObserverXXX;
 
 public class Ftrace
 {
-    static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
-
     // Where to send output.
     Reporter reporter;
 
@@ -289,7 +285,7 @@ public class Ftrace
 
 	public void tracePoint(Task task, TracePoint tp)
 	{
-	    logger.log(Level.CONFIG, "Request for tracing `{0}'", tp.symbol.name);
+	    FtraceLogger.info.log("Request for tracing `" + tp.symbol.name + "'");
 	    tracePoints.add(tp);
 	}
 
@@ -300,19 +296,19 @@ public class Ftrace
 		TracePoint tp = (TracePoint)it.next();
 		if (tp.offset >= part.offset
 		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-		    logger.log(Level.FINER,
-			       "Will trace `" + tp.symbol.name + "', "
-			       + "address=0x" + Long.toHexString(tp.address) + "; "
-			       + "offset=0x" + Long.toHexString(tp.offset) + "; "
-			       + "part at=0x" + Long.toHexString(part.addressLow)
-			       + ".." + Long.toHexString(part.addressHigh) + "; "
-			       + "part off=0x" + Long.toHexString(part.offset) + ";");
+		    FtraceLogger.finest.log(
+			"Will trace `" + tp.symbol.name + "', "
+			+ "address=0x" + Long.toHexString(tp.address) + "; "
+			+ "offset=0x" + Long.toHexString(tp.offset) + "; "
+			+ "part at=0x" + Long.toHexString(part.addressLow)
+			+ ".." + Long.toHexString(part.addressHigh) + "; "
+			+ "part off=0x" + Long.toHexString(part.offset) + ";");
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
 		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    logger.log(Level.CONFIG,
-			       "Will trace `" + tpi.tracePoint.symbol.name
-			       + "' at 0x" + Long.toHexString(tpi.address));
+		    FtraceLogger.info.log(
+			"Will trace `" + tpi.tracePoint.symbol.name
+			+ "' at 0x" + Long.toHexString(tpi.address));
 
 		    request.add(tpi);
 		}
@@ -331,9 +327,9 @@ public class Ftrace
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
 		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    logger.log(Level.CONFIG,
-			       "Stopping tracing of `" + tpi.tracePoint.symbol.name
-			       + "' at 0x" + Long.toHexString(tpi.address));
+		    FtraceLogger.info.log(
+			"Stopping tracing of `" + tpi.tracePoint.symbol.name
+			+ "' at 0x" + Long.toHexString(tpi.address));
 
 		    request.add(tpi);
 		}

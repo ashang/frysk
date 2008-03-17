@@ -43,6 +43,9 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -51,11 +54,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.logging.*;
 
 public class Ltrace
 {
-    private static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
+    private static final Log fine = LogFactory.fine(Ltrace.class);
+    private static final Log finest = LogFactory.finest(Ltrace.class);
 
     // HashMap<Task, Ltrace>
     private static final Map ltraceForTask = new HashMap();
@@ -130,7 +133,7 @@ public class Ltrace
 
 	public Action updateHit (final Task task, long address)
 	{
-	    logger.log(Level.FINE, "Return breakpoint at 0x" + Long.toHexString(address));
+	    fine.log("Return breakpoint at 0x" + Long.toHexString(address));
 
 	    final Node leave = (Node)nodeList.removeLast();
 	    Action action = Action.CONTINUE;
@@ -138,7 +141,7 @@ public class Ltrace
 	    // Retract lowlevel breakpoint when the last return has
 	    // been hit.
 	    if (nodeList.isEmpty()) {
-		logger.log(Level.FINEST, "Removing leave breakpoint.");
+		finest.log("Removing leave breakpoint.");
 		functionReturnObservers.remove(new Long(address));
 		task.requestDeleteCodeObserver(this, address);
 
@@ -147,7 +150,7 @@ public class Ltrace
 		action = Action.BLOCK;
 	    }
 
-	    logger.log(Level.FINEST, "Fetching retval.");
+	    finest.log("Fetching retval.");
 	    final Symbol symbol = leave.tpi.tracePoint.symbol;
 	    final Object ret = arch.getReturnValue(task, symbol);
 	    eachObserver(leave.observers, new ObserverIterator() {
@@ -156,7 +159,7 @@ public class Ltrace
 		    }
 		});
 
-	    logger.log(Level.FINE, "Breakpoint handled.");
+	    finest.log("Breakpoint handled.");
 
 	    return action;
 	}
@@ -212,14 +215,13 @@ public class Ltrace
 
 	public Action updateHit (final Task task, long address)
 	{
-	    logger.log(Level.FINE, "Enter breakpoint at 0x" + Long.toHexString(address));
+	    fine.log("Enter breakpoint at 0x" + Long.toHexString(address));
 
 	    if (address != tpi.tracePoint.symbol.getParent().getEntryPoint()) {
 		// Install breakpoint to return address.
 		long retAddr = arch.getReturnAddress(task, tpi.tracePoint.symbol);
-		logger.log(Level.FINER,
-			   "It's enter tracepoint, return address 0x"
-			   + Long.toHexString(retAddr) + ".");
+		fine.log("It's enter tracepoint, return address 0x"
+				      + Long.toHexString(retAddr) + ".");
 		Long retAddrL = new Long(retAddr);
 		FunctionReturnObserver retObserver
 		    = (FunctionReturnObserver)functionReturnObservers.get(retAddrL);
@@ -230,10 +232,9 @@ public class Ltrace
 		retObserver.add(tpi, observers);
 	    }
 	    else
-		logger.log(Level.FINEST,
-			   "It's _start, no return breakpoint established...");
+		fine.log("It's _start, no return breakpoint established...");
 
-	    logger.log(Level.FINEST, "Building arglist.");
+	    finest.log("Building arglist.");
 	    final Object[] args = arch.getCallArguments(task, tpi.tracePoint.symbol);
 	    eachObserver(observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
@@ -257,7 +258,7 @@ public class Ltrace
 	}
 
         public synchronized void addFailed(final Object observable, final Throwable w) {
-            logger.log(Level.FINE, "lowlevel addFailed!");
+            fine.log("lowlevel addFailed!");
             if (!breakpointFailed) {
 		for (Iterator it = observers.iterator(); it.hasNext(); ) {
 		    FunctionObserver fo = (FunctionObserver)it.next();

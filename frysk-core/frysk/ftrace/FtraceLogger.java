@@ -38,8 +38,13 @@
 // exception.
 
 package frysk.ftrace;
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
-public class FtraceLogger
+class FtraceLogger
 {
-  public static final String LOGGER_ID = "frysk";
+    static final Log warning = LogFactory.warning(Ftrace.class);
+    static final Log info = LogFactory.info(Ftrace.class);
+    static final Log fine = LogFactory.fine(Ftrace.class);
+    static final Log finest = LogFactory.finest(Ftrace.class);
 }

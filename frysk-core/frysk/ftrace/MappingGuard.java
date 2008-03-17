@@ -40,16 +40,20 @@
 package frysk.ftrace;
 
 import frysk.isa.signals.Signal;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.logging.*;
-import java.io.File;
 import frysk.isa.syscalls.Syscall;
+
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Use this pseudo-class to request that an map/unmap observer be
@@ -57,9 +61,11 @@ import frysk.proc.TaskObserver;
  */
 class MappingGuard
 {
-    /*package-private*/ static boolean enableSyscallObserver = true;
-    /*package-private*/ static boolean enableDebugstateObserver = true;
-    protected static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
+    private static final Log fine = LogFactory.fine(MappingGuard.class);
+    private static final Log warning = LogFactory.warning(MappingGuard.class);
+
+    static boolean enableSyscallObserver = true;
+    static boolean enableDebugstateObserver = true;
 
     // HashMap<Task, MappingGuardB>
     private static final Map guardsForTask = new HashMap();
@@ -128,7 +134,7 @@ class MappingGuard
 	}
 
 	public synchronized void addFailed(final Object observable, final Throwable w) {
-	    logger.log(Level.FINE, "lowlevel addFailed!");
+	    fine.log("lowlevel addFailed!");
 	    if (!lowlevelObserversFailed) {
 		eachObserver(new ObserverIterator() {
 			public Action action(MappingObserver observer) {
@@ -165,7 +171,7 @@ class MappingGuard
 	}
 
 	public Action updateTerminating(Task task, Signal signal, int value) {
-	    logger.log(Level.FINE, "The task is terminating.");
+	    fine.log("The task is terminating.");
 	    updateMapping(task, true);
 	    return Action.CONTINUE;
 	}
@@ -338,7 +344,7 @@ class MappingGuard
 
 	public Action updateHit (Task task, long address)
 	{
-	    logger.log(Level.FINE, "Mapping guard hit.");
+	    fine.log("Mapping guard hit.");
 	    updateMapping(task, false);
 	    return Action.CONTINUE;
 	}
@@ -362,14 +368,14 @@ class MappingGuard
      */
     private static MappingGuardB setupDebugStateObserver(Task task)
     {
-	logger.log(Level.FINE, "Entering....");
+	fine.log("Entering....");
 
 	File f = new File(task.getProc().getExe());
 	ObjectFile objf = ObjectFile.buildFromFile(f);
 	String interp = objf.getInterp();
 	if (interp == null) {
 	    // We're boned.
-	    logger.log(Level.WARNING, "`{1}' has no interpreter.", f);
+	    warning.log("`{1}' has no interpreter.", f);
 	    return null;
 	}
 
@@ -380,26 +386,23 @@ class MappingGuard
 	    tp = interpf.lookupTracePoint("_dl_debug_state",
 					  TracePointOrigin.DYNAMIC);
 	    if (tp == null) {
-		logger.log(Level.FINE,
-			   "Symbol _dl_debug_state not found in `{0}'.",
-			   interppath);
+		fine.log("Symbol _dl_debug_state not found in `{0}'.",
+			 interppath);
 		return null;
 	    }
 
 	    // Make sure we know the offset of the symbol data.
 	    // Necessary for lookup between mappings.
 	    if (tp.symbol.offset == 0) {
-		logger.log(Level.FINE,
-			   "Symbol _dl_debug_state has offset 0.",
-			   interppath);
+		fine.log("Symbol _dl_debug_state has offset 0.",
+			 interppath);
 		return null;
 	    }
 	}
 	catch (lib.dwfl.ElfException e) {
 	    e.printStackTrace();
-	    logger.log(Level.WARNING,
-		       "Problem reading DYNAMIC entry points from `{0}'",
-		       interppath);
+	    warning.log("Problem reading DYNAMIC entry points from `{0}'",
+			interppath);
 	    return null;
 	}
 
@@ -407,13 +410,13 @@ class MappingGuard
 	Map currentMappings = MemoryMapping.buildForPid(task.getTid());
 	MemoryMapping mm = (MemoryMapping)currentMappings.get(interppath);
 	if (mm == null) {
-	    logger.log(Level.FINE, "Couldn't obtain mappings of interpreter.");
+	    fine.log("Couldn't obtain mappings of interpreter.");
 	    return null;
 	}
 
 	List parts = mm.lookupParts(tp.symbol.offset);
 	if (parts.size() != 1) {
-	    logger.log(Level.FINE, "Ambiguous mapping of interpreter, or the mapping couldn't be determined.");
+	    fine.log("Ambiguous mapping of interpreter, or the mapping couldn't be determined.");
 	    return null;
 	}
 	MemoryMapping.Part p = (MemoryMapping.Part)parts.get(0);
@@ -421,10 +424,9 @@ class MappingGuard
 
 	// There we go!
 	long fin = tp.address + relocation;
-	logger.log(Level.FINE,
-		   "Success: tp.address=0x" + Long.toHexString(tp.address)
-		   + ", relocation=0x" + Long.toHexString(relocation)
-		   + ", fin=0x" + Long.toHexString(fin));
+	fine.log("Success: tp.address=0x" + Long.toHexString(tp.address)
+		 + ", relocation=0x" + Long.toHexString(relocation)
+		 + ", fin=0x" + Long.toHexString(fin));
 	return new DebugStateMappingGuard(task, fin);
     }
 

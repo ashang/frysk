@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.*;
 
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
@@ -77,7 +76,6 @@ public class ObjectFile
     private long baseAddress = 0;
     private long entryPoint = 0;
     private static HashMap cachedFiles = new HashMap();
-    protected static final Logger logger = Logger.getLogger(FtraceLogger.LOGGER_ID);
 
     public ElfSection dynamicStrtab = null;
     public ElfSection dynamicSymtab = null;
@@ -160,7 +158,7 @@ public class ObjectFile
 	    /// indicate we want a mapping of (name x verdefs) -> symbol.
 
 	    String dName = Demangler.demangle(name);
-	    logger.log(Level.FINEST, "Got new symbol `" + dName + "' with origin " + this.origin + ".");
+	    FtraceLogger.finest.log("Got new symbol `" + dName + "' with origin " + this.origin + ".");
 
 	    Long valueL = null;
 	    Symbol sym = null;
@@ -171,7 +169,7 @@ public class ObjectFile
 	    }
 
 	    if (sym != null) {
-		logger.log(Level.FINEST, "... aliasing `" + sym.name + "'.");
+		FtraceLogger.finest.log("... aliasing `" + sym.name + "'.");
 		sym.addAlias(dName);
 		recordDynamicSymbol(index, sym);
 	    }
@@ -202,10 +200,10 @@ public class ObjectFile
 
 	public void addNewTracepoint(long address, long offset, Symbol symbol)
 	{
-	    logger.log(Level.FINE,
-		       "New tracepoint for `" + symbol + "', origin " + this.origin
-		       + ", address=0x" + Long.toHexString(address)
-		       + ", offset=0x" + Long.toHexString(offset) + ".");
+	    FtraceLogger.fine.log(
+		"New tracepoint for `" + symbol + "', origin " + this.origin
+		+ ", address=0x" + Long.toHexString(address)
+		+ ", offset=0x" + Long.toHexString(offset) + ".");
 	    TracePoint tp = new TracePoint(address, offset, symbol, this.origin);
 	    tracePoints.add(tp);
 	}
@@ -213,11 +211,13 @@ public class ObjectFile
 	public synchronized ArrayList getTracePoints(TracePointOrigin origin) {
 	    ArrayList tracePoints = (ArrayList)this.tracePointMap.get(origin);
 	    if (tracePoints != null) {
-		logger.log(Level.FINE, "" + tracePoints.size() + " tracepoints for origin " + origin + " retrieved from cache.");
+		FtraceLogger.fine.log(
+		    "" + tracePoints.size() + " tracepoints for origin "
+		    + origin + " retrieved from cache.");
 		return tracePoints;
 	    }
 
-	    logger.log(Level.FINE, "Loading tracepoints for origin " + origin + ".");
+	    FtraceLogger.fine.log("Loading tracepoints for origin " + origin + ".");
 	    if ((origin == TracePointOrigin.PLT
 		 || origin == TracePointOrigin.DYNAMIC)
 		&& this.haveDynamic) {
@@ -234,7 +234,7 @@ public class ObjectFile
 
 		if (origin == TracePointOrigin.DYNAMIC) {
 		    // Load dynamic symtab and PLT entries.
-		    logger.log(Level.FINER, "Loading dynamic symtab.");
+		    FtraceLogger.finest.log("Loading dynamic symtab.");
 		    this.origin = TracePointOrigin.DYNAMIC;
 		    this.tracePoints = new ArrayList();
 		    this.tracePointMap.put(this.origin, this.tracePoints);
@@ -244,7 +244,7 @@ public class ObjectFile
 
 		if (origin == TracePointOrigin.PLT) {
 		    int pltCount = ObjectFile.this.pltRelocs.length;
-		    logger.log(Level.FINER, "Loading " + pltCount + " PLT entries.");
+		    FtraceLogger.finest.log("Loading " + pltCount + " PLT entries.");
 
 		    ArrayList tracePointsPlt = new ArrayList();
 		    this.tracePointMap.put(TracePointOrigin.PLT, tracePointsPlt);
@@ -267,8 +267,7 @@ public class ObjectFile
 			    assertFitsToInt(symbolIndex, "Symbol associated with PLT entry");
 			    Symbol symbol = this.dynamicSymbolList[(int)symbolIndex];
 			    if (symbol == null) {
-				logger.log(Level.FINEST,
-					   "Lazy loading symbol #" + symbolIndex);
+				FtraceLogger.finest.log("Lazy loading symbol #" + symbolIndex);
 				this.origin = TracePointOrigin.DYNAMIC;
 				this.tracePoints = tracePointsDynamic;
 				this.dynamicLoader.load(symbolIndex, this);
@@ -277,9 +276,9 @@ public class ObjectFile
 			    if (symbol == null)
 				throw new AssertionError("Dynamic symbol still not initialized.");
 
-			    logger.log(Level.FINEST,
-				       "Got plt entry for `" + symbol.name
-				       + "' at 0x" + Long.toHexString(pltEntryAddr) + ".");
+			    FtraceLogger.finest.log(
+				"Got plt entry for `" + symbol.name + "' at 0x"
+				+ Long.toHexString(pltEntryAddr) + ".");
 			    this.origin = TracePointOrigin.PLT;
 			    this.tracePoints = tracePointsPlt;
 			    long pltEntryOffset = pltEntryAddr - ObjectFile.this.baseAddress;
@@ -290,7 +289,7 @@ public class ObjectFile
 	    else if (origin == TracePointOrigin.SYMTAB
 		     && ObjectFile.this.staticSymtab != null)	{
 		// Load static symtab.
-		logger.log(Level.FINER, "Loading static symtab.");
+		FtraceLogger.finest.log("Loading static symtab.");
 		this.origin = TracePointOrigin.SYMTAB;
 		this.tracePoints = new ArrayList();
 		this.tracePointMap.put(this.origin, this.tracePoints);
@@ -321,35 +320,35 @@ public class ObjectFile
 	    if (ph.type == ElfPHeader.PTYPE_DYNAMIC) {
 		builder.haveDynamic = true;
 		offDynamic = ph.offset;
-		logger.log(Level.FINER, "Found DYNAMIC segment.");
+		FtraceLogger.finest.log("Found DYNAMIC segment.");
 	    }
 	    else if (ph.type == ElfPHeader.PTYPE_LOAD
 		     && ph.offset == 0) {
 		haveLoadable = true;
 		this.baseAddress = ph.vaddr;
-		logger.log(Level.FINER,
-			   "Found LOADABLE segment, base address = 0x"
-			   + Long.toHexString(this.baseAddress));
+		FtraceLogger.finest.log(
+		    "Found LOADABLE segment, base address = 0x"
+		    + Long.toHexString(this.baseAddress));
 	    }
 	    else if (ph.type == ElfPHeader.PTYPE_INTERP) {
 		ElfData interpData = elfFile.getRawData(ph.offset, ph.filesz - 1); // -1 for trailing zero
 		String interp = new String(interpData.getBytes());
 		this.setInterp(interp);
-		logger.log(Level.FINEST, "Found INTERP `" + interp + "'.");
+		FtraceLogger.finest.log("Found INTERP `" + interp + "'.");
 	    }
 	}
 
 	if (!haveLoadable) {
-	    logger.log(Level.FINE, "Failed, didn't find any loadable segments.");
+	    FtraceLogger.fine.log("Failed, didn't find any loadable segments.");
 	    throw new ElfFileException(file, "Failed, didn't find any loadable segments.");
 	}
 
 	if (eh.type == ElfEHeader.PHEADER_ET_EXEC)
-	    logger.log(Level.FINER, "This file is EXECUTABLE.");
+	    FtraceLogger.finest.log("This file is EXECUTABLE.");
 	else if (eh.type == ElfEHeader.PHEADER_ET_DYN)
-	    logger.log(Level.FINER, "This file is DSO or PIE EXECUTABLE.");
+	    FtraceLogger.finest.log("This file is DSO or PIE EXECUTABLE.");
 	else {
-	    logger.log(Level.FINE, "Failed, unsupported ELF file type.");
+	    FtraceLogger.fine.log("Failed, unsupported ELF file type.");
 	    throw new ElfFileException(file, "Failed, unsupported ELF file type.");
 	}
 
@@ -366,51 +365,51 @@ public class ObjectFile
 	     section = elfFile.getNextSection(section)) {
 	    ElfSectionHeader sheader = section.getSectionHeader();
 	    if (builder.haveDynamic && sheader.offset == offDynamic) {
-		logger.log(Level.FINER, "Processing DYNAMIC section.");
+		FtraceLogger.finest.log("Processing DYNAMIC section.");
 		foundDynamic = true;
 		ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
 			public void entry (int tag, long value)
 			{
 			    if (tag == ElfDynamic.ELF_DT_STRTAB)
 				{
-				    logger.log(Level.FINEST, " * dynamic strtab at 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * dynamic strtab at 0x" + Long.toHexString(value));
 				    ObjectFile.this.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
 				}
 			    else if (tag == ElfDynamic.ELF_DT_SONAME)
 				{
-				    logger.log(Level.FINEST, " * soname index = 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * soname index = 0x" + Long.toHexString(value));
 				    assertFitsToInt(value, "SONAME index");
 				    locals.dynamicSonameIdx = (int)value;
 				}
 			    else if (tag == ElfDynamic.ELF_DT_SYMTAB)
 				{
-				    logger.log(Level.FINEST, " * dynamic symtab = 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * dynamic symtab = 0x" + Long.toHexString(value));
 				    ObjectFile.this.dynamicSymtab = getElfSectionWithAddr(elfFile, value);
 				}
 			    else if (tag == ElfDynamic.ELF_DT_VERSYM)
 				{
-				    logger.log(Level.FINEST, " * versym = 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * versym = 0x" + Long.toHexString(value));
 				    ObjectFile.this.dynamicVersym = getElfSectionWithAddr(elfFile, value);
 				}
 			    else if (tag == ElfDynamic.ELF_DT_VERDEF)
 				{
-				    logger.log(Level.FINEST, " * verdef = 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * verdef = 0x" + Long.toHexString(value));
 				    ObjectFile.this.dynamicVerdef = getElfSectionWithAddr(elfFile, value);
 				}
 			    else if (tag == ElfDynamic.ELF_DT_VERDEFNUM)
 				{
-				    logger.log(Level.FINEST, " * verdefnum = " + Long.toString(value));
+				    FtraceLogger.finest.log(" * verdefnum = " + Long.toString(value));
 				    assertFitsToInt(value, "Count of VERDEF entries");
 				    ObjectFile.this.dynamicVerdefCount = (int)value;
 				}
 			    else if (tag == ElfDynamic.ELF_DT_VERNEED)
 				{
-				    logger.log(Level.FINEST, " * verneed = 0x" + Long.toHexString(value));
+				    FtraceLogger.finest.log(" * verneed = 0x" + Long.toHexString(value));
 				    ObjectFile.this.dynamicVerneed = getElfSectionWithAddr(elfFile, value);
 				}
 			    else if (tag == ElfDynamic.ELF_DT_VERNEEDNUM)
 				{
-				    logger.log(Level.FINEST, " * verneednum = " + Long.toString(value));
+				    FtraceLogger.finest.log(" * verneednum = " + Long.toString(value));
 				    assertFitsToInt(value, "Count of VERNEED entries");
 				    ObjectFile.this.dynamicVerneedCount = (int)value;
 				}
@@ -420,7 +419,7 @@ public class ObjectFile
 	    else if ((sheader.type == ElfSectionHeader.ELF_SHT_PROGBITS
 		      || sheader.type == ElfSectionHeader.ELF_SHT_NOBITS)
 		     && sheader.name.equals(".plt")) {
-		logger.log(Level.FINER, "Found PLT section.");
+		FtraceLogger.finest.log("Found PLT section.");
 		havePlt = true;
 		this.pltAddr = sheader.addr;
 		this.pltSize = sheader.size;
@@ -429,14 +428,14 @@ public class ObjectFile
 		      && sheader.name.equals(".rel.plt"))
 		     || (sheader.type == ElfSectionHeader.ELF_SHT_RELA
 			 && sheader.name.equals(".rela.plt"))) {
-		logger.log(Level.FINER, "Found PLT relocation section.");
+		FtraceLogger.finest.log("Found PLT relocation section.");
 		haveRelPlt = true;
 		this.pltRelocs = ElfRel.loadFrom(section);
 	    }
 	    else if (sheader.type == ElfSectionHeader.ELF_SHT_SYMTAB) {
 		if (this.staticSymtab != null)
 		    throw new ElfFileException(file, "Strange: More than one static symbol tables.");
-		logger.log(Level.FINER, "Found static symtab section `" + sheader.name + "'.");
+		FtraceLogger.finest.log("Found static symtab section `" + sheader.name + "'.");
 		this.staticSymtab = section;
 	    }
 	}
@@ -465,7 +464,7 @@ public class ObjectFile
 
 	// Read SONAME, if there was one.
 	if (locals.dynamicSonameIdx != -1) {
-	    logger.log(Level.FINER, "Reading SONAME.");
+	    FtraceLogger.finest.log("Reading SONAME.");
 	    ElfData data = this.dynamicStrtab.getData();
 	    byte[] bytes = data.getBytes();
 	    int startIndex = locals.dynamicSonameIdx;
@@ -474,29 +473,31 @@ public class ObjectFile
 		++endIndex;
 	    String name = new String(bytes, startIndex, endIndex - startIndex);
 	    this.setSoname(name);
-	    logger.log(Level.FINEST, "Found SONAME `" + name + "'.");
+	    FtraceLogger.finest.log("Found SONAME `" + name + "'.");
 	}
 
-	logger.log(Level.FINE, "Loading finished successfully.");
+	FtraceLogger.fine.log("Loading finished successfully.");
     }
 
     public void eachTracePoint(TracePointIterator client, TracePointOrigin origin) {
-	logger.log(Level.FINE, "Loading tracepoints for origin " + origin + ".");
+	FtraceLogger.fine.log("Loading tracepoints for origin " + origin + ".");
 	List tracePoints = builder.getTracePoints(origin);
 
-	logger.log(Level.FINE, "Got them, now processing each loaded.");
-	for (Iterator it = tracePoints.iterator(); it.hasNext();)
-	    {
-		TracePoint tp = (TracePoint)it.next();
-		logger.log(Level.FINEST, "Tracepoint for `" + tp.symbol.name + "', origin " + tp.origin);
-		client.tracePoint(tp);
-	    }
+	FtraceLogger.fine.log("Got them, now processing each loaded.");
+	for (Iterator it = tracePoints.iterator(); it.hasNext();) {
+	    TracePoint tp = (TracePoint)it.next();
+	    FtraceLogger.finest.log("Tracepoint for `" + tp.symbol.name
+				    + "', origin " + tp.origin);
+	    client.tracePoint(tp);
+	}
 
-	logger.log(Level.FINE, "Done processing tracepoints for origin " + origin + ".");
+	FtraceLogger.fine.log("Done processing tracepoints for origin "
+			      + origin + ".");
     }
 
     public TracePoint lookupTracePoint(String name, TracePointOrigin origin) {
-	logger.log(Level.FINE, "Looking up tracepoint for `" + name + "' in " + origin + ".");
+	FtraceLogger.fine.log("Looking up tracepoint for `"
+			      + name + "' in " + origin + ".");
 	List tracePoints = builder.getTracePoints(origin);
 	for (Iterator it = tracePoints.iterator(); it.hasNext();) {
 	    TracePoint tp = (TracePoint)it.next();
@@ -507,11 +508,11 @@ public class ObjectFile
     }
 
     public void eachTracePoint(TracePointIterator client) {
-	logger.log(Level.FINE, "Load ALL tracepoints.");
+	FtraceLogger.fine.log("Load ALL tracepoints.");
 	eachTracePoint(client, TracePointOrigin.PLT);
 	eachTracePoint(client, TracePointOrigin.DYNAMIC);
 	eachTracePoint(client, TracePointOrigin.SYMTAB);
-	logger.log(Level.FINE, "ALL tracepoints processed.");
+	FtraceLogger.fine.log("ALL tracepoints processed.");
     }
 
     protected void setSoname(String soname)
@@ -550,9 +551,9 @@ public class ObjectFile
 		this.resolvedInterp = interppath.getCanonicalFile();
 	    }
 	    catch (java.io.IOException e) {
-		logger.log(Level.WARNING,
-			   "Couldn't get canonical path of ELF interpreter `{0}'.",
-			   interppath);
+		FtraceLogger.warning.log(
+		    "Couldn't get canonical path of ELF interpreter `{0}'.",
+		    interppath);
 	    }
 	}
 	return this.resolvedInterp;
@@ -592,10 +593,10 @@ public class ObjectFile
 
     public static ObjectFile buildFromFile(File filename)
     {
-	logger.log(Level.FINE, "Loading object file `" + filename + "'");
+	FtraceLogger.fine.log("Loading object file `" + filename + "'");
 	ObjectFile objFile = (ObjectFile)cachedFiles.get(filename);
 	if (objFile != null) {
-	    logger.log(Level.FINE, "Retrieved from cache.");
+	    FtraceLogger.fine.log("Retrieved from cache.");
 	    return objFile;
 	}
 
@@ -612,13 +613,13 @@ public class ObjectFile
 	try {
 	    eh = elfFile.getEHeader();
 	} catch (ElfException e) {
-	    logger.log(Level.FINE, "Failed, couldn't get an ELF header.");
+	    FtraceLogger.fine.log("Failed, couldn't get an ELF header.");
 	    return null;
 	}
 
 	objFile = new ObjectFile(filename, elfFile, eh);
 	cachedFiles.put(filename, objFile);
-	logger.log(Level.FINE, "Done.");
+	FtraceLogger.fine.log("Done.");
 	return objFile;
     }
 }

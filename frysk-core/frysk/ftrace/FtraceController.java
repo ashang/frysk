@@ -49,7 +49,6 @@ import java.util.Set;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.proc.Task;
-import frysk.rsl.Log;
 
 public class FtraceController
     implements Ftrace.Controller,
@@ -57,8 +56,6 @@ public class FtraceController
 	       Ftrace.TracedSyscallProvider,
 	       Ftrace.TracedSignalProvider
 {
-    private static final Log fine = Log.fine(FtraceController.class);
-
     // ArrayList<SymbolRule>
     private final List pltRules = new ArrayList();
     private final List dynRules = new ArrayList();
@@ -82,27 +79,27 @@ public class FtraceController
     public FtraceController() { }
 
     public void gotPltRules(List rules) {
-	fine.log("Got " + rules.size() + " PLT rules.");
+	FtraceLogger.fine.log("Got " + rules.size() + " PLT rules.");
 	this.pltRules.addAll(rules);
     }
 
     public void gotDynRules(List rules) {
-	fine.log("Got " + rules.size() + " DYNAMIC rules.");
+	FtraceLogger.fine.log("Got " + rules.size() + " DYNAMIC rules.");
 	this.dynRules.addAll(rules);
     }
 
     public void gotSymRules(List rules) {
-	fine.log("Got " + rules.size() + " SYMTAB rules.");
+	FtraceLogger.fine.log("Got " + rules.size() + " SYMTAB rules.");
 	this.symRules.addAll(rules);
     }
 
     public void gotSysRules(List rules) {
-	fine.log("Got " + rules.size() + " syscall rules.");
+	FtraceLogger.fine.log("Got " + rules.size() + " syscall rules.");
 	this.sysRules.addAll(rules);
     }
 
     public void gotSigRules(List rules) {
-	fine.log("Got " + rules.size() + " signal rules.");
+	FtraceLogger.fine.log("Got " + rules.size() + " signal rules.");
 	this.sigRules.addAll(rules);
     }
 
@@ -114,7 +111,7 @@ public class FtraceController
 
 	for (Iterator it = rules.iterator(); it.hasNext(); ) {
 	    final Rule rule = (Rule)it.next();
-	    fine.log("Considering syscall rule " + rule + ".");
+	    FtraceLogger.fine.log("Considering syscall rule " + rule + ".");
 	    rule.apply(candidates, workingSet, stackTraceSet);
 	}
 
@@ -166,7 +163,7 @@ public class FtraceController
 				  final List rules, final TracePointOrigin origin)
 	throws lib.dwfl.ElfException
     {
-	fine.log("Building working set for origin " + origin + ".");
+	FtraceLogger.fine.log("Building working set for origin " + origin + ".");
 
 	// Skip the set if it's empty...
 	if (rules.isEmpty())
@@ -188,7 +185,7 @@ public class FtraceController
 	// lazily inside the loop.
 	for (Iterator it = rules.iterator(); it.hasNext(); ) {
 	    final SymbolRule rule = (SymbolRule)it.next();
-	    fine.log("Considering symbol rule " + rule + ".");
+	    FtraceLogger.fine.log("Considering symbol rule " + rule + ".");
 
 	    // MAIN is meta-soname meaning "main executable".
 	    if ((rule.sonamePattern.pattern().equals("MAIN")
@@ -202,7 +199,7 @@ public class FtraceController
 		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
 			    public void tracePoint(TracePoint tp) {
 				if (candidates.add(tp))
-				    fine.log("candidate `" + tp.symbol.name + "'.");
+				    FtraceLogger.fine.log("candidate `" + tp.symbol.name + "'.");
 			    }
 			}, origin);
 		}
@@ -212,7 +209,7 @@ public class FtraceController
 	}
 
 	// Finally, apply constructed working set.
-	fine.log("Applying working set for origin " + origin + ".");
+	FtraceLogger.fine.log("Applying working set for origin " + origin + ".");
 	for (Iterator it = workingSet.iterator(); it.hasNext(); )
 	    driver.tracePoint(task, (TracePoint)it.next());
 
