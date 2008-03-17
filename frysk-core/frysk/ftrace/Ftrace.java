@@ -139,11 +139,13 @@ public class Ftrace
 
     public void setTraceSyscalls (TracedSyscallProvider tracedSyscallProvider)
     {
+	FtraceLogger.finest.log("syscall tracing requested");
 	this.tracedSyscallProvider = tracedSyscallProvider;
     }
 
     public void setTraceSignals (TracedSignalProvider tracedSignalProvider)
     {
+	FtraceLogger.finest.log("signal tracing requested");
 	this.tracedSignalProvider = tracedSignalProvider;
     }
 
@@ -222,6 +224,7 @@ public class Ftrace
 	Proc proc = task.getProc();
 
 	if (tracedSyscallProvider != null) {
+	    FtraceLogger.finest.log("requesting syscall observer");
 	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
 	    Map workingSet
@@ -230,6 +233,7 @@ public class Ftrace
 	}
 
 	if (tracedSignalProvider != null) {
+	    FtraceLogger.finest.log("requesting signal observer");
 	    task.requestAddSignaledObserver(new MySignaledObserver());
 	    observationRequested(task);
 	    Map workingSet
@@ -475,6 +479,7 @@ public class Ftrace
 
 	public void addedTo (Object observable)
 	{
+	    FtraceLogger.finest.log("syscall observer realized");
 	    Task task = (Task) observable;
 	    observationRealized(task);
 	}
@@ -570,6 +575,7 @@ public class Ftrace
 
     class MySignaledObserver implements TaskObserver.Signaled {
 	public Action updateSignaled(Task task, Signal signal) {
+	    FtraceLogger.finest.log("signal hit " + signal);
 	    String name = signal.getName();
 	    Map signalWorkingSet = (Map)signalSetForTask.get(task);
 	    Boolean stackTrace = (Boolean)signalWorkingSet.get(signal);
@@ -585,11 +591,17 @@ public class Ftrace
 	}
 
 	public void addedTo (Object observable) {
+	    FtraceLogger.finest.log("signal observer realized for " + observable);
 	    Task task = (Task) observable;
 	    observationRealized(task);
 	}
-	public void deletedFrom (Object observable) { }
-	public void addFailed (Object observable, Throwable w) { }
+	public void deletedFrom (Object observable) {
+	    FtraceLogger.finest.log("signal observer deleted from " + observable);
+	}
+	public void addFailed (Object observable, Throwable w) {
+	    FtraceLogger.finest.log("signal observer failure for "
+				    + observable + " with " + w);
+	}
     }
 
     class MyMappingObserver

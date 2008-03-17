@@ -68,9 +68,9 @@ public class Ltrace
      * given set of TracePoint.Instances.
      */
     public synchronized static
-	void requestAddFunctionObserver(Task task,
-					FunctionObserver observer,
-					Set tracePoints)
+    void requestAddFunctionObserver(Task task,
+				    FunctionObserver observer,
+				    Set tracePoints)
     {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
 	if (ltrace == null) {
@@ -82,9 +82,9 @@ public class Ltrace
     }
 
     public synchronized static
-	void requestDeleteFunctionObserver(Task task,
-					   FunctionObserver observer,
-					   Set tracePoints)
+    void requestDeleteFunctionObserver(Task task,
+				       FunctionObserver observer,
+				       Set tracePoints)
     {
 	Ltrace ltrace = (Ltrace)ltraceForTask.get(task);
 	if (ltrace == null)

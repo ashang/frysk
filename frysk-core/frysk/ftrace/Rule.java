@@ -61,15 +61,19 @@ public abstract class Rule {
 	    + (this.stackTrace ? "#" : "");
     }
 
-    public void apply(Collection candidates,
-		      Set workingSet, Set stackTraceSet) {
-	if (this.addition)
+    public boolean apply(Collection candidates,
+		      Set workingSet, Set stackTraceSet)
+    {
+	boolean matched = false;
+
+	if (this.addition) {
 	    // For '+' rules iterate over candidates,
 	    // and add what matches to workingSet, and
 	    // maybe to stackTraceSet.
 	    for (Iterator jt = candidates.iterator(); jt.hasNext(); ) {
 		Object candidate = jt.next();
 		if (this.matches(candidate)) {
+		    matched = true;
 		    if (workingSet.add(candidate))
 			fine.log(this, "add", candidate);
 		    if (this.stackTrace
@@ -77,6 +81,7 @@ public abstract class Rule {
 			fine.log(this, "stack trace on", candidate);
 		}
 	    }
+	}
 	else {
 	    // For '-' or '-#' rules iterate over
 	    // workingSet or stackTraceSet, and remove
@@ -85,6 +90,7 @@ public abstract class Rule {
 	    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
 		Object candidate = jt.next();
 		if (this.matches(candidate)) {
+		    matched = true;
 		    jt.remove();
 		    if (!this.stackTrace)
 			stackTraceSet.remove(candidate);
@@ -92,6 +98,8 @@ public abstract class Rule {
 		}
 	    }
 	}
+
+	return matched;
     }
 
     abstract public boolean matches(Object traceable);

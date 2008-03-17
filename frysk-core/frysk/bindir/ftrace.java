@@ -176,10 +176,20 @@ class ftrace {
 	    else
 		stackTrace = false;
 
+	    final String ruleKern = new String(str);
+	    abstract class SigSysRule extends Rule {
+		public SigSysRule(boolean addition, boolean stackTrace) {
+		    super(addition, stackTrace);
+		}
+		public String toString() {
+		    return super.toString() + ruleKern;
+		}
+	    }
+
 	    if (sysnumPat.matcher(str).matches()) {
 		fine.log(i + ": " + str + ": by number rule");
 		final int number = (new Integer(str)).intValue();
-		rule = new Rule(addition, stackTrace) {
+		rule = new SigSysRule(addition, stackTrace) {
 			public boolean matches(final Object traceable) {
 			    return number == examiner.traceableNumber(traceable);
 			}
@@ -191,7 +201,7 @@ class ftrace {
 		if (optionalPrefix != null && !str.startsWith(optionalPrefix))
 		    str = optionalPrefix + str;
 		final Pattern pattern = Glob.compile(str, Pattern.CASE_INSENSITIVE);
-		rule = new Rule(addition, stackTrace) {
+		rule = new SigSysRule(addition, stackTrace) {
 			public boolean matches(final Object traceable) {
 			    String name = examiner.traceableName(traceable);
 			    return pattern.matcher(name).matches();
@@ -200,7 +210,7 @@ class ftrace {
 	    }
 	    else {
 		fine.log(i + ": " + str + ": \"everything\" rule");
-		rule = new Rule(addition, stackTrace) {
+		rule = new SigSysRule(addition, stackTrace) {
 			public boolean matches(Object traceable) {
 			    return true;
 			}

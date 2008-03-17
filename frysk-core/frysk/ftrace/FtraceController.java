@@ -104,15 +104,16 @@ public class FtraceController
     }
 
     private Map computeWorkingSet(Task task, String what,
-				 List rules, ArrayList candidates)
+				  List rules, ArrayList candidates)
     {
 	HashSet workingSet = new HashSet();
 	HashSet stackTraceSet = new HashSet();
 
 	for (Iterator it = rules.iterator(); it.hasNext(); ) {
 	    final Rule rule = (Rule)it.next();
-	    FtraceLogger.fine.log("Considering syscall rule " + rule + ".");
-	    rule.apply(candidates, workingSet, stackTraceSet);
+	    FtraceLogger.fine.log("Considering " + what + " rule `" + rule + "'.");
+	    if (!rule.apply(candidates, workingSet, stackTraceSet))
+		FtraceLogger.warning.log("Rule `" + rule + "' didn't match any " + what + ".");
 	}
 
 	// Apply the two sets.

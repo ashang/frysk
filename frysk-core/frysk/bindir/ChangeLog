@@ -2,6 +2,10 @@
 
 	* fstep.java: Update; using TaskAttachedObserverXXX.
 
+2008-03-17  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Fix toString for signal and syscall rules.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk.xml: New.

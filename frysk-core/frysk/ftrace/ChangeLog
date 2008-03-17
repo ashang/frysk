@@ -4,6 +4,15 @@
 
 2008-03-17  Petr Machata  <pmachata@redhat.com>
 
+	* Ftrace.java: Add some more logging messages.
+	* FtraceController.java: Fix logging.
+	Warn when rule wasn't matched.
+	* Ltrace.java: Reindent.
+	* Rule.java (apply): Return boolean, true when apply matched
+	something, false otherwise.
+
+2008-03-17  Petr Machata  <pmachata@redhat.com>
+
 	* FtraceLogger.java: Use rsl.
 	* Ftrace.java: Adjust to above.
 	* FtraceController.java: Likewise.
