@@ -1,3 +1,7 @@
+2008-03-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestJGMemory.java: New test.
+
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Use EventLogger.getLogger().
