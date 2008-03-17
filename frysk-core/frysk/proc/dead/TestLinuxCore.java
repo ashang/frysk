@@ -44,8 +44,9 @@ import frysk.proc.TaskAttachedObserverXXX;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import frysk.proc.ProcObserver;
 import lib.dwfl.Dwfl;
+import java.util.Iterator;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
 import frysk.config.Config;
@@ -60,7 +61,6 @@ import frysk.proc.Manager;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcCoreAction;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.testbed.CorefileFactory;
@@ -128,7 +128,7 @@ public class TestLinuxCore extends TestLib {
 	    };
 	
 	// And run ....
-	new ProcCoreAction(coreProc, coreStacktrace);
+	actionCoreProc(coreProc, coreStacktrace);
 	assertRunUntilStop("Perform corefile Backtrace");
 
 	String mainThread = "Task #\\d+\n" + 
@@ -253,7 +253,7 @@ public class TestLinuxCore extends TestLib {
     };
 
     // And run ....
-    new ProcCoreAction(coreProc, coreStacktrace);
+    actionCoreProc(coreProc, coreStacktrace);
     assertRunUntilStop("Perform corefile Backtrace");
 
     // Check that the dead process stacktrace produces something. If
@@ -619,4 +619,14 @@ public class TestLinuxCore extends TestLib {
     }
   }
 
+    /**
+     * Apply a core-file to a proc-block-action.
+     */
+    private void actionCoreProc(Proc proc, ProcObserver.ProcAction action) {
+	for (Iterator i = proc.getTasks().iterator(); i.hasNext(); ) {
+	    Task task = (Task) i.next();
+	    action.existingTask(task);
+	}
+	action.allExistingTasksCompleted();
+    }
 }

@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStackTraceAction.java (testCore()): Delete; tested by core
+	code.
+
 	* ProcRunUtil.java: Update; using TaskAttachedObserverXXX.
 
 2008-03-13  Stan Cox  <scox@redhat.com>

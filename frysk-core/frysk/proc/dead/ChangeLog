@@ -1,8 +1,15 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java (actionCoreProc()): New; replace
+	ProcCoreAction.
+
 2008-03-17  Phil Muldoon  <pmuldoon@redhat.com>
+	
 	* TestCorefileByteBuffer.java (testCorefileByteBufferSlice): Use
 	getBytes(). Test for null returns.
 
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
+	
 	* DeadHost.java: Update; using TaskAttachedObserverXXX;
 	* TestLinuxCore.java: Update.
 	* DeadTask.java: Ditto.

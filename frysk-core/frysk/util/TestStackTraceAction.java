@@ -43,14 +43,11 @@ package frysk.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import frysk.rsl.Log;
-import frysk.config.Config;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcCoreAction;
-import frysk.proc.dead.LinuxCoreFactory;
 import frysk.testbed.TestLib;
 import frysk.testbed.SlaveOffspring;
 
@@ -132,22 +129,4 @@ public class TestStackTraceAction extends TestLib {
                result.matches(regex));
 
   }
-  
-    public void testCore() {
-	if (unresolved(4581))
-	    return;
-	StringWriter stringWriter = new StringWriter();
-	Proc proc = LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
-	assertNotNull("core proc", proc);
-	StacktraceAction stacker;
-	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop),options) {
-		
-		public void addFailed (Object observable, Throwable w) {
-		    fail("Proc add failed: " + w.getMessage());
-		}
-	    };
-	new ProcCoreAction (proc, stacker);
-	assertRunUntilStop("perform backtrace");
-	assertNotNull("has backtrace?", stringWriter.getBuffer().toString());
-    }
 }
