@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSysRoot.java (testHaveSysRoot()): Mark as unresolved; bug
+	5953.
+
 	* ShellCommand.java: Update; using TaskAttachedObserverXXX.
 	* StartRun.java: Ditto.
 
