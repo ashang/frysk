@@ -47,7 +47,6 @@ import frysk.sys.WaitBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import frysk.rsl.Log;
-import frysk.proc.Task;
 import frysk.sys.ProcessIdentifier;
 import frysk.proc.TaskAttachedObserverXXX;
 
@@ -142,8 +141,8 @@ class LinuxWaitBuilder implements WaitBuilder {
         // Create an attached and running fork of TASK.
         LinuxPtraceProc forkedProc = new LinuxPtraceProc(forkingTask, fork);
         // The forked proc's only and main task.
-        Task forkedTask = new LinuxPtraceTask(forkingTask, forkedProc,
-					      (TaskAttachedObserverXXX) null);
+        LinuxPtraceTask forkedTask = new LinuxPtraceTask
+	    (forkingTask, forkedProc, (TaskAttachedObserverXXX) null);
         forkingTask.processForkedEvent(forkedTask);
 	attemptDeliveringFsckedKernelEvents ();
     }

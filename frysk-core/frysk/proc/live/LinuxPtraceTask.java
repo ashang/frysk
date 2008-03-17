@@ -190,24 +190,22 @@ public class LinuxPtraceTask extends LiveTask {
     /**
      * (internal) This task cloned creating the new Task cloneArg.
      */
-    void processClonedEvent (Task clone)
-    {
-	set(oldState().handleClonedEvent(this, (LinuxPtraceTask)clone));
+    void processClonedEvent(LinuxPtraceTask clone) {
+	newState = oldState().handleClonedEvent(this, clone);
     }
     /**
      * (internal) This Task forked creating an entirely new child process
      * containing one (the fork) task.
      */
-    void processForkedEvent (Task fork)
-    {
-	set(oldState().handleForkedEvent(this, (LinuxPtraceTask)fork));
+    void processForkedEvent(LinuxPtraceTask fork) {
+	newState = oldState().handleForkedEvent(this, (LinuxPtraceTask)fork);
     }
     /**
      * (internal) This task stopped with SIGNAL pending.
      */
     void processStoppedEvent(Signal signal) {
 	fine.log(this, "stoppedEvent", signal);
-	set(oldState().handleStoppedEvent(this, signal));
+	newState = oldState().handleStoppedEvent(this, signal);
     }
     /**
      * (internal) The task is in the process of terminating. If SIGNAL
@@ -215,36 +213,33 @@ public class LinuxPtraceTask extends LiveTask {
      * status.
      */
     void processTerminatingEvent(Signal signal, int value) {
-	set(oldState().handleTerminatingEvent(this, signal, value));
+	newState = oldState().handleTerminatingEvent(this, signal, value);
     }
     /**
      * (internal) The task has disappeared (due to an exit or some other error
      * operation).
      */
-    void processDisappearedEvent (Throwable arg)
-    {
-	set(oldState().handleDisappearedEvent(this, arg));
+    void processDisappearedEvent(Throwable arg) {
+	newState = oldState().handleDisappearedEvent(this, arg);
     }
     /**
      * (internal) The task is performing a system call.
      */
-    void processSyscalledEvent ()
-    {
-	set(oldState().handleSyscalledEvent(this));
+    void processSyscalledEvent() {
+	newState = oldState().handleSyscalledEvent(this);
     }
     /**
      * (internal) The task has terminated; if SIGNAL is non-NULL the
      * termination signal else STATUS contains the exit status.
      */
     void processTerminatedEvent(Signal signal, int value) {
-	set(oldState().handleTerminatedEvent(this, signal, value));
+	newState = oldState().handleTerminatedEvent(this, signal, value);
     }
     /**
      * (internal) The task has execed, overlaying itself with another program.
      */
-    void processExecedEvent ()
-    {
-	set(oldState().handleExecedEvent(this));
+    void processExecedEvent() {
+	newState = oldState().handleExecedEvent(this);
     }
 
     /**
@@ -394,13 +389,6 @@ public class LinuxPtraceTask extends LiveTask {
 	    return getState().toString();
 	else
 	    return "<null>";
-    }
-
-    /**
-     * Set the new state.
-     */
-    void set(LinuxPtraceTaskState newState) {
-	this.newState = newState;
     }
 
     /**

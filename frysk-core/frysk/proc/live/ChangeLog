@@ -1,5 +1,8 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java (set(LinuxPtraceTaskState)): Delete.
+	* LinuxWaitBuilder.java: Update
+
 	* LinuxPtraceProcState.java (handleRefresh(LinuxPtraceProc)): Delete.
 	* LinuxPtraceProc.java (requestRefresh()): Delete.
 
