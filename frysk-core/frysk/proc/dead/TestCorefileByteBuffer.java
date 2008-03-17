@@ -57,7 +57,7 @@ public class TestCorefileByteBuffer
   public void testCorefileByteBufferSlice() throws ElfException
   {
 
-    ElfData rawData;
+    ElfData rawData = null;
     final long sliceBottom = 0x411bb000L;
     final long sliceTop = 0x411bbfffL;
     final long elfOffset = 0x28000;
@@ -74,16 +74,18 @@ public class TestCorefileByteBuffer
     // Independently get the elf core data as a raw image
     Elf segment = new Elf(Config.getPkgDataFile("test-core-x86"),
 			  ElfCommand.ELF_C_READ);
+    assertNotNull("Get Elf file for segment inspection", segment);
     rawData = segment.getRawData(elfOffset,elfLen);
+    assertNotNull("RawData is not null", rawData);
 
+    byte[] byteSet = rawData.getBytes();
     //    coreSlice.position(sliceBottom);
     for(int i=0; i<elfLen; i++)
       assertEquals("Offset at 0x"+Long.toHexString(elfOffset+i)
 		   +" does not match rawData at location " 
 		   + Long.toHexString(i),
-		   rawData.internal_buffer[i],
+		   byteSet[i],
 		   coreSlice.get());
-
     segment.close();
   }
 
