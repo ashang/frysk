@@ -1,5 +1,7 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* HostObserver.java: Delete.
+
 	* TaskObserver.java (Attached): Move to ...
 	* TaskAttachedObserverXXX.java: ... here.
 	* StressAttachDetachSignaledTask.java: Ditto.
