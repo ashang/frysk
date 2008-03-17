@@ -39,6 +39,7 @@
 
 package frysk.proc.dummy;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.isa.ISA;
@@ -80,10 +81,10 @@ public class DummyTask extends Task {
     public void requestDeleteClonedObserver(TaskObserver.Cloned o) {
 	throw new RuntimeException("oops!");
     }
-    public void requestAddAttachedObserver(TaskObserver.Attached o) {
+    public void requestAddAttachedObserver(TaskAttachedObserverXXX o) {
 	throw new RuntimeException("oops!");
     }
-    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
+    public void requestDeleteAttachedObserver(TaskAttachedObserverXXX o) {
 	throw new RuntimeException("oops!");
     }
     public void requestAddForkedObserver(TaskObserver.Forked o) {

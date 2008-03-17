@@ -1,3 +1,7 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Update; using TaskAttachedObserverXXX.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java (ProcRemovedObserver): Re-implement as a Terminated

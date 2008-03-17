@@ -63,10 +63,10 @@ public class TestRun
     TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
 
-    // Observe TaskObserver.Attached events; when any occur indicate
+    // Observe TaskAttachedObserverXXX events; when any occur indicate
     // that the curresponding task should continue.
     class TaskCreatedContinuedObserver extends TaskObserverBase
-        implements TaskObserver.Attached
+        implements TaskAttachedObserverXXX
     {
 	final TaskSet attachedTasks = new TaskSet();
 	Proc proc;
@@ -96,7 +96,7 @@ public class TestRun
 
   /**
    * Check that a stopped (at entry point) sub-process can be created. This gets
-   * a little messy, need to get TaskObserver.Attached installed on the just
+   * a little messy, need to get TaskAttachedObserverXXX installed on the just
    * added task.
    */
   public void testCreateAttachedStoppedProc ()
@@ -104,12 +104,12 @@ public class TestRun
     TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
 
-    // Observe TaskObserver.Attached events; when any occur indicate
+    // Observe TaskAttachedObserverXXX events; when any occur indicate
     // that the curresponding task should block, and then request that
     // the event-loop stop.
     class TaskCreatedStoppedObserver
         extends TaskObserverBase
-        implements TaskObserver.Attached
+        implements TaskAttachedObserverXXX
     {
 	Proc proc;
 	final TaskSet attachedTasks = new TaskSet();

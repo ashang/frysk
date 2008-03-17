@@ -223,24 +223,4 @@ public interface TaskObserver
 	 */ 
       Action updateHit (Task task, long address);
     }
-
-    /**
-     * Interface used to notify of a Task that has has been attached,
-     * and is about to resume execution in that state.  Only after a
-     * Task has been attached can its internals be manipulated
-     * (registers, memory, auxv).
-     *
-     * XXX: This observer only works on un-attached tasks.
-     *
-     * XXX: This is an internal observer used to test the attached /
-     * detached state transitions.
-     */
-    interface Attached
-	extends TaskObserver
-    {
-	/**
-	 * The Task is attached.
-	 */
-	Action updateAttached (Task task);
-    }
 }

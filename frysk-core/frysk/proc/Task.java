@@ -184,13 +184,13 @@ public abstract class Task {
     public abstract void requestDeleteClonedObserver(TaskObserver.Cloned o);
 
     /**
-     * Add a TaskObserver.Attached observer.
+     * Add a TaskAttachedObserverXXX observer.
      */
-    public abstract void requestAddAttachedObserver(TaskObserver.Attached o);
+    public abstract void requestAddAttachedObserver(TaskAttachedObserverXXX o);
     /**
-     * Delete a TaskObserver.Attached observer.
+     * Delete a TaskAttachedObserverXXX observer.
      */
-    public abstract void requestDeleteAttachedObserver(TaskObserver.Attached o);
+    public abstract void requestDeleteAttachedObserver(TaskAttachedObserverXXX o);
 
     /**
      * Add a TaskObserver.Forked observer.

@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.rsl.Log;
 import frysk.testbed.SignalWaiter;
 import frysk.testbed.TestLib;
@@ -76,7 +77,7 @@ public class TestTaskObserverBlocked extends TestLib {
     // the TaskObserverBase's task set.
     class BlockAttached
         extends TaskObserverBase
-        implements TaskObserver.Attached
+        implements TaskAttachedObserverXXX
     {
       TaskSet attachedTasks = new TaskSet();
 
@@ -115,7 +116,7 @@ public class TestTaskObserverBlocked extends TestLib {
    */
   abstract class SpawnObserver
       extends TaskObserverBase
-      implements TaskObserver.Attached
+      implements TaskAttachedObserverXXX
   {
     /**
      * Possible states of the spawn observer.
@@ -636,7 +637,7 @@ public class TestTaskObserverBlocked extends TestLib {
 
     class UnblockRunning
         extends TaskObserverBase
-        implements TaskObserver.Attached
+        implements TaskAttachedObserverXXX
     {
       public Action updateAttached (Task task)
       {

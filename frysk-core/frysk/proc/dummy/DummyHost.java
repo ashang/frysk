@@ -39,7 +39,7 @@
 
 package frysk.proc.dummy;
 
-import frysk.proc.TaskObserver.Attached;
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.Proc;
 import frysk.proc.FindProc;
 import frysk.proc.Host;
@@ -59,7 +59,7 @@ public class DummyHost extends Host {
     public void requestCreateAttachedProc(File exe,
 					  String stdin, String stdout,
 					  String stderr, String[] args,
-					  Attached attached) {
+					  TaskAttachedObserverXXX attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
     public Proc getSelf() {

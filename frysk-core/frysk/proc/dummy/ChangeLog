@@ -1,3 +1,8 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* DummyHost.java: Update; using TaskAttachedObserverXXX.
+	* DummyTask.java: Ditto.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyProc.java (getMainTask()): Implement.

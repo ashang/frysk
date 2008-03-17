@@ -40,7 +40,7 @@
 package frysk.proc.dead;
 
 import inua.eio.ByteBuffer;
-
+import frysk.proc.TaskAttachedObserverXXX;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -596,9 +596,7 @@ public class TestLinuxCore extends TestLib {
   }
 
   // Helper class for attaching to a task.
-  static class AttachedObserver
-    implements TaskObserver.Attached
-  {
+  static class AttachedObserver implements TaskAttachedObserverXXX {
     public Action updateAttached(Task task)
     {
       Manager.eventLoop.requestStop();

@@ -39,9 +39,9 @@
 
 package frysk.testbed;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.sys.Fork;
 import frysk.proc.Manager;
-import frysk.proc.TaskObserver;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.sys.ProcessIdentifier;
@@ -86,7 +86,7 @@ public abstract class OffspringType {
 		// Capture the child process id as it flys past.
 		class TidObserver
 		    extends TaskObserverBase
-		    implements TaskObserver.Attached
+		    implements TaskAttachedObserverXXX
 		{
 		    int tid;
 		    public Action updateAttached (Task task) {

@@ -1,3 +1,20 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskObserver.java (Attached): Move to ...
+	* TaskAttachedObserverXXX.java: ... here.
+	* StressAttachDetachSignaledTask.java: Ditto.
+	* StressAttachDetachRapidlyCloningMainTask.java: Update.
+	* StressAttachDetachManyTasks.java: Update.
+	* TestTaskObserverInstruction.java: Update.
+	* TestTaskObserverInstructionSigReturn.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+	* TestTaskObserver.java: Update.
+	* Host.java: Update.
+	* Task.java: Update.
+	* TestBreakpoints.java: Update.
+	* TestInstructions.java: Update.
+	* TestRun.java: Update.
+
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java (observations): Move to LinuxPtraceProc.

@@ -45,7 +45,7 @@ import frysk.testbed.TestLib;
 
 public class TestTaskObserverInstructionSigReturn
     extends TestLib
-    implements TaskObserver.Attached,
+    implements TaskAttachedObserverXXX,
 	       TaskObserver.Instruction,
 	       TaskObserver.Terminating,
 	       TaskObserver.Signaled
@@ -107,7 +107,7 @@ public class TestTaskObserverInstructionSigReturn
     // ignored
   }
 
-    // TaskObserver.Attached interface
+    // TaskAttachedObserverXXX interface
     public Action updateAttached(Task task) {
 	addToTearDown(task);
 	this.task = task;

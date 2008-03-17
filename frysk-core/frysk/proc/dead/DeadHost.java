@@ -41,7 +41,7 @@ package frysk.proc.dead;
 
 import frysk.proc.Host;
 import java.util.HashSet;
-import frysk.proc.TaskObserver.Attached;
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.Proc;
 import frysk.proc.Manager;
 import frysk.proc.FindProc;
@@ -60,7 +60,7 @@ abstract class DeadHost extends Host {
     public void requestCreateAttachedProc(File exe,
 					  String in, String out, String err,
 					  String[] args,
-					  Attached attached) {
+					  TaskAttachedObserverXXX attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
     public void requestRefresh(final Collection theKnownProcesses,

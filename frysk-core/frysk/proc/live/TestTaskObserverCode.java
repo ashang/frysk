@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import java.io.File;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
@@ -1095,7 +1096,7 @@ public class TestTaskObserverCode extends TestLib
   }
 
   static class AttachedObserver
-    implements TaskObserver.Attached
+    implements TaskAttachedObserverXXX
   {
     Task task;
 

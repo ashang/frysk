@@ -39,6 +39,7 @@
 
 package frysk.proc.dead;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.rsl.Log;
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -95,16 +96,16 @@ abstract class DeadTask extends Task {
     }
 
     /**
-     * Add a TaskObserver.Attached observer.
+     * Add a TaskAttachedObserverXXX observer.
      */
-    public void requestAddAttachedObserver(TaskObserver.Attached o) {
+    public void requestAddAttachedObserver(TaskAttachedObserverXXX o) {
 	throw new RuntimeException("requestAddAttachedObserver");
     }
 
     /**
-     * Delete a TaskObserver.Attached observer.
+     * Delete a TaskAttachedObserverXXX observer.
      */
-    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
+    public void requestDeleteAttachedObserver(TaskAttachedObserverXXX o) {
 	throw new RuntimeException("requestDeleteAttachedObserver");
     }
 

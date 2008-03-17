@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import java.util.List;
-
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -91,7 +91,7 @@ class ShellCommand extends NoOptsCommand {
 	
 	// Request for an attached proc to execute the command.
   	Manager.host.requestCreateAttachedProc(command,
-					       new TaskObserver.Attached() {  	    
+					       new TaskAttachedObserverXXX() {  	    
   	    public Action updateAttached (Task task)
   	    {
   		// On termination of command, resume fhpd.

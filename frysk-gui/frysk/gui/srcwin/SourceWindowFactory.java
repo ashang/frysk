@@ -52,6 +52,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import frysk.proc.dead.LinuxCoreFactory;
 import frysk.config.Config;
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dom.DOMFrysk;
@@ -61,7 +62,6 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -77,7 +77,7 @@ public class SourceWindowFactory
   
   public static AttachedObserver newProcObserver = null;
   
-//  private static TaskObserver.Attached attachedObserver = null;
+//  private static TaskAttachedObserverXXX attachedObserver = null;
 
   /**
    * Creates a new source window using the given task. The SourceWindows
@@ -271,7 +271,7 @@ public class SourceWindowFactory
     }
   }
   
- protected static class AttachedObserver implements TaskObserver.Attached
+ protected static class AttachedObserver implements TaskAttachedObserverXXX
   {
     public void addedTo (Object o)
     {

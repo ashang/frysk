@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.LinkedList;
@@ -105,7 +106,7 @@ public class LinuxPtraceTask extends LiveTask {
      */
     public LinuxPtraceTask(LinuxPtraceTask forkingTask,
 			   LinuxPtraceProc proc,
-			   TaskObserver.Attached attached) {
+			   TaskAttachedObserverXXX attached) {
 	super(proc);
 	this.creator = forkingTask;
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
@@ -578,23 +579,23 @@ public class LinuxPtraceTask extends LiveTask {
 	//Fill isa on attach.
 	getIsaFIXME();
 	for (Iterator i = attachedObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
+	    TaskAttachedObserverXXX observer = (TaskAttachedObserverXXX) i.next();
 	    if (observer.updateAttached(this) == Action.BLOCK)
 		blockers.add(observer);
 	}
 	return blockers.size();
     }
     /**
-     * Add a TaskObserver.Attached observer.
+     * Add a TaskAttachedObserverXXX observer.
      */
-    public void requestAddAttachedObserver(TaskObserver.Attached o) {
+    public void requestAddAttachedObserver(TaskAttachedObserverXXX o) {
 	fine.log(this, "requestAddAttachedObserver");
 	((LinuxPtraceProc)getProc()).requestAddObserver(this, attachedObservers, o);
     }
     /**
-     * Delete a TaskObserver.Attached observer.
+     * Delete a TaskAttachedObserverXXX observer.
      */
-    public void requestDeleteAttachedObserver(TaskObserver.Attached o) {
+    public void requestDeleteAttachedObserver(TaskAttachedObserverXXX o) {
 	fine.log(this, "requestDeleteAttachedObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteObserver(this, attachedObservers, o);
     }

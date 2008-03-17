@@ -39,11 +39,11 @@
 
 package frysk.stepping;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import java.util.Observable;
 import java.util.Observer;
 import frysk.testbed.TestLib;
 import frysk.proc.Manager;
-import frysk.proc.TaskObserver;
 import frysk.testbed.TaskObserverBase;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -68,7 +68,7 @@ public class TestFirstInstruction extends TestLib {
 
     private class AttachedObserver
 	extends TaskObserverBase
-	implements TaskObserver.Attached
+	implements TaskAttachedObserverXXX
     {
 	public Action updateAttached(Task task) {
 	    addToTearDown(task);

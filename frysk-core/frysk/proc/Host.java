@@ -89,14 +89,14 @@ public abstract class Host implements Comparable {
 						   String stdout,
 						   String stderr,
 						   String[] args,
-						   TaskObserver.Attached attachedObserver);
+						   TaskAttachedObserverXXX attachedObserver);
     /**
      * Request that a new attached and running process(with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
     public void requestCreateAttachedProc(String stdin, String stdout,
 					  String stderr, String[] args,
-					  TaskObserver.Attached attachedObserver) {
+					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
 	requestCreateAttachedProc(new File(args[0]), stdin, stdout, stderr,
@@ -107,7 +107,7 @@ public abstract class Host implements Comparable {
      * stdout, and stderr are shared with this process) be created.
      */
     public void requestCreateAttachedProc(String[] args,
-					  TaskObserver.Attached attachedObserver) {
+					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
 	requestCreateAttachedProc(new File(args[0]), null, null, null,
@@ -118,7 +118,7 @@ public abstract class Host implements Comparable {
      * TEMPLATE be created.
      */
     public void requestCreateAttachedProc(Proc template,
-					  TaskObserver.Attached attachedObserver) {
+					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc template", template,
 		 "observer", attachedObserver);
 	requestCreateAttachedProc(new File(template.getExe()),

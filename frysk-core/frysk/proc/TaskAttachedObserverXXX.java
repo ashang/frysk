@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,58 +39,21 @@
 
 package frysk.proc;
 
-import frysk.testbed.TestLib;
-import java.util.Observer;
-import java.util.Observable;
-import frysk.testbed.TaskObserverBase;
-import frysk.testbed.FunitThreadsOffspring;
-import frysk.proc.TaskAttachedObserverXXX;
-
 /**
- * Test attaching to a process with many many tasks.
+ * Interface used to notify of a Task that has has been attached, and
+ * is about to resume execution in that state.  Only after a Task has
+ * been attached can its internals be manipulated (registers, memory,
+ * auxv).
+ *
+ * XXX: This observer only works on un-attached tasks.
+ *
+ * XXX: This is an internal observer used to test the attached /
+ * detached state transitions.  It was never intended to escape into
+ * the wild and is currently being re-captured.
  */
-
-public class StressAttachDetachManyTasks
-    extends TestLib
-{
+public interface TaskAttachedObserverXXX extends TaskObserver {
     /**
-     * Stress test attaching to a process with many many tasks.
+     * The Task is attached.
      */
-    public void test ()
-    {
-	final int timeout = 20;
-
-	Task task = new FunitThreadsOffspring(1000, FunitThreadsOffspring.Type.BLOCK)
-	    .findTaskUsingRefresh (true);
-	final Proc proc = task.getProc ();
-
- 	class AttachDetachObserver
-	    extends TaskObserverBase
-	    implements TaskAttachedObserverXXX
-	{
-	    public Action updateAttached (Task task)
-	    {
-		task.requestDeleteAttachedObserver (this);
-		return Action.CONTINUE;
-	    }
-	}
-	AttachDetachObserver attachDetachObserver
-	    = new AttachDetachObserver ();
-	task.requestAddAttachedObserver (attachDetachObserver);
-
-	// The main task never dies so at least it will have been
-	// successfully attached.
-	proc.observableDetachedXXX.addObserver (new Observer ()
-	    {
-		Proc p = proc;
-		public void update (Observable obj, Object arg)
-		{
-		    p.observableAttachedXXX.deleteObserver(this);
-		    Manager.eventLoop.requestStop ();
-		}
-	    });
-	assertRunUntilStop (timeout, "attach and detach");
-	assertTrue ("successful attach count greater than zero",
-		    attachDetachObserver.addedCount() > 0);
-    }
+    Action updateAttached(Task task);
 }

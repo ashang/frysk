@@ -1,3 +1,8 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* ShellCommand.java: Update; using TaskAttachedObserverXXX.
+	* StartRun.java: Ditto.
+
 2008-03-14  Rick Moseley  <rmoseley@redhat.com>
 
 	* LoadCommand.java:  Add target set to output line.

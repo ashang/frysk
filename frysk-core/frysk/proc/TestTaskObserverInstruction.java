@@ -136,7 +136,7 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("InstructionObserver hit", instr.hit == 2);
   }
 
-  private class StepAttachedObserver implements TaskObserver.Attached
+  private class StepAttachedObserver implements TaskAttachedObserverXXX
   {
     private final InstructionObserver instr;
 

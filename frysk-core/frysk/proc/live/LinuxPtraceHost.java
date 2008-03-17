@@ -49,7 +49,7 @@ import frysk.proc.Proc;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.ProcBuilder;
 import java.util.Iterator;
-import frysk.proc.TaskObserver.Attached;
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.proc.Manager;
@@ -252,7 +252,7 @@ public class LinuxPtraceHost extends LiveHost {
 					  final String stdout,
 					  final String stderr,
 					  final String[] args,
-					  final Attached attachedObserver) {
+					  final TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {

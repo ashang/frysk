@@ -275,7 +275,7 @@ public class TestTaskSyscallObserver extends TestLib {
    */
   SyscallObserver syscallObserver1 = null;
 
-  TaskObserver.Attached attachedObserver = new TaskObserver.Attached()
+  TaskAttachedObserverXXX attachedObserver = new TaskAttachedObserverXXX()
   {
 
     public Action updateAttached (Task task)

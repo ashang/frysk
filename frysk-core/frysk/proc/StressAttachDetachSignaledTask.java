@@ -64,7 +64,7 @@ public class StressAttachDetachSignaledTask
      */
     class AttachDetach
 	extends TaskObserverBase
-	implements TaskObserver.Attached
+	implements TaskAttachedObserverXXX
     {
 	public Action updateAttached (Task task)
 	{

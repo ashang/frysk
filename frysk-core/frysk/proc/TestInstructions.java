@@ -309,7 +309,7 @@ public class TestInstructions
       }
   }
   
-  class AttachedObserver implements TaskObserver.Attached
+  class AttachedObserver implements TaskAttachedObserverXXX
   {
     Task task;
     

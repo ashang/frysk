@@ -56,9 +56,9 @@ import java.util.Iterator;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskAttachedObserverXXX;
 
-public class fstep
-  implements TaskObserver.Attached,
+public class fstep implements TaskAttachedObserverXXX,
   TaskObserver.Code,
   TaskObserver.Instruction,
   TaskObserver.Terminated
@@ -223,7 +223,7 @@ public class fstep
     }
   }
 
-  // TaskObserver.Attached interface
+  // TaskAttachedObserverXXX interface
   public Action updateAttached(Task task)
   {
     // We only need one disassembler since all Tasks share their memory.

@@ -38,6 +38,7 @@
 // exception.
 package frysk.gui.monitor;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +58,6 @@ import frysk.gui.monitor.eventviewer.EventViewer2;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.sys.PseudoTerminal;
 import frysk.sys.Signal;
 
@@ -124,7 +124,7 @@ public class MainWindow extends Window implements Saveable{
 		
 //		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
 		Manager.host.requestCreateAttachedProc(name, name, name, new String[] {"/bin/sh"},
-		                                       new TaskObserver.Attached()
+		                                       new TaskAttachedObserverXXX()
 		{
 		  public Action updateAttached(Task task)
 													{

@@ -430,7 +430,7 @@ public class TestBreakpoints
   }
 
   private class AttachedObserver
-      implements TaskObserver.Attached
+      implements TaskAttachedObserverXXX
   {
     public Action updateAttached(Task task)
     {

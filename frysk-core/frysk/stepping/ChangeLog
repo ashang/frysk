@@ -1,3 +1,8 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFirstInstruction.java: Update; using
+	TaskAttachedObserverXXX.
+
 2008-03-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFirstInstruction.java: Extract from

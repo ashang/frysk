@@ -74,7 +74,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 	// one of those old tasks is attempted.
 	class CanFailObserver
 	    extends TaskObserverBase
-	    implements TaskObserver.Attached
+	    implements TaskAttachedObserverXXX
 	{
 	    int failedCount;
 	    public void addFailed (Object o, Throwable w)

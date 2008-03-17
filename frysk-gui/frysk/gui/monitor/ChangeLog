@@ -1,3 +1,8 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* actions/RunExternal.java: Update; using TaskAttachedObserverXXX.
+	* MainWindow.java: Ditto.
+
 2008-03-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcWiseDataModel.java: Deleted observableProc*XXX, and

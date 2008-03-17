@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import frysk.proc.TaskAttachedObserverXXX;
 import org.gnu.glib.CustomEvents;
 import frysk.isa.signals.Signal;
 import frysk.gui.Gui;
@@ -139,7 +139,7 @@ public class RunExternal
    * arise later.
    */
   class AttachedObserver
-      implements TaskObserver.Attached
+      implements TaskAttachedObserverXXX
   {
 
     public void addedTo (Object observable)
@@ -182,7 +182,7 @@ public class RunExternal
     }
 
   class RunExBlocker
-      implements TaskObserver.Attached
+      implements TaskAttachedObserverXXX
   {
 
     public void addedTo (Object observable)

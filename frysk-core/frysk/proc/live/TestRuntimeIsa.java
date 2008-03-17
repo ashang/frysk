@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.isa.ISA;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
@@ -66,7 +67,7 @@ public class TestRuntimeIsa extends TestLib {
 
     static class AttachedObserver
 	extends TaskObserverBase
-	implements TaskObserver.Attached
+	implements TaskAttachedObserverXXX
     {
 	public Action updateAttached(Task task) {
 	    task.getISA();
@@ -79,7 +80,7 @@ public class TestRuntimeIsa extends TestLib {
       SlaveOffspring ackProc = SlaveOffspring.createChild();
       Task task = ackProc.findTaskUsingRefresh(true);
       assertHasNoIsa("before attach", task);
-      TaskObserver.Attached attacher = new AttachedObserver();
+      TaskAttachedObserverXXX attacher = new AttachedObserver();
       task.requestAddAttachedObserver(attacher);
       assertRunUntilStop("testIsa attach");
       task.requestDeleteAttachedObserver(attacher);
@@ -95,7 +96,7 @@ public class TestRuntimeIsa extends TestLib {
     Task firstMain = ackProc.findTaskUsingRefresh(true);
     Task secondMain = ackProc2.findTaskUsingRefresh(true);
 
-    TaskObserver.Attached attacher = new AttachedObserver();
+    TaskAttachedObserverXXX attacher = new AttachedObserver();
 
     firstMain.requestAddAttachedObserver(attacher);
     assertRunUntilStop("attach to first task");
@@ -115,7 +116,7 @@ public class TestRuntimeIsa extends TestLib {
       assertNotNull("child has an isa at start", proc.getMainTask().getISA());
       ackProc.assertSendAddForkWaitForAcks();
       Proc child = (Proc) proc.getChildren().iterator().next();
-      TaskObserver.Attached attacher = new AttachedObserver();
+      TaskAttachedObserverXXX attacher = new AttachedObserver();
       child.getMainTask().requestAddAttachedObserver(attacher);
       assertRunUntilStop("attach to child process");
       assertNotNull("child has an isa", child.getMainTask().getISA());

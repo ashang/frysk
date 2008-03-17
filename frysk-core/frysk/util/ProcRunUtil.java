@@ -42,7 +42,6 @@ package frysk.util;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -50,7 +49,7 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.TaskObserver.Attached;
+import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.TaskObserver.Cloned;
 import frysk.proc.TaskObserver.Execed;
 import frysk.proc.TaskObserver.Forked;
@@ -171,7 +170,7 @@ public class ProcRunUtil {
 	}
     }
 
-    class AttachedObserver implements TaskObserver.Attached {
+    class AttachedObserver implements TaskAttachedObserverXXX {
 	private Set procs = new HashSet();
 
 	public synchronized Action updateAttached(Task task) {
@@ -235,8 +234,8 @@ public class ProcRunUtil {
     private void addTaskObserver(TaskObserver observer, Task task){
 	boolean handled = false;
 	
-	if(observer instanceof TaskObserver.Attached){
-	    task.requestAddAttachedObserver((Attached) observer);
+	if(observer instanceof TaskAttachedObserverXXX){
+	    task.requestAddAttachedObserver((TaskAttachedObserverXXX) observer);
 	    handled = true;
 	}
 	if(observer instanceof TaskObserver.Cloned){

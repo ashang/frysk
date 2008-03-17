@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import frysk.proc.TaskAttachedObserverXXX;
 
 public class Ftrace
 {
@@ -401,9 +402,7 @@ public class Ftrace
      * An observer that sets up things once frysk has set up the requested
      * proc and attached to it.
      */
-    class MyAttachedObserver
-	implements TaskObserver.Attached
-    {
+    class MyAttachedObserver implements TaskAttachedObserverXXX {
 	private Set procs = new HashSet();
 	public synchronized Action updateAttached (Task task)
 	{

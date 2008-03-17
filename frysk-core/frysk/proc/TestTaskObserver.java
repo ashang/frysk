@@ -64,7 +64,7 @@ public class TestTaskObserver
      */
     class AttachedObserver
 	extends TaskObserverBase
-	implements TaskObserver.Attached
+	implements TaskAttachedObserverXXX
     {
 	int attachedCount;
 	public Action updateAttached (Task task)
@@ -492,7 +492,7 @@ public class TestTaskObserver
      */
     private void deleteUnattachedObserver (Offspring child, boolean main)
     {
-	TaskObserver.Attached unattachedObserver = new TaskObserver.Attached ()
+	TaskAttachedObserverXXX unattachedObserver = new TaskAttachedObserverXXX ()
 	    {
 		public Action updateAttached (Task task)
 		{

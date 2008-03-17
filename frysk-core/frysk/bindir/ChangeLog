@@ -1,3 +1,7 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* fstep.java: Update; using TaskAttachedObserverXXX.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk.xml: New.

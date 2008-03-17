@@ -45,13 +45,13 @@ import frysk.proc.Proc;
 import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.util.CountDownLatch;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import frysk.proc.TaskAttachedObserverXXX;
 
 /**
  * Due to a lot of similar code in StartCommand/RunCommand this class was
@@ -63,7 +63,7 @@ abstract class StartRun extends ParameterizedCommand {
 	super(command, help1, help2);
     }
 
-    static class Runner implements TaskObserver.Attached {
+    static class Runner implements TaskAttachedObserverXXX {
 	final CLI cli;
 	CountDownLatch latch;
 	Task launchedTask;
