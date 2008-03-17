@@ -130,7 +130,7 @@ start
   *  This rule looks for comma separated expressions.
   */
 expressionList
-    :   expression (COMMA! expression)*
+    :   (PLUS!)? expression (COMMA! expression)*
         {#expressionList = #(#[EXPR_LIST,"Expr list"], expressionList);}
         ;
 

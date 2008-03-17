@@ -1,5 +1,9 @@
 2008-03-11  Teresa Thomas  <tthomas@redhat.com>
 
+	* CExpr.g: Allow +expression.
+
+2008-03-11  Teresa Thomas  <tthomas@redhat.com>
+
 	* CExprEvaluator.g: Handle CAST for char*.
 	* CExpr.g (typeCast): Add.	 
 
