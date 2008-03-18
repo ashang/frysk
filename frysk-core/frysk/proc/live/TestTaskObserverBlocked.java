@@ -489,106 +489,97 @@ public class TestTaskObserverBlocked extends TestLib {
     proc.assertSendAddForkWaitForAcks();
   }
 
-  /**
-   * Test that Task.requestAddObserver () can be used to hold multiple tasks at
-   * the spawn point. This creates a program that, in turn, creates lots and
-   * lots of tasks. It then checks that the number of task create and delete
-   * events matches the expected.
-   */
-  abstract class BlockingFibonacci
-      extends TaskObserverBase
-  {
-    static final int fibCount = 10;
+    /**
+     * Test that Task.requestAddObserver () can be used to hold
+     * multiple tasks at the spawn point. This creates a program that,
+     * in turn, creates lots and lots of tasks. It then checks that
+     * the number of task create and delete events matches the
+     * expected.
+     */
+    private abstract class BlockingFibonacci extends TaskObserverBase {
+	static final int fibCount = 10;
 
-    TaskSet parentTasks = new TaskSet();
+	TaskSet parentTasks = new TaskSet();
+	
+	TaskSet childTasks = new TaskSet();
+	
+	/** Program to run. */
+	abstract String fibonacciProgram ();
+	
+	/** Seed the observer. */
+	abstract void addFirstObserver (Task task);
+	
+	BlockingFibonacci() {
 
-    TaskSet childTasks = new TaskSet();
+	    // Compute the expected number of tasks (this includes the
+	    // main task).
+	    Fibonacci fib = new Fibonacci(fibCount);
+	    
+	    DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[] {
+		    fibonacciProgram(),
+		    Integer.toString(fibCount)
+		});
+	    // An object that, when the child process exits, both sets
+	    // a flag to record that event, and requests that the
+	    // event loop stop.
+	    StopEventLoopWhenProcTerminated childRemoved
+		= new StopEventLoopWhenProcTerminated(child);
 
-    /** Program to run. */
-    abstract String fibonacciProgram ();
-
-    /** Seed the observer. */
-    abstract void addFirstObserver (Task task);
-
-    BlockingFibonacci ()
-    {
-
-      // Compute the expected number of tasks (this includes the
-      // main task).
-      Fibonacci fib = new Fibonacci(fibCount);
-
-      DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(new String[] {
-								fibonacciProgram(),
-								Integer.toString(fibCount) });
-      addFirstObserver(child.getMainTask());
-      child.requestRemoveBlock();
-
-      // An object that, when the child process exits, both sets
-      // a flag to record that event, and requests that the
-      // event loop stop.
-      StopEventLoopWhenProcTerminated childRemoved
-	  = new StopEventLoopWhenProcTerminated(child);
-
-      // Repeatedly run the event loop until the child exits
-      // (every time there is a spawn the event loop will stop).
-      int spawnCount = 0;
-      int loopCount = 0;
-      while (loopCount <= fib.getCallCount() && ! childRemoved.terminated) {
-          loopCount++;
-          assertRunUntilStop("run \"fibonacci\" until stop, number "
-                             + spawnCount + " of " + fib.getCallCount());
-          spawnCount += parentTasks.size();
-          parentTasks.unblock(this).clear();
-          childTasks.unblock(this).clear();
-        }
-
-      // The first task, included in fib.getCallCount() isn't
-      // included in the spawn count.
-      assertEquals("number of times spawnObserver added", fib.getCallCount(),
-                   addedCount());
-      assertEquals("number of times spawnObserver deleted", 0, deletedCount());
-      assertEquals("Number of spawns", fib.getCallCount() - 1, spawnCount);
-      assertTrue("child exited", childRemoved.terminated);
-      assertTrue("at least two iterations of the spawn loop", loopCount > 2);
+	    addFirstObserver(child.getMainTask());
+	    child.requestRemoveBlock();
+	    
+	    // Repeatedly run the event loop until the child exits
+	    // (every time there is a spawn the event loop will stop).
+	    int spawnCount = 0;
+	    int loopCount = 0;
+	    while (loopCount <= fib.getCallCount() && ! childRemoved.terminated) {
+		loopCount++;
+		assertRunUntilStop("run \"fibonacci\" until stop, number "
+				   + spawnCount + " of " + fib.getCallCount());
+		spawnCount += parentTasks.size();
+		parentTasks.unblock(this).clear();
+		childTasks.unblock(this).clear();
+	    }
+	    
+	    // The first task, included in fib.getCallCount() isn't
+	    // included in the spawn count.
+	    assertEquals("number of times spawnObserver added", fib.getCallCount(),
+			 addedCount());
+	    assertEquals("number of times spawnObserver deleted", 0, deletedCount());
+	    assertEquals("Number of spawns", fib.getCallCount() - 1, spawnCount);
+	    assertTrue("child exited", childRemoved.terminated);
+	    assertTrue("at least two iterations of the spawn loop", loopCount > 2);
+	}
     }
-  }
 
-  /**
-   * Check that a program rapidly cloning can be stopped and started at the
-   * cline points.
-   */
-  public void testBlockingFibonacciClone ()
-  {
-    class CloneFibonacci
-        extends BlockingFibonacci
-        implements TaskObserver.Cloned
-    {
-      public Action updateClonedParent (Task parent, Task offspring)
-      {
-        parentTasks.add(parent);
-        return Action.BLOCK;
-      }
-
-      public Action updateClonedOffspring (Task parent, Task offspring)
-      {
-        offspring.requestAddClonedObserver(this);
-        childTasks.add(offspring);
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
-
-      void addFirstObserver (Task task)
-      {
-        task.requestAddClonedObserver(this);
-      }
-
-      String fibonacciProgram ()
-      {
-	  return getExecPath ("funit-fib-clone");
-      }
+    /**
+     * Check that a program rapidly cloning can be stopped and started
+     * at the cline points.
+     */
+    public void testBlockingFibonacciClone() {
+	class CloneFibonacci
+	    extends BlockingFibonacci
+	    implements TaskObserver.Cloned
+	{
+	    public Action updateClonedParent(Task parent, Task offspring) {
+		parentTasks.add(parent);
+		return Action.BLOCK;
+	    }
+	    public Action updateClonedOffspring(Task parent, Task offspring) {
+		offspring.requestAddClonedObserver(this);
+		childTasks.add(offspring);
+		Manager.eventLoop.requestStop();
+		return Action.BLOCK;
+	    }
+	    void addFirstObserver(Task task) {
+		task.requestAddClonedObserver(this);
+	    }
+	    String fibonacciProgram() {
+		return getExecPath ("funit-fib-clone");
+	    }
+	}
+	new CloneFibonacci();
     }
-    new CloneFibonacci();
-  }
 
   /**
    * Check that a program rapidly cloning can be stopped and started at the

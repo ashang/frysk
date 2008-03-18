@@ -1,3 +1,8 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcBuilder.java: Use ProcessIdentifier.intValue() not
+	.hashCode().
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/ProcBuilder.cxx (ProcBuilder::scan): Add warnings when PID

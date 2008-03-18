@@ -1,5 +1,11 @@
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java (BlockedFibonacci): Register the
+	process with StopEventLoopWhenProcTerminated earlier.
+	* LinuxPtraceProc.java: Add more logging.
+	* LinuxPtraceHost.java (requestProc(int,FindProc)): Refresh the
+	proc, not its tasks.
+
 	* LinuxPtraceTask.java (sendAttach(), sendDetach(Signal)): Don't
 	try to perform error recovery here.
 

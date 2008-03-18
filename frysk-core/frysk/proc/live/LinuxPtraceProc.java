@@ -254,10 +254,10 @@ public class LinuxPtraceProc extends LiveProc {
     /**
      * If it hasn't already been read, read the stat structure.
      */
-    public Stat getStat ()
-    {
+    public Stat getStat() {
 	if (stat == null) {
 	    stat = new Stat().scan(ProcessIdentifierFactory.create(getPid()));
+	    fine.log(this, "getStat", stat);
 	}
 	return stat;
     }

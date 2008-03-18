@@ -208,6 +208,7 @@ public class LinuxPtraceHost extends LiveHost {
 	fine.log(this, "requestRefresh");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
+		    fine.log(LinuxPtraceHost.this, "execute - refresh");
 		    LinuxPtraceHost.this.executeRefresh(knownProcesses,
 							updates);
 		}
@@ -224,22 +225,30 @@ public class LinuxPtraceHost extends LiveHost {
     }
 
     public void requestProc(final int theProcId, final FindProc theFinder) {
+	fine.log(this, "requestProc", theProcId);
 	Manager.eventLoop.add(new Event() {
 		private final ProcessIdentifier pid
 		    = ProcessIdentifierFactory.create(theProcId);
 		private final FindProc finder = theFinder;
 		public void execute() {
-		    // Iterate (build) the /proc tree starting with
-		    // the given procId.
-		    new ProcBuilder() {
-			public void build(ProcessIdentifier pid) {
-			    new ProcChanges().update(pid);
-			}
-		    }.construct(pid);
-		    Proc proc = getProc(pid);
+		    fine.log(LinuxPtraceHost.this, "execute - requestProc",
+			     pid);
+		    // Force an update of the proc in the hosts
+		    // tables; this may or may not succeed.
+		    Proc proc = new ProcChanges().update(pid);
 		    if (proc == null) {
 			finder.procNotFound(pid.intValue());
 		    } else {
+			// FIXME: frysk/5964: This has a race: if a
+			// process part way through an attached clone
+			// gets its task-list refreshed using the
+			// below it will create a detached task for
+			// the clone; when the clone handling code
+			// should/would have created an attached task.
+			// This causes a panic.  The fix is to simply
+			// not call Proc.sendRefresh(); unfortunately
+			// many tests are still relying on this
+			// behaviour.
 			proc.sendRefresh();
 			finder.procFound(proc);
 		    }
@@ -256,7 +265,9 @@ public class LinuxPtraceHost extends LiveHost {
 	fine.log(this, "requestCreateAttachedProc");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
-		    fine.log(LinuxPtraceHost.this, "executeCreateAttachedProc");
+		    fine.log(LinuxPtraceHost.this,
+			     "execute - requestCreateAttachedProc",
+			     exe);
 		    ProcessIdentifier pid
 			= Fork.ptrace(exe, stdin, stdout, stderr, args);
 		    // See if the Host knows about this task.

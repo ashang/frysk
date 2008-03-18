@@ -58,7 +58,7 @@ public abstract class ProcBuilder {
      * "finally" to ensure that the directory is always closed.
      */
     public final boolean construct(ProcessIdentifier pid) {
-	return construct(pid.hashCode ());
+	return construct(pid.intValue());
     }
     private boolean construct(int pid) {
 	RawData dir = open(pid);
