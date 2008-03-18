@@ -1,3 +1,8 @@
+2008-03-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CommandlineParser.java (CommandlineParser): Trim
+	Sys Root help output.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* StacktraceAction.java: Implement ProcBlockObserver.

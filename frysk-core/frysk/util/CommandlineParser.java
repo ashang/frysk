@@ -84,7 +84,7 @@ public class CommandlineParser {
 		    explicitExe = exeValue;
 		}
 	    });
-	add(new Option("sysroot", "special root directory", "Path of special root directory") {
+	add(new Option("sysroot", "Special root directory", "<path to sysroot>") {
 		public void parsed(String arg) throws OptionException {
 		    parseSysRoot(arg);
 		}
