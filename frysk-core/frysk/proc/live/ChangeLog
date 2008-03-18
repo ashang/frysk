@@ -1,3 +1,8 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java (sendAttach(), sendDetach(Signal)): Don't
+	try to perform error recovery here.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTaskState.java (getDestroyed): Delete.

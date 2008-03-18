@@ -334,46 +334,40 @@ public class LinuxPtraceTask extends LiveTask {
 
     public void sendAttach () {
 	fine.log(this, "sendAttach");
-	try
-	    {
-		Ptrace.attach(tid);
+	try {
+	    Ptrace.attach(tid);
+	    
+	    // XXX: Linux kernel has a 'feature' that if a process is
+	    // already stopped and ptrace requests that it be stopped
+	    // (again) in order to attach to it, the signal (SIGCHLD)
+	    // notifying frysk of the attach's pending waitpid event
+	    // isn't generated.  XXX: This line sends another signal
+	    // to frysk notifying about the attach's pending waitpid
+	    // regardless of whether the task is running or
+	    // stopped. This avoids hangs on attaching to a stopped
+	    // process. Bug 3316.
 
-		/*
-		 * XXX: Linux kernel has a 'feature' that if a process is already
-		 * stopped and ptrace requests that it be stopped (again) in order to
-		 * attach to it, the signal (SIGCHLD) notifying frysk of the attach's
-		 * pending waitpid event isn't generated.
-		 */
-
-		/*
-		 * XXX: This line sends another signal to frysk
-		 * notifying about the attach's pending waitpid
-		 * regardless of whether the task is running or
-		 * stopped. This avoids hangs on attaching to a
-		 * stopped process. Bug 3316.
-		 */
-		Signal.CHLD.tkill(frysk.sys.Tid.get());
-	    } catch (Errno.Eperm e) {
+	    Signal.CHLD.tkill(frysk.sys.Tid.get());
+	} catch (Errno.Eperm e) {
+	    // FIXME: Need to propogate this back up to the initiator
+	    // of the attach some how.
 	    fine.log(this, "cannot attach to process", e);
-	    } catch (Errno.Esrch e) {
-		postDisappearedEvent(e);
-	    }
+	}
+	// NOTE: If there's an Errno.Esrch that is allowed to
+	// propogate all the way up to the state engine which will
+	// immediatly execute "disappeared" - since the task is gone
+	// just get the hell out of here.
     }
 
     void sendDetach(Signal sig) {
 	fine.log(this, "sendDetach");
 	clearIsa();
-	try {
-	    if (sig == Signal.STOP) {
-		fine.log(this, "sendDetach/signal STOP");
-		Signal.STOP.tkill(tid);
-		Ptrace.detach(tid, Signal.NONE);
-	    } else {
-		Ptrace.detach(tid, sig);
-	    }
-	} catch (Exception e) {
-	    // Ignore problems trying to detach, most of the time the
-	    // problem is the process has already left the cpu queue
+	if (sig == Signal.STOP) {
+	    fine.log(this, "sendDetach/signal STOP");
+	    Signal.STOP.tkill(tid);
+	    Ptrace.detach(tid, Signal.NONE);
+	} else {
+	    Ptrace.detach(tid, sig);
 	}
     }
 
