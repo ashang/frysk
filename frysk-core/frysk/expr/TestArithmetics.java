@@ -54,6 +54,8 @@ public class TestArithmetics extends TestCase {
     }
     public void testAdd() {
 	checkScratchExpr("1 + 2", 3);
+	checkScratchExpr("+1 + +3*2", 7);
+	checkScratchExpr("+1 + (-3)*2", -5);
     }
 
     private void checkVariableExpr(String expr, long value) {
@@ -64,7 +66,15 @@ public class TestArithmetics extends TestCase {
     public void testMember() {
 	checkVariableExpr("a.alpha", 0x01020304);
     }
-
+    
+    public void testIncrement() {
+	checkVariableExpr("a.kappa++ + ++a.kappa", 4); 
+    }
+    
+    public void testDecrement() {
+	checkVariableExpr("a.kappa-- + --a.kappa", 0); 
+    }
+    
     private void checkErrorExpr(String input, String error) {
 	Throwable t = null;
 	try {

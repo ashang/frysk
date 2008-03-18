@@ -116,6 +116,12 @@ imaginaryTokenDefinitions
 	SIZEOF
 	INDEX
 	SLICE
+	ARITHMETIC_PLUS
+	ARITHMETIC_MINUS
+	PREINCREMENT
+	PREDECREMENT
+	POSTINCREMENT
+	POSTDECREMENT	
     ;
 
 /** 
@@ -130,7 +136,7 @@ start
   *  This rule looks for comma separated expressions.
   */
 expressionList
-    :   (PLUS!)? expression (COMMA! expression)*
+    :   expression (COMMA! expression)*
         {#expressionList = #(#[EXPR_LIST,"Expr list"], expressionList);}
         ;
 
@@ -280,12 +286,20 @@ prefix_expression
         { ## = #(#[SIZEOF, "Size_Of"], #expr); 
         }
         //sizeof (type)
-    |   PLUSPLUS^ prefix_expression
-    |   MINUSMINUS^ prefix_expression
+    |   PLUSPLUS^ pp_expr: prefix_expression 
+        { ## = #([PREINCREMENT, "Preincrement"], #pp_expr);    
+        }
+    |   MINUSMINUS^ mm_expr: prefix_expression
+        { ## = #([PREDECREMENT, "Preincrement"], #mm_expr);    
+        }    
     |   TILDE^ prefix_expression 
     |   NOT^ prefix_expression   
-    |   MINUS^ prefix_expression       
-    |   PLUS^ prefix_expression
+    |   MINUS^ n_expr: prefix_expression
+        { ## = #([ARITHMETIC_MINUS, "Arithmetic_minus"], #n_expr);    
+        }          
+    |   PLUS^ p_expr: prefix_expression 
+        { ## = #([ARITHMETIC_PLUS, "Arithmetic_plus"], #p_expr);    
+        }
     |   AMPERSAND addr_expr: prefix_expression
         { ## = #([ADDRESS_OF, "Address_Of"], #addr_expr);    
         }         
@@ -328,12 +342,12 @@ postfix_expression!
 	   )    
          | LPAREN! expressionList RPAREN!  
    	 | PLUSPLUS  
-   	       { astPostExpr = #(PLUSPLUS, #astPostExpr); 
-   	       }
+   	   { astPostExpr = #(#[POSTINCREMENT, "Postincrement"], #astPostExpr); 
+   	   }
    	 | MINUSMINUS
-   	       { astPostExpr = #(MINUSMINUS, #astPostExpr); 
-   	       }
-   	    )*
+   	   { astPostExpr = #(#[POSTDECREMENT, "Postdecrement"], #astPostExpr); 
+   	   }
+   	   )*
    	 )      
     { ## = #astPostExpr; }       
     ;           

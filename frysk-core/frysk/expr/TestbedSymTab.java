@@ -63,12 +63,14 @@ class TestbedSymTab implements ExprSymTab {
 	.addMember("alpha", scratchSourceLocation, StandardTypes.INT32B_T, 0, null)
 	.addMember("beta", scratchSourceLocation, StandardTypes.INT32B_T, 4, null)
 	.addMember("gamma", scratchSourceLocation, StandardTypes.INT16B_T, 8, null)
+	.addMember("kappa", scratchSourceLocation, StandardTypes.INT32B_T, 12, null)	
 	.addBitFieldMember("iota", scratchSourceLocation, StandardTypes.INT32B_T, 8, null, 16, 8) // 0x0000ff00
 	.addBitFieldMember("epsilon", scratchSourceLocation, StandardTypes.INT32B_T, 8, null, 24, 8); // 0x000000ff
     private byte[] buf = {
 	0x01, 0x02, 0x03, 0x04, // alpha
 	0x05, 0x06, 0x07, 0x08, // beta
-	0x09, 0x10, 0x11, 0x12  // gama, iota, epsilon
+	0x09, 0x10, 0x11, 0x12, // gama, iota, epsilon
+	0x00, 0x00, 0x00, 0x01  // kappa
     };
     private Value c1 = new Value(classType, new ScratchLocation(buf));
 

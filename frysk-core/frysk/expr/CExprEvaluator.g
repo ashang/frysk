@@ -279,6 +279,47 @@ expr returns [Value returnVar=null]
             returnVar = v1.getType().getALU(exprSymTab.getWordSize())
                         .bitWiseComplement(v1); 
         }
+    |   #(ARITHMETIC_PLUS  v1=expr) {
+            returnVar = v1; 
+        }    
+    |   #(ARITHMETIC_MINUS  v1=expr) {
+            Value zero = longType.createValue(0);
+            returnVar = v1.getType().getALU(zero.getType(), 
+                        exprSymTab.getWordSize())
+                        .subtract(zero, v1); 
+        }              
+    |   #(PREINCREMENT  v1=expr) {
+            Value one = longType.createValue(1);
+            v1.assign(v1.getType().getALU(one.getType(), 
+                      exprSymTab.getWordSize())
+                     .add(one, v1)); 
+            returnVar = v1; 
+        }       
+    |   #(PREDECREMENT  v1=expr) {
+            Value one = longType.createValue(1);
+            v1.assign(v1.getType().getALU(one.getType(), 
+                      exprSymTab.getWordSize())
+                     .subtract(v1, one)); 
+            returnVar = v1;     
+        }   
+    |   #(POSTINCREMENT  v1=expr) {
+            Value one = longType.createValue(1);
+            v1.assign(v1.getType().getALU(one.getType(), 
+                      exprSymTab.getWordSize())
+                      .add(one, v1)); 
+            returnVar = (v1.getType().getALU(one.getType(), 
+                         exprSymTab.getWordSize())
+                        .subtract(v1, one));                      
+        }       
+    |   #(POSTDECREMENT  v1=expr) {
+            Value one = longType.createValue(1);            
+            v1.assign(v1.getType().getALU(one.getType(), 
+                      exprSymTab.getWordSize())
+                     .subtract(v1, one));  
+            returnVar = (v1.getType().getALU(one.getType(), 
+                         exprSymTab.getWordSize())
+                        .add(v1, one));                         
+        }          
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr) {
             returnVar = ((log_expr.getType().getALU(log_expr.getType(), 
                         exprSymTab.getWordSize())
