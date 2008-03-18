@@ -1,3 +1,7 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (--enable-jar-compile): Default to yes.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* manpages.sh: New.
