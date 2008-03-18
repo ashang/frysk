@@ -88,11 +88,11 @@
 /* 88 */ 	*littlest = sortlist[i];
 /* 89 */     }
 /* 90 */ }
-/* 91 */ 
+/* 91 */ int sortlist[element_count + 1];
 /* 92 */ int
 /* 93 */ main()
 /* 94 */ {
-/* 95 */   int sortlist[element_count + 1];
+/* 95 */
 /* 96 */   int biggest, littlest;
 /* 97 */ 
 /* 98 */   init_array (sortlist, &littlest, &biggest);

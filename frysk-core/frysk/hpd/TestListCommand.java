@@ -52,27 +52,25 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListPC() {
-	if (unresolved(5855))
-	    return;
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
-	e.sendCommandExpectPrompt("break main", "breakpoint.*");
+	e.sendCommandExpectPrompt("break #funit-quicksort.c#98", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	// Matching the list expected output is a trial and error process
 	// as the matching tends to be greedy.
 	e.send("list\n");
-	e.expect("88.*88.*littlest");
+	e.expect("88.*88.*littlest = sortlist");
 	e.expect("89.*89");
 	e.expect("90.*90");
-	e.expect("91.*91");
-	e.expect("92.*92.*int");
+	e.expect(".*91.*91.*int sortlist.element_count . 1.;");
+	e.expect("92.*92");
 	e.expect("93.*93.*main");
 	e.expect("94.*94.*{");
-	e.expect("95.*95.*sortlist");
-	e.expect("96.*96.*biggest");
+	e.expect("95.*95");
+	e.expect("96.*96.*biggest, littlest");
 	e.expect("97.*97");
 	e.expect("->  98.*98.*init_array");
 	e.expect("99.*99.*quicksort");
@@ -168,22 +166,25 @@ public class TestListCommand extends TestLib {
     }
 
     public void testListFrames() {
-	if (unresolved(5901))
-	  return;
-
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
-	e.sendCommandExpectPrompt("break bubblesort", "breakpoint.*");
+	e.sendCommandExpectPrompt("break #funit-bubblesort.c#49", "breakpoint.*");
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.send("list\n");
+	e.expect("39.*39");
+	e.expect("40.*40");
+	e.expect("41.*41");
+	e.expect("42.*42");
+	e.expect("43.*43");
+	e.expect("44.*44");
 	e.expect("45.*45");
 	e.expect("46.*46.*void");
 	e.expect("47.*47.*bubblesort");
 	e.expect("48.*48");
-	e.expect("->.*49.*49.*while");
+	e.expect(".*->  49.*49.*while");
 	e.expect("50.*50");
 	e.expect("51.*51.*int i");
 	e.expect("52.*52.*int j");
