@@ -256,10 +256,6 @@ AC_ARG_ENABLE([jar-compile],
  	   no) jar_compile=no;;
            *) AC_MSG_ERROR([bad value ${enableval} for --enable-jar-compile]) ;;
 	esac],
-	[case "$JAVAC_IS" in
-	  gcj) jar_compile=yes ;;
-	  ecj) jar_compile=no ;;
-	  *) AC_MSG_ERROR([compiler ${JAVAC_IS} unknown]) ;;
-	esac])
+	[jar_compile=yes])
 AC_MSG_RESULT([$jar_compile])
 AM_CONDITIONAL([JAR_COMPILE], [test x$jar_compile = xyes])
