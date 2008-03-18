@@ -54,7 +54,7 @@ import frysk.rsl.LogFactory;
  * A Linux Task's State tracked using PTRACE.
  */
 
-class LinuxPtraceTaskState extends State {
+abstract class LinuxPtraceTaskState extends State {
     private static final Log fine = LogFactory.fine(LinuxPtraceTaskState.class);
     private static final Log warning = LogFactory.warning(LinuxPtraceTaskState.class);
 
@@ -69,11 +69,13 @@ class LinuxPtraceTaskState extends State {
     LinuxPtraceTaskState handleSyscalledEvent(LinuxPtraceTask task) {
 	throw unhandled(task, "handleSyscalledEvent");
     }
-    LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
-					       Signal signal,
-					       int status) {
-	throw unhandled(task, "handleTerminatedEvent");
-    }
+    /**
+     * The process was terminated (can happen at any time and hence
+     * must always be handled).
+     */
+    abstract LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+							Signal signal,
+							int status);
     LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
 						Signal signal,
 						int status) {
@@ -81,9 +83,6 @@ class LinuxPtraceTaskState extends State {
     }
     LinuxPtraceTaskState handleExecedEvent(LinuxPtraceTask task) {
 	throw unhandled(task, "handleExecedEvent");
-    }
-    LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task, Throwable w) {
-	throw unhandled(task, "handleDisappearedEvent");
     }
     LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
 	throw unhandled(task, "handleContinue");
@@ -177,6 +176,15 @@ class LinuxPtraceTaskState extends State {
      */
     private static final LinuxPtraceTaskState detached
 	= new LinuxPtraceTaskState("detached")	{
+		LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+							   Signal signal,
+							   int status) {
+		    fine.log("handleTerminatedEvent", task,
+			     "signal", signal, "status", status);
+		    // Termination event for a forked, but unattached
+		    // child; discard.
+		    return detached;
+		}
 		LinuxPtraceTaskState handleRemoval(LinuxPtraceTask task) {
 		    fine.log("handleRemoval", task); 
 		    return destroyed;
@@ -243,18 +251,8 @@ class LinuxPtraceTaskState extends State {
 		return new Attached.WaitForContinueOrUnblock(signal);
 	    }
 	}
-	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
-						    Throwable w) {
-	    fine.log("handleDisappearedEvent", task); 
-	    // Ouch, the task disappeared before the attach reached
-	    // it, just abandon this one (but ack the operation
-	    // regardless).
-	    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
-	    ((LinuxPtraceProc)task.getProc()).removeTask(task);
-	    return destroyed;
-	}
 	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
-						   boolean signal, int value) {
+						   Signal signal, int value) {
 	    fine.log("processTerminatedEvent", task); 
 	    // Ouch, the task terminated before the attach reached it,
 	    // just abandon this one (but ack the operation
@@ -350,7 +348,6 @@ class LinuxPtraceTaskState extends State {
 	    handleAttachedTerminated(task, signal, status);
 	    return destroyed;
 	}
-
 	/**
 	 * Once the task is both unblocked and continued, should
 	 * transition to the running state.
@@ -427,9 +424,9 @@ class LinuxPtraceTaskState extends State {
 
     /**
      * A new main Task, created via fork, just starting.  Go with the
-     * assumption that it should detach.  Two events exist that
+     * assumption that it should detach.  Three events exist that
      * influence this assumption: the task stops; and the controlling
-     * proc orders an attach.
+     * proc orders an attach; the task terminated.
      *
      * If the LinuxPtraceTask stops then, once the ForkedOffspring
      * observers have stopped blocking this, do the detach.
@@ -442,6 +439,14 @@ class LinuxPtraceTaskState extends State {
     private static class StartMainTask extends LinuxPtraceTaskState {
 	StartMainTask(String name) {
 	    super("StartMainTask." + name);
+	}
+	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						   Signal signal,
+						   int status) {
+	    fine.log("handleTerminatedEvent", task,
+		     "signal", signal, "status", status);
+	    handleAttachedTerminated(task, signal, status);
+	    return destroyed;
 	}
 	/**
 	 * StartMainTask out assuming that, once the process has
@@ -640,6 +645,14 @@ class LinuxPtraceTaskState extends State {
     static class StartClonedTask extends LinuxPtraceTaskState {
 	StartClonedTask(String name) {
 	    super("StartClonedTask." + name);
+	}
+	LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
+						   Signal signal,
+						   int status) {
+	    fine.log("handleTerminatedEvent", task,
+		     "signal", signal, "status", status);
+	    handleAttachedTerminated(task, signal, status);
+	    return destroyed;
 	}
 	LinuxPtraceTaskState handleAddObservation(LinuxPtraceTask task,
 						  TaskObservation observation) {
@@ -885,10 +898,6 @@ class LinuxPtraceTaskState extends State {
 		sendContinue(task, Signal.NONE);
 		return inSyscallRunning;
 	    }
-	}
-	LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task, Throwable w) {
-	    fine.log("handleDisappearedEvent", task); 
-	    return disappeared;
 	}
 	LinuxPtraceTaskState handleContinue(LinuxPtraceTask task) {
 	    fine.log("handleContinue", task); 
@@ -1224,15 +1233,6 @@ class LinuxPtraceTaskState extends State {
 		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
 		return destroyed;
 	    }
-	    LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
-							Throwable w) {
-		// Woops, it disappeared before we were really detached,
-	        // pretend the detached happened anyway.
-		fine.log("handleDisappearedEvent", task); 
-		((LinuxPtraceProc)task.getProc()).removeTask(task);
-		((LinuxPtraceProc)task.getProc()).performTaskDetachCompleted(task);
-		return destroyed;
-	    }
 	    LinuxPtraceTaskState handleForkedEvent(LinuxPtraceTask task,
 						   LinuxPtraceTask fork)	    {
 		fine.log("handleForkedEvent", task, "fork", fork);
@@ -1401,43 +1401,26 @@ class LinuxPtraceTaskState extends State {
 	    }	    
 	};
     
-    private static final LinuxPtraceTaskState disappeared
-	= new LinuxPtraceTaskState("disappeared") {
+    private static final LinuxPtraceTaskState destroyed
+	= new LinuxPtraceTaskState("destroyed") {
 		LinuxPtraceTaskState handleTerminatedEvent(LinuxPtraceTask task,
 							   Signal signal,
 							   int status) {
-		    fine.log("handleTerminatedEvent", task); 
-		    ((LinuxPtraceProc)task.getProc()).removeTask(task);
-		    handleAttachedTerminated(task, signal, status);
+		    fine.log("discard handleTerminatedEvent", task,
+			     "signal", signal, "status", status); 
 		    return destroyed;
 		}
 		LinuxPtraceTaskState handleTerminatingEvent(LinuxPtraceTask task,
 							    Signal signal,
 							    int status) {
-		    fine.log("handleTerminatingEvent", task); 
-		    if (signal != null)
-			task.notifyTerminating(true, signal.intValue());
-		    else
-			task.notifyTerminating(false, status);
-		    return disappeared;
+		    fine.log("discard handleTerminatingEvent", task,
+			     "signal", signal, "status", status); 
+		    return destroyed;
 		}
-		LinuxPtraceTaskState handleDisappearedEvent(LinuxPtraceTask task,
-							    Throwable w) {
-		    fine.log("handleDisappearedEvent", task); 
-		    return disappeared;
-		}
-	    };
-
-    static LinuxPtraceTaskState getDestroyed() {
-	return destroyed;
-    }
-    
-    private static final LinuxPtraceTaskState destroyed
-	= new LinuxPtraceTaskState("destroyed") {
 		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		    fine.log("handleAttach", task); 
-		    // Lie; the Proc wants to know that the operation has
-		    // been processed rather than the request was
+		    // Lie; the Proc wants to know that the operation
+		    // has been processed rather than the request was
 		    // successful.
 		    ((LinuxPtraceProc)task.getProc()).performTaskAttachCompleted(task);
 		    return destroyed;

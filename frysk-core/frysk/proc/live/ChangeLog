@@ -1,5 +1,12 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java (getDestroyed): Delete.
+	(handleDisappearedEvent(LinuxPtraceTask)): Delete.
+	(handleTerminatedEvent(LinuxPtraceTask,Signal,int)): Make
+	abstract; implement in all sub-classes.
+	* LinuxPtraceTask.java (processClonedEvent(LinuxPtraceTask)):
+	Catch Errno.Esrch.
+	
 	* LinuxPtraceTask.java (set(LinuxPtraceTaskState)): Delete.
 	* LinuxWaitBuilder.java: Update
 

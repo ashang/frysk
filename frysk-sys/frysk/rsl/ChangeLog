@@ -1,3 +1,7 @@
+2008-03-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (log(String,Object,String,Object,String,int)): New.
+
 2008-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java (log(String,String,String,String)): New.

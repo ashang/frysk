@@ -1,5 +1,7 @@
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java (attachDieingTask(int,boolean)): Do not
+	check attached count.
 	* Proc.java (requestRefresh()): Delete.
 	(sendRefresh()): Make concrete.
 

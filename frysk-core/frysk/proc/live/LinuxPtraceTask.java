@@ -191,21 +191,33 @@ public class LinuxPtraceTask extends LiveTask {
      * (internal) This task cloned creating the new Task cloneArg.
      */
     void processClonedEvent(LinuxPtraceTask clone) {
-	newState = oldState().handleClonedEvent(this, clone);
+	try {
+	    newState = oldState().handleClonedEvent(this, clone);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) This Task forked creating an entirely new child process
      * containing one (the fork) task.
      */
     void processForkedEvent(LinuxPtraceTask fork) {
-	newState = oldState().handleForkedEvent(this, (LinuxPtraceTask)fork);
+	try {
+	    newState = oldState().handleForkedEvent(this, fork);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) This task stopped with SIGNAL pending.
      */
     void processStoppedEvent(Signal signal) {
-	fine.log(this, "stoppedEvent", signal);
-	newState = oldState().handleStoppedEvent(this, signal);
+	try {
+	    fine.log(this, "stoppedEvent", signal);
+	    newState = oldState().handleStoppedEvent(this, signal);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) The task is in the process of terminating. If SIGNAL
@@ -213,33 +225,55 @@ public class LinuxPtraceTask extends LiveTask {
      * status.
      */
     void processTerminatingEvent(Signal signal, int value) {
-	newState = oldState().handleTerminatingEvent(this, signal, value);
+	try {
+	    newState = oldState().handleTerminatingEvent(this, signal, value);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) The task has disappeared (due to an exit or some other error
      * operation).
      */
     void processDisappearedEvent(Throwable arg) {
-	newState = oldState().handleDisappearedEvent(this, arg);
+	newState = handleDisappearedEvent(arg);
+    }
+    private LinuxPtraceTaskState handleDisappearedEvent(Throwable arg) {
+	// Don't call oldState() here; things are stuffed without also
+	// worrying about double state transitions.
+	return oldState.handleTerminatedEvent(this, Signal.KILL,
+					      -Signal.KILL.intValue());
     }
     /**
      * (internal) The task is performing a system call.
      */
     void processSyscalledEvent() {
-	newState = oldState().handleSyscalledEvent(this);
+	try {
+	    newState = oldState().handleSyscalledEvent(this);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) The task has terminated; if SIGNAL is non-NULL the
      * termination signal else STATUS contains the exit status.
      */
     void processTerminatedEvent(Signal signal, int value) {
-	newState = oldState().handleTerminatedEvent(this, signal, value);
+	try {
+	    newState = oldState().handleTerminatedEvent(this, signal, value);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     /**
      * (internal) The task has execed, overlaying itself with another program.
      */
     void processExecedEvent() {
-	newState = oldState().handleExecedEvent(this);
+	try {
+	    newState = oldState().handleExecedEvent(this);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
@@ -410,25 +444,41 @@ public class LinuxPtraceTask extends LiveTask {
      * (Internal) Add the specified observer to the observable.
      */
     void handleAddObservation(TaskObservation observation) {
-	newState = oldState().handleAddObservation(this, observation);
+	try {
+	    newState = oldState().handleAddObservation(this, observation);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     
     /**
      * (Internal) Delete the specified observer from the observable.
      */
     void handleDeleteObservation(TaskObservation observation) {
-	newState = oldState().handleDeleteObservation(this, observation);
+	try {
+	    newState = oldState().handleDeleteObservation(this, observation);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
     
     void handleUnblock(TaskObserver observer) {
-	newState = oldState().handleUnblock(this, observer);
+	try {
+	    newState = oldState().handleUnblock(this, observer);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
      * (Internal) Requesting that the task go (or resume execution).
      */
     void performContinue() {
-	newState = oldState().handleContinue(this);
+	try {
+	    newState = oldState().handleContinue(this);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
@@ -439,7 +489,11 @@ public class LinuxPtraceTask extends LiveTask {
      * XXX: Should not be public.
      */
     void performRemoval() {
-	newState = oldState().handleRemoval(this);
+	try {
+	    newState = oldState().handleRemoval(this);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
@@ -450,7 +504,11 @@ public class LinuxPtraceTask extends LiveTask {
      * XXX: Should not be public.
      */
     void performAttach() {
-	newState = oldState().handleAttach(this);
+	try {
+	    newState = oldState().handleAttach(this);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
@@ -460,7 +518,11 @@ public class LinuxPtraceTask extends LiveTask {
      * @param shouldRemoveObservers whether to remove the observers as well.
      */
     void performDetach(boolean shouldRemoveObservers) {
-	newState = oldState().handleDetach(this, shouldRemoveObservers);
+	try {
+	    newState = oldState().handleDetach(this, shouldRemoveObservers);
+	} catch (Errno.Esrch e) {
+	    newState = handleDisappearedEvent(e);
+	}
     }
 
     /**
@@ -961,7 +1023,11 @@ public class LinuxPtraceTask extends LiveTask {
 	observation = new TaskObservation((LinuxPtraceTask)task, observable, observer, 
 					  watchAction, false) {
 		public void execute() {
-		    newState = oldState().handleDeleteObservation(LinuxPtraceTask.this, this);
+		    try {
+			newState = oldState().handleDeleteObservation(LinuxPtraceTask.this, this);
+		    } catch (Errno.Esrch e) {
+			newState = handleDisappearedEvent(e);
+		    }
 		}
 		
 		public boolean needsSuspendedAction() {

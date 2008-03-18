@@ -316,11 +316,10 @@ public class TestTaskObserver
 	}	    
 
 	// Try to add the observer to the now defunct task.  Should
-	// successfully fail.
+	// fail (which will stop the event loop).
 	FailedObserver failedObserver = new FailedObserver ();
 	task.requestAddAttachedObserver (failedObserver);
-	assertRunUntilStop ("fail to add observer");
-	assertEquals ("added count", 1, failedObserver.addedCount());
+	assertRunUntilStop("fail to add observer");
     }
     /** {@link #attachDieingTask} */
     public void testAttachDieingMainTask ()
