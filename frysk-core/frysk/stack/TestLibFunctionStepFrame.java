@@ -67,7 +67,7 @@ public class TestLibFunctionStepFrame
 {
   public void testStepIntoLibFunctionCall()
   {
-    if (unresolvedOnx8664(5259) || unresolvedOnPPC(5259))
+    if (unresolvedOnPPC(5259))
       return;
 
     String source = Config.getRootSrcDir()

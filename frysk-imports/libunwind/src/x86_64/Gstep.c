@@ -4,6 +4,9 @@
 
    Modified for x86_64 by Max Asbock <masbock@us.ibm.com>
 
+   Copyright (C) 2008 Red Hat, Inc.
+	Contributed by Mark Wielaard <mwielaard@redhat.com>
+
 This file is part of libunwind.
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -83,6 +86,59 @@ code_descriptor_trap (struct cursor *c, struct dwarf_loc *rip_loc_pointer)
   return 1;
 }
 
+// A CALL instruction starts with 0xFF.
+static int
+is_call_instr_at (struct cursor *c, unw_word_t addr)
+{
+  int ret;
+  unw_word_t instr;
+  ret = dwarf_get (&c->dwarf, DWARF_LOC (addr, 0), &instr);
+  Debug (99, "ret %d, instr 0x%x\n", ret, instr);
+  return ret >= 0 && ((instr & 0xff000000) == 0xff000000);
+}
+
+// Checks whether this looks like a plt entry like cursor and returns
+// the stack offset where the return address can be found, or -1 if
+// not detected (also tries to make sure this is the inner most frame).
+// When this function returns positively (zero included) addr will
+// contain the return address.
+static int
+init_stack_based_ret (struct cursor *c, unw_word_t *addr)
+{
+  // See if this looks "clean", everything in actual registers
+  // which indicates this is most likely an inner most frame just
+  // initted.
+  int ret;
+  unw_word_t ip, cfa;
+  ret = dwarf_get (&c->dwarf, c->dwarf.loc[RIP], &ip);
+  if (ret < 0)
+    return ret;
+  
+  ret = dwarf_get (&c->dwarf, c->dwarf.loc[RSP], &cfa);
+  if (ret < 0)
+    return ret;
+  
+  // See if one of the top 3 elements on the stack contains a
+  // return address.
+  int i;
+  for (i = 0; i <= 16; i += 8)
+    {
+      Debug (99, "trying %d\n", i);
+      ret = dwarf_get (&c->dwarf, DWARF_LOC (c->dwarf.cfa + i, 0), addr);
+      if (ret < 0)
+	      return ret;
+      
+      Debug (99, "addr at %d: 0x%x\n", i, *addr);
+      // Sanity check the address, not too low, and must
+      // come from a call instruction.
+      if (*addr > 0 && is_call_instr_at(c, (*addr) - 5))
+	return i;
+    }
+  
+  return -1;
+}
+
+
 PROTECTED int
 unw_step (unw_cursor_t *cursor)
 {
@@ -91,6 +147,7 @@ unw_step (unw_cursor_t *cursor)
   struct dwarf_loc rip_loc;
   int rip_loc_set = 0;
   unw_word_t prev_ip = c->dwarf.ip, prev_cfa = c->dwarf.cfa;
+  unw_word_t addr;
 
   Debug (1, "(cursor=%p, ip=0x%016llx)\n",
 	 c, (unsigned long long) c->dwarf.ip);
@@ -186,6 +243,16 @@ unw_step (unw_cursor_t *cursor)
 	  c->dwarf.loc[RBP] = rbp_loc;
 	  c->dwarf.loc[RSP] = rsp_loc;
 	}
+      else if((ret = init_stack_based_ret(c, &addr)) >= 0)
+	{
+	  Debug (99, "init_stack_based_ret() %d (0x%x)\n", ret, addr);
+	  c->dwarf.cfa += ret + 8;
+	  c->dwarf.loc[RSP] = DWARF_LOC (c->dwarf.cfa, 0);
+	  c->dwarf.loc[RIP] = DWARF_LOC (addr, 0);
+	  c->dwarf.ret_addr_column = RIP;
+	  c->dwarf.ip = addr;
+	  return 1;
+	}
       else
 	{
 	  unw_word_t rbp;
@@ -258,6 +325,6 @@ unw_step (unw_cursor_t *cursor)
     return -UNW_EBADFRAME;
 
   ret = (c->dwarf.ip == 0) ? 0 : 1;
-  Debug (2, "returning %d\n", ret);
+  Debug (2, "dwarf.ip = 0x%x, returning %d\n", c->dwarf.ip, ret);
   return ret;
 }

@@ -1,3 +1,10 @@
+2007-03-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* src/x86_64/Gstep.c (is_call_instr_at): New function.
+	(init_stack_based_ret): New function.
+	(unw_step): Try stack based unwind with call instr, before
+	fallback to frame pointer.
+	
 2007-03-12  Mark Wielaard  <mwielaard@redhat.com>
 
 	* src/x86/Gstep.c (is_call_instr_at): New function.
