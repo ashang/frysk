@@ -1188,7 +1188,7 @@ public class SteppingEngine {
 
 	    steppingObserver.notifyNotBlocked(tse);
 
-	    return Action.CONTINUE;
+	    return Action.BLOCK;
 	}
 	
 	public Action updateTerminated(Task task, Signal signal, int value) {

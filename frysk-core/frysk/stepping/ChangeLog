@@ -1,3 +1,7 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* SteppingEngine.java: Block terminating tasks.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFirstInstruction.java: Update; using

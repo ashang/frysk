@@ -448,7 +448,7 @@ public class CLI {
 	    // Ensure Ctrl-C handler is set back to fhpd settings
 	    Manager.eventLoop.add(SigIntHandler.fhpd);
             
-	    if (!tse.isAlive()) {
+	    if (!tse.isAlive() && !tse.isTerminating()) {
 		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
 		tse.setMessage("");
 		flushMessages();
@@ -462,10 +462,19 @@ public class CLI {
 		return;
 	    }
      
-            if (! tse.getState().isStopped()) {
+            if (! tse.isStopped()) {
                 attached = -1;
                 return;
             }
+
+
+	    if (!tse.isAlive() && tse.isTerminating()) {
+		// Report the terminating reason.
+		addMessage(tse.getMessage(), Message.TYPE_VERBOSE);
+		tse.setMessage("");
+		flushMessages();
+	    }
+
             Task task = tse.getTask();
             synchronized (CLI.this) {
                 DebugInfoFrame frame

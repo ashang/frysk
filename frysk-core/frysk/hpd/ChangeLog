@@ -1,3 +1,8 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java: Treat a terminating task as stopped.
+	* TestHelloWorld.java: New.
+
 2008-03-18  Stan Cox  <scox@redhat.com>
 
 	* TestListCommand.java (testListPC): Set breakpoint via line number.
