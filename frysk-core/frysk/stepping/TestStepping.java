@@ -1017,7 +1017,6 @@ public class TestStepping extends TestLib {
 
 	    Task testTask = null;
 	    String callingFrame = "foo";
-	    boolean first = true;
 	    int endLine = 0;
 	    
 	    public InstructionStepThroughSectionTest(Task task, int lineNum) {
@@ -1031,12 +1030,6 @@ public class TestStepping extends TestLib {
 		.createDebugInfoStackTrace(testTask);
 	
 		String s = frame.getSymbol().getDemangledName();
-		
-		if (first) {
-		    se.stepLine(this.testTask);
-		    this.first = false;
-		    return;
-		}
 		
 		assertEquals("calling frame", callingFrame, s);
 		assertEquals("line number", endLine, frame.getLine().getLine());

@@ -1,3 +1,18 @@
+2008-03-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* InstructionStepState.java (InstructionStepState): Take and set
+	isLine argument.
+	(handleUpdate): Only try skipping plt when line stepping.
+	* LineStepState.java (handleUpdate): When no line info found act
+	like an InstructionStepState.
+	* SteppingEngine.java (stepInstruction): Create InstructionStepState
+	for instruction stepping.
+	(stepInstruction): Likewise.
+	(stepLine): Create InstructionStepState for line stepping.
+	(setUp): Create InstructionStepState using isLine.
+	* TestStepping.java (testInstructionStepThroughSection): Just do one
+	line step.
+
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* SteppingEngine.java: Block terminating tasks.

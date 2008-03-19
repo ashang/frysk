@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,8 +49,15 @@ public class InstructionStepState extends State {
     private ElfSectionCache elfCache;
     private final String PLT_DL_FIXUP = "_dl_fixup";
 
-    public InstructionStepState(Task task) {
+    /**
+     * Indicates that this is a step (into) line, if true then plt
+     * entries are skipped.
+     */
+    private final boolean isLine;
+
+    public InstructionStepState(Task task, boolean isLine) {
 	this.task = task;
+	this.isLine = isLine;
     }
 
     /**
@@ -64,14 +71,20 @@ public class InstructionStepState extends State {
      */
     public State handleUpdate(TaskStepEngine tse) {
 
+      if (isLine) {
 	long addr = this.task.getPC();
 	this.elfCache = new ElfSectionCache(this.task);
 	ElfSectionHeader header = this.elfCache.getSectionHeader(".plt", addr);
 
-	/* If the user steps into a function call, the following catches the .plt section of the program, and
-	 * ensures that Frysk steps past it, so that the user is landed back into their own code after the call. */
-	if ((header != null && header.addr <= addr && (header.addr + header.offset) >= addr)
-		&& (header.type == ElfSectionHeader.ELF_SHT_PROGBITS || header.type == ElfSectionHeader.ELF_SHT_NOBITS)) {
+	/* If the user steps into a function call, the following
+	 * catches the .plt section of the program, and ensures that
+	 * Frysk steps past it, so that the user is landed back into
+	 * their own code after the call. */
+	if (header != null
+	    && header.addr <= addr
+	    && (header.addr + header.offset) >= addr
+	    && (header.type == ElfSectionHeader.ELF_SHT_PROGBITS
+		|| header.type == ElfSectionHeader.ELF_SHT_NOBITS)) {
 
 	    DwflLine line = tse.getDwflLine();
 
@@ -80,8 +93,8 @@ public class InstructionStepState extends State {
 		return new InstructionStepThroughState(task, PLT_DL_FIXUP);
 	    }
 	}
-
-	return new StoppedState(this.task);
+      }
+      return new StoppedState(this.task);
     }
 
     public boolean isStopped() {

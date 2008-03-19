@@ -198,7 +198,7 @@ public class SteppingEngine {
 	if (!tse.isStopped())
 	    return false;
 
-	tse.setState(new InstructionStepState(task));
+	tse.setState(new InstructionStepState(task, false));
 	this.steppingObserver.notifyNotBlocked(tse);
 	this.contextMap.put(task.getProc(), new Integer(1));
 
@@ -228,7 +228,7 @@ public class SteppingEngine {
 	while (iter.hasNext()) {
 	    t = (Task) iter.next();
 	    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
-	    tse.setState(new InstructionStepState(t));
+	    tse.setState(new InstructionStepState(t, false));
 	    this.steppingObserver.notifyNotBlocked(tse);
 	    continueForStepping(t, true);
 	}
@@ -258,7 +258,7 @@ public class SteppingEngine {
 	    DwflLine line = tse.getDwflLine();
 
 	    if (line == null) {
-		tse.setState(new InstructionStepState(task));
+	        tse.setState(new InstructionStepState(task, true));
 		if (continueForStepping(task, true)) {
 		    this.steppingObserver.notifyNotBlocked(tse);
 		}
@@ -321,7 +321,7 @@ public class SteppingEngine {
 		 * from the Task at this point. If not, there's no point in doing
 		 * 'line stepping' since there are no 'lines' to step. */
 		if (line == null) {
-		    tse.setState(new InstructionStepState(t));
+		    tse.setState(new InstructionStepState(t, isLine));
 		} else {
 		    tse.setLine(line.getLineNum());
 		    tse.setState(new LineStepState(t));

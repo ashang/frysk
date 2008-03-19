@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -62,9 +62,13 @@ public class LineStepState extends State {
 	if (line == null) /* We're in no-debuginfo land */
 	{
 	    tse.setLine(0);
-	    /* Returned a StoppedState because line-stepping has no meaning
-	     * when there is no debug information to relate the 'lines' to. */
-	    return new StoppedState(this.task);
+	    // Pretend we are an InstructionStepState because
+	    // line-stepping has no meaning when there is no debug
+	    // information to relate the 'lines' to.  And
+	    // InstructionStepState with isLine set to true will
+	    // return StoppedState, but not before it went through a
+	    // plt section first.
+	    return new InstructionStepState(task, true).handleUpdate(tse);
 	} else
 	    lineNum = line.getLineNum();
 
