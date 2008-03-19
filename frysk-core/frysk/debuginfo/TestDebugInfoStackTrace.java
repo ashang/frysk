@@ -407,8 +407,8 @@ public class TestDebugInfoStackTrace
 	String frameName =  this.frameTracker[i][index][2];
 	
 	while (frameName == null
-	       || frameName.indexOf("kill") > 0
-	       || frameName.indexOf("syscall") > 0)
+	       || frameName.indexOf("kill") >= 0
+	       || frameName.indexOf("syscall") >= 0)
 	  {
 	    index++;
 	    frameName = this.frameTracker[i][index][2];

@@ -1,3 +1,8 @@
+2008-03-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestDebugInfoStackTrace (frameAssertions): Also check for function
+	names starting with kill or syscall.
+
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TypeFactory.java: Rename TypeEntry.java.
