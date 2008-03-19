@@ -1,3 +1,11 @@
+help:
+	@echo ""
+	@echo "	make new	: generate new files"
+	@echo "	make diff	: show changes old-new"
+	@echo "	make install	: copy old-to-new ready for commit"
+	@echo ""
+
+
 HTML = \
 	index.html \
 	build/index.html \
@@ -7,13 +15,11 @@ HTML = \
 	questions/index.html \
 	usecases/index.html \
 	workflow/index.html \
-	zilla/index.html \
-	todo/index.html \
 	bugs/index.html \
 	bugzilla/index.html \
 	$(ZZZ)
-all: $(HTML:.html=.new)
-.PHONY: all
+new: $(HTML:.html=.new)
+.PHONY: new
 
 clean:
 	rm -f *.new */*.new
