@@ -39,26 +39,25 @@
 
 package frysk.bindir;
 
-import frysk.isa.signals.Signal;
-import frysk.proc.FindProc;
+import inua.eio.ByteBuffer;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+
+import lib.opcodes.Disassembler;
+import frysk.isa.signals.Signal;
+import frysk.proc.Action;
 import frysk.proc.Auxv;
 import frysk.proc.Manager;
-import frysk.util.CommandlineParser;
-import inua.eio.ByteBuffer;
-import frysk.proc.TaskObserver;
-import lib.opcodes.Disassembler;
-import java.util.HashMap;
-import java.util.ArrayList;
-import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Option;
-import java.util.Iterator;
-import frysk.proc.Action;
-import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskAttachedObserverXXX;
+import frysk.proc.TaskObserver;
+import frysk.util.ProcRunUtil;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
 
-public class fstep implements TaskAttachedObserverXXX,
+public class fstep implements ProcRunUtil.NewTaskObserver,
   TaskObserver.Code,
   TaskObserver.Instruction,
   TaskObserver.Terminated
@@ -76,7 +75,7 @@ public class fstep implements TaskAttachedObserverXXX,
   private static int instrs;
 
   // The command to execute
-  static String[] command;
+//  static String[] command;
 
   // The process id to trace
   static int pid;
@@ -89,15 +88,7 @@ public class fstep implements TaskAttachedObserverXXX,
     sample = 0;
     instrs = 1;
 
-    final CommandlineParser parser = new CommandlineParser("fstep")
-    {
-
-      public void parseCommand(Proc command) {
-	  fstep.command = command.getCmdLine();
-      }
-      
-    };
-    parser.add(new Option("sample", 's',
+    Option sampleOption = new Option("sample", 's',
 			  "how often to print the current instruction",
 			  "samples")
       {
@@ -115,9 +106,9 @@ public class fstep implements TaskAttachedObserverXXX,
 	      throw ex;
 	    }
 	}
-      });
+      };
 
-    parser.add(new Option("instructions", 'i',
+    Option instructionsOption = new Option("instructions", 'i',
 			  "how many instructions to print at each step/sample",
 			  "instructions")
       {
@@ -135,9 +126,9 @@ public class fstep implements TaskAttachedObserverXXX,
 	      throw ex;
 	    }
 	}
-      });
+      };
 
-    parser.add(new Option("pid", 'p',
+    Option pidOptions = new Option("pid", 'p',
 			  "the running process to step",
 			  "pid")
       {
@@ -155,40 +146,14 @@ public class fstep implements TaskAttachedObserverXXX,
 	      throw ex;
 	    }
 	}
-      });
-
-    parser.parse(args);
-    if ((command == null || command.length == 0)
-	&& pid == 0)
-      {
-	System.err.println("fstep: Neither command line nor pid provided");
-	parser.printHelp();
-	System.exit(-1);
-      }
-    if (command != null && command.length != 0 && pid != 0)
-      {
-	System.err.println("fstep: Provide either a command line or a pid");
-	parser.printHelp();
-	System.exit(-1);
-      }
+      };
 
     final fstep step = new fstep();
-    if (pid != 0) {
-	Manager.host.requestProc(pid, new FindProc() {
-	    public void procFound(Proc proc) {
-		Task mainTask = proc.getMainTask();
-		mainTask.requestAddAttachedObserver(step);
-	    }
-	    public void procNotFound(int pid) {
-		System.err.println("no such process: " + pid);
-		parser.printHelp();
-		System.exit(-1);
-	    }});
-      }
-    else
-      Manager.host.requestCreateAttachedProc(command, step);
     
-    Manager.eventLoop.run();
+    Option[] options = new Option[]{sampleOption, instructionsOption, pidOptions};
+    
+    ProcRunUtil procRunUtil = new ProcRunUtil("fstep", "fstep <PID|EXEC> [OPTIONS]", args, step , options, ProcRunUtil.DEFAULT);
+    procRunUtil.start();
   }
 
   /**
@@ -223,8 +188,7 @@ public class fstep implements TaskAttachedObserverXXX,
     }
   }
 
-  // TaskAttachedObserverXXX interface
-  public Action updateAttached(Task task)
+  public void notifyNewTask(Task task)
   {
     // We only need one disassembler since all Tasks share their memory.
     if (disassembler == null)
@@ -241,8 +205,8 @@ public class fstep implements TaskAttachedObserverXXX,
     // then we want to start stepping at the actual start of the
     // process (and not inside the dynamic linker).
     long startAddress = 0;
-    if (command != null && command.length != 0)
-      {
+//    if (command != null && command.length != 0)
+//      {
 	Auxv[] auxv = task.getProc().getAuxv ();
 	for (int i = 0; i < auxv.length; i++)
 	  {
@@ -252,7 +216,9 @@ public class fstep implements TaskAttachedObserverXXX,
 		break;
 	      }
 	  }
-      }
+//      }
+    
+//    System.out.println("fstep.updateAttached() startAddress 0x" + Long.toHexString(startAddress));
 
     if (startAddress == 0)
       {
@@ -262,7 +228,7 @@ public class fstep implements TaskAttachedObserverXXX,
       }
     else
       task.requestAddCodeObserver(this, startAddress);
-    return Action.BLOCK;
+    
   }
 
   // TaskObserver.Code interface

@@ -39,17 +39,17 @@
 
 package frysk.util;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.proc.TaskAttachedObserverXXX;
+import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Cloned;
 import frysk.proc.TaskObserver.Execed;
 import frysk.proc.TaskObserver.Forked;
@@ -75,11 +75,24 @@ public class ProcRunUtil {
     private RunningUtilOptions options;
     private TaskObserver[] observers;
 
+    private NewTaskObserver newTaskObserver;
+
+    public static interface NewTaskObserver{
+	void notifyNewTask(Task task);
+    }
+    
     public static class RunningUtilOptions {
 	boolean followForks = true;
     }
     
     public static final RunningUtilOptions DEFAULT = new RunningUtilOptions();
+
+    public ProcRunUtil(String utilName, String usage, String[] args,
+	    NewTaskObserver newTaskObserver, Option[] customOptions,
+	    RunningUtilOptions options) {
+	this(utilName, usage, args, new TaskObserver[]{}, customOptions, options);
+	this.newTaskObserver = newTaskObserver;
+    }
     
     public ProcRunUtil(String utilName, String usage, String[] args,
 	    TaskObserver[] observers, Option[] customOptions,
@@ -122,36 +135,14 @@ public class ProcRunUtil {
 	}
 	if(options.followForks){
 	    this.addTaskObserver(forkedObserver, task);
-	    observationRequested(task);
 	}
     }
     
-    private HashMap observationCounters = new HashMap();
-    synchronized private void observationRequested(Task task) {
-	Integer i = (Integer)observationCounters.get(task);
-	if (i == null)
-	    i = new Integer(1);
-	else
-	    i = new Integer(i.intValue() + 1);
-	observationCounters.put(task, i);
-    }
-
-    synchronized private void observationRealized(Task task) {
-	Integer i = (Integer)observationCounters.get(task);
-	// must be non-null
-	int j = i.intValue();
-	if (j == 1) {
-	    // Store a dummy into the map to detect errors.
-	    observationCounters.put(task, new Object());
-	    task.requestUnblock(attachedObserver);
-	}
-	else
-	    observationCounters.put(task, new Integer(--j));
-    }
-
     class ForkedObserver implements TaskObserver.Forked {
 	public Action updateForkedOffspring(Task parent, Task offspring) {
+	    newTaskObserver.notifyNewTask(offspring);
 	    addObservers(offspring.getProc());
+	    offspring.requestUnblock(this);
 	    return Action.BLOCK;
 	}
 
@@ -163,7 +154,6 @@ public class ProcRunUtil {
 	}
 
 	public void addedTo(Object observable) {
-	    observationRealized((Task) observable);
 	}
 
 	public void deletedFrom(Object observable) {
@@ -174,11 +164,14 @@ public class ProcRunUtil {
 	private Set procs = new HashSet();
 
 	public synchronized Action updateAttached(Task task) {
+	    newTaskObserver.notifyNewTask(task);
+		
 	    Proc proc = task.getProc();
 	    if (!procs.contains(proc)) {
 		procs.add(proc);
 		addObservers(proc);
 	    }
+	    task.requestUnblock(this);
 	    return Action.BLOCK;
 	}
 
