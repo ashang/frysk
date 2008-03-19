@@ -176,7 +176,7 @@ public class ProcRunUtil {
 		procs.add(proc);
 		addObservers(proc);
 	    }
-	    task.requestUnblock(this);
+	    
 	    return Action.BLOCK;
 	}
 
@@ -203,6 +203,8 @@ public class ProcRunUtil {
 		// main task after the fork or clone, to give us a
 		// chance to pick it up.
 		task.requestUnblock(forkedObserver);
+		task.requestUnblock(attachedObserver);
+		
 	    }
 	}
 

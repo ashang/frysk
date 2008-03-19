@@ -1,3 +1,7 @@
+2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcRunUtil.java: Moved unblocking to ProcTasksObserver.
+
 2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* ProcRunUtil.java: keeps a set of known tasks.
