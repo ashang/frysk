@@ -68,6 +68,8 @@ import gnu.classpath.tools.getopt.Option;
  */
 public class ProcRunUtil {
 
+    private final HashSet knownTasks = new HashSet();
+    
     ForkedObserver forkedObserver = new ForkedObserver();
 
     AttachedObserver attachedObserver = new AttachedObserver();
@@ -129,20 +131,24 @@ public class ProcRunUtil {
     }
     
     private void addObservers(Task task) {
-	
-	for (int i = 0; i < observers.length; i++) {
-	    this.addTaskObserver(observers[i], task);
-	}
-	if(options.followForks){
-	    this.addTaskObserver(forkedObserver, task);
+	if (knownTasks.add(task)) {
+	    
+	    if(newTaskObserver != null){
+		newTaskObserver.notifyNewTask(task);
+	    }
+	    
+	    for (int i = 0; i < observers.length; i++) {
+		this.addTaskObserver(observers[i], task);
+	    }
+	    if (options.followForks) {
+		this.addTaskObserver(forkedObserver, task);
+	    }
 	}
     }
     
     class ForkedObserver implements TaskObserver.Forked {
 	public Action updateForkedOffspring(Task parent, Task offspring) {
-	    newTaskObserver.notifyNewTask(offspring);
 	    addObservers(offspring.getProc());
-	    offspring.requestUnblock(this);
 	    return Action.BLOCK;
 	}
 
@@ -164,8 +170,7 @@ public class ProcRunUtil {
 	private Set procs = new HashSet();
 
 	public synchronized Action updateAttached(Task task) {
-	    newTaskObserver.notifyNewTask(task);
-		
+	    
 	    Proc proc = task.getProc();
 	    if (!procs.contains(proc)) {
 		procs.add(proc);
@@ -188,10 +193,9 @@ public class ProcRunUtil {
     
     ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
     {
-	int taskCount = 0;
+	
 	public void existingTask (Task task)
 	{
-	    taskCount++;
 	    addObservers(task);
 
 	    if (task == task.getProc().getMainTask()) {
@@ -204,14 +208,13 @@ public class ProcRunUtil {
 
 	public void taskAdded (Task task)
 	{
-	    taskCount++;
 	    addObservers(task);
 	}
 
 	public void taskRemoved (Task task)
 	{
-	    taskCount--;
-	    if(taskCount == 0){
+	    knownTasks.remove(task);
+	    if(knownTasks.size() == 0){
 		Manager.eventLoop.requestStop();
 	    }
 	}

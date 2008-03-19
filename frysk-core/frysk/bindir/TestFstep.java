@@ -43,6 +43,8 @@ package frysk.bindir;
 import frysk.config.Config;
 import java.io.File;
 import frysk.expunit.Regex;
+import frysk.proc.Task;
+import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownExpect;
 import lib.dwfl.Elf;
@@ -75,4 +77,21 @@ public class TestFstep extends TestLib {
 	e.close();
     }
   }
+    
+    public void testFstepAcceptsPIDArgument() {
+	
+	// Create an unattached child process.
+	SlaveOffspring child = SlaveOffspring.createChild();
+	Task task = child.findTaskUsingRefresh(true);
+	
+	String command = Config.getBinFile("fstep").getAbsolutePath();
+	String argument = "" + task.getProc().getPid();
+	TearDownExpect expect = new TearDownExpect(new String[] {
+		command, argument
+	});
+	
+	expect.expect(""+task.getProc().getPid());
+
+    }
+      
 }

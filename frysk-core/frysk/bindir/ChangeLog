@@ -1,7 +1,13 @@
+2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com>  
+
+	* TestFstep.java: New Test.
+	* fstep.java: fixed PID support.
+	removed -p options (supported through command line parser)
+	
 2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstep.java: Now uses ProcRunUtil.
-
+	
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* fstep.java: Update; using TaskAttachedObserverXXX.
