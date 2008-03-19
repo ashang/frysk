@@ -56,11 +56,13 @@ import frysk.proc.Manager;
  */
 public class TestRefresh extends TestLib {
 
+    /**
+     * Bit-flags to indicate what processes should be found.
+     */
     private static final int PROCESSES = 1;
     private static final int DAEMONS = 2;
     private static final int NEW_PROCESSES = 4;
     private static final int EXITED_PROCESSES = 16;
-
 
     /**
      * Class to record a refresh; both saving the supplied updates,
@@ -164,48 +166,50 @@ public class TestRefresh extends TestLib {
      * Check that a host refresh detects a process addition then
      * removal.
      */
-    private void checkAdditionAndRemoval(boolean daemon) {
+    private void checkAdditionsAndRemovals(boolean daemon) {
 	HostState state = new HostState(host);
 	state.assertRefresh("before creating process");
 	
-	// Create a sub-process; check that while there are some
-	// processes this new one isn't known.
-	SlaveOffspring child;
-	if (daemon)
-	    child = SlaveOffspring.createDaemon();
-	else
-	    child = SlaveOffspring.createChild();
-	assertTrue("host.procPool non-empty", state.processes.size() > 0);
-	state.assertIn("refresh before child created", child, 0);
-
-	// Do a refresh, check that the process gets added.
-	state.assertRefresh("after child created");
-	state.assertIn("refresh after child created", child,
-		       PROCESSES | NEW_PROCESSES
-		       | (daemon ? DAEMONS : 0));
-
-	// Delete the process.
-	child.reap();
-
-	// Check that a further refresh removes the process, generates
-	// a removed event, and puts the proc into the removed state.
-	state.assertRefresh("after child exited");
-	state.assertIn("refresh after child exits", child,
-		       EXITED_PROCESSES);
+	for (int i = 0; i < 2; i++) {
+	    // Create a sub-process; check that while there are some
+	    // processes this new one isn't known.
+	    SlaveOffspring child;
+	    if (daemon)
+		child = SlaveOffspring.createDaemon();
+	    else
+		child = SlaveOffspring.createChild();
+	    assertTrue("host.procPool non-empty", state.processes.size() > 0);
+	    state.assertIn("refresh before child created", child, 0);
+	    
+	    // Do a refresh, check that the process gets added.
+	    state.assertRefresh("after child created");
+	    state.assertIn("refresh after child created", child,
+			   PROCESSES | NEW_PROCESSES
+			   | (daemon ? DAEMONS : 0));
+	    
+	    // Delete the process.
+	    child.reap();
+	    
+	    // Check that a further refresh removes the process, generates
+	    // a removed event, and puts the proc into the removed state.
+	    state.assertRefresh("after child exited");
+	    state.assertIn("refresh after child exits", child,
+			   EXITED_PROCESSES);
+	}
     }
 
     /**
      * Check a child creation/deletion.
      */
     public void testProcAdditionAndRemoval() {
-	checkAdditionAndRemoval(false);
+	checkAdditionsAndRemovals(false);
     }
 
     /**
      * Check a daemon creation/deletion.
      */
     public void testDaemonAdditionAndRemoval() {
-	checkAdditionAndRemoval(true);
+	checkAdditionsAndRemovals(true);
     }
 
     /**

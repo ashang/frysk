@@ -1,5 +1,9 @@
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRefresh.java (checkAdditionsAndRemovals(boolean)): Replace
+	checkAdditionAndRemoval.
+	* LinuxPtraceProc.java: Add more logging.
+	
 	* TestTaskObserverBlocked.java (BlockedFibonacci): Register the
 	process with StopEventLoopWhenProcTerminated earlier.
 	* LinuxPtraceProc.java: Add more logging.

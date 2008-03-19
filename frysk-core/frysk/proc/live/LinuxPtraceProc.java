@@ -341,13 +341,12 @@ public class LinuxPtraceProc extends LiveProc {
     /**
      * (Internal) Tell the process that is no longer listed in the
      * system table remove itself.
-     *
-     * XXX: This should not be public.
      */
     void performRemoval() {
 	fine.log(this, "performRemoval -- no longer in /proc");
 	Manager.eventLoop.add(new ProcEvent() {
 		public void execute() {
+		    fine.log(LinuxPtraceProc.this, "execute - performRemoval");
 		    newState = oldState().handleRemoval(LinuxPtraceProc.this);
 		}
 	    });

@@ -104,22 +104,23 @@ public class LinuxPtraceHost extends LiveHost {
     }
 
     /**
-     * Either add or update a process, however, before doing that
-     * determine the parent and ensure that it has been updated.
+     * Either add or update the specified process, however, before
+     * doing that determine the parent and ensure that it has been
+     * updated.
      */
     private class ProcChanges {
 	/**
 	 * ADDED accumulates all the tasks added as things are
 	 * updated.
 	 */
-	List added = new LinkedList();
+	final List added = new LinkedList();
 
 	/**
 	 * REMOVED starts with the full list of processes and then
 	 * works backwards removing any that are processed, by the end
 	 * it contains processes that no longer exist.
 	 */
-	HashMap removed = (HashMap) procs.clone();
+	final HashMap removed = new HashMap(procs);
 
 	/**
 	 * Update PROCID, either adding it
@@ -208,7 +209,6 @@ public class LinuxPtraceHost extends LiveHost {
 	fine.log(this, "requestRefresh");
 	Manager.eventLoop.add(new Event() {
 		public void execute() {
-		    fine.log(LinuxPtraceHost.this, "execute - refresh");
 		    LinuxPtraceHost.this.executeRefresh(knownProcesses,
 							updates);
 		}
@@ -216,6 +216,7 @@ public class LinuxPtraceHost extends LiveHost {
     }
     private void executeRefresh(Collection knownProcesses,
 				HostRefreshBuilder builder) {
+	fine.log(LinuxPtraceHost.this, "executeRefresh");
 	ProcChanges procChanges = executeRefresh();
 	Collection exitedProcesses = procChanges.removed.values();
 	exitedProcesses.retainAll(knownProcesses);
