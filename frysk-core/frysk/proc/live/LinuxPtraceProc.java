@@ -81,10 +81,10 @@ public class LinuxPtraceProc extends LiveProc {
     public LinuxPtraceProc(Host host, Proc parent,
 			   ProcessIdentifier pid, Stat stat) {
 	super(host, parent, pid);
-	((LinuxPtraceHost)host).addProc(ProcessIdentifierFactory.create(pid.hashCode()), this);
 	this.newState = LinuxPtraceProcState.initial(false);
 	this.stat = stat;
 	this.breakpoints = new BreakpointAddresses(this);
+	((LinuxPtraceHost)host).addProc(this);
     }
 
     /**
@@ -93,9 +93,9 @@ public class LinuxPtraceProc extends LiveProc {
      */
     public LinuxPtraceProc(Task task, ProcessIdentifier fork) {
 	super(task, fork);
-	((LinuxPtraceHost)getHost()).addProc(fork, this);
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);
+	((LinuxPtraceHost)getHost()).addProc(this);
     }
 
     void addTask(LinuxPtraceTask task) {

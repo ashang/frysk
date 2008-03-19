@@ -1,5 +1,13 @@
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (removeProc(LinuxPtraceProc)): Replace
+	removeProc(ProcessIdentifier).
+	(addProc(LinuxPtraceProc)): Replace
+	addProc(ProcessIdentifier,LinuxPtraceProc).
+	* LinuxPtraceProcState.java (detached.handleRemove): Remove the
+	Proc from the Host.
+	* LinuxPtraceProc.java: Update.
+
 	* TestRefresh.java (checkAdditionsAndRemovals(boolean)): Replace
 	checkAdditionAndRemoval.
 	* LinuxPtraceProc.java: Add more logging.

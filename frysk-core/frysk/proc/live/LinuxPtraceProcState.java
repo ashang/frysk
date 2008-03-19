@@ -99,32 +99,32 @@ abstract class LinuxPtraceProcState extends State {
      * The process is running free (or at least was the last time its
      * status was checked).
      */
-    private static final LinuxPtraceProcState detached = new LinuxPtraceProcState ("detached")
-	{
-	    LinuxPtraceProcState handleRemoval(LinuxPtraceProc proc) {
-		fine.log("handleRemoval", proc); 
-		// XXX: What about a dieing proc's tasks, have a
-		// dieing state and force a proc refresh?
-		if (proc.parent != null)
-		    proc.parent.remove (proc);
-		return destroyed;
-	    }
-	    LinuxPtraceProcState handleAddObservation (LinuxPtraceProc proc,
-						       Observation observation) {
-	    	fine.log("handleAddObserver", proc); 
-	    	return Attaching.initialState (proc, observation);
-	    }
-
-	    LinuxPtraceProcState handleDeleteObservation (LinuxPtraceProc proc,
-					       Observation observation)
-	    {
-	    	fine.log("handleDeleteObservation", proc); 
-		// Must be bogus; if there were observations then the
-		// Proc wouldn't be in this state.
-		observation.fail (new RuntimeException ("not attached"));
-		return detached;
-	    }
-	};
+    private static final LinuxPtraceProcState detached
+	= new LinuxPtraceProcState ("detached") {
+		LinuxPtraceProcState handleRemoval(LinuxPtraceProc proc) {
+		    fine.log("handleRemoval", proc); 
+		    // XXX: What about a dieing proc's tasks, have a
+		    // dieing state and force a proc refresh?
+		    if (proc.parent != null)
+			proc.parent.remove (proc);
+		    // Take it out of the host's data-base.
+		    ((LinuxPtraceHost)proc.getHost()).removeProc(proc);
+		    return destroyed;
+		}
+		LinuxPtraceProcState handleAddObservation(LinuxPtraceProc proc,
+							  Observation observation) {
+		    fine.log("handleAddObserver", proc); 
+		    return Attaching.initialState (proc, observation);
+		}
+		LinuxPtraceProcState handleDeleteObservation(LinuxPtraceProc proc,
+							     Observation observation) {
+		    fine.log("handleDeleteObservation", proc); 
+		    // Must be bogus; if there were observations then the
+		    // Proc wouldn't be in this state.
+		    observation.fail (new RuntimeException ("not attached"));
+		    return detached;
+		}
+	    };
 
     /**
      * A process is being attached, this is broken down into

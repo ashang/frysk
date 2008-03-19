@@ -96,11 +96,11 @@ public class LinuxPtraceHost extends LiveHost {
     LinuxPtraceProc getProc(ProcessIdentifier pid) {
 	return (LinuxPtraceProc) procs.get(pid);
     }
-    void addProc(ProcessIdentifier pid, LinuxPtraceProc proc) {
-	procs.put(pid, proc);
+    void addProc(LinuxPtraceProc proc) {
+	procs.put(proc.pid, proc);
     }
-    void removeProc(ProcessIdentifier pid) {
-	procs.remove(pid);
+    void removeProc(LinuxPtraceProc proc) {
+	procs.remove(proc.pid);
     }
 
     /**
