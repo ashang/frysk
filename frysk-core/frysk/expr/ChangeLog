@@ -1,3 +1,8 @@
+2008-03-18  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCompletion.java (testCompleteStructMember()): Add "kappa" to
+	expected list.
+
 2008-03-18  Teresa Thomas  <tthomas@redhat.com>
 
 	* CExpr.g (ARITHMETIC_PLUS): New
