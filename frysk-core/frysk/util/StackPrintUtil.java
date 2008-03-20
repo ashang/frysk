@@ -83,7 +83,7 @@ public class StackPrintUtil {
 			     ("Print all information that can be retrieved"
 			      + " about the stack"
 			      + "\nthis is equivalent to"
-			      + " -p functions,params,scopes,fullpath")) {
+			      + " -print functions,params,scopes,fullpath")) {
 		public void parsed(String argument) throws OptionException {
 		    options.setElfOnly(false);
 		    options.setPrintParameters(true);
@@ -102,7 +102,7 @@ public class StackPrintUtil {
 		}
 	    });
 	group.add(new Option("common", 'c', "print commonly used debug information:" +
-			     "this is equivalent to -p functions,params,fullpath") {
+			     "this is equivalent to -print functions,params,fullpath") {
 		public void parsed(String argument) throws OptionException {
 		    options.setElfOnly(false);
 		    options.setPrintParameters(true);
@@ -111,7 +111,7 @@ public class StackPrintUtil {
 		    options.setPrintVirtualFrames(true);
 		}
 	    });
-	group.add(new Option("print", 'p', "itmes to print. Possible items:\n" +
+	group.add(new Option("print", "itmes to print. Possible items:\n" +
 			     "functions : print function names using debug information\n" +
 			     "scopes : print variables declared in each scope within the " +
 			     "function.\n" +

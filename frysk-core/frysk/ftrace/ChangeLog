@@ -1,3 +1,10 @@
+2008-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java (Ftrace(PrintStackOptions)): New constructor.
+	* Reporter.java (Reporter(PrintWriter,PrintStackOptions)): Add
+	stackPrintOptions parameter; use.
+	(generateStackTrace(Task)): Use StackPrintUtil.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Update; using TaskAttachedObserverXXX.

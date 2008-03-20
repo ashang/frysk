@@ -1,6 +1,10 @@
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
-	* fstack.java: Use StackPrintFactory to create standard options
+	* TestFtrace.java: Use -follow.
+	* ftrace.java: Use StackPrintUtil.  Replace '-c' with -f/-follow -
+	follow children.
+
+	* fstack.java: Use StackPrintUtil to create standard options
 	and print the stack.
 	* ferror.java: Ditto.
 

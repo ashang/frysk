@@ -39,6 +39,8 @@
 
 package frysk.bindir;
 
+import frysk.debuginfo.PrintStackOptions;
+import frysk.util.StackPrintUtil;
 import inua.util.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -83,7 +85,9 @@ class ftrace {
     private final FtraceController controller = new FtraceController();
     private boolean allowInterpTracing = false;
 
-    private Ftrace tracer = new Ftrace();
+    private final PrintStackOptions stackPrintOptions
+	= new PrintStackOptions();
+    private final Ftrace tracer = new Ftrace(stackPrintOptions);
 
     private List parseSymbolRules(String arg) {
 	String[] strs = arg.split(",", -1);
@@ -237,7 +241,7 @@ class ftrace {
                 }
 		}
 	    });
-        group.add(new Option('c', "trace children as well") {
+        group.add(new Option("follow", 'f', "follow children as well") {
 		public void parsed(String arg0) throws OptionException {
 		    tracer.setTraceChildren();
 		}
@@ -295,7 +299,10 @@ class ftrace {
 		    controller.stackTraceEverything();
 		}
 	    });
-	return new OptionGroup[] { group };
+	return new OptionGroup[] {
+	    group,
+	    StackPrintUtil.options(stackPrintOptions)
+	};
     }
 
     public void run(String[] args) {

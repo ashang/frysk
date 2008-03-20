@@ -55,9 +55,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import frysk.proc.TaskAttachedObserverXXX;
+import frysk.debuginfo.PrintStackOptions;
 
-public class Ftrace
-{
+public class Ftrace {
+    private final PrintStackOptions stackPrintOptions;
+    
+    public Ftrace(PrintStackOptions stackPrintOptions) {
+	this.stackPrintOptions = stackPrintOptions;
+	reporter = new Reporter(new PrintWriter(System.out), stackPrintOptions);
+    }
+
     // Where to send output.
     Reporter reporter;
 
@@ -171,12 +178,10 @@ public class Ftrace
     }
 
     public void setWriter (PrintWriter writer) {
-	this.reporter = new Reporter(writer);
+	this.reporter = new Reporter(writer, stackPrintOptions);
     }
 
     private void init() {
-	if (reporter == null)
-	    reporter = new Reporter(new PrintWriter(System.out));
 	functionObserver = new MyFunctionObserver(reporter, stackTraceSetProvider);
     }
 

@@ -1,5 +1,8 @@
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
+	* StackPrintUtil.java (options(PrintStackOptions)): Drop -p; keeps
+	clashing with -p PID.
+	
 	* FCatch.java (options()): New; use StackPrintUtil.
 	* StackPrintUtil.java: New file.
 

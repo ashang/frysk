@@ -91,7 +91,7 @@ public class TestFtrace extends TestLib {
         TearDownExpect e = new TearDownExpect(new String[] {
 		Config.getBinFile("ftrace").getAbsolutePath(),
 		"-sys=",
-		"-c",
+		"-follow",
 		""+task.getProc().getPid()
 	    });
 	e.expect(""+task.getProc().getPid()+"."+ task.getTid() + " * syscall * rt_sigsuspend");

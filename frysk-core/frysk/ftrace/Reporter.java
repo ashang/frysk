@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@
 
 package frysk.ftrace;
 
+import frysk.debuginfo.PrintStackOptions;
+import frysk.util.StackPrintUtil;
 import frysk.proc.Task;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
 import inua.util.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,10 +52,11 @@ class Reporter
     private Object lastItem = null;
     private Task lastTask = null;
     private HashMap levelMap = new HashMap();
+    private final PrintStackOptions stackPrintOptions;
 
-    public Reporter(PrintWriter writer)
-    {
+    public Reporter(PrintWriter writer, PrintStackOptions stackPrintOptions) {
 	this.writer = writer;
+	this.stackPrintOptions = stackPrintOptions;
     }
 
     private int getLevel(Task task)
@@ -176,12 +177,9 @@ class Reporter
 	updateOpenLine(null, null);
     }
 
-    public void generateStackTrace(Task task)
-    {
+    public void generateStackTrace(Task task) {
 	eventSingle(task, "dumping stack trace:");
-
-	Frame frame = StackFactory.createFrame(task);
-	StackFactory.printStack(writer, frame);
+	StackPrintUtil.print(task, stackPrintOptions, writer);
 	writer.flush();
 	updateOpenLine(null, null);
     }
