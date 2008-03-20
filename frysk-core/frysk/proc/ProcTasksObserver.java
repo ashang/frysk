@@ -1,11 +1,11 @@
 // This file is part of the program FRYSK.
-// 
+//
 // Copyright 2005, 2006, 2008, Red Hat Inc.
-// 
+//
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
 // the Free Software Foundation; version 2 of the License.
-// 
+//
 // FRYSK is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -37,124 +37,28 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
-import frysk.isa.signals.Signal;
-import java.util.Iterator;
-import frysk.rsl.Log;
-import frysk.event.Event;
-
 /**
- * Provides a mechanism for tracing all clone events within a process.
- * Notifies a ProcObserver.ProcTasks of any tasks added to or deleted from
- * that process. 
+ * An interface for clients to correctly know about all tasks of a
+ * Proc.
  */
-
-public final class ProcTasksObserver
-    implements TaskObserver.Cloned, TaskObserver.Terminated
-{
-    private static final Log fine = Log.fine(ProcTasksObserver.class);
-    private final Proc proc;
-    private final ProcObserver.ProcTasks procTasksObserver;
-    private Task mainTask;
-	
+public interface ProcTasksObserver extends Observer {
+    
     /**
-     * An observer that monitors all Tasks of a process notifying the
-     * caller of each new Task as it is added. 
+     * Called to deliver a list of existing tasks to the client.
      */
-    public ProcTasksObserver (Proc theProc, 
-			      ProcObserver.ProcTasks theProcTasksObserver)
-    {
-	fine.log(this, "new");
-	proc = theProc;
-	procTasksObserver = theProcTasksObserver;
-		
-	// The rest of the construction must be done synchronous to
-	// the EventLoop, schedule it.
-	Manager.eventLoop.add(new Event() {
-		public void execute() {
-		    // Get a preliminary list of tasks - XXX: hack really.
-		    proc.sendRefresh ();
-		    mainTask = proc.getMainTask();
-		    if (mainTask == null) {
-			fine.log(this, "Could not get main thread of "
-				 + "process", proc);
-			procTasksObserver.addFailed (proc,
-						     new RuntimeException ("Process lost: could not " +
-									   "get the main thread of this process.\n" + 
-									   proc));
-			return;
-		    }
-				
-		    requestAddObservers(mainTask);
-		}
-	    });
-    }
-	
-    private void requestAddObservers(Task task) 
-    {
-	task.requestAddClonedObserver(ProcTasksObserver.this);
-	task.requestAddTerminatedObserver(ProcTasksObserver.this);
-    }
-	
-    // Never block the parent.
-    public Action updateClonedParent (Task parent,
-				      Task offspring)
-    {
-	return Action.CONTINUE;
-    }
-	
+    void existingTask(Task task);
+    
     /**
-     * When ever a new cloned offspring appears notify the observer,
-     * and add a cloned observer to it.
+     * Called when the observed process clones a new task.
      */
-    public Action updateClonedOffspring (Task parent,
-					 Task offspring)
-    {
-	procTasksObserver.taskAdded (offspring);
-	fine.log(this, "ProcTasksObserver.updateClonedOffspring "
-		 + "parent", parent, "offspring", offspring);
-	requestAddObservers(offspring);
-	// Need to BLOCK and UNBLOCK so that the
-	// request to add an observer has enough time
-	// to be processed before the task continues.
-	offspring.requestUnblock (this);
-        return Action.BLOCK;
-    }
-	
-    private boolean isMainTaskAdded;
-	
-    public void addedTo(Object observable)
-    {
-	if (!isMainTaskAdded) {
-	    isMainTaskAdded= true;
-	    // XXX: Is there a race here with a rapidly cloning task?
-	    for (Iterator iterator = proc.getTasks().iterator();
-		 iterator.hasNext(); ) {
-		Task task = (Task) iterator.next();
-		procTasksObserver.existingTask (task);
-		if (task != mainTask) {
-		    fine.log(this, "Inside if not mainTask");
-		    requestAddObservers(task);
-		}
-	    }
-			
-	}
-    }
-	
-    public void addFailed(Object observable, Throwable w)
-    {
-	//throw new RuntimeException("How did this (addFailed) happen ?!");
-	procTasksObserver.addFailed(observable, w);
-    }
-	
-    public void deletedFrom(Object observable)
-    {
-	procTasksObserver.deletedFrom(observable);
-    }
-	
-    public Action updateTerminated(Task task, Signal signal, int value) {
-	procTasksObserver.taskRemoved(task);
-	return Action.CONTINUE;
-    }
+    void taskAdded(Task task);
+    
+    /**
+     * Called when one of the tasks of a process exits.
+     */
+    void taskRemoved(Task task);
+    
 }

@@ -45,7 +45,7 @@ import java.util.Set;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcTasksAction;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskAttachedObserverXXX;
@@ -122,7 +122,7 @@ public class ProcRunUtil {
     }
 
     private void addObservers(Proc proc) {
-	new ProcTasksObserver(proc, tasksObserver);
+	new ProcTasksAction(proc, tasksObserver);
     }
     
     private void addObservers(Task task) {
@@ -186,9 +186,7 @@ public class ProcRunUtil {
 	}
     }
     
-    ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
-    {
-	
+    private ProcTasksObserver tasksObserver = new ProcTasksObserver() {
 	public void existingTask (Task task)
 	{
 	    addObservers(task);

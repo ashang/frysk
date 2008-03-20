@@ -66,7 +66,7 @@ public class TestProcTasksObserver extends TestLib {
 	final int count = 4;
 			
 	MyTester observerTester = new MyTester(proc, count);
-	new ProcTasksObserver (proc, observerTester);
+	new ProcTasksAction(proc, observerTester);
 		
 	assertRunUntilStop("manyExistingThread");
 		
@@ -98,7 +98,7 @@ public class TestProcTasksObserver extends TestLib {
 		
 	//Add observer
 	MyTester observerTester = new MyTester(proc, count);
-	new ProcTasksObserver (proc, observerTester);
+	new ProcTasksAction(proc, observerTester);
 		
 	assertRunUntilStop("single existing clone");
 
@@ -124,7 +124,7 @@ public class TestProcTasksObserver extends TestLib {
 
 	//Add observer
 	MyTester observerTester = new MyTester(proc, count);
-	new ProcTasksObserver (proc, observerTester);
+	new ProcTasksAction(proc, observerTester);
 		
 	assertRunUntilStop("single existing thread");
 		
@@ -150,7 +150,7 @@ public class TestProcTasksObserver extends TestLib {
 		
 	//Add observer
 	ProcTasksTester observerTester = new ProcTasksTester();
-	new ProcTasksObserver (proc, observerTester);
+	new ProcTasksAction(proc, observerTester);
 
 	//To make sure that the add observer at least starts being processed
 	//before the addClone().
@@ -184,7 +184,7 @@ public class TestProcTasksObserver extends TestLib {
 	
 	//Add observer
 	MyTester observerTester = new MyTester(proc, existcount);
-	new ProcTasksObserver (proc, observerTester);	
+	new ProcTasksAction(proc, observerTester);	
 		
 	assertRunUntilStop("delete 1");
 		
@@ -223,7 +223,7 @@ public class TestProcTasksObserver extends TestLib {
 				
 	//Add observer
 	MyTester observerTester = new MyTester(proc, existingcount);
-	new ProcTasksObserver (proc, observerTester);
+	new ProcTasksAction(proc, observerTester);
 		
 	assertRunUntilStop("clone then kill");
 		
@@ -356,9 +356,7 @@ public class TestProcTasksObserver extends TestLib {
 	singleExistingThread(ackProcess);
     }
 	
-    class ProcTasksTester
-	implements ProcObserver.ProcTasks
-    {
+    private static class ProcTasksTester implements ProcTasksObserver {
 		
 	TaskSet tasksAdded = new TaskSet();
 	TaskSet tasksRemoved = new TaskSet();

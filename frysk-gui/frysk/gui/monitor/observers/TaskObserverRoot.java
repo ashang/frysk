@@ -46,7 +46,7 @@ import frysk.gui.Gui;
 import frysk.proc.Proc;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.ProcObserver.ProcTasks;
+import frysk.proc.ProcTasksAction;
 
 public abstract class TaskObserverRoot extends ObserverRoot {
 
@@ -60,9 +60,8 @@ public abstract class TaskObserverRoot extends ObserverRoot {
     super(other);
   }
 
-  public void apply(Proc proc){
-    new ProcTasksObserver (proc, new ProcTasks()
-    {
+    public void apply(Proc proc){
+	new ProcTasksAction(proc, new ProcTasksObserver() {
       public void taskAdded(Task task){
 	TaskObserverRoot.this.apply(task);
       }
@@ -83,8 +82,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
   }
 	
     public void unapply(Proc proc){	
-      new ProcTasksObserver (proc, new ProcTasks()
-      {
+	new ProcTasksAction(proc, new ProcTasksObserver() {
 	public void taskAdded(Task task){
 	  unapply(task);
 	}

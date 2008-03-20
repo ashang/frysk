@@ -1,3 +1,7 @@
+2008-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* StartRun.java: Use ProcTasksAction and ProcTasksObserver.
+
 2008-03-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Fix to not ignore "focus" command(bz #5578).

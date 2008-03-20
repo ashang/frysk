@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import frysk.rsl.Log;
 import frysk.event.TimerEvent;
-import frysk.proc.ProcObserver.ProcTasks;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
 import frysk.testbed.DaemonBlockedAtEntry;
@@ -118,7 +117,8 @@ public class StressAttachDetachRapidlyForkingMainTask extends TestLib {
 	ForkObserver forkObserver = new ForkObserver ();
 
 	// Add a tasks observer to add observers to fork's children
-	new ProcTasksObserver(child.getMainTask().getProc(), new ProcTasks(){
+	new ProcTasksAction(child.getMainTask().getProc(),
+			    new ProcTasksObserver() {
 		public void deletedFrom(Object observable) {
 		    fine.log("ProcTasksObserver.deleted from fired");
 		}

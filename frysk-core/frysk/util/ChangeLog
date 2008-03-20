@@ -1,5 +1,7 @@
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcRunUtil.java: Use ProcTasksObserver and ProcTasksAction.
+
 	* StackPrintUtil.java (options(PrintStackOptions)): Drop -p; keeps
 	clashing with -p PID.
 	

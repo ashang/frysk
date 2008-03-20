@@ -42,8 +42,8 @@ package frysk.ftrace;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcTasksAction;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.isa.syscalls.Syscall;
@@ -186,7 +186,7 @@ public class Ftrace {
     }
 
     public void addProc(Proc proc) {
-	new ProcTasksObserver(proc, tasksObserver);
+	new ProcTasksAction(proc, tasksObserver);
     }
 
     public void trace (String[] command) {
@@ -348,34 +348,26 @@ public class Ftrace {
 	}
     }
 
-    ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
-    {
-	public void existingTask (Task task)
-	{
-	    handleTask(task);
-
-	    if (task == task.getProc().getMainTask()) {
-		// Unblock forked and cloned observer, which blocks
-		// main task after the fork or clone, to give us a
-		// chance to pick it up.
-		task.requestUnblock(forkedObserver);
-		task.requestUnblock(clonedObserver);
+    private ProcTasksObserver tasksObserver = new ProcTasksObserver() {
+	    public void existingTask(Task task) {
+		handleTask(task);
+		if (task == task.getProc().getMainTask()) {
+		    // Unblock forked and cloned observer, which
+		    // blocks main task after the fork or clone, to
+		    // give us a chance to pick it up.
+		    task.requestUnblock(forkedObserver);
+		    task.requestUnblock(clonedObserver);
+		}
 	    }
-	}
-
-	public void taskAdded (Task task)
-	{
-	    handleTask(task);
-	}
-
-	public void taskRemoved (Task task)
-	{
-	}
-
-	public void addedTo (Object observable)	{}
-	public void addFailed (Object observable, Throwable arg1) {}
-	public void deletedFrom (Object observable) {}
-    };
+	    public void taskAdded(Task task) {
+		handleTask(task);
+	    }
+	    public void taskRemoved(Task task) {
+	    }
+	    public void addedTo (Object observable)	{}
+	    public void addFailed (Object observable, Throwable arg1) {}
+	    public void deletedFrom (Object observable) {}
+	};
 
 
     /**

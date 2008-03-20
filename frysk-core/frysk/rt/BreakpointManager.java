@@ -48,7 +48,7 @@ import java.util.TreeMap;
 import frysk.rsl.Log;
 import frysk.proc.Action;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
+import frysk.proc.ProcTasksAction;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
@@ -79,14 +79,13 @@ public class BreakpointManager extends Observable {
 
     // Watch a process and its tasks for events that might cause
     // breakpoints to be added or deleted in it.
-    private class ProcWatcher
-        implements ProcObserver.ProcTasks {
+    private class ProcWatcher implements ProcTasksObserver {
         Proc proc;
-        ProcTasksObserver ptObs;
+        ProcTasksAction ptObs;
 
         ProcWatcher(Proc proc) {
             this.proc = proc;
-            ptObs = new ProcTasksObserver(proc, this);
+            ptObs = new ProcTasksAction(proc, this);
         }
     
         HashSet procTasks = new HashSet();

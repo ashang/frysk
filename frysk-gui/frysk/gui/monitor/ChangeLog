@@ -1,3 +1,9 @@
+2008-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* eventviewer/ProcBox.java: Use ProcTasksObserver and
+	ProcTasksAction.
+	* observers/TaskObserverRoot.java: Ditto.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* actions/RunExternal.java: Update; using TaskAttachedObserverXXX.

@@ -53,7 +53,7 @@ import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.ProcObserver.ProcTasks;
+import frysk.proc.ProcTasksAction;
 
 public class ProcBox extends Frame
 {
@@ -109,7 +109,7 @@ public class ProcBox extends Frame
     procTimeLine.setHAdjustment(hAdjustment);
     bigVBox.packStart(procTimeLine, true, true, 0);
     
-    new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
+    new ProcTasksAction(guiProc.getProc(), new ProcTasksObserver() {
 
       public void taskAdded (final Task task)
       {

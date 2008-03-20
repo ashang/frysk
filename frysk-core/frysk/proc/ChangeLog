@@ -1,3 +1,11 @@
+2008-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcTasksAction.java: Rename ProcTasksObserver.
+	* ProcTasksObserver.java: Extract ProcTasks from ProcObserver.
+	* ProcObserver.java: Delete.
+	* StressAttachDetachRapidlyForkingMainTask.java: Update.
+	* TestProcTasksObserver.java: Update.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserver.java (attachDieingTask(int,boolean)): Do not

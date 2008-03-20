@@ -42,8 +42,8 @@ package frysk.hpd;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcTasksAction;
 import frysk.proc.Task;
 import frysk.util.CountDownLatch;
 import java.util.HashSet;
@@ -63,7 +63,7 @@ abstract class StartRun extends ParameterizedCommand {
 	super(command, help1, help2);
     }
 
-    static class Runner implements TaskAttachedObserverXXX {
+    private static class Runner implements TaskAttachedObserverXXX {
 	final CLI cli;
 	CountDownLatch latch;
 	Task launchedTask;
@@ -80,7 +80,7 @@ abstract class StartRun extends ParameterizedCommand {
 	    synchronized (cli) {
 		cli.getRunningProcs().add(proc);
 	    }
-	    new ProcTasksObserver(proc, new ProcTasks() {
+	    new ProcTasksAction(proc, new ProcTasksObserver() {
 		public void existingTask(Task task) {
 		}
 
