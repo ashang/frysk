@@ -9,6 +9,8 @@
 	* TestStartCommand.java: Ditto.
 	* LoadCommand.java: Add new method for loaded procs listing.
 	* TestLoadCommand.java: Modify test for above.
+	
+	* StartRun.java: Fix merge error.
 
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 

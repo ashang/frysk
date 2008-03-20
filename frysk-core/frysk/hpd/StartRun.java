@@ -42,7 +42,6 @@ package frysk.hpd;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskAttachedObserverXXX;
