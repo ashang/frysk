@@ -1,3 +1,11 @@
+2008-03-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Fix to not ignore "focus" command(bz #5578).
+	* TestRunCommand.java: Add test for above.
+	* TestStartCommand.java: Ditto.
+	* LoadCommand.java: Add new method for loaded procs listing.
+	* TestLoadCommand.java: Modify test for above.
+
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* CLI.java: Treat a terminating task as stopped.
