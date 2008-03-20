@@ -41,26 +41,22 @@ package frysk.bindir;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
-
-import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.event.Event;
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rsl.Log;
-import frysk.stack.StackFactory;
 import frysk.util.ProcStopUtil;
-import gnu.classpath.tools.getopt.Option;
+import frysk.util.StackPrintUtil;
 import gnu.classpath.tools.getopt.OptionGroup;
-import gnu.classpath.tools.getopt.OptionException;
 
 public final class fstack {
 
   private static PrintWriter printWriter = new PrintWriter(System.out);  
-  static PrintStackOptions options = new PrintStackOptions();
+    private static PrintStackOptions stackPrintOptions
+	= new PrintStackOptions();
   private static final Log fine = Log.fine(fstack.class);
   
     public static void main(String[] args) {
@@ -103,20 +99,9 @@ public final class fstack {
       for (int i=0; i<tasks.length; i++)
           sortedTasks.put(new Integer(tasks[i].getTid()), tasks[i]);
 
-      Iterator iter = sortedTasks.values().iterator();
-      while (iter.hasNext())
-      {
-          Task task =  (Task) iter.next();
-
-          if(options.elfOnly()){
-              StackFactory.printTaskStackTrace(printWriter,task,options);
-          }else{
-              if(options.printVirtualFrames()){
-                  DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,options);
-              }else{
-                  DebugInfoStackFactory.printTaskStackTrace(printWriter,task,options);
-              }
-          }
+      for (Iterator i = sortedTasks.values().iterator(); i.hasNext(); ) {
+          Task task = (Task) i.next();
+	  StackPrintUtil.print(task, stackPrintOptions, printWriter);
           printWriter.println();
       }
   }
@@ -125,87 +110,8 @@ public final class fstack {
      * Create the default option group.
      */
     private static OptionGroup[] options() {
-	OptionGroup group = new OptionGroup("fstack options");
-	group.add(new Option("number-of-frames", 'n', "number of frames to print. Use -n 0 or" +
-			     " -n all to print all frames.", "<number of frames>") {
-		public void parsed(String arg) throws OptionException {
-		    if(arg.equals("all")){
-			options.setNumberOfFrames(0);
-		    }else{
-			options.setNumberOfFrames(Integer.parseInt(arg));
-			return;
-		    }
-		}
-	    });
-	group.add(new Option("fullpath", 'f', "print full path." +
-			     "-f prints full path") {
-		public void parsed(String arg) throws OptionException {
-		    options.setPrintFullpath(true);
-		}
-	    });
-	group.add(new Option("all", 'a', "print all information that can currently be retrieved" +
-			     "about the stack\n" +
-			     "this is equivalent to -p functions,params,scopes,fullpath") {
-		public void parsed(String argument) throws OptionException {
-		    options.setElfOnly(false);
-		    options.setPrintParameters(true);
-		    options.setPrintScopes(true);
-		    options.setPrintFullpath(true);
-		}
-	    });
-	group.add(new Option("virtual",
-			     'v',
-			     "Includes virtual frames in the stack trace.\n" +
-			     "Virtual frames are artificial frames corresponding" +
-			     " to calls to inlined functions") {
-		public void parsed(String argument) throws OptionException {
-		    options.setPrintVirtualFrames(true);
-		    options.setElfOnly(false);
-		}
-	    });
-	group.add(new Option("common", 'c', "print commonly used debug information:" +
-			     "this is equivalent to fstack -v -p functions,params,fullpath") {
-		public void parsed(String argument) throws OptionException {
-		    options.setElfOnly(false);
-		    options.setPrintParameters(true);
-		    options.setPrintScopes(false);
-		    options.setPrintFullpath(true);
-		    options.setPrintVirtualFrames(true);
-		}
-	    });
-	group.add(new Option("print", 'p', "itmes to print. Possible items:\n" +
-			     "functions : print function names using debug information\n" +
-			     "scopes : print variables declared in each scope within the " +
-			     "function.\n" +
-			     "params : print function parameters\n" +
-			     "fullpath : print full executbale path" , "[item],...") {
-		public void parsed(String arg) throws OptionException {
-		    options.setElfOnly(true);
-		    options.setPrintParameters(false);
-		    options.setPrintScopes(false);
-		    options.setPrintFullpath(false);
-		    options.setPrintVirtualFrames(false);
-		    StringTokenizer st = new StringTokenizer(arg, ",");
-		    while (st.hasMoreTokens()) {
-			String name = st.nextToken();
-			if (name.equals("functions")) {
-			    options.setElfOnly(false);
-			} else if (name.equals("params")) {
-			    options.setElfOnly(false);
-			    options.setPrintParameters(true);
-			} else if (name.equals("scopes")) {
-			    options.setElfOnly(false);
-			    options.setPrintScopes(true);
-			} else if (name.equals("fullpath")) {
-			    options.setElfOnly(false);
-			    options.setPrintFullpath(true);
-			} else {
-			    throw new OptionException
-				("unknown print parameter: " + name);
-			}
-		    }
-		}
-	    });
-	return new OptionGroup[] { group };
+	return new OptionGroup[] {
+	    StackPrintUtil.options(stackPrintOptions)
+	};
     }
 }

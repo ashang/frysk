@@ -1,3 +1,9 @@
+2008-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* fstack.java: Use StackPrintFactory to create standard options
+	and print the stack.
+	* ferror.java: Ditto.
+
 2008-03-19  Phil Muldoon  <pmuldoon@redhat.com>
 	    Andrew Cagney  <cagney@redhat.com>
 

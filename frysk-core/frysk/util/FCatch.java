@@ -41,9 +41,9 @@ package frysk.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import gnu.classpath.tools.getopt.OptionGroup;
 import java.util.HashMap;
-
-import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.PrintStackOptions;
 import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -51,8 +51,9 @@ import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
 
 public class FCatch {
-
     private static final Log fine = Log.fine(FCatch.class);
+
+    private final PrintStackOptions stackPrintOptions = new PrintStackOptions();
 
     private PrintWriter printWriter = new PrintWriter(System.out);
     HashMap signaledTasks = new HashMap();
@@ -104,8 +105,8 @@ public class FCatch {
 	    fine.log(this, "updateSignaled", task, "signal", signal);
 	    
 	    StringWriter stringWriter = new StringWriter();
-	    
-	    DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, DebugInfoStackFactory.DEFAULT);
+	    StackPrintUtil.print(task, stackPrintOptions,
+				 new PrintWriter(stringWriter));
 	    
 	    SignalStack signalStack = new SignalStack();
 	    signalStack.signal = signal;
@@ -129,13 +130,19 @@ public class FCatch {
 	}
     }
 
+    private OptionGroup[] options() {
+	return new OptionGroup[] {
+	    StackPrintUtil.options(stackPrintOptions)
+	};
+    }
+
     public void run(String[] args) {
 	CatchObserver catchObserver = new CatchObserver();
 	ProcRunUtil procRunUtil
 	    = new ProcRunUtil("fcatch",
 			      "Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
 			      args, new TaskObserver[] { catchObserver},
-			      null, ProcRunUtil.DEFAULT);
+			      options(), ProcRunUtil.DEFAULT);
 	procRunUtil.start();
     }
 }
