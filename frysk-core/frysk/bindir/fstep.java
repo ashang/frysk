@@ -51,16 +51,15 @@ import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Auxv;
 import frysk.proc.Manager;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.util.CommandlineParser;
-import frysk.util.ProcFollowUtil;
+import frysk.util.ProcRunUtil;
+import frysk.util.ProcRunUtil.ProcRunObserver;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 
-public class fstep implements ProcFollowUtil.NewTaskObserver,
+public class fstep implements ProcRunObserver,
   TaskObserver.Code,
   TaskObserver.Instruction,
   TaskObserver.Terminated
@@ -77,13 +76,9 @@ public class fstep implements ProcFollowUtil.NewTaskObserver,
   // Defaults to 1.
   private static int instrs;
 
-  // The command to execute
-//  static String[] command;
-
   // The process id to trace
   static int pid;
 
-  private static String[] command;
 
   // Tasks being observed mapped to the total number of steps.
   private static final HashMap tasks = new HashMap();
@@ -135,32 +130,35 @@ public class fstep implements ProcFollowUtil.NewTaskObserver,
 	return new OptionGroup[] { group };
     }
 
-    public static void main(String[] args) {
-	sample = 0;
-	instrs = 1;
-	
-	// XXX: parser is only needed because fstep uses fstep.command
-	// to figure out wether the loaded code should be skipped or
-	// not.
-	final CommandlineParser parser = new CommandlineParser("fstep") {
-		//XXX: this is needed so parser doesnt thin that pids
-		//are not supported
-		public void parsePids(Proc[] procs) {
-		}
-		public void parseCommand(Proc command) {
-		    fstep.command = command.getCmdLine();
-		}
-	    };
-	parser.parse(args);
-	
-	final fstep step = new fstep();
-	
-	ProcFollowUtil procRunUtil = new ProcFollowUtil("fstep",
-						  "fstep <PID|EXEC> [OPTIONS]",
-						  args, step, options(),
-						  ProcFollowUtil.DEFAULT);
-	procRunUtil.start();
-    }
+    Option instructionsOption = new Option("instructions", 'i',
+			  "how many instructions to print at each step/sample",
+			  "instructions")
+      {
+	public void parsed(String argument) throws OptionException
+	{
+	  try
+	    {
+	      instrs = Integer.parseInt(argument);
+	    }
+	  catch (NumberFormatException nfe)
+	    {
+	      OptionException ex;
+	      ex = new OptionException("instructions must be a number");
+	      ex.initCause(nfe);
+	      throw ex;
+	    }
+	}
+      };
+
+  public static void main(String[] args) {
+    sample = 0;
+    instrs = 1;
+    
+    final fstep step = new fstep();
+    
+    ProcRunUtil procRunUtil = new ProcRunUtil("fstep", "fstep <PID|EXEC> [OPTIONS]", args, step , options(), ProcRunUtil.DEFAULT);
+    procRunUtil.start();
+  }
 
   /**
    * Disassembler to use when real disassembler isn't available.
@@ -194,54 +192,51 @@ public class fstep implements ProcFollowUtil.NewTaskObserver,
     }
   }
 
-  public void notifyNewTask(Task task)
+  public Action updateAttached(Task task)
   {
-    // We only need one disassembler since all Tasks share their memory.
-    if (disassembler == null)
-      {
-	if (Disassembler.available())
-	  disassembler = new Disassembler(task.getMemory());
-	else
-	  disassembler = new DummyDisassembler(task.getMemory());
-      }
-
-    tasks.put(task, Long.valueOf(0));
-
     // If this is an attach for a command given on the command line
     // then we want to start stepping at the actual start of the
     // process (and not inside the dynamic linker).
     long startAddress = 0;
-    if (command != null && command.length != 0)
-      {
-	Auxv[] auxv = task.getProc().getAuxv ();
-	for (int i = 0; i < auxv.length; i++)
-	  {
-	    if (auxv[i].type == inua.elf.AT.ENTRY)
-	      {
+	Auxv[] auxv = task.getProc().getAuxv();
+	for (int i = 0; i < auxv.length; i++) {
+	    if (auxv[i].type == inua.elf.AT.ENTRY) {
 		startAddress = auxv[i].val;
 		break;
-	      }
-	  }
-      }
-    
-//    System.out.println("fstep.updateAttached() startAddress 0x" + Long.toHexString(startAddress));
+	    }
+	}
 
     if (startAddress == 0)
       {
 	// Immediately start tracing steps.
-	task.requestAddInstructionObserver(this);
-	task.requestAddTerminatedObserver(this);
+	this.startTracingTask(task);
       }
     else
       task.requestAddCodeObserver(this, startAddress);
     
+    return Action.CONTINUE;
   }
 
+  private void startTracingTask(Task task){
+      if (!tasks.containsKey(task)) {
+	  tasks.put(task, Long.valueOf(0));
+	  // We only need one disassembler since all Tasks share their memory.
+	  if (disassembler == null)
+	  {
+	      if (Disassembler.available())
+		  disassembler = new Disassembler(task.getMemory());
+	      else
+		  disassembler = new DummyDisassembler(task.getMemory());
+	  }
+	    task.requestAddInstructionObserver(this);
+	    task.requestAddTerminatedObserver(this);
+	}
+  }
+  
   // TaskObserver.Code interface
   public Action updateHit(Task task, long address)
   {
-    task.requestAddInstructionObserver(this);
-    task.requestAddTerminatedObserver(this);
+      startTracingTask(task);
     task.requestDeleteCodeObserver(this, address);
     return Action.BLOCK;
   }
@@ -268,7 +263,7 @@ public class fstep implements ProcFollowUtil.NewTaskObserver,
     long steps = ((Long) tasks.get(task)).longValue();
     steps++;
     tasks.put(task, Long.valueOf(steps));
-
+    
     if (sample == 0 || steps % sample == 0) {
 	int tid = task.getTid();
 	long pc = task.getPC();
@@ -300,4 +295,33 @@ public class fstep implements ProcFollowUtil.NewTaskObserver,
   {
     // Unused
   }
+
+  public Action updateForkedOffspring(Task parent, Task offspring) {
+      this.startTracingTask(offspring);
+      offspring.requestUnblock(this);
+      return Action.BLOCK;
+  }
+
+    public Action updateExeced(Task task) {
+	// XXX: skip dynamic linker code again
+	//      a la updateAttached ?
+	return Action.CONTINUE;
+    }
+
+    public Action updateClonedOffspring(Task parent, Task offspring) {
+	this.startTracingTask(offspring);
+	offspring.requestUnblock(this);
+	return Action.BLOCK;
+    }
+    
+    public void taskAdded(Task task) {/* use updateClonedOffspring instead*/}
+    
+    public void existingTask(Task task) {
+	this.startTracingTask(task);
+    }
+
+    public void taskRemoved(Task task) {}
+    public Action updateForkedParent(Task parent, Task offspring) {return Action.CONTINUE;}
+    public Action updateClonedParent(Task task, Task clone) {return Action.CONTINUE;}
+
 }

@@ -1,8 +1,12 @@
+2008-03-20  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* fstep.java: Use ProcRunUtil.
+	
 2008-03-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Renamed ProcRunUtil to ProcFollowUtil.
 	* ferror.java: Updated.
-	* fstep.java: Updated.
+	* fstep.java: Updated.	
 
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
