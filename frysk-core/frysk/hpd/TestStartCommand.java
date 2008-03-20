@@ -53,11 +53,11 @@ public class TestStartCommand extends TestLib {
     public void testStartCommand() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
-		"\\[0\\.0] Loaded executable file.*");
+		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
-	e.sendCommandExpectPrompt("where", "[0.0].*");
+	e.sendCommandExpectPrompt("focus", "\\[0\\.0\\].*");
 	e.send("quit\n");
-	e.expect("Quitting...");
+	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
     
@@ -107,6 +107,26 @@ public class TestStartCommand extends TestLib {
 	    System.out.println("Error reading file param-test");
 	}
 	assertTrue("Testing passed parameters", paramlist.equals(compare));
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    /**
+     * This test case tests to make sure the start command pays attention to the "focus"
+     * command.
+     */
+    
+    public void testStartFocus() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"\\[1\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("focus [1.0]", "Creating new HPD notation set.*");
+	e.sendCommandExpectPrompt("start", "Attached to process ([0-9]+).*" +
+		"starting.*");
+	e.sendCommandExpectPrompt("load", "\\[0\\.0\\].*funit-hello.*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();

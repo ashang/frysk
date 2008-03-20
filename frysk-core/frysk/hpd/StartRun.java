@@ -42,16 +42,16 @@ package frysk.hpd;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
-import frysk.proc.ProcTasksAction;
 import frysk.proc.Task;
+import frysk.proc.TaskAttachedObserverXXX;
+import frysk.proc.ProcTasksAction;
 import frysk.util.CountDownLatch;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import frysk.proc.TaskAttachedObserverXXX;
+
 
 /**
  * Due to a lot of similar code in StartCommand/RunCommand this class was
@@ -124,69 +124,71 @@ abstract class StartRun extends ParameterizedCommand {
     
     public void interpretCmd(CLI cli, Input cmd, Object options,
 			     boolean runToBreak) {
-	// See if there are any running tasks, if so, process them
-	// if there are not any procs loaded with the load/core commands
+	// See if there are any tasks in the current target set
 	Iterator foo = cli.targetset.getTaskData();
+	int oldPid = -1;
 	if (foo.hasNext()) {
-	    if (cli.coreProcs.isEmpty() && cli.loadedProcs.isEmpty()) {
-		// Clear the parameters for this process
-		int oldPid = -1;
-		TaskData taskData = null;
-		while (foo.hasNext()) {
-		    taskData = (TaskData) foo.next();
-		    Task task = taskData.getTask();
-		    // Need only one kill per PID(proc)
-		    if (task.getProc().getPid() == oldPid) {
-			continue;
+	    // Clear the parameters for this process
+	    TaskData taskData = null;
+	    while (foo.hasNext()) {
+		taskData = (TaskData) foo.next();
+		Task task = taskData.getTask();
+		// Need only one kill per PID(proc) if proc is running already
+		if (task.getProc().getPid() != oldPid &&
+		  task.getProc().getPid() > 0) {
+		    cli.execCommand("kill " + task.getProc().getPid() + "\n");
+		    int taskid = taskData.getParentID();
+		    run(cli, cmd, task.getProc(), runToBreak, taskid);
+		    oldPid = task.getProc().getPid();
 		    } else {
-			cli.execCommand("kill\n");
 			int taskid = taskData.getParentID();
-			synchronized (cli) {
-				cli.taskID = taskid;
+			// Take care of loaded procs
+			if (!cli.loadedProcs.isEmpty() && 
+			    cli.loadedProcs.containsKey(task.getProc())) {
+			    run(cli, cmd, task.getProc(), runToBreak, taskid);
+			    synchronized (cli) {
+				cli.loadedProcs.remove(task.getProc());
+			    }
 			}
-		    	run(cli, cmd, task.getProc(), runToBreak);
-		    	synchronized (cli) {
-				cli.taskID = -1;
-				cli.loadedProcs.clear();
+			// Take care of core procs
+			else if (!cli.coreProcs.isEmpty() &&
+				cli.coreProcs.containsKey(task.getProc())) {
+			    run(cli, cmd, task.getProc(), runToBreak, taskid);
+			    synchronized (cli) {
+				cli.coreProcs.remove(new Integer(taskid));
+			    }
 			}
-		    	oldPid = task.getProc().getPid();
 		    }
 		}
 		return;
-	    }
+	   // }
 	} else {
 	    cli.addMessage("No procs in targetset to run", Message.TYPE_NORMAL);
 	    return;
 	}
-
-	/*
-	 * If we made it here, a run command was issued and there are no running
-	 * procs, so, see if there were loaded procs or core procs
-	 */
-
-	/* This is the case where there are loaded procs */
-	if (!cli.loadedProcs.isEmpty()) {
-	    Set procSet = cli.loadedProcs.entrySet();
-	    runProcs(cli, procSet, cmd, runToBreak);
-	    synchronized (cli) {
-		cli.loadedProcs.clear();
-	    }
-	}
-
-	/* Check to see if there were procs loaded from a core command */
-	if (!cli.coreProcs.isEmpty()) {
-	    Set coreSet = cli.coreProcs.entrySet();
-	    runProcs(cli, coreSet, cmd, runToBreak);
-	    synchronized (cli) {
-		cli.coreProcs.clear();
-	    }
-	}
     }
 
-    private void run(CLI cli, Input cmd, Proc template, boolean runToBreak) {
+    /**
+     * run takes a passed proc from the target set and runs it
+     * 
+     * @param cli is the commandline object
+     * @param cmd is the command object with all the parameters
+     * @param template is the proc to run
+     * @param runToBreak true if the process is to run to the first break point
+     * 		or until it blows up("run" command), false if it should stop
+     * 		at the first executable statement("start" command)
+     * @param taskid the internal target set id that should be used for this process
+     */
+    private void run(CLI cli, Input cmd, Proc template, boolean runToBreak,
+	    int taskid) {
 	Runner runner = new Runner(cli);
+	String startrun = "";
+	    if (runToBreak)
+		startrun = "running";
+	    else
+		startrun = "starting";
 	if (cmd.size() == 0) {
-	    cli.addMessage("starting/running with this command: " + 
+	    cli.addMessage(startrun + " with this command: " + 
 			   asString(template.getCmdLine()),
 			   Message.TYPE_NORMAL);
 	    Manager.host.requestCreateAttachedProc(template, runner);
@@ -195,7 +197,7 @@ abstract class StartRun extends ParameterizedCommand {
 	    args[0] = template.getCmdLine()[0];
 	    for (int i = 1; i < args.length; i++)
 		args[i] = cmd.parameter(i - 1);
-	    cli.addMessage("starting/running with this command: " + 
+	    cli.addMessage(startrun + " with this command: " + 
 			   asString(args), Message.TYPE_NORMAL);
 	    Manager.host.requestCreateAttachedProc(args, runner);
 	}
@@ -208,8 +210,15 @@ abstract class StartRun extends ParameterizedCommand {
 	    }
 	}
 	// register with SteppingEngine et.al.
+	// Make sure we use the old task id for the new one
+	synchronized (cli) {
+		cli.taskID = taskid;
+	}
 	cli.doAttach(runner.launchedTask.getProc(), runToBreak);
 	runner.launchedTask.requestUnblock(runner);
+	synchronized (cli) {
+		cli.taskID = -1;
+	}
     }
 
     private String asString(String[] args) {
@@ -219,34 +228,6 @@ abstract class StartRun extends ParameterizedCommand {
 	    b.append(args[i]);
 	}
 	return b.toString();
-    }
-
-    /**
-     * runProcs does as the name implies, it runs procs found to be loaded by a
-     * load or a core command.
-     * 
-     * @param cli is the current commandline interface object
-     * @param procs is the set of procs to be run
-     * @param cmd is the command object to use to start the proc(s)
-     */
-    private void runProcs(CLI cli, Set procs, Input cmd, boolean runToBreak) {
-	Iterator foo = procs.iterator();
-	int ctr = 0;
-	while (foo.hasNext()) {
-	    ctr++;
-	    Map.Entry me = (Map.Entry) foo.next();
-	    Proc proc = (Proc) me.getKey();
-	    Integer taskid = (Integer) me.getValue();
-	    // Set the TaskID to be used to what was used when the
-	    // proc was loaded with the core or load commands
-	    synchronized (cli) {
-		cli.taskID = taskid.intValue();
-	    }
-	    run(cli, cmd, proc, runToBreak);
-	    synchronized (cli) {
-		cli.taskID = -1;
-	    }
-	}
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {

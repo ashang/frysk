@@ -178,4 +178,24 @@ public class TestRunCommand extends TestLib {
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
+    
+    /**
+     * This test case tests to make sure the run command pays attention to the "focus"
+     * command.
+     */
+    
+    public void testRunFocus() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"\\[1\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("focus [1.0]", "Creating new HPD notation set.*");
+	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*" +
+		"running.*" + "Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("load", "\\[0\\.0\\].*funit-hello.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
 }

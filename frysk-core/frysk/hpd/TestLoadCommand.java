@@ -106,7 +106,7 @@ public class TestLoadCommand extends TestLib {
 		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
 		"\\[1\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load", "Target set.*\\[0\\.0\\].*\\[1\\.0\\].*");
+	e.sendCommandExpectPrompt("load", "Loaded procs.*\\[0\\.0\\].*\\[1\\.0\\].*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();

@@ -40,7 +40,12 @@
 package frysk.hpd;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import frysk.proc.dead.LinuxExeFactory;
 import frysk.debuginfo.DebugInfo;
 import frysk.debuginfo.DebugInfoFrame;
@@ -48,7 +53,6 @@ import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.sysroot.SysRootCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import java.util.List;
 
 /**
  * LoadCommand handles the "load path-to-executable" command on the fhpd
@@ -100,8 +104,7 @@ public class LoadCommand extends ParameterizedCommand {
 		return;
 	    } else {
 		// List the loaded procs if no parameters entered
-		ViewsetCommand.printLoop(cli.targetset, cli, "Target set",
-					 true);
+		printLoop(cli, "Loaded procs", cli.loadedProcs);
 		return;
 	    }
 	}
@@ -147,6 +150,35 @@ public class LoadCommand extends ParameterizedCommand {
 
 	cli.addMessage("[" + procID + ".0] Loaded executable file: " + 
 		exeProc.getExe(), Message.TYPE_NORMAL);
+    }
+    
+    /**
+     * printLoop goes through the specified set of procs/tasks and prints them out
+     * 
+     * @param cli is the current command line interface object
+     * @param displayedName is the String used for the title of the set
+     * @param hashProcs is a HashMap containing the procs to list 
+     */
+    
+    static void printLoop(CLI cli, String displayedName, HashMap hashProcs) {
+	Set procSet = hashProcs.entrySet();
+	cli.outWriter.print(displayedName);
+	cli.outWriter.println("\tpath-to-executable");
+	ArrayList listing = new ArrayList();
+	// Run through procs and put into ArrayList so we can print them out in 
+	// numerical order after sorting them
+	for (Iterator foo = procSet.iterator(); foo.hasNext();) {
+	    Map.Entry me = (Map.Entry) foo.next();
+	    Proc proc = (Proc) me.getKey();
+	    Integer taskid = (Integer) me.getValue();
+	    listing.add("[" + taskid.intValue() + ".0]\t\t" + proc.getExe());
+	}
+	String alphaListing[] = (String[]) listing.toArray(new String[listing.size()]);
+	java.util.Arrays.sort(alphaListing);
+	for (int foo = 0; foo < alphaListing.length; foo++) {
+	    cli.outWriter.println(alphaListing[foo]);
+	}
+	cli.outWriter.flush();
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {
