@@ -55,12 +55,12 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.util.CommandlineParser;
-import frysk.util.ProcRunUtil;
+import frysk.util.ProcFollowUtil;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 
-public class fstep implements ProcRunUtil.NewTaskObserver,
+public class fstep implements ProcFollowUtil.NewTaskObserver,
   TaskObserver.Code,
   TaskObserver.Instruction,
   TaskObserver.Terminated
@@ -155,10 +155,10 @@ public class fstep implements ProcRunUtil.NewTaskObserver,
 	
 	final fstep step = new fstep();
 	
-	ProcRunUtil procRunUtil = new ProcRunUtil("fstep",
+	ProcFollowUtil procRunUtil = new ProcFollowUtil("fstep",
 						  "fstep <PID|EXEC> [OPTIONS]",
 						  args, step, options(),
-						  ProcRunUtil.DEFAULT);
+						  ProcFollowUtil.DEFAULT);
 	procRunUtil.start();
     }
 

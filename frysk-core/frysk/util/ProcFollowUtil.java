@@ -66,7 +66,7 @@ import gnu.classpath.tools.getopt.OptionGroup;
  * 
  * Utilities must define a event.ProcEvent to execute.
  */
-public class ProcRunUtil {
+public class ProcFollowUtil {
 
     private final HashSet knownTasks = new HashSet();
     
@@ -89,7 +89,7 @@ public class ProcRunUtil {
     
     public static final RunningUtilOptions DEFAULT = new RunningUtilOptions();
 
-    public ProcRunUtil(String utilName, String usage, String[] args,
+    public ProcFollowUtil(String utilName, String usage, String[] args,
 		       NewTaskObserver newTaskObserver,
 		       OptionGroup[] customOptions,
 		       RunningUtilOptions options) {
@@ -98,7 +98,7 @@ public class ProcRunUtil {
 	this.newTaskObserver = newTaskObserver;
     }
     
-    public ProcRunUtil(String utilName, String usage, String[] args,
+    public ProcFollowUtil(String utilName, String usage, String[] args,
 		       TaskObserver[] observers, OptionGroup[] customOptions,
 		       RunningUtilOptions options) {
 	this.options = options;

@@ -138,11 +138,11 @@ public class FCatch {
 
     public void run(String[] args) {
 	CatchObserver catchObserver = new CatchObserver();
-	ProcRunUtil procRunUtil
-	    = new ProcRunUtil("fcatch",
+	ProcFollowUtil procRunUtil
+	    = new ProcFollowUtil("fcatch",
 			      "Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
 			      args, new TaskObserver[] { catchObserver},
-			      options(), ProcRunUtil.DEFAULT);
+			      options(), ProcFollowUtil.DEFAULT);
 	procRunUtil.start();
     }
 }

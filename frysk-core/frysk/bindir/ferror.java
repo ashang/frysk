@@ -45,7 +45,7 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Syscalls;
-import frysk.util.ProcRunUtil;
+import frysk.util.ProcFollowUtil;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
@@ -81,13 +81,13 @@ public class ferror {
 	stackPrintOptions.setPrintVirtualFrames(true);
 	stackPrintOptions.setPrintLibrary(true);
 
-	ProcRunUtil procRunningUtil = 
-	    new ProcRunUtil("ferror",
+	ProcFollowUtil procRunningUtil = 
+	    new ProcFollowUtil("ferror",
 			    "ferror -e \"<error string>\" -- <executbale|PID> [ARGS]",
 			    args, 
 			    new TaskObserver[]{ syscallObserver },
 			    options(),
-			    ProcRunUtil.DEFAULT);
+			    ProcFollowUtil.DEFAULT);
 	procRunningUtil.start();
     }
 
