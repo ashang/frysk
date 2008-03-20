@@ -41,6 +41,8 @@ package lib.dwfl;
 
 public interface SymbolBuilder
 {
-  void symbol (String name, long value, long size, int type, int bind,
-	       int visibility);
+  void symbol (String name, long value, long size,
+	       ElfSymbolType type,
+	       ElfSymbolBinding bind,
+	       ElfSymbolVisibility visibility);
 }

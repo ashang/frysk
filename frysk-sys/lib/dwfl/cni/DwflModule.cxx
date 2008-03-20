@@ -51,6 +51,9 @@
 #include "lib/dwfl/ModuleElfBias.h"
 #include "lib/dwfl/SymbolBuilder.h"
 #include "lib/dwfl/Elf.h"
+#include "lib/dwfl/ElfSymbolBinding.h"
+#include "lib/dwfl/ElfSymbolType.h"
+#include "lib/dwfl/ElfSymbolVisibility.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/Dwfl.h"
 #include "lib/dwfl/DwException.h"
@@ -112,29 +115,47 @@ lib::dwfl::DwflModule::getLines(jstring filename, jint lineno, jint column)
       return array;
     }
   return 0;
-} 
+}
+
+namespace {
+  void builder_callout(lib::dwfl::SymbolBuilder *symbolBuilder,
+		       jstring name, ::GElf_Sym sym)
+  {
+    using lib::dwfl::ElfSymbolType;
+    using lib::dwfl::ElfSymbolBinding;
+    using lib::dwfl::ElfSymbolVisibility;
+
+    ElfSymbolType * type
+      = ElfSymbolType::intern(ELF64_ST_TYPE(sym.st_info));
+    ElfSymbolBinding * bind
+      = ElfSymbolBinding::intern(ELF64_ST_BIND(sym.st_info));
+    ElfSymbolVisibility * visibility
+      = ElfSymbolVisibility::intern(ELF64_ST_VISIBILITY(sym.st_other));
+
+    symbolBuilder->symbol(name,
+			  sym.st_value,
+			  sym.st_size,
+			  type, bind, visibility);
+  }
+}
 
 void
-lib::dwfl::DwflModule::getSymbol(jlong address, lib::dwfl::SymbolBuilder* symbolBuilder)
+lib::dwfl::DwflModule::getSymbol(jlong address,
+				 lib::dwfl::SymbolBuilder *symbolBuilder)
 {
-	Dwarf_Addr addr = (Dwarf_Addr) address;
-	GElf_Sym closest_sym;
-	
-	const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr, 
-                                                   &closest_sym, NULL);
-	
-	jstring jMethodName;
-	if (methName == NULL)	
-		jMethodName = NULL;
-	else
-		jMethodName = JvNewStringUTF(methName);	
-	
-	symbolBuilder->symbol(jMethodName,
-			      closest_sym.st_value, 
-			      closest_sym.st_size,
-			      ELF64_ST_TYPE(closest_sym.st_info),
-			      ELF64_ST_BIND(closest_sym.st_info),
-			      closest_sym.st_other);
+  Dwarf_Addr addr = (Dwarf_Addr) address;
+  GElf_Sym closest_sym;
+
+  const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr,
+					     &closest_sym, NULL);
+
+  jstring jMethodName;
+  if (methName == NULL)
+    jMethodName = NULL;
+  else
+    jMethodName = JvNewStringUTF(methName);
+
+  ::builder_callout(symbolBuilder, jMethodName, closest_sym);
 }
 
 void
@@ -151,12 +172,7 @@ lib::dwfl::DwflModule::getSymbolByName(jstring name,
       GElf_Sym sym;
       const char *symName = dwfl_module_getsym(DWFL_MODULE_POINTER, i, &sym, 0);
       if (!::strcmp(rawName, symName))
-	symbolBuilder->symbol(JvNewStringUTF(symName),
-			      sym.st_value,
-			      sym.st_size,
-			      ELF64_ST_TYPE(sym.st_info),
-			      ELF64_ST_BIND(sym.st_info),
-			      sym.st_other);
+	::builder_callout (symbolBuilder, JvNewStringUTF(symName), sym);
     }
 }
 
@@ -205,7 +221,7 @@ lib::dwfl::DwflModule::getDebuginfo()
 }    
 
 static int
-callback (Dwarf *dwarf, Dwarf_Global *gl, void* thisObject)
+each_pubname (Dwarf *dwarf, Dwarf_Global *gl, void* thisObject)
 {
 
   lib::dwfl::DwflModule* dwflModule = (lib::dwfl::DwflModule*)thisObject;
@@ -230,7 +246,8 @@ lib::dwfl::DwflModule::get_pubnames()
   Dwarf_Addr bias;
   ::Dwarf* dwarf = dwfl_module_getdwarf ((Dwfl_Module*)this->pointer, &bias);
 
-  dwarf_getpubnames(dwarf, callback, this,0);
+  if (dwarf != NULL)
+    dwarf_getpubnames(dwarf, each_pubname, this,0);
 }
 
 

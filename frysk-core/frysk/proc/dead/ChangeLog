@@ -21,6 +21,11 @@
 	(createProc): Likewise.
 	* LinuxCoreProc.java (getExeFile): New.
 
+2008-03-20  Petr Machata  <pmachata@redhat.com>
+
+	* TestLinuxCore.java (Symbol): Pass type, bind, visibility as
+	full-fledged objects.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadProc.java (requestRefresh()): Delete.

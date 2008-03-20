@@ -1,3 +1,9 @@
+2008-03-20  Petr Machata  <pmachata@redhat.com>
+
+	* DwflSymbol.java: Pass type, bind, visibility as full-fledged
+	objects.
+	* SymbolFactory.java (getSymbol): Likewise.
+
 2008-03-14  Tim Moore  <timoore@redhat.com>
 
 	* TestSymbol.java (testLocalInGlobal, testNoSymbolAfterGlobal

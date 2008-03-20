@@ -6,6 +6,20 @@
 
 	* LinuxPtraceProc.java (getExeFile): New.
 
+2008-03-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Isa.java (setWatchpoint): New Interface
+	(deleteWatchpoint): Ditto.
+	(getWatchpointCount): Ditto.
+	* LinuxX8664.java: Add above interfaces.
+	* LinuxIA32.java: Ditto.
+	* IsaPowerPC.java: Ditto.
+
+2008-03-20  Petr Machata  <pmachata@redhat.com>
+
+	* TestTaskObserverCode.java (Symbol): Pass type, bind, visibility
+	as full-fledged objects.
+
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java (removeProc(LinuxPtraceProc)): Replace

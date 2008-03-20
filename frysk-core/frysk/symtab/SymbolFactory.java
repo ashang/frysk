@@ -94,14 +94,16 @@ public class SymbolFactory
 	final LinkedList addrs = new LinkedList();
 	SymbolBuilder builder = new SymbolBuilder() {
 		public void symbol(String name, long value, long size,
-				   int type, int bind, int visibility) {
-		    addrs.add(new Long(value));		    
-		}	    
+				   lib.dwfl.ElfSymbolType type,
+				   lib.dwfl.ElfSymbolBinding bind,
+				   lib.dwfl.ElfSymbolVisibility visibility)
+		{
+		    addrs.add(new Long(value));
+		}
 	};
-	for (int i = 0; i < modules.length; i++)
-	{
+	for (int i = 0; i < modules.length; i++) {
 	    DwflModule module = modules[i];
-	    module.getSymbolByName(name, builder);	    
+	    module.getSymbolByName(name, builder);
 	}
 	if (addrs.size() == 0)
 	    throw new RuntimeException("Couldn't find symbol " + name);

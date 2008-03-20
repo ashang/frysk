@@ -355,7 +355,9 @@ public class TestTaskObserverCode extends TestLib
     }
     
     public void symbol(String name, long value, long size,
-		       int type, int bind, int visibility)
+		       lib.dwfl.ElfSymbolType type,
+		       lib.dwfl.ElfSymbolBinding bind,
+		       lib.dwfl.ElfSymbolVisibility visibility)
     {
       if (name.equals(this.name))
 	{

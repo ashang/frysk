@@ -111,7 +111,9 @@ public class TestInstructions
     }
 
     public void symbol(String name, long value, long size,
-		       int type, int bind, int visibility)
+		       ElfSymbolType type,
+		       ElfSymbolBinding bind,
+		       ElfSymbolVisibility visibility)
     {
       if (name.equals(this.name))
 	{

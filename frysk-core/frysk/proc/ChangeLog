@@ -19,6 +19,11 @@
 	* StressAttachDetachRapidlyForkingMainTask.java: Update.
 	* TestProcTasksObserver.java: Update.
 
+2008-03-20  Petr Machata  <pmachata@redhat.com>
+
+	* TestInstructions.java (Symbol): Pass type, bind, visibility as
+	full-fledged objects.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserver.java (attachDieingTask(int,boolean)): Do not

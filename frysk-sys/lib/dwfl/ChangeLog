@@ -3,6 +3,17 @@
 	* cni/DwflLine.cxx (DwflLine::dwfl_linecomp_dir): added
 	NULL check.
 
+2008-03-20  Petr Machata  <pmachata@redhat.com>
+	
+	* SymbolBuilder.java: Pass type, bind, visibility as full-fledged
+	objects.
+	* cni/DwflModule.cxx (builder_callout): New function, calls
+	builder with the right arguments.
+	(getSymbol): Reindent, call builder_callout
+	(getSymbolByName): call builder_callout
+	(callback): Rename to each_pubname
+	(get_pubnames): Adjust to above
+
 2008-03-13  Tim Moore  <timoore@redhat.com>
 
 	* cni/Dwfl.cxx: Add declaration for elfutils'
