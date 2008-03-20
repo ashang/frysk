@@ -49,7 +49,6 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
-import gnu.classpath.tools.getopt.Option;
 
 public class FCatch {
 
@@ -131,16 +130,12 @@ public class FCatch {
     }
 
     public void run(String[] args) {
-	
 	CatchObserver catchObserver = new CatchObserver();
-
-	ProcRunUtil procRunUtil = new ProcRunUtil("fcatch",
-		"Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
-		args, new TaskObserver[] { catchObserver},
-		new Option[] {}, ProcRunUtil.DEFAULT);
-
+	ProcRunUtil procRunUtil
+	    = new ProcRunUtil("fcatch",
+			      "Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
+			      args, new TaskObserver[] { catchObserver},
+			      null, ProcRunUtil.DEFAULT);
 	procRunUtil.start();
-
     }
-
 }

@@ -9,6 +9,7 @@ import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Syscalls;
 import frysk.util.ProcRunUtil;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -17,24 +18,29 @@ import java.io.PrintWriter;
 
 public class ferror {
     
-    static final PrintWriter printWriter = new PrintWriter(System.out);
-    static Pattern writePattern;
+    private static final PrintWriter printWriter = new PrintWriter(System.out);
+    private static Pattern writePattern;
+    private static OptionGroup[] options() {
+	OptionGroup group = new OptionGroup("ferror options");
+	group.add(new Option('e', "--error",
+			     "error regex to catch in double quotes -e \"<error string>\"") {
+		public void parsed(String argument) throws OptionException {
+		    writePattern = Pattern.compile(argument);
+		}  
+	    });
+	return new OptionGroup[] { group };
+		  
+    }
     
-    public static void main (String[] args)
-    {
-       Option option = new Option('e', "--error", "error regex to catch in double quotes -e \"<error string>\""){
-
-	public void parsed(String argument) throws OptionException {
-	    writePattern = Pattern.compile(argument);
-	}  
-       };
-	
-       ProcRunUtil procRunningUtil = 
-	   new ProcRunUtil("ferror",
-		   "ferror -e \"<error string>\" -- <executbale|PID> [ARGS]",
-		   args, 
-		   new TaskObserver[]{syscallObserver},new Option[]{option} , ProcRunUtil.DEFAULT);
-       procRunningUtil.start();
+    public static void main(String[] args) {
+	ProcRunUtil procRunningUtil = 
+	    new ProcRunUtil("ferror",
+			    "ferror -e \"<error string>\" -- <executbale|PID> [ARGS]",
+			    args, 
+			    new TaskObserver[]{ syscallObserver },
+			    options(),
+			    ProcRunUtil.DEFAULT);
+	procRunningUtil.start();
     }
 
     

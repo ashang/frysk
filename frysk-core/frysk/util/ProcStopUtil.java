@@ -47,7 +47,7 @@ import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.util.CommandlineParser;
-import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import frysk.rsl.Log;
 
 /**
@@ -63,10 +63,11 @@ public class ProcStopUtil {
     private String[] args;
     private CommandlineParser parser;
 	
-    public ProcStopUtil (String utilName, String[] args, 
-			 final ProcEvent procEvent) {
+    public ProcStopUtil(String utilName, String[] args, 
+			final ProcEvent procEvent,
+			OptionGroup[] utilOptionGroups) {
 	this.args = args;
-	parser = new CommandlineParser(utilName) {
+	parser = new CommandlineParser(utilName, utilOptionGroups) {
 		//@Override
 		public void parsePids(Proc[] procs) { 
 		    for (int i= 0; i < procs.length; i++)  {                  
@@ -94,6 +95,11 @@ public class ProcStopUtil {
 	    };
     }    
     
+    public ProcStopUtil(String utilName, String[] args, 
+			final ProcEvent procEvent) {
+	this(utilName, args, procEvent, null);
+    }
+
     /**
      * Use to set the usage of utility.
      * 
@@ -102,16 +108,6 @@ public class ProcStopUtil {
      */
     public void setUsage (String usage) {
 	parser.setHeader(usage);
-    }
-    
-    /**
-     * Use to add options to the utility.
-     * 
-     * @param option - Option object that defines the
-     *                 option.
-     */
-    public void addOption (Option option) {
-	parser.add (option);
     }
     
     public void execute () {

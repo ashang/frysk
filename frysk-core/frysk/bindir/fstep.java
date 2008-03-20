@@ -57,6 +57,7 @@ import frysk.proc.TaskObserver;
 import frysk.util.CommandlineParser;
 import frysk.util.ProcRunUtil;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 
 public class fstep implements ProcRunUtil.NewTaskObserver,
@@ -87,73 +88,79 @@ public class fstep implements ProcRunUtil.NewTaskObserver,
   // Tasks being observed mapped to the total number of steps.
   private static final HashMap tasks = new HashMap();
 
-  public static void main(String[] args)
-  {
-    sample = 0;
-    instrs = 1;
-    
-    //XXX: parser is only needed because fstep uses fstep.command
-    //     to figure out wether the loaded code should be skipped
-    //     or not.
-    final CommandlineParser parser = new CommandlineParser("fstep")
-    {
-	//XXX: this is needed so parser doesnt thin that pids are not supported
-	public void parsePids(Proc[] procs) {
-	}
+    private static OptionGroup[] options() {
+	OptionGroup group = new OptionGroup("fstep options");
+	group.add(new Option("sample", 's',
+			     "how often to print the current instruction",
+			     "samples") {
+		public void parsed(String argument) throws OptionException {
+		    try {
+			sample = Integer.parseInt(argument);
+		    } catch (NumberFormatException nfe) {
+			OptionException ex;
+			ex = new OptionException("sample must be a number");
+			ex.initCause(nfe);
+			throw ex;
+		    }
+		}
+	    });
+	group.add(new Option("instructions", 'i',
+			     "how many instructions to print at each step/sample",
+			     "instructions") {
+		public void parsed(String argument) throws OptionException {
+		    try {
+			instrs = Integer.parseInt(argument);
+		    } catch (NumberFormatException nfe) {
+			OptionException ex;
+			ex = new OptionException("instructions must be a number");
+			ex.initCause(nfe);
+			throw ex;
+		    }
+		}
+	    });
+	group.add(new Option("pid", 'p',
+			     "the running process to step",
+			     "pid") {
+		public void parsed(String argument) throws OptionException {
+		    try {
+			pid = Integer.parseInt(argument);
+		    } catch (NumberFormatException nfe) {
+			OptionException ex;
+			ex = new OptionException("pid must be a number");
+			ex.initCause(nfe);
+			throw ex;
+		    }
+		}
+	    });
+	return new OptionGroup[] { group };
+    }
 
-	public void parseCommand(Proc command) {
-	    fstep.command = command.getCmdLine();
-	}      
-    };
-    parser.parse(args);
-    
-    Option sampleOption = new Option("sample", 's',
-			  "how often to print the current instruction",
-			  "samples")
-      {
-	public void parsed(String argument) throws OptionException
-	{
-	  try
-	    {
-	      sample = Integer.parseInt(argument);
-	    }
-	  catch (NumberFormatException nfe)
-	    {
-	      OptionException ex;
-	      ex = new OptionException("sample must be a number");
-	      ex.initCause(nfe);
-	      throw ex;
-	    }
-	}
-      };
-
-    Option instructionsOption = new Option("instructions", 'i',
-			  "how many instructions to print at each step/sample",
-			  "instructions")
-      {
-	public void parsed(String argument) throws OptionException
-	{
-	  try
-	    {
-	      instrs = Integer.parseInt(argument);
-	    }
-	  catch (NumberFormatException nfe)
-	    {
-	      OptionException ex;
-	      ex = new OptionException("instructions must be a number");
-	      ex.initCause(nfe);
-	      throw ex;
-	    }
-	}
-      };
-
-    final fstep step = new fstep();
-    
-    Option[] options = new Option[]{sampleOption, instructionsOption};
-    
-    ProcRunUtil procRunUtil = new ProcRunUtil("fstep", "fstep <PID|EXEC> [OPTIONS]", args, step , options, ProcRunUtil.DEFAULT);
-    procRunUtil.start();
-  }
+    public static void main(String[] args) {
+	sample = 0;
+	instrs = 1;
+	
+	// XXX: parser is only needed because fstep uses fstep.command
+	// to figure out wether the loaded code should be skipped or
+	// not.
+	final CommandlineParser parser = new CommandlineParser("fstep") {
+		//XXX: this is needed so parser doesnt thin that pids
+		//are not supported
+		public void parsePids(Proc[] procs) {
+		}
+		public void parseCommand(Proc command) {
+		    fstep.command = command.getCmdLine();
+		}
+	    };
+	parser.parse(args);
+	
+	final fstep step = new fstep();
+	
+	ProcRunUtil procRunUtil = new ProcRunUtil("fstep",
+						  "fstep <PID|EXEC> [OPTIONS]",
+						  args, step, options(),
+						  ProcRunUtil.DEFAULT);
+	procRunUtil.start();
+    }
 
   /**
    * Disassembler to use when real disassembler isn't available.

@@ -54,6 +54,7 @@ import frysk.util.CommandlineParser;
 import frysk.util.Glob;
 import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 import frysk.ftrace.Rule;
 import frysk.ftrace.SymbolRule;
@@ -222,103 +223,87 @@ class ftrace {
 	return rules;
     }
 
-    private void addOptions(CommandlineParser parser)
-    {
-        parser.add(new Option('o', "output file name", "FILE") {
-            public void parsed(String filename) throws OptionException
-            {
-                // FIXME: strace supports '|' and '!' here for piping.
-                try {
-                    writer = new PrintWriter(new FileOutputStream(filename));
-                } catch (FileNotFoundException fnfe) {
-                    OptionException oe = new OptionException(fnfe.getMessage());
-                    oe.initCause(fnfe);
-                    throw oe;
+    private OptionGroup[] options() {
+	OptionGroup group = new OptionGroup("ftrace options");
+        group.add(new Option('o', "output file name", "FILE") {
+		public void parsed(String filename) throws OptionException {
+		    // FIXME: strace supports '|' and '!' here for piping.
+		    try {
+			writer = new PrintWriter(new FileOutputStream(filename));
+		    } catch (FileNotFoundException fnfe) {
+			OptionException oe = new OptionException(fnfe.getMessage());
+			oe.initCause(fnfe);
+			throw oe;
                 }
-            }
-        });
-
-        parser.add(new Option('c', "trace children as well") {
-            public void parsed(String arg0) throws OptionException
-            {
-                tracer.setTraceChildren();
-            }
-        });
-
-	parser.add(new Option('p', "pid to trace", "PID") {
-            public void parsed(String arg) throws OptionException {
-                try {
-		    Proc proc = Util.getProcFromPid(Integer.parseInt(arg));
-		    tracer.addProc(proc);
-		    requestedPid = true;
-                } catch (NumberFormatException e) {
-                    OptionException oe = new OptionException("couldn't parse pid: " + arg);
-                    oe.initCause(e);
-                    throw oe;
-                }
-            }
-        });
-
-        parser.add(new Option('m', "print out when library is mapped or unmapped") {
-          public void parsed(String arg) throws OptionException
-          {
-	      tracer.setTraceMmaps();
-          }
-        });
-
-        parser.add(new Option('i', "don't trace dynamic linker symbols") {
-          public void parsed(String arg) throws OptionException
-          {
-	      allowInterpTracing = true;
-          }
-        });
-
-        parser.add(new Option("sig", "trace signals", "SIG[,SIG]...") {
-		public void parsed(String arg) throws OptionException
-		{
+		}
+	    });
+        group.add(new Option('c', "trace children as well") {
+		public void parsed(String arg0) throws OptionException {
+		    tracer.setTraceChildren();
+		}
+	    });
+	group.add(new Option('p', "pid to trace", "PID") {
+		public void parsed(String arg) throws OptionException {
+		    try {
+			Proc proc = Util.getProcFromPid(Integer.parseInt(arg));
+			tracer.addProc(proc);
+			requestedPid = true;
+		    } catch (NumberFormatException e) {
+			OptionException oe = new OptionException("couldn't parse pid: " + arg);
+			oe.initCause(e);
+			throw oe;
+		    }
+		}
+	    });
+        group.add(new Option('m', "print out when library is mapped or unmapped") {
+		public void parsed(String arg) throws OptionException {
+		    tracer.setTraceMmaps();
+		}
+	    });
+        group.add(new Option('i', "don't trace dynamic linker symbols") {
+		public void parsed(String arg) throws OptionException {
+		    allowInterpTracing = true;
+		}
+	    });
+        group.add(new Option("sig", "trace signals", "SIG[,SIG]...") {
+		public void parsed(String arg) throws OptionException {
 		    sigRules.add(arg);
 		}
-        });
-
-        parser.add(new Option("sys", "trace system calls", "CALL[,CALL]...") {
-		public void parsed(String arg) throws OptionException
-		{
+	    });
+        group.add(new Option("sys", "trace system calls", "CALL[,CALL]...") {
+		public void parsed(String arg) throws OptionException {
 		    sysRules.add(arg);
 		}
-        });
-
-	parser.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
+	    });
+	group.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    pltRules.add(arg);
 		}
-	});
-
-	parser.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
+	    });
+	group.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    dynRules.add(arg);
 		}
-	});
-
-	parser.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
+	    });
+	group.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    symRules.add(arg);
 		}
-	});
-
-	parser.add(new Option("stack", "stack trace on every traced entity") {
+	    });
+	group.add(new Option("stack", "stack trace on every traced entity") {
 		public void parsed(String arg) {
 		    controller.stackTraceEverything();
 		}
-	});
+	    });
+	return new OptionGroup[] { group };
     }
 
-    public void run(String[] args)
-    {
-        CommandlineParser parser = new CommandlineParser("ftrace") {
-            protected void validate() throws OptionException {
-                if (! requestedPid && commandAndArguments == null)
-                    throw new OptionException("no command or PID specified");
-            }
+    public void run(String[] args) {
+        CommandlineParser parser = new CommandlineParser("ftrace", options()) {
+		protected void validate() throws OptionException {
+		    if (! requestedPid && commandAndArguments == null)
+			throw new OptionException("no command or PID specified");
+		}
 
 		//@Override
 		public void parseCommand(Proc command) {
@@ -335,7 +320,6 @@ class ftrace {
 		requestedPid = true;
             }
         };
-        addOptions(parser);
         parser.setHeader("usage: ftrace [OPTIONS] COMMAND ARGS...");
 
         parser.parse(args);

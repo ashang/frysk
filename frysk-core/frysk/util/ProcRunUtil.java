@@ -58,7 +58,7 @@ import frysk.proc.TaskObserver.Signaled;
 import frysk.proc.TaskObserver.Syscalls;
 import frysk.proc.TaskObserver.Terminated;
 import frysk.proc.TaskObserver.Terminating;
-import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 
 /**
  * Framework to be used for frysk utilities that, a) Accept pids, executable
@@ -90,39 +90,34 @@ public class ProcRunUtil {
     public static final RunningUtilOptions DEFAULT = new RunningUtilOptions();
 
     public ProcRunUtil(String utilName, String usage, String[] args,
-	    NewTaskObserver newTaskObserver, Option[] customOptions,
-	    RunningUtilOptions options) {
-	this(utilName, usage, args, new TaskObserver[]{}, customOptions, options);
+		       NewTaskObserver newTaskObserver,
+		       OptionGroup[] customOptions,
+		       RunningUtilOptions options) {
+	this(utilName, usage, args, new TaskObserver[]{}, customOptions,
+	     options);
 	this.newTaskObserver = newTaskObserver;
     }
     
     public ProcRunUtil(String utilName, String usage, String[] args,
-	    TaskObserver[] observers, Option[] customOptions,
-	    RunningUtilOptions options) {
-
+		       TaskObserver[] observers, OptionGroup[] customOptions,
+		       RunningUtilOptions options) {
 	this.options = options;
 	this.observers = observers;
 
 	//Set up commandline parser
-	CommandlineParser parser = new CommandlineParser(utilName) {
-	    // @Override
-	    public void parsePids(Proc[] procs) {
-		for (int i = 0; i < procs.length; i++) {
-		    addObservers(procs[i]);
+	CommandlineParser parser = new CommandlineParser(utilName,
+							 customOptions) {
+		// @Override
+		public void parsePids(Proc[] procs) {
+		    for (int i = 0; i < procs.length; i++) {
+			addObservers(procs[i]);
+		    }
 		}
-	    }
-
-	    // @Override
-	    public void parseCommand(Proc command) {
-		Manager.host.requestCreateAttachedProc(command, attachedObserver);
-	    }
-	};
-
-	// Add options
-	for (int i = 0; i < customOptions.length; i++) {
-	    parser.add(customOptions[i]);
-	}
-
+		// @Override
+		public void parseCommand(Proc command) {
+		    Manager.host.requestCreateAttachedProc(command, attachedObserver);
+		}
+	    };
 	parser.parse(args);
     }
 

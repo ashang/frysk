@@ -1,3 +1,23 @@
+2008-03-19  Phil Muldoon  <pmuldoon@redhat.com>
+	    Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java (add(Option)): Delete.
+	(CommandlineParser(String,OptionGroup[])): New.
+	(CommandlineParser(String,String,OptionGroup[])): New.
+	(CommandlineParser(String,String)): Delete.
+	* ProcStopUtil.java (ProcStopUtil(String,String[],ProcEvent,
+	OptionGroup[])): New.
+	(addOption(Option)): Delete.	
+	* ProcRunUtil.java (ProcRunUtil(String,String,String[],
+	NewTaskObserver,OptionGroup[],RunningUtilOptions)): Replace
+	ProcRunUtil(String,String,String[],NewTaskObserver,Option[],
+	RunningUtilOptions).
+	(ProcRunUtil(String,String,String[],NewTaskObserver[],
+	OptionGroup[],RunningUtilOptions)): Replace ProcRunUtil(String,
+	String,String[],NewTaskObserver[],Option[],RunningUtilOptions).
+	* FCatch.java (run(String[])): Pass NULL as OptionGroup[] to
+	ProcRunUtil.
+	
 2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcRunUtil.java: Moved unblocking to ProcTasksObserver.
@@ -12,8 +32,8 @@
 
 2008-03-18  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* CommandlineParser.java (CommandlineParser): Trim
-	Sys Root help output.
+       * CommandlineParser.java (CommandlineParser): Trim
+       Sys Root help output.
 
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 

@@ -46,22 +46,28 @@ import frysk.event.ProcEvent;
 import frysk.proc.Proc;
 import frysk.sys.proc.Exe;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 
 public class fexe 
 {
     static boolean verbose = false;
     
-    public static void main (String[] args) {
-	
-	PrintExeEvent printExe = new PrintExeEvent();
-	ProcStopUtil fexe = new ProcStopUtil("fexe", args, printExe);
-	fexe.setUsage("Usage: fexe <PID> || fexe <EXEFILE> " +
-                      "|| fexe <COREFILE> [<EXEFILE>]"); 
-	fexe.addOption(new Option('v', "More verbose output") {
+    private static OptionGroup[] options() {
+	OptionGroup group = new OptionGroup("fexe options");
+	group.add(new Option('v', "More verbose output") {
 		public void parsed (String val) {
 		    verbose = true;
 		}
 	    });
+	return new OptionGroup[] { group };
+    }
+
+    public static void main(String[] args) {
+	PrintExeEvent printExe = new PrintExeEvent();
+	ProcStopUtil fexe = new ProcStopUtil("fexe", args, printExe,
+					     options());
+	fexe.setUsage("Usage: fexe <PID> || fexe <EXEFILE> " +
+                      "|| fexe <COREFILE> [<EXEFILE>]"); 
 	fexe.execute();
     }
     

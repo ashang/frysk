@@ -46,6 +46,7 @@ import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.rsl.LogOption;
@@ -59,40 +60,54 @@ import frysk.proc.Proc;
  * CommandlineParser extends the getopt {@link Parser} class with
  * common options for Frysk command-line applications.
  */
-public class CommandlineParser {
+public abstract class CommandlineParser {
     private static final Log fine = Log.fine(CommandlineParser.class);
 
     private final Parser parser;
     private boolean extendedCore = true;
     private String explicitExe = null;
 
-    public CommandlineParser(String name, String version) {
+    public CommandlineParser(String name, String version,
+			     OptionGroup[] options) {
 	parser = new Parser(name, version, true);
-	parser.add(new LogOption("debug"));
-	add(new Option("noexe", "Do not attempt to read an"+
-		       " executable for a corefile ") {
-		public void parsed(String exeValue) throws OptionException {
-		    extendedCore = false;
-		    explicitExe = null;
-		}
-	    });
-	add(new Option("exe",
-		       "Specify the full path of the executable to read",
-		       "<executable>") {
+	// Add the utilities options (all most be in groups).
+	if (options != null) {
+	    for (int i = 0; i < options.length; i++) {
+		parser.add(options[i]);
+	    }
+	}
+	// Add the standard/default option to their own group.
+	OptionGroup defaultGroup = new OptionGroup("Frysk specific options");
+	defaultGroup.add(new Option("exe",
+				    "Specify the full path of the executable to read",
+				    "<executable>") {
 		public void parsed(String exeValue) throws OptionException {
 		    extendedCore = true;
 		    explicitExe = exeValue;
 		}
 	    });
-	add(new Option("sysroot", "Special root directory", "<path to sysroot>") {
+	defaultGroup.add(new Option("noexe", "Do not attempt to read an"+
+				    " executable for a corefile ") {
+		public void parsed(String exeValue) throws OptionException {
+		    extendedCore = false;
+		    explicitExe = null;
+		}
+	    });
+	defaultGroup.add(new Option("sysroot", "Special root directory", "<path to sysroot>") {
 		public void parsed(String arg) throws OptionException {
 		    parseSysRoot(arg);
 		}
 	    });
+	defaultGroup.add(new LogOption("debug"));
+	parser.add(defaultGroup); // must be last.
     }
 
     public CommandlineParser(String programName) {
-	this(programName, FryskVersion.getVersion());
+	this(programName, FryskVersion.getVersion(), null);
+    }
+
+    public CommandlineParser(String programName, OptionGroup[] options) {
+	this(programName, FryskVersion.getVersion(), options);
     }
 
     /**
@@ -138,6 +153,7 @@ public class CommandlineParser {
     }
 
     public String[] parse(String[] args) {
+	
 	try {
 	    fine.log(this, "parse", args);
 	    String[] result = doParse(args);
@@ -266,10 +282,6 @@ public class CommandlineParser {
 
     public void setHeader(String string) {
 	parser.setHeader(string);
-    }
-
-    public void add(Option option) {
-	parser.add(option);
     }
 
     public void printHelp() {

@@ -48,6 +48,7 @@ import frysk.util.ProcStopUtil;
 import frysk.isa.corefiles.LinuxElfCorefile;
 import frysk.isa.corefiles.LinuxElfCorefileFactory;
 import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.OptionException;
 
 
@@ -66,69 +67,57 @@ public class fcore {
      * 
      * @param args - pid of the process to core dump
      */
-    public static void main (String[] args)
-    {
+    public static void main (String[] args) {
 	ProcStopUtil fcore = new ProcStopUtil("fcore", args, 
-		                              new createCoreEvent());
-	fcore.setUsage("Usage: fcore <PID>"); 
-	addOptions (fcore);
+		                              new createCoreEvent(),
+					      options());
+	fcore.setUsage("Usage: fcore PID"); 
 	fcore.execute();
     }
-  
+    
     /**
-     * Add options to fcore.
+     * Return the fcore specific options.
      */
-    private static void addOptions (ProcStopUtil fcore)
-    {
-
-      fcore.addOption(new Option( "allmaps", 'a',
-	                          " Writes all readable maps. Does not elide"
-	                        + " or omit any readable map. Caution: could"
-	                        + " take considerable amount of time to"
-	                        + " construct core file.")
-	  {
-	      public void parsed (String mapsValue) throws OptionException {
-		  try {
-		      writeAllMaps = true;
-		      mapOptionCount++;
-		  } catch (IllegalArgumentException e) {
-		      throw new OptionException("Invalid maps parameter " + mapsValue);
-		  }
-		  
-	      }
-	  });
-      
-      fcore.addOption(new Option("segments", 's',
-				 "Define what segments to include via regex.",
-				 "RegEx") {
-	      public void parsed(String regEx) throws OptionException {
-		  try {
-		      mapOptionCount++;
-		      matchingRegEx = regEx;
-                    } catch (IllegalArgumentException e) {
-		      throw new OptionException("Invalid match parameter "
-						+ matchingRegEx);
-		  }
-	      }
-	  });
-      
-      
-
-      fcore.addOption(new Option( "outputfile", 'o',
-	                          " Sets the name (not extension) of the core"
-	                        + " file. Default is core.{pid}. The extension"
-				  + " will always be the pid.", "<filename>")
-	  {
-	      public void parsed (String filenameValue) throws OptionException {
-		  try {
-		  filename = filenameValue;
-		  }
-		  catch (IllegalArgumentException e) {
-		      throw new OptionException(  "Invalid output filename: "
-						  + filenameValue);
-		  }
-	      }
-	  });
+    private static OptionGroup[] options() {
+	OptionGroup group = new OptionGroup("fcore options");
+	group.add(new Option("allmaps", 'a',
+			     "Include all process readable maps.") {
+		public void parsed (String mapsValue) throws OptionException {
+		    try {
+			writeAllMaps = true;
+			mapOptionCount++;
+		    } catch (IllegalArgumentException e) {
+			throw new OptionException("Invalid maps parameter " + mapsValue);
+		    }
+		}
+	    });
+	group.add(new Option("segments", 's',
+			     "Use PATTERN as regex to define maps inclusion.",
+			     "PATTERN") {
+		public void parsed(String regEx) throws OptionException {
+		    try {
+			mapOptionCount++;
+			matchingRegEx = regEx;
+		    } catch (IllegalArgumentException e) {
+			throw new OptionException("Invalid match parameter "
+						  + matchingRegEx);
+		    }
+		}
+	    });
+	group.add(new Option("outputfile", 'o',
+			     "Set the name of  the output corefile.",
+			     "FILENAME") {
+		public void parsed (String filenameValue) throws OptionException {
+		    try {
+			filename = filenameValue;
+		    }
+		    catch (IllegalArgumentException e) {
+			throw new OptionException(  "Invalid output filename: "
+						    + filenameValue);
+		    }
+		}
+	    });
+	return new OptionGroup[] { group };
     }
     
     /**
@@ -141,8 +130,8 @@ public class fcore {
 	    
 	  
 	    if (mapOptionCount > 1)
-		System.err.println("Please either speciy -stackonly,"+
-		" -allmaps, or -match <pattern> for map writing.");
+		System.err.println("Please either specify "+
+		" -allmaps, or -segments=PATTERN for map writing.");
 	    else {
 		Task[] tasks = (Task[]) proc.getTasks().toArray
 	                   (new Task[proc.getTasks().size()]);
@@ -168,7 +157,7 @@ public class fcore {
 	}
 	
 	public void executeDead(Proc proc) {
-	    System.err.println ("Cannot create core file from dead process");
+	    System.err.println ("Cannot create core file from a dead process.");
 	}
     }
 }

@@ -1,3 +1,13 @@
+2008-03-19  Phil Muldoon  <pmuldoon@redhat.com>
+	    Andrew Cagney  <cagney@redhat.com>
+
+	* fcore.java (options()): Replace addOptions(ProcStopUtil).
+	(main(String[])): Pass OptionGroup[] to ProcStopUtil constructor.
+	* ftrace.java: Similar.
+	* fstep.java: Similar.
+	* ferror.java: SImilar.
+	* fexe.java: Similiar.
+
 2008-03-19  Sami Wagiaalla  <swagiaal@redhat.com>  
 
 	* TestFstep.java: New Test.
