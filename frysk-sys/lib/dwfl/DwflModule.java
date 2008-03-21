@@ -48,6 +48,7 @@ public class DwflModule
 {
 
     protected LinkedList pubNames;
+    protected LinkedList symbolTable;
     
     protected long bias;
   
@@ -92,11 +93,20 @@ public class DwflModule
 	return pubNames;
     }
     private native void get_pubnames();
-    
-    
+
+    public LinkedList getSymtab() {
+	if (this.symbolTable == null) {
+	    this.symbolTable = new LinkedList();
+	    get_symbol_table();
+	}
+	return symbolTable;
+    }
+    private native void get_symbol_table();
+
+
     protected DwarfDie getDieByOffset(long offset){
 	return offdie(this.getPointer(), offset);
-    }    
+    }
     private native DwarfDie offdie(long die, long offset);
 
     

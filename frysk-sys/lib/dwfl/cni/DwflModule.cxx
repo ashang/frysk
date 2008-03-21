@@ -51,6 +51,7 @@
 #include "lib/dwfl/ModuleElfBias.h"
 #include "lib/dwfl/SymbolBuilder.h"
 #include "lib/dwfl/Elf.h"
+#include "lib/dwfl/ElfSymbol.h"
 #include "lib/dwfl/ElfSymbolBinding.h"
 #include "lib/dwfl/ElfSymbolType.h"
 #include "lib/dwfl/ElfSymbolVisibility.h"
@@ -156,6 +157,24 @@ lib::dwfl::DwflModule::getSymbol(jlong address,
     jMethodName = JvNewStringUTF(methName);
 
   ::builder_callout(symbolBuilder, jMethodName, &closest_sym);
+}
+
+void
+lib::dwfl::DwflModule::get_symbol_table()
+{
+  Dwfl_Module *module = (Dwfl_Module *)this->pointer;
+  int count = ::dwfl_module_getsymtab (module);
+  if (count < 0)
+    return;
+
+  for (int i = 0; i < count; ++i)
+    {
+      ::GElf_Sym sym;
+      char const* name = ::dwfl_module_getsym (module, i, &sym, NULL);
+      lib::dwfl::ElfSymbol *elf_symbol
+	= new ElfSymbol(sym.st_value, sym.st_size, JvNewStringUTF(name));
+      this->symbolTable->add(elf_symbol);
+    }
 }
 
 void

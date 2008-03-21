@@ -5,6 +5,13 @@
 
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
+	* DwflModule.java (getSymtab): New method.
+	(symbolTable): New field.
+	(get_symbol_table): New native method...
+	* cni/DwflModule.cxx (get_symbol_table): ... and its implementation.
+
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
 	* cni/DwflModule.cxx (builder_callout): Pass GElf_Sym as pointer.
 	(getSymbol, getSymbolByName): Adjust.
 
