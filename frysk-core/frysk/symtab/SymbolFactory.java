@@ -41,8 +41,12 @@
 package frysk.symtab;
 
 import java.util.LinkedList;
-import frysk.proc.Task;
+
 import frysk.dwfl.DwflCache;
+import frysk.proc.Task;
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
+
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
@@ -57,6 +61,8 @@ import lib.dwfl.SymbolBuilder;
 
 public class SymbolFactory
 {
+    private static final Log warning = LogFactory.warning(SymbolFactory.class);
+
     /**
      * A special unknown symbol.
      */
@@ -74,14 +80,29 @@ public class SymbolFactory
 	if (module == null)
 	    return UNKNOWN;
 
-	DwflSymbol symbol = new DwflSymbol();
-	module.getSymbol(address, symbol);
-	if (symbol.getName() == null)
+	class Builder implements SymbolBuilder {
+	    public DwflSymbol symbol = null;
+	    public void symbol(String name, long value, long size,
+			       lib.dwfl.ElfSymbolType type,
+			       lib.dwfl.ElfSymbolBinding bind,
+			       lib.dwfl.ElfSymbolVisibility visibility)
+	    {
+		if (symbol != null)
+		    warning.log("Symbol", name, "reported on address", value,
+				"where symbol was already reported:", symbol.getName());
+		else if (name != null)
+		    symbol = new DwflSymbol (value, size, name);
+	    }
+	}
+	Builder builder = new Builder();
+
+	module.getSymbol(address, builder);
+	if (builder.symbol == null)
 	    return UNKNOWN;
 
-	return symbol;
+	return builder.symbol;
     }
-    
+
     /**
      * Get address list by symbol name.
      * @param task

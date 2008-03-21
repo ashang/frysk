@@ -39,8 +39,6 @@
 
 package frysk.symtab;
 
-import lib.dwfl.SymbolBuilder;
-
 /**
  * A dwfl based symbol.
  *
@@ -50,13 +48,9 @@ import lib.dwfl.SymbolBuilder;
 
 class DwflSymbol
     extends Symbol
-    implements SymbolBuilder
 {
-    public void symbol(String name, long value, long size,
-		       lib.dwfl.ElfSymbolType type,
-		       lib.dwfl.ElfSymbolBinding bind,
-		       lib.dwfl.ElfSymbolVisibility visibility)
-    {
-	super.symbol(value, size, name);
+    // package private constructor.
+    DwflSymbol(long address, long size, String name) {
+	super (address, size, name);
     }
 }

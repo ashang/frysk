@@ -52,23 +52,15 @@ import lib.stdcpp.Demangler;
 public class Symbol
 {
     // The symbol's fields.
-    private long address;
-    private long size;
-    private String name;
+    private final long address;
+    private final long size;
+    private final String name;
     private String demangledName;
 
     // package private constructor.
-    Symbol() {
-    }
-
-    void symbol(long address, long size, String name) {
+    Symbol(long address, long size, String name) {
 	this.address = address;
 	this.size = size;
-	this.name = name;
-    }
-    void symbol(long address, String name) {
-	this.address = address;
-	this.size = 0;
 	this.name = name;
     }
 

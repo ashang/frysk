@@ -47,7 +47,7 @@ class UnknownSymbol
     extends Symbol
 {
     UnknownSymbol() {
-	super.symbol(0, -1, "[unknown]");
+	super(0, -1, "[unknown]");
     }
     public String getDemangledName () {
 	return "[unknown]";
