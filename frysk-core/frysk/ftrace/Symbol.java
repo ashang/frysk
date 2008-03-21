@@ -59,74 +59,69 @@ public class Symbol
      * alternative names. */
     public ArrayList aliases = null;
 
-  public final long value;
-  public final long size;
+    public final long value;
+    public final long size;
     public final long offset; // Relative to ELF file start.
-  public final ElfSymbolType type;
-  public final long shndx;
+    public final ElfSymbolType type;
+    public final long shndx;
 
-  public final ElfSymbolVersion.Def[] verdefs;
-  public final ElfSymbolVersion.Need[] verneeds;
+    public final ElfSymbolVersion.Def[] verdefs;
+    public final ElfSymbolVersion.Need[] verneeds;
 
-  protected ObjectFile parent = null;
+    protected ObjectFile parent = null;
 
-  /**
-   * Build ltrace symbol.
-   *
-   * @param name Name of the symbol.
-   * @param type Type of the symbol, as in ElfSymbol.ELF_STT_* fields.
-   * @param value Value of the symbol.
-   * @param size Size of the symbol.
-   * @param shndx Associated section index, or one of the special
-   *   values in ElfSectionHeader.ELF_SHN_*.
-   * @param versions Version requirements and/or definitions of
-   *   symbol. If there are none, null is passed instead of
-   *   zero-length array.
-   */
-  public Symbol(final String name, ElfSymbolType type, long value,
-		long offset, long size, long shndx, List versions)
-  {
-    this.name = name;
-    this.aliases = null;
-    this.type = type;
-    this.value = value;
-    this.offset = offset;
-    this.size = size;
-    this.shndx = shndx;
-
-    final ArrayList foundDefs = new ArrayList();
-    final ArrayList foundNeeds = new ArrayList();
-
-    if (versions != null)
-      for (Iterator it = versions.iterator(); it.hasNext(); )
-	((ElfSymbolVersion)it.next()).visit(new ElfSymbolVersion.Visitor() {
-	    public Object def(ElfSymbolVersion.Def verdef) {
-	      foundDefs.add(verdef);
-	      return null;
-	    }
-	    public Object need(ElfSymbolVersion.Need verneed) {
-	      foundNeeds.add(verneed);
-	      return null;
-	    }
-	  });
-
+    /**
+     * Build ltrace symbol.
+     *
+     * @param name Name of the symbol.
+     * @param type Type of the symbol, as in ElfSymbol.ELF_STT_* fields.
+     * @param value Value of the symbol.
+     * @param size Size of the symbol.
+     * @param shndx Associated section index, or one of the special
+     *   values in ElfSectionHeader.ELF_SHN_*.
+     * @param versions Version requirements and/or definitions of
+     *   symbol. If there are none, null is passed instead of
+     *   zero-length array.
+     */
+    public Symbol(final String name, ElfSymbolType type, long value,
+		  long offset, long size, long shndx, List versions)
     {
-      this.verdefs = new ElfSymbolVersion.Def[foundDefs.size()];
-      int i = 0;
-      for (Iterator it = foundDefs.iterator(); it.hasNext(); )
-	this.verdefs[i++] = (ElfSymbolVersion.Def)it.next();
+	this.name = name;
+	this.aliases = null;
+	this.type = type;
+	this.value = value;
+	this.offset = offset;
+	this.size = size;
+	this.shndx = shndx;
+
+	final ArrayList foundDefs = new ArrayList();
+	final ArrayList foundNeeds = new ArrayList();
+
+	if (versions != null)
+	    for (Iterator it = versions.iterator(); it.hasNext(); )
+		((ElfSymbolVersion)it.next()).visit(new ElfSymbolVersion.Visitor() {
+			public Object def(ElfSymbolVersion.Def verdef) {
+			    foundDefs.add(verdef);
+			    return null;
+			}
+			public Object need(ElfSymbolVersion.Need verneed) {
+			    foundNeeds.add(verneed);
+			    return null;
+			}
+		    });
+
+	int i = 0;
+	this.verdefs = new ElfSymbolVersion.Def[foundDefs.size()];
+	for (Iterator it = foundDefs.iterator(); it.hasNext(); )
+	    this.verdefs[i++] = (ElfSymbolVersion.Def)it.next();
+
+	i = 0;
+	this.verneeds = new ElfSymbolVersion.Need[foundNeeds.size()];
+	for (Iterator it = foundNeeds.iterator(); it.hasNext(); )
+	    this.verneeds[i++] = (ElfSymbolVersion.Need)it.next();
     }
 
-    {
-      this.verneeds = new ElfSymbolVersion.Need[foundNeeds.size()];
-      int i = 0;
-      for (Iterator it = foundNeeds.iterator(); it.hasNext(); )
-	this.verneeds[i++] = (ElfSymbolVersion.Need)it.next();
-    }
-  }
-
-    public void addAlias(String alias)
-    {
+    public void addAlias(String alias) {
 	if (this.aliases == null)
 	    this.aliases = new ArrayList();
 
@@ -140,17 +135,15 @@ public class Symbol
 	this.aliases.add(alias);
     }
 
-  public String toString()
-  {
-    StringBuffer buf = new StringBuffer();
-    buf.append(this.name);
-    return buf.toString();
-  }
+    public String toString() {
+	StringBuffer buf = new StringBuffer();
+	buf.append(this.name);
+	return buf.toString();
+    }
 
     /** Answer true, if name of the symbol, or one of the aliases,
      *  match given NAME. */
-    public boolean hasName(String name)
-    {
+    public boolean hasName(String name) {
 	if (this.name.equals(name))
 	    return true;
 
@@ -162,11 +155,11 @@ public class Symbol
 	return false;
     }
 
-  public void addedTo(ObjectFile of) {
-    this.parent = of;
-  }
+    public void addedTo(ObjectFile of) {
+	this.parent = of;
+    }
 
-  public ObjectFile getParent() {
-    return this.parent;
-  }
+    public ObjectFile getParent() {
+	return this.parent;
+    }
 }
