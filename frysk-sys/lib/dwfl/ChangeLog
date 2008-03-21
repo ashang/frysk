@@ -5,6 +5,11 @@
 
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
+	* cni/DwflModule.cxx (builder_callout): Pass GElf_Sym as pointer.
+	(getSymbol, getSymbolByName): Adjust.
+
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
 	* ElfSymbol.java: Merge in methods and field from
 	frysk.symtab.Symbol.
 

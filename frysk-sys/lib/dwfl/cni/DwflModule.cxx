@@ -119,22 +119,22 @@ lib::dwfl::DwflModule::getLines(jstring filename, jint lineno, jint column)
 
 namespace {
   void builder_callout(lib::dwfl::SymbolBuilder *symbolBuilder,
-		       jstring name, ::GElf_Sym sym)
+		       jstring name, ::GElf_Sym const*sym)
   {
     using lib::dwfl::ElfSymbolType;
     using lib::dwfl::ElfSymbolBinding;
     using lib::dwfl::ElfSymbolVisibility;
 
     ElfSymbolType * type
-      = ElfSymbolType::intern(ELF64_ST_TYPE(sym.st_info));
+      = ElfSymbolType::intern(ELF64_ST_TYPE(sym->st_info));
     ElfSymbolBinding * bind
-      = ElfSymbolBinding::intern(ELF64_ST_BIND(sym.st_info));
+      = ElfSymbolBinding::intern(ELF64_ST_BIND(sym->st_info));
     ElfSymbolVisibility * visibility
-      = ElfSymbolVisibility::intern(ELF64_ST_VISIBILITY(sym.st_other));
+      = ElfSymbolVisibility::intern(ELF64_ST_VISIBILITY(sym->st_other));
 
     symbolBuilder->symbol(name,
-			  sym.st_value,
-			  sym.st_size,
+			  sym->st_value,
+			  sym->st_size,
 			  type, bind, visibility);
   }
 }
@@ -155,7 +155,7 @@ lib::dwfl::DwflModule::getSymbol(jlong address,
   else
     jMethodName = JvNewStringUTF(methName);
 
-  ::builder_callout(symbolBuilder, jMethodName, closest_sym);
+  ::builder_callout(symbolBuilder, jMethodName, &closest_sym);
 }
 
 void
@@ -172,7 +172,7 @@ lib::dwfl::DwflModule::getSymbolByName(jstring name,
       GElf_Sym sym;
       const char *symName = dwfl_module_getsym(DWFL_MODULE_POINTER, i, &sym, 0);
       if (!::strcmp(rawName, symName))
-	::builder_callout (symbolBuilder, JvNewStringUTF(symName), sym);
+	::builder_callout (symbolBuilder, JvNewStringUTF(symName), &sym);
     }
 }
 
