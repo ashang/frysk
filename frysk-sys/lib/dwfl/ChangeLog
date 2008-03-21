@@ -5,6 +5,13 @@
 
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
+	* ElfSymbol.java (type): New field.
+	(DwflSymbol): Ctor now gets ElfSymbolType argument
+	(getType): New accessor method.
+	* cni/DwflModule.cxx (get_symbol_table): Adjust to above.
+
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
 	* DwflModule.java (getSymtab): New method.
 	(symbolTable): New field.
 	(get_symbol_table): New native method...

@@ -39,6 +39,8 @@
 
 package frysk.symtab;
 
+import lib.dwfl.ElfSymbolType;
+
 /**
  * An unknown-symbol; a singleton.
  */
@@ -47,7 +49,7 @@ class UnknownSymbol
     extends Symbol
 {
     UnknownSymbol() {
-	super(0, -1, "[unknown]");
+	super(0, -1, "[unknown]", ElfSymbolType.ELF_STT_NOTYPE);
 	demangledName = getName();
     }
 }

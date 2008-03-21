@@ -56,11 +56,14 @@ public class ElfSymbol {
     private final long address;
     private final long size;
     private final String name;
+    private final ElfSymbolType type;
 
-    protected ElfSymbol(long address, long size, String name) {
+    protected ElfSymbol(long address, long size, String name,
+			ElfSymbolType type) {
 	this.address = address;
 	this.size = size;
 	this.name = name;
+	this.type = type;
     }
 
     /**
@@ -86,6 +89,14 @@ public class ElfSymbol {
     public String getName ()
     {
 	return name;
+    }
+
+    /**
+     * Return the symbol type.
+     */
+    public ElfSymbolType getType ()
+    {
+	return type;
     }
 
     /**

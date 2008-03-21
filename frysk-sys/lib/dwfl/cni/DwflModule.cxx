@@ -171,8 +171,10 @@ lib::dwfl::DwflModule::get_symbol_table()
     {
       ::GElf_Sym sym;
       char const* name = ::dwfl_module_getsym (module, i, &sym, NULL);
+      ElfSymbolType * type
+	= ElfSymbolType::intern(ELF64_ST_TYPE(sym.st_info));
       lib::dwfl::ElfSymbol *elf_symbol
-	= new ElfSymbol(sym.st_value, sym.st_size, JvNewStringUTF(name));
+	= new ElfSymbol(sym.st_value, sym.st_size, JvNewStringUTF(name), type);
       this->symbolTable->add(elf_symbol);
     }
 }

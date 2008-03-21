@@ -40,28 +40,29 @@
 package frysk.symtab;
 
 /**
- * A dwfl based symbol.
- *
- * Do not confuse this with higher-level symbolic information, such as
- * function names, obtained from debug information such as DWARF.
+ * A dwfl based symbol -- a symbol that, in addition to "simple" elf
+ * portion, optionally carries over dwarf die portion.
  */
 
 import lib.dwfl.DwarfDie;
+import lib.dwfl.ElfSymbolType;
 
-class DwflSymbol
+public class DwflSymbol
     extends Symbol
 {
     private final DwarfDie dwarfDie;
 
     // package private constructor.
-    DwflSymbol(long address, long size, String name) {
-	super (address, size, name);
+    DwflSymbol(long address, long size, String name, ElfSymbolType type) {
+	super (address, size, name, type);
 	this.dwarfDie = null;
     }
 
     // package private constructor.
-    DwflSymbol(long address, long size, String name, DwarfDie dw) {
-	super (address, size, name);
+    DwflSymbol(long address, long size, String name,
+	       ElfSymbolType type, DwarfDie dw)
+    {
+	super (address, size, name, type);
 	this.dwarfDie = dw;
     }
 

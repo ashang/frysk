@@ -40,6 +40,7 @@
 package frysk.symtab;
 
 import lib.stdcpp.Demangler;
+import lib.dwfl.ElfSymbolType;
 
 /**
  * The object-file symbol.  Typically obtained by reading ELF
@@ -55,12 +56,14 @@ public class Symbol {
     private final long size;
     private final String name;
     protected String demangledName = null;
+    private final ElfSymbolType type;
 
     // package private constructor.
-    Symbol(long address, long size, String name) {
+    Symbol(long address, long size, String name, ElfSymbolType type) {
 	this.address = address;
 	this.size = size;
 	this.name = name;
+	this.type = type;
     }
 
     /**
@@ -102,5 +105,9 @@ public class Symbol {
      */
     public String toString () {
 	return name + "@" + Long.toHexString (address) + ":" + size;
+    }
+
+    public boolean isFunctionSymbol() {
+	return this.type == ElfSymbolType.ELF_STT_FUNC;
     }
 }

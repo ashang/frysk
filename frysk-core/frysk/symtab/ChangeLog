@@ -1,4 +1,12 @@
 2008-03-21  Petr Machata  <pmachata@redhat.com>
+	* Symbol.java: Ctor takes new parameter, elf symbol type.
+	(isFunctionSymbol): New method.
+	* DwflSymbol.java: publish the class
+	(DwflSymbol): Both ctors now get ElfSymbolType argument
+	* SymbolFactory.java: Adjust to above.
+	* UnknownSymbol.java: Likewise.
+
+2008-03-21  Petr Machata  <pmachata@redhat.com>
 
 	* DwflSymbol.java
 	(dwarfDie): New field.
