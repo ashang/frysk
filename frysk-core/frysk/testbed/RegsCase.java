@@ -56,7 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.math.BigInteger;
 import inua.eio.ByteOrder;
-import frysk.symtab.Symbol;
+import lib.dwfl.ElfSymbol;
 import frysk.symtab.SymbolFactory;
 
 /**
@@ -245,8 +245,8 @@ public abstract class RegsCase extends TestLib {
 	void checkValue(Register register) { }
 	void checkRegister(RegsCase c, Register register) {
 	    BigInteger value = registerValue(c, register);
-	    Symbol check = SymbolFactory.getSymbol(c.task(),
-						   value.longValue());
+	    ElfSymbol check = SymbolFactory.getSymbol(c.task(),
+						      value.longValue());
 	    RegsCase.assertEquals(register.getName(), correct,
 				  check.getName());
 	}

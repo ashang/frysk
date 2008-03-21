@@ -3,6 +3,11 @@
 	* cni/DwflLine.cxx (DwflLine::dwfl_linecomp_dir): added
 	NULL check.
 
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
+	* ElfSymbol.java: Merge in methods and field from
+	frysk.symtab.Symbol.
+
 2008-03-20  Petr Machata  <pmachata@redhat.com>
 	
 	* SymbolBuilder.java: Pass type, bind, visibility as full-fledged

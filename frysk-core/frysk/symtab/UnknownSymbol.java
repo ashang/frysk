@@ -39,17 +39,17 @@
 
 package frysk.symtab;
 
+import lib.dwfl.ElfSymbol;
+
 /**
  * An unknown-symbol; a singleton.
  */
 
 class UnknownSymbol
-    extends Symbol
+    extends ElfSymbol
 {
     UnknownSymbol() {
 	super(0, -1, "[unknown]");
-    }
-    public String getDemangledName () {
-	return "[unknown]";
+	demangledName = getName();
     }
 }

@@ -87,11 +87,11 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.TaskStepEngine;
 import frysk.proc.MemoryMap;
-import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
+import lib.dwfl.ElfSymbol;
 
 public class DisassemblyWindow
     extends Window
@@ -1025,7 +1025,7 @@ public class DisassemblyWindow
   {
       LinkedList addressList = SymbolFactory.getSymbol(this.myTask, symbolName);
       long startAddress = ((Long)addressList.getFirst()).longValue();
-      Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
+      ElfSymbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
       long endAddress = symbol.getAddress() + symbol.getSize();
       handleSegment(startAddress, endAddress);      
   }

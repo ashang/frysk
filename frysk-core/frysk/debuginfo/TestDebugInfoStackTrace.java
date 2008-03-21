@@ -54,11 +54,12 @@ import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.stepping.SteppingEngine;
 import frysk.stepping.TaskStepEngine;
-import frysk.symtab.Symbol;
 import frysk.sys.Pid;
 import frysk.sys.Signal;
 import frysk.testbed.SynchronizedOffspring;
 import frysk.testbed.TestLib;
+
+import lib.dwfl.ElfSymbol;
 
 public class TestDebugInfoStackTrace
     extends TestLib
@@ -147,7 +148,7 @@ public class TestDebugInfoStackTrace
   {
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
     SourceLocation line;
-    Symbol symbol;
+    ElfSymbol symbol;
 
     assertNotNull(frame);
     assertNull(frame.getInner());

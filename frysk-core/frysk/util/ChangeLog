@@ -14,6 +14,11 @@
 	* ProcFollowUtil.java: Reimplemented based on ProcRunUtil.
 	* FCatch.java: Updated
 
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
+	* AuxvStringBuilder.java: Use lib.dwfl.ElfSymbol instead of
+	frysk.symtab.Symbol.
+
 2008-03-20  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* ProcRunUtil.java: Reimplemented with rich client notification.

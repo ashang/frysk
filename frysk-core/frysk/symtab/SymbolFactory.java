@@ -50,6 +50,7 @@ import frysk.rsl.LogFactory;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
+import lib.dwfl.ElfSymbol;
 
 /**
  * The object-file symbol.  Typically obtained by reading ELF
@@ -66,12 +67,12 @@ public class SymbolFactory
     /**
      * A special unknown symbol.
      */
-    public static final Symbol UNKNOWN = new UnknownSymbol ();
+    public static final ElfSymbol UNKNOWN = new UnknownSymbol ();
 
    /**
     * Return the symbol at the specified address within task.
     */
-    public static Symbol getSymbol(Task task, long address) {
+    public static ElfSymbol getSymbol(Task task, long address) {
 	Dwfl dwfl = DwflCache.getDwfl(task);
 	if (dwfl == null)
 	    return UNKNOWN;

@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import frysk.symtab.Symbol;
+import lib.dwfl.ElfSymbol;
 import frysk.isa.registers.Register;
 
 /**
@@ -81,7 +81,7 @@ public abstract class FrameDecorator extends Frame {
 	return undecoratedFrame.getFrameIdentifier();
     }
 
-    public Symbol getSymbol() {
+    public ElfSymbol getSymbol() {
 	return undecoratedFrame.getSymbol();
     }
     

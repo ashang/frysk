@@ -46,8 +46,10 @@ package frysk.symtab;
  * function names, obtained from debug information such as DWARF.
  */
 
+import lib.dwfl.ElfSymbol;
+
 class DwflSymbol
-    extends Symbol
+    extends ElfSymbol
 {
     // package private constructor.
     DwflSymbol(long address, long size, String name) {

@@ -42,16 +42,16 @@ package frysk.stack;
 import frysk.rsl.Log;
 import frysk.isa.registers.Register;
 import lib.unwind.Cursor;
+import lib.dwfl.ElfSymbol;
 import frysk.isa.ISA;
 import frysk.proc.Task;
-import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.isa.registers.RegisterMap;
 
 class LibunwindFrame extends Frame {  
     private static final Log fine = Log.fine(LibunwindFrame.class);
 
-    private Symbol symbol;
+    private ElfSymbol symbol;
   
     /* Identifies this frame by its CFA and frame start address */
     private FrameIdentifier frameIdentifier;
@@ -177,7 +177,7 @@ class LibunwindFrame extends Frame {
     /**
      * Return this frame's symbol; UNKNOWN if there is no symbol.
      */
-    public Symbol getSymbol() {
+    public ElfSymbol getSymbol() {
 	if (symbol == null) {
 	    symbol = SymbolFactory.getSymbol(getTask(), getAdjustedAddress());
 	}

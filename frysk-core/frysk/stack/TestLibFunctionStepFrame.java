@@ -47,8 +47,8 @@ import frysk.config.*;
 import frysk.testbed.*;
 
 import frysk.proc.*;
-import frysk.symtab.*;
 import frysk.rt.*;
+import lib.dwfl.ElfSymbol;
 
 /**
  * Test making sure all frames are available when stepping (twice)
@@ -166,7 +166,7 @@ public class TestLibFunctionStepFrame
   // frame.
   private void assertFooAndMainOuterFrames(String message, Frame frame)
   {
-    Symbol sym = frame.getSymbol();
+    ElfSymbol sym = frame.getSymbol();
     String name = sym.getName();
     boolean ok = name.indexOf("foo") == -1 && name.indexOf("main") == -1;
     if (! ok)

@@ -43,11 +43,76 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lib.stdcpp.Demangler;
+
 /**
- * ElfSymbol is a container class with symbol-table related functions
- * and constants.
+ * The object-file symbol.  Typically obtained by reading ELF
+ * information.
+ *
+ * Do not confuse this with higher-level symbolic information, such as
+ * function names, obtained from debug information such as DWARF.
  */
 public class ElfSymbol {
+
+    // The symbol's fields.
+    private final long address;
+    private final long size;
+    private final String name;
+    protected String demangledName;
+
+    protected ElfSymbol(long address, long size, String name) {
+	this.address = address;
+	this.size = size;
+	this.name = name;
+    }
+
+    /**
+     * Return the address of the symbol.
+     */
+    public long getAddress ()
+    {
+	return address;
+    }
+
+    /**
+     * Return the size of the symbol (possibly zero).
+     */
+    public long getSize ()
+    {
+	return size;
+    }
+
+    /**
+     * Return the mangled name (the raw string found in the symbol
+     * table).  Or NULL, of the name is unknown.
+     */
+    public String getName ()
+    {
+	return name;
+    }
+
+    /**
+     * Return the demangled name, or "" of the name isn't known.
+     *
+     * XXX: Is returning "" better than null?  Sounds like a cheat for
+     * code that should be conditional on the symbol being known.
+     */
+    public String getDemangledName ()
+    {
+	if (demangledName == null)
+	    demangledName = Demangler.demangle (name);
+	return demangledName;
+    }
+
+    /**
+     * Dump the symbol's contents.
+     */
+    public String toString ()
+    {
+	return name + "@" + Long.toHexString (address) + ":" + size;
+    }
+
+
     public static interface Builder {
       /**
        * Called for each symbol.
