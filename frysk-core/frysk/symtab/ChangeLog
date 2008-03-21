@@ -1,5 +1,13 @@
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
+	* DwflSymbol.java
+	(dwarfDie): New field.
+	(DwflSymbol(long, long, String, DwarfDie)): New method.
+	(getDie): New method.
+	* SymbolFactory.java (getSymbols): New method.
+
+2008-03-21  Petr Machata  <pmachata@redhat.com>
+
 	* Symbol.java: Straighten dataflow here: internal data are set via
 	ctor and are final, instead of using "symbol" method for that.
 	(symbol): Two methods of that name erased.

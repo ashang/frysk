@@ -46,11 +46,26 @@ package frysk.symtab;
  * function names, obtained from debug information such as DWARF.
  */
 
+import lib.dwfl.DwarfDie;
+
 class DwflSymbol
     extends Symbol
 {
+    private final DwarfDie dwarfDie;
+
     // package private constructor.
     DwflSymbol(long address, long size, String name) {
 	super (address, size, name);
+	this.dwarfDie = null;
+    }
+
+    // package private constructor.
+    DwflSymbol(long address, long size, String name, DwarfDie dw) {
+	super (address, size, name);
+	this.dwarfDie = dw;
+    }
+
+    public DwarfDie getDie() {
+	return this.dwarfDie;
     }
 }

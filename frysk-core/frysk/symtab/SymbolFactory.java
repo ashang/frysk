@@ -40,13 +40,20 @@
 
 package frysk.symtab;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 
+import lib.dwfl.ElfSymbol;
+import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
@@ -61,6 +68,7 @@ import lib.dwfl.SymbolBuilder;
 
 public class SymbolFactory
 {
+    private static final Log fine = LogFactory.fine(SymbolFactory.class);
     private static final Log warning = LogFactory.warning(SymbolFactory.class);
 
     /**
@@ -101,6 +109,49 @@ public class SymbolFactory
 	    return UNKNOWN;
 
 	return builder.symbol;
+    }
+
+
+    /**
+     * Return symbols in given DwflModule.
+     * @return List&lt;DwflSymbol&gt;
+     */
+    public static List getSymbols(DwflModule module) {
+	Map dwSymbols = new HashMap();
+	for (Iterator it = module.getPubNames().iterator(); it.hasNext(); ) {
+	    DwarfDie die = (DwarfDie)it.next();
+	    dwSymbols.put(die.getName(), die);
+	}
+
+	LinkedList symbols = new LinkedList();
+	Map elfSymbols = new HashMap();
+	for (Iterator it = module.getSymtab().iterator(); it.hasNext(); ) {
+	    ElfSymbol sym = (ElfSymbol)it.next();
+	    DwarfDie die = (DwarfDie)dwSymbols.get(sym.getName());
+	    symbols.add(new DwflSymbol(sym.getAddress(), sym.getSize(),
+				       sym.getName(), die));
+	    elfSymbols.put(sym.getName(), sym);
+	}
+	fine.log("Got", symbols.size(), "symbols after sweep over symtabs.");
+
+	// This will probably not add anything, but just to make sure...
+	for (Iterator it = dwSymbols.entrySet().iterator(); it.hasNext(); ) {
+	    Map.Entry entry = (Map.Entry)it.next();
+	    String name = (String)entry.getKey();
+	    if (!elfSymbols.containsKey(name)) {
+		DwarfDie die = (DwarfDie)entry.getValue();
+		ArrayList entries = die.getEntryBreakpoints();
+		if (entries != null) {
+		    long addr = ((Long)entries.get(0)).longValue();
+		    long size = die.getHighPC() - die.getLowPC();
+		    symbols.add(new DwflSymbol(addr, size,
+					       die.getName(), die));
+		}
+	    }
+	}
+	fine.log("Got", symbols.size(), "symbols after sweep over debuginfo.");
+
+	return symbols;
     }
 
     /**
