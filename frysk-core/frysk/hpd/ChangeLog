@@ -1,3 +1,11 @@
+2008-03-24  Stan Cox  <scox@redhat.com>
+
+	* ListCommand.java (listOneTask): New.  Refactored from interpret.
+	(parseFunctionName): Likewise.
+	(interpret): Use listOneTask and parseFunctionName.
+	* TestListCommand.java (testListReverse): Test 'list -length' around PC.
+	* TestSysRoot.java (testHaveSysRoot()): Reactivate.
+
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* StartRun.java: Use ProcTasksAction and ProcTasksObserver.

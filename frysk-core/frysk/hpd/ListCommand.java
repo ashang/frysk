@@ -94,133 +94,145 @@ class ListCommand extends ParameterizedCommand {
 	Options options = (Options)o;
         PTSet ptset = cli.getCommandPTSet(cmd);
 	int windowSize = 20;
+	boolean adjust_line = true;
+
         Iterator taskIter = ptset.getTaskData();
         while (taskIter.hasNext()) {
             TaskData taskData = (TaskData)taskIter.next();
-            Task task = taskData.getTask();
-            cli.outWriter.print("[");
-	    cli.outWriter.print(taskData.getParentID());
-	    cli.outWriter.print(".");
-	    cli.outWriter.print(taskData.getID());
-	    cli.outWriter.println("]");
-            DebugInfoFrame frame = cli.getTaskFrame(task);
-            if (frame.getLine() == SourceLocation.UNKNOWN) {
-		cli.outWriter.println("No symbol table is available.");
-		continue;
+            exec_line = cli.getTaskFrame(taskData.getTask()).getLine().getLine();
+            if (cmd.size() == 0)
+        	// default to list around PC
+        	line = exec_line;
+            else if (cmd.size() == 1) {
+        	try {
+        	    line = Integer.parseInt(cmd.parameter(0));
+        	}
+        	catch (NumberFormatException ignore) {
+        	    line = parseFunctionName(cmd.parameter(0), file, cli, taskData);
+        	    adjust_line = false;
+        	}
             }
-            if (cmd.size() == 1) {
-                // list N
-                try {
-                    line = Integer.parseInt(cmd.parameter(0));
-                }
-                catch (NumberFormatException ignore) {
-                    if ((cmd.parameter(0)).compareTo("$EXEC") == 0)
-		      line = frame.getLine().getLine() - (windowSize / 2);
-                    else {
-                        DwarfDie funcDie = null;
-			DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-			if (debugInfo != null) {
-			    funcDie = debugInfo
-				.getSymbolDie(cmd.parameter(0));
-                        }
-			if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
-		            DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
-		            .getSourceLine(frame.getAdjustedAddress());
-		            if (dwflLine != null) {
-				SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(frame.getTask()));
-		                file = sysRoot.getSourcePathViaSysRoot
-				    (new File(dwflLine.getCompilationDir()),
-				     funcDie.getDeclFile()).getSysRootedFile();
-		            }
-		            else
-		        	file = funcDie.getDeclFile();
-		            line = (int)funcDie.getDeclLine();
-			}
-			else {
-			    cli.addMessage("function " + cmd.parameter(0) + " not found.",
-					   Message.TYPE_ERROR);
-			    return;
-			}
-                    }
-                }
+            if (options.length != null) {
+        	windowSize = options.length.magnitude;
             }
-	    else if (options.length != null) {
-		windowSize = options.length.magnitude;
-		if (options.length.sign < 0) {
-		    windowSize *= -1;
-		    line += windowSize;
-		}
-	    }
-            else if (frame.getLine().getLine() != exec_line) {
-                // list around pc.
-                exec_line = frame.getLine().getLine();
-                line = exec_line - (windowSize / 2);
-            }
- 
-            if (file == null || frame != currentFrame) {
-                if (frame.getLine() != SourceLocation.UNKNOWN) {
-                    file = (frame.getLine()).getFile();
-                    if (file == null) {
-                        cli.addMessage("No symbol table is available.",
-                                       Message.TYPE_NORMAL);
-                        return;
-                    }
-                    line = (frame.getLine()).getLine() - (windowSize / 2);
-		    currentFrame = frame;
-		    if (exec_line == 0)
-			exec_line = line;
-                }
-                else { 
-                    cli.outWriter.println("No source for current frame");
-                    return;
-                }
-            }
-      
-            if (line < 0)
-                line = 1;
-            try {
-                FileReader fr = new FileReader(file);
-                LineNumberReader lr = new LineNumberReader(fr);
-                String str;
-                boolean display = false;
-                int endLine = line + StrictMath.abs(windowSize);
-                String flag = "";
-                while ((str = lr.readLine()) != null) {
-                    if (lr.getLineNumber() == line)
-                        display = true;
-                    else if (lr.getLineNumber() == endLine)
-                        break;
-                    if (display && lr.getLineNumber() == exec_line)
-                        flag = "->";
-		    else
-			flag = "  ";
 
-                    if (display) {
-			int lineNumber = lr.getLineNumber();
-			String rightAdjust;
-			if (lineNumber < 10)
-			    rightAdjust = "   ";
-			else if (lineNumber < 100)
-			    rightAdjust = "  ";
-			else if (lineNumber < 1000)
-			    rightAdjust = " ";
-			else
-			    rightAdjust = "";
-                        cli.outWriter.println(flag + rightAdjust + lineNumber + "\t "+ str);
-                        flag = "";
-                    }
-                }
-                lr.close();
-            }
-            catch (IOException e) {
-                cli.addMessage("file " + file + " not found.",
-                               Message.TYPE_ERROR);
-            }
-	}
-
+            if (adjust_line)
+        	line = line - (windowSize / 2);
+            listOneTask(cli, cmd, taskData, windowSize);
+        }
     }
 
     int completer(CLI cli, Input input, int cursor, List candidates) {
 	return -1;
+    }
+    
+    private void listOneTask (CLI cli, Input cmd, TaskData taskData, int windowSize) {
+        Task task = taskData.getTask();
+	cli.outWriter.print("[");
+	cli.outWriter.print(taskData.getParentID());
+	cli.outWriter.print(".");
+	cli.outWriter.print(taskData.getID());
+	cli.outWriter.println("]");
+	DebugInfoFrame frame = cli.getTaskFrame(task);
+	if (frame.getLine() == SourceLocation.UNKNOWN) {
+	    cli.outWriter.println("No symbol table is available.");
+	    return;
+	}
+	if (cmd.size() == 1) {
+	}
+
+	if (file == null || frame != currentFrame) {
+	    if (frame.getLine() != SourceLocation.UNKNOWN) {
+		file = (frame.getLine()).getFile();
+		if (file == null) {
+		    cli.addMessage("No symbol table is available.",
+			    Message.TYPE_NORMAL);
+		    return;
+		}
+		line = (frame.getLine()).getLine() - (windowSize / 2);
+		currentFrame = frame;
+		if (exec_line == 0)
+		    exec_line = line;
+	    }
+	    else { 
+		cli.outWriter.println("No source for current frame");
+		return;
+	    }
+	}
+
+	if (line < 0)
+	    line = 1;
+	try {
+	    FileReader fr = new FileReader(file);
+	    LineNumberReader lr = new LineNumberReader(fr);
+	    String str;
+	    boolean display = false;
+	    int endLine = line + StrictMath.abs(windowSize);
+	    String flag = "";
+	    while ((str = lr.readLine()) != null) {
+		if (lr.getLineNumber() == line)
+		    display = true;
+		else if (lr.getLineNumber() == endLine)
+		    break;
+		if (display && lr.getLineNumber() == exec_line)
+		    flag = "->";
+		    else
+			flag = "  ";
+
+		if (display) {
+		    int lineNumber = lr.getLineNumber();
+		    String rightAdjust;
+		    if (lineNumber < 10)
+			rightAdjust = "   ";
+		    else if (lineNumber < 100)
+			rightAdjust = "  ";
+		    else if (lineNumber < 1000)
+			rightAdjust = " ";
+		    else
+			rightAdjust = "";
+		    cli.outWriter.println(flag + rightAdjust + lineNumber + "\t "+ str);
+		    flag = "";
+		}
+	    }
+	    lr.close();
+	}
+	catch (IOException e) {
+	    cli.addMessage("file " + file + " not found.",
+		    Message.TYPE_ERROR);
+	}
+    }
+    
+    private int parseFunctionName (String cmdParm, File file, CLI cli, TaskData taskData) {
+        Task task = taskData.getTask();
+	DebugInfoFrame frame = cli.getTaskFrame(task);
+
+	if ((cmdParm).compareTo("$EXEC") == 0)
+	    return frame.getLine().getLine();
+	else {
+	    DwarfDie funcDie = null;
+	    DebugInfo debugInfo = cli.getTaskDebugInfo(task);
+	    if (debugInfo != null) {
+		funcDie = debugInfo
+		.getSymbolDie(cmdParm);
+	    }
+	    if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
+		DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
+		.getSourceLine(frame.getAdjustedAddress());
+		if (dwflLine != null) {
+		    SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(frame.getTask()));
+		    file = sysRoot.getSourcePathViaSysRoot
+		    (new File(dwflLine.getCompilationDir()),
+			    funcDie.getDeclFile()).getSysRootedFile();
+		}
+		else
+		    file = funcDie.getDeclFile();
+		return (int)funcDie.getDeclLine();
+	    }
+	    else {
+		cli.addMessage("function " + cmdParm + " not found.",
+			Message.TYPE_ERROR);
+		return line;
+	    }
+	}
     }
 }

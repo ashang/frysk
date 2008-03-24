@@ -1,3 +1,8 @@
+2008-03-24  Stan Cox  <scox@redhat.com>
+
+	* dwfl_module_getdwarf.c (load_symtab): Keep looking for an external
+	symbol table even if we have a .dynsym.  Should be fixed post 0.133.
+
 2008-03-13  Tim Moore  <timoore@redhat.com>
 
 	* dwfl_module_addrsym.c (dwfl_module_addrsym): Start min_label
