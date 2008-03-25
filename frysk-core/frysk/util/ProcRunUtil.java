@@ -52,10 +52,10 @@ import frysk.proc.TaskObserver;
 import gnu.classpath.tools.getopt.OptionGroup;
 
 /**
- * Framework to be used for frysk utilities that, a) Accept pids, executable
- * paths, core files & b) Require tasks to be stopped,
+ * Framework to be used for frysk utilities which analyze running
+ * processes. 
  * 
- * Utilities must define a event.ProcEvent to execute.
+ * Utilities must implement {@link ProcRunObserver} to use.
  */
 public class ProcRunUtil {
 
@@ -117,7 +117,7 @@ public class ProcRunUtil {
 	if (knownTasks.add(task)) {
 	    task.requestAddClonedObserver(procRunObserver);
 	    task.requestAddExecedObserver(procRunObserver);
-	    task.requestAddForkedObserver(forkedObserver);
+	    task.requestAddForkedObserver(procRunObserver);
 	    task.requestAddTerminatedObserver(procRunObserver);
 
 	    if (this.options.followForks) {
@@ -153,7 +153,9 @@ public class ProcRunUtil {
 	    procRunObserver.updateAttached(task);
 	    Proc proc = task.getProc();
 	    addObservers(proc);
-	    
+	    //XXX: the addObserver... requestUblock... return Action.Block
+	    //     does not work of the observer being added is a tasks
+	    //     observer... a concrete block and unblock must be done.
 	    return Action.BLOCK;
 	}
 

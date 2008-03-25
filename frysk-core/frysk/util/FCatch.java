@@ -41,14 +41,15 @@ package frysk.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import gnu.classpath.tools.getopt.OptionGroup;
 import java.util.HashMap;
+
 import frysk.debuginfo.PrintStackOptions;
 import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
+import gnu.classpath.tools.getopt.OptionGroup;
 
 public class FCatch {
     private static final Log fine = Log.fine(FCatch.class);
@@ -142,7 +143,7 @@ public class FCatch {
 	    = new ProcFollowUtil("fcatch",
 			      "Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID",
 			      args, new TaskObserver[] { catchObserver},
-			      options(), ProcFollowUtil.DEFAULT);
+			      options(), ProcRunUtil.DEFAULT);
 	procRunUtil.start();
     }
 }

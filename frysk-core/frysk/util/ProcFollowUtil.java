@@ -40,13 +40,9 @@
 package frysk.util;
 
 import java.util.HashSet;
-import java.util.Set;
 
+import frysk.isa.signals.Signal;
 import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.ProcTasksAction;
-import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.TaskObserver;
@@ -58,166 +54,42 @@ import frysk.proc.TaskObserver.Signaled;
 import frysk.proc.TaskObserver.Syscalls;
 import frysk.proc.TaskObserver.Terminated;
 import frysk.proc.TaskObserver.Terminating;
+import frysk.util.ProcRunUtil.ProcRunObserver;
+import frysk.util.ProcRunUtil.RunUtilOptions;
 import gnu.classpath.tools.getopt.OptionGroup;
 
-/**
- * Framework to be used for frysk utilities that, a) Accept pids, executable
- * paths, core files & b) Require tasks to be stopped,
- * 
- * Utilities must define a event.ProcEvent to execute.
- */
+
 public class ProcFollowUtil {
 
     private final HashSet knownTasks = new HashSet();
-    
-    ForkedObserver forkedObserver = new ForkedObserver();
-
-    AttachedObserver attachedObserver = new AttachedObserver();
-
-    private RunningUtilOptions options;
+ 
     private TaskObserver[] observers;
 
-    private NewTaskObserver newTaskObserver;
-
-    public static interface NewTaskObserver{
-	void notifyNewTask(Task task);
-    }
-    
-    public static class RunningUtilOptions {
-	boolean followForks = true;
-    }
-    
-    public static final RunningUtilOptions DEFAULT = new RunningUtilOptions();
-
-    public ProcFollowUtil(String utilName, String usage, String[] args,
-		       NewTaskObserver newTaskObserver,
-		       OptionGroup[] customOptions,
-		       RunningUtilOptions options) {
-	this(utilName, usage, args, new TaskObserver[]{}, customOptions,
-	     options);
-	this.newTaskObserver = newTaskObserver;
-    }
-    
+    ProcRunUtil procRunUtil;
     public ProcFollowUtil(String utilName, String usage, String[] args,
 		       TaskObserver[] observers, OptionGroup[] customOptions,
-		       RunningUtilOptions options) {
-	this.options = options;
-	this.observers = observers;
-
-	//Set up commandline parser
-	CommandlineParser parser = new CommandlineParser(utilName,
-							 customOptions) {
-		// @Override
-		public void parsePids(Proc[] procs) {
-		    for (int i = 0; i < procs.length; i++) {
-			addObservers(procs[i]);
-		    }
-		}
-		// @Override
-		public void parseCommand(Proc command) {
-		    Manager.host.requestCreateAttachedProc(command, attachedObserver);
-		}
-	    };
-	parser.parse(args);
+		       RunUtilOptions options) {
+	
+      this.procRunUtil = new ProcRunUtil(utilName,
+            usage,
+            args,
+            procRunObserver,
+            customOptions,
+            options
+      );
+	
+      this.observers = observers;
     }
 
-    private void addObservers(Proc proc) {
-	new ProcTasksAction(proc, tasksObserver);
-    }
-    
     private void addObservers(Task task) {
 	if (knownTasks.add(task)) {
-	    
-	    if(newTaskObserver != null){
-		newTaskObserver.notifyNewTask(task);
-	    }
 	    
 	    for (int i = 0; i < observers.length; i++) {
 		this.addTaskObserver(observers[i], task);
 	    }
-	    if (options.followForks) {
-		this.addTaskObserver(forkedObserver, task);
-	    }
 	}
     }
     
-    class ForkedObserver implements TaskObserver.Forked {
-	public Action updateForkedOffspring(Task parent, Task offspring) {
-	    addObservers(offspring.getProc());
-	    return Action.BLOCK;
-	}
-
-	public Action updateForkedParent(Task parent, Task offspring) {
-	    return Action.CONTINUE;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void deletedFrom(Object observable) {
-	}
-    }
-
-    class AttachedObserver implements TaskAttachedObserverXXX {
-	private Set procs = new HashSet();
-
-	public synchronized Action updateAttached(Task task) {
-	    
-	    Proc proc = task.getProc();
-	    if (!procs.contains(proc)) {
-		procs.add(proc);
-		addObservers(proc);
-	    }
-	    
-	    return Action.BLOCK;
-	}
-
-	public void addedTo(Object observable) {
-	}
-
-	public void deletedFrom(Object observable) {
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    throw new RuntimeException("Failed to attach to created proc", w);
-	}
-    }
-    
-    private ProcTasksObserver tasksObserver = new ProcTasksObserver() {
-	public void existingTask (Task task)
-	{
-	    addObservers(task);
-
-	    if (task == task.getProc().getMainTask()) {
-		// Unblock forked and cloned observer, which blocks
-		// main task after the fork or clone, to give us a
-		// chance to pick it up.
-		task.requestUnblock(forkedObserver);
-		task.requestUnblock(attachedObserver);
-		
-	    }
-	}
-
-	public void taskAdded (Task task)
-	{
-	    addObservers(task);
-	}
-
-	public void taskRemoved (Task task)
-	{
-	    knownTasks.remove(task);
-	    if(knownTasks.size() == 0){
-		Manager.eventLoop.requestStop();
-	    }
-	}
-
-	public void addedTo (Object observable)	{}
-	public void addFailed (Object observable, Throwable arg1) {}
-	public void deletedFrom (Object observable) {}
-    };
 
     //XXX: this is to handle adding observers according to their types
     //     since task does not provide overloaded functions for adding
@@ -267,7 +139,49 @@ public class ProcFollowUtil {
 	}
     }
 
+    private ProcRunObserver procRunObserver = new ProcRunObserver(){
+
+      public Action updateAttached (Task task)
+      {
+	addObservers(task);
+	return Action.CONTINUE;
+      }
+
+      public Action updateForkedOffspring (Task parent, Task offspring){
+	  System.out.println(".updateForkedOffspring()");
+	  System.out.println(".updateForkedOffspring()");
+	  System.out.println(".updateForkedOffspring()");
+	  
+	addObservers(offspring);
+	offspring.requestUnblock(this);
+	return Action.BLOCK;
+      }
+
+      public void existingTask (Task task)
+      {
+	addObservers(task);
+      }
+
+      public Action updateClonedOffspring (Task parent, Task offspring){
+	addObservers(offspring);
+	return Action.CONTINUE;
+      }
+
+      public Action updateForkedParent (Task parent, Task offspring){return Action.CONTINUE;}
+      public Action updateExeced (Task task){return Action.CONTINUE;}
+      public Action updateClonedParent (Task task, Task clone){return Action.CONTINUE;}
+      public Action updateTerminated (Task task, Signal signal, int value){ return Action.CONTINUE;}
+      
+      public void taskAdded (Task task){}
+      public void taskRemoved (Task task){}
+
+      public void addFailed (Object observable, Throwable w){}
+      public void addedTo (Object observable){}
+      public void deletedFrom (Object observable){}
+      
+    };
+    
     public void start() {
-	Manager.eventLoop.run();
+	procRunUtil.start();
     }
 }

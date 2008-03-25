@@ -39,6 +39,10 @@
 
 package frysk.bindir;
 
+import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import frysk.debuginfo.PrintStackOptions;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
@@ -46,14 +50,11 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Syscalls;
 import frysk.util.ProcFollowUtil;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionGroup;
-import gnu.classpath.tools.getopt.OptionException;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import frysk.util.ProcRunUtil;
 import frysk.util.StackPrintUtil;
-
-import java.io.PrintWriter;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.OptionGroup;
 
 public class ferror {
     
@@ -87,7 +88,7 @@ public class ferror {
 			    args, 
 			    new TaskObserver[]{ syscallObserver },
 			    options(),
-			    ProcFollowUtil.DEFAULT);
+			    ProcRunUtil.DEFAULT);
 	procRunningUtil.start();
     }
 

@@ -1,3 +1,8 @@
+2008-03-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Reimplemented ProcFollowUtil based on ProcRunUtil.
+	* ferror.java: Updated.
+
 2008-03-20  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* fstep.java: Use ProcRunUtil.
