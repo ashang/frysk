@@ -89,14 +89,8 @@ public class TestRunCommand extends TestLib {
 	//e.sendCommandExpectPrompt("focus","Target set.*\\[0\\.0\\]\t\t([0-9]+)" +
 	//	"\t([0-9]+)\r\n" + "\\[0\\.1\\]\t\t([0-9]+)\t([0-9]+)\r\n");
 	//try { Thread.sleep(1000); } catch (Exception e) {}
-	e.send("run\n");
-	e.expect(".*Killing process ([0-9])+.*");
-	e.expect("\\[0\\.0\\] Loaded executable file.*");
-	e.expect("Attached to process ([0-9])+.*");
-	e.expect("Running process ([0-9])+.*");
-	//e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*" +
-	//	"Loaded executable file.*" + "Attached to process ([0-9])+.*" +
-	//	"Running process ([0-9])+.*");
+	e.sendCommandExpectPrompt("run", "Killing process ([0-9])+.*running.*" +
+		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
 	//e.send("quit\n");
 	//e.expect("Quitting\\.\\.\\.");
 	e.close();
@@ -153,7 +147,7 @@ public class TestRunCommand extends TestLib {
      * just rerun the currently running process and place in in the same place in the target set.
      */
     public void testRunCommandTwoProcesses() {
-	if (unresolved(5615))
+	if (unresolved(5984))
 	    return;
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
@@ -163,16 +157,12 @@ public class TestRunCommand extends TestLib {
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 	"\\[1\\.0\\]\t\t0*\\t0.*");
 	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*Attached to process ([0-9]+).*" +
-		"starting.*" + "Running process ([0-9]+).*starting.*Running process ([0-9]+).*");
-	//e.sendCommandExpectPrompt("run", "Killing process ([0-9]+).*Loaded executable file.*" +
-	//	"Attached to process ([0-9]+).*starting.*Running process ([0-9]+).*starting.*" +
-	//	"Running process ([0-9]+).*");
-	e.send("run\n");
-	e.expect("Killing process ([0-9]+).*");
-	e.expect("\\[1\\.0\\] Loaded executable file.*");
-	e.expect("Attached to process ([0-9]+).*");
-	e.expect("Running process ([0-9]+).*");
-	e.sendCommandExpectPrompt("focus", "Target set.*\\[1\\.0\\]\t\t([0-9]+)\t([0-9]+).*" +
+		"running.*" + "Running process ([0-9]+).*running.*Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("run", "Killing process ([0-9]+).*Killing process ([0-9]+).*" +
+		"Attached to process ([0-9]+).*running.*Running process ([0-9]+).*running.*" +
+		"Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t([0-9]+)\t([0-9]+).*" +
+		"\\[0\\.1\\]\t\t([0-9]+).*\\t([0-9]+).*\\[1\\.0\\]\t\t([0-9]+)\t([0-9]+).*" + 
 		"\\[1\\.1\\]\t\t([0-9]+).*\\t([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");

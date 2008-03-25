@@ -47,6 +47,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.ProcTasksAction;
 import frysk.util.CountDownLatch;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +58,8 @@ import java.util.List;
  * created to consolidate most of the methods to one code base.
  */
 abstract class StartRun extends ParameterizedCommand {
+    
+    final ArrayList procList = new ArrayList();
     
     StartRun(String command, String help1, String help2) {
 	super(command, help1, help2);
@@ -123,48 +126,74 @@ abstract class StartRun extends ParameterizedCommand {
     
     public void interpretCmd(CLI cli, Input cmd, Object options,
 			     boolean runToBreak) {
+	// See if there are any tasks to be killed
+	if (killProcs(cli)) {
 	// See if there are any tasks in the current target set
-	Iterator foo = cli.targetset.getTaskData();
-	int oldPid = -1;
-	if (foo.hasNext()) {
-	    // Clear the parameters for this process
 	    TaskData taskData = null;
+	    Iterator foo = procList.iterator();
 	    while (foo.hasNext()) {
 		taskData = (TaskData) foo.next();
 		Task task = taskData.getTask();
-		// Need only one kill per PID(proc) if proc is running already
-		if (task.getProc().getPid() != oldPid &&
-		  task.getProc().getPid() > 0) {
-		    cli.execCommand("kill " + task.getProc().getPid() + "\n");
-		    int taskid = taskData.getParentID();
-		    run(cli, cmd, task.getProc(), runToBreak, taskid);
-		    oldPid = task.getProc().getPid();
-		    } else {
-			int taskid = taskData.getParentID();
-			// Take care of loaded procs
-			if (!cli.loadedProcs.isEmpty() && 
-			    cli.loadedProcs.containsKey(task.getProc())) {
-			    run(cli, cmd, task.getProc(), runToBreak, taskid);
-			    synchronized (cli) {
-				cli.loadedProcs.remove(task.getProc());
-			    }
-			}
-			// Take care of core procs
-			else if (!cli.coreProcs.isEmpty() &&
-				cli.coreProcs.containsKey(task.getProc())) {
-			    run(cli, cmd, task.getProc(), runToBreak, taskid);
-			    synchronized (cli) {
-				cli.coreProcs.remove(new Integer(taskid));
-			    }
-			}
-		    }
-		}
-		return;
-	   // }
-	} else {
+		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+	    }
+	    return;
+	}
+	// Take care of loaded procs
+	Iterator foo = cli.targetset.getTaskData();
+	if (!foo.hasNext()) {
 	    cli.addMessage("No procs in targetset to run", Message.TYPE_NORMAL);
 	    return;
 	}
+	while (foo.hasNext()) {
+	    TaskData taskData = (TaskData) foo.next();
+	    Task task = taskData.getTask();
+	    if (!cli.loadedProcs.isEmpty() && 
+		    cli.loadedProcs.containsKey(task.getProc())) {
+		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+		synchronized (cli) {
+		    cli.loadedProcs.remove(task.getProc());
+		}
+	    }
+	// Take care of core procs
+	    else if (!cli.coreProcs.isEmpty() &&
+		    cli.coreProcs.containsKey(task.getProc())) {
+		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+		synchronized (cli) {
+		    cli.coreProcs.remove(new Integer(taskData.getParentID()));
+		}
+	    }
+	}
+	
+    }
+    
+    /**
+     * killProcs loops through the current target set to see if there are any
+     * tasks to kill, the philosophy being that all tasks should be killed before
+     * 
+     */
+    
+    private boolean killProcs(CLI cli) {
+	Iterator foo = cli.targetset.getTaskData();
+	// No procs in target set return false
+	if (!foo.hasNext()) {
+	    return false;
+	}
+	TaskData taskData = null;
+	int oldPid = -1;
+	while (foo.hasNext()) {
+	    taskData = (TaskData) foo.next();
+	    Task task = taskData.getTask();
+	    if (task.getProc().getPid() != oldPid && 
+		    task.getProc().getPid() > 0) {
+		procList.add(taskData);
+		cli.execCommand("kill " + task.getProc().getPid() + "\n");
+		oldPid = task.getProc().getPid();
+	    }
+	}
+	if (procList.isEmpty())
+	    return false;
+	
+	return true;
     }
 
     /**
@@ -221,6 +250,8 @@ abstract class StartRun extends ParameterizedCommand {
     }
 
     private String asString(String[] args) {
+	if (args == null || args.length <= 0)
+	    return "";
 	StringBuffer b = new StringBuffer(args[0]);
 	for (int i = 1; i < args.length; i++) {
 	    b.append(" ");
