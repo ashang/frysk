@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -115,6 +115,17 @@ public class IA32Registers extends Registers {
     // of a system call.
     public static final Register ORIG_EAX
 	= new Register("orig_eax", StandardTypes.INT32L_T);
+
+    // Add hardware manual aliases
+    public static final Register DEBUG_STATUS = D6;
+    public static final Register DEBUG_CONTROL = D7;
+
+    // Add Debug register group.
+    public static final RegisterGroup DEBUG_REGS_GROUP
+	= new RegisterGroup("debugregs",
+			    new Register[] {
+				D0, D1, D2, D3 , D4, D5, D6, D7
+			    });
 
     public final static RegisterGroup REGS_GROUP
 	= new RegisterGroup("regs",

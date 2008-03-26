@@ -1,3 +1,9 @@
+2008-03-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* X8664Registers.java: Add debug register group.
+	Add debug control and status register aliases.
+	* IA32Registers.java: Ditto.
+	
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32Registers.java: Move to here from frysk.isa.

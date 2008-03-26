@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -126,6 +126,17 @@ public class X8664Registers extends Registers {
     // of a system call.
     public static final Register ORIG_RAX
 	= new Register("orig_rax", StandardTypes.INT64L_T);
+
+    // Add hardware manual aliases
+    public static final Register DEBUG_STATUS = DR6;
+    public static final Register DEBUG_CONTROL = DR7;
+
+    // Add debug register group.
+    public static final RegisterGroup DEBUG_REGS_GROUP
+	= new RegisterGroup("debugregs",
+			    new Register[] {
+				DR0, DR1, DR2, DR3 , DR4, DR5, DR6, DR7
+			    });
 
     public static final RegisterGroup REGS_GROUP
 	= new RegisterGroup("regs",
