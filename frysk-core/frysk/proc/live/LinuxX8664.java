@@ -50,6 +50,41 @@ import frysk.proc.Auxv;
 class LinuxX8664 implements Isa {
     private static final Instruction X8664Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);
+
+
+    // Architecture Watchpoint Count
+    private final int NoOfWatchpoints = 7;
+
+    /**
+     * Builds a watchpoint. Takes a task, an address, a 
+     * range and a register index.
+     *
+     * @return boolean whether the watchpoint
+     * was set succesfully.
+     */
+    public final boolean setWatchpoint(Task task, long addr, 
+				       long range, int index) {
+	throw new RuntimeException("Watchpoints not supported on this arch");
+    }
+
+    /**
+     * Deletes a watchpoint. Takes a task, and a range.
+     *
+     * @return boolean whether the watchpoint
+     * was deleted succesfully.
+     */
+    public final boolean deleteWatchpoint(Task task, int index) {
+	throw new RuntimeException("Watchpoints not supported on this arch");
+    }
+
+    /**
+     * Returns number of watchpoints for this architecture
+     *
+     * @return int number of usable watchpoints.
+     */
+    public final int getWatchpointCount() {
+	return NoOfWatchpoints;
+    }
   
     /**
      * Get the breakpoint instruction for X8664.
