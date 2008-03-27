@@ -58,7 +58,7 @@ public class SysRootFile {
      * Get the root directory for this SysRoot File.
      * @return the root directory
      */
-    File getSysRoot () {
+    public File getSysRoot () {
 	return sysRoot;
     }
 
@@ -66,7 +66,7 @@ public class SysRootFile {
      * Get the file within the SysRoot for this SysRoot File.
      * @return the file.
      */
-    File getFile () {
+    public File getFile () {
 	return file;
     }
 

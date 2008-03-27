@@ -1,3 +1,8 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* SysRootFile.java (getSysRoot): Make public.
+	(getFile): Likewise.
+
 2008-03-13  Stan Cox  <scox@redhat.com>
 
 	* SysRootFile.java: New.

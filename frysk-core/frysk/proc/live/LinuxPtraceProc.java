@@ -66,6 +66,8 @@ import java.io.File;
 import frysk.proc.Manager;
 import frysk.proc.ProcEvent;
 import frysk.proc.TaskObserver;
+import frysk.sysroot.SysRootCache;
+import frysk.sysroot.SysRootFile;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -249,6 +251,12 @@ public class LinuxPtraceProc extends LiveProc {
 	    this.exe = exe;
 	}
 	return exe;
+    }
+
+    public SysRootFile getExeFile() {
+	String exe = getExe();
+	File exeFile = new File(exe);
+	return new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), exeFile);
     }
 
     /**

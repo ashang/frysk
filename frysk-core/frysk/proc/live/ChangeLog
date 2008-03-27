@@ -1,3 +1,7 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* LinuxPtraceProc.java (getExeFile): New.
+
 2008-03-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Isa.java (setWatchpoint): New Interface

@@ -1,3 +1,7 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* Proc.java (getExeFile): New.
+
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcTasksAction.java: Rename ProcTasksObserver.

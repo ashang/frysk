@@ -1,3 +1,7 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* DummyProc.java (getExeFile): New.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyProc.java (requestRefresh()): Delete.

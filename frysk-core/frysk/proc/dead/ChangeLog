@@ -1,3 +1,13 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* TestLinuxExe.java (testSysRootedProc): New.
+	* LinuxExeProc.java (LinuxExeProc): Make SysRootFile aware.
+	(getExeFile): New.
+	* LinuxExeHost.java (LinuxExeHost): Likewise.
+	* LinuxExeFactory.java (createElfProc): Likewise.
+	(createProc): Likewise.
+	* LinuxCoreProc.java (getExeFile): New.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* DeadProc.java (requestRefresh()): Delete.

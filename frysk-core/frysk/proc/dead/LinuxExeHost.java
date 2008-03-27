@@ -39,22 +39,22 @@
 
 package frysk.proc.dead;
 
-import java.io.File;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.MemoryMap;
+import frysk.sysroot.SysRootFile;
 
 public class LinuxExeHost extends DeadHost {
-    private final File exeFile;
+    private final SysRootFile exeFile;
     private final LinuxExeProc proc;
     
-    LinuxExeHost(File exeFile, ElfEHeader eHeader, MemoryMap[] memoryMaps,
+    LinuxExeHost(SysRootFile exeFile, ElfEHeader eHeader, MemoryMap[] memoryMaps,
 		 String[] args) {
 	this.exeFile = exeFile;
 	proc = new LinuxExeProc(this, exeFile, eHeader, memoryMaps, args);
     }
 
     public String getName() {
-	return exeFile.getName();
+	return exeFile.getFile().getName();
     }
 
     DeadProc getProc() {

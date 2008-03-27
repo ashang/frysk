@@ -43,6 +43,7 @@ import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.sysroot.SysRootFile;
 
 public class DummyProc extends Proc {
     public DummyProc(DummyHost host, int pid) {
@@ -60,6 +61,9 @@ public class DummyProc extends Proc {
 	return "Foo";
     }
     public String getExe() {
+	return null;
+    }
+    public SysRootFile getExeFile() {
 	return null;
     }
     public int getUID() {

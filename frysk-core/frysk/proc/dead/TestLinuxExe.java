@@ -48,6 +48,7 @@ import frysk.proc.HostRefreshBuilder;
 import frysk.proc.Task;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.sysroot.SysRootCache;
 import frysk.testbed.TestLib;
 
 public class TestLinuxExe extends TestLib {
@@ -109,6 +110,16 @@ public class TestLinuxExe extends TestLib {
 		Config.getBinFile("fdebugrpm").getPath(),
 		"arg"
 	    });
-	assertEquals("exe", "/bin/sh", proc.getExe());
+	assertEquals("exe", "/bin/bash", proc.getExe());
+    }
+    
+    public void testSysRootedProc() {
+	SysRootCache.setSysroot("funit-addresses", Config.getPkgLibFile("test-sysroot").getAbsolutePath());
+	Proc proc = LinuxExeFactory.createProc(new String[] {"funit-addresses", ""});
+	int testValue = proc.getExe().compareTo(Config.getPkgLibFile("test-sysroot").getAbsolutePath()
+		+ "/usr/bin/funit-addresses");
+	assertEquals("exe", 0, testValue); 
+	testValue = proc.getExeFile().getFile().getAbsolutePath().compareTo("/usr/bin/funit-addresses");
+	assertEquals("exeFile", 0, testValue);
     }
 }

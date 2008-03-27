@@ -1,3 +1,8 @@
+2008-03-27  Stan Cox  <scox@redhat.com>
+
+	* fexe.java (executeLive): Also show sysrooted exe path.
+	(executeDead): Likewise.
+
 2008-03-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Reimplemented ProcFollowUtil based on ProcRunUtil.

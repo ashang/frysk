@@ -74,23 +74,39 @@ public class fexe
     private static class PrintExeEvent implements ProcEvent
     {	
 	public void executeLive(Proc proc) {
+	    String sysRoot = proc.getExeFile().getSysRoot().getAbsolutePath();
+	    String sysRootedPath;
+	    if (sysRoot.compareTo("/") == 0)
+		sysRootedPath= "";
+	    else 
+		sysRootedPath = "\n(" + proc.getExe() + ")";
 	    if (verbose) {
 		ProcessIdentifier pid
 		= ProcessIdentifierFactory.create(proc.getPid());
 		System.out.println(  proc.getPid()
 			           + " "
-			           + proc.getExe()
+			           + proc.getExeFile().getFile().getAbsolutePath()
 			           + " "
-			           + Exe.get(pid));
+			           + Exe.get(pid)
+			           + " "
+			           + sysRootedPath);
 	    } else 
 		System.out.println(proc.getExe());
 	}
 	
 	public void executeDead(Proc proc) {
+	    String sysRoot = proc.getExeFile().getSysRoot().getAbsolutePath();
+	    String sysRootedPath;
+	    if (sysRoot.compareTo("/") == 0)
+		sysRootedPath= "";
+	    else 
+		sysRootedPath = "\n(" + proc.getExe() + ")";
 	    if (verbose) {
 		System.out.println(proc.getHost().getName()
 			           + " "
-			           + proc.getExe());
+			           + proc.getExeFile().getFile().getAbsolutePath()
+			           + " "
+			           + sysRootedPath);
 	    } else {
 		System.out.println(proc.getExe());
 	    }

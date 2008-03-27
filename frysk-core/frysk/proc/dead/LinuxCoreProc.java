@@ -39,9 +39,13 @@
 
 package frysk.proc.dead;
 
+import java.io.File;
+
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.rsl.Log;
+import frysk.sysroot.SysRootCache;
+import frysk.sysroot.SysRootFile;
 import frysk.proc.Task;
 
 public class LinuxCoreProc extends DeadProc {
@@ -73,6 +77,12 @@ public class LinuxCoreProc extends DeadProc {
 	return exe;
     }
 
+    public SysRootFile getExeFile() {
+	String exe = getExe();
+	File exeFile = new File(exe);
+	return new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), exeFile); 
+    }
+    
     public int getUID() {
 	fine.log(this,"getUID()", info.prpsInfo.getPrUid());
 	return (int) info.prpsInfo.getPrUid();

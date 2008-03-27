@@ -51,6 +51,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.event.Event;
 import frysk.sys.Signal;
 import frysk.rsl.Log;
+import frysk.sysroot.SysRootFile;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -93,6 +94,12 @@ public abstract class Proc implements Comparable {
      * running.
      */
     public abstract String getExe();
+    
+    /**
+     * Return the SysRoot path of the program that this process is
+     * running.
+     */
+    public abstract SysRootFile getExeFile();
 
     /**
      * Return the UID of the Proc.

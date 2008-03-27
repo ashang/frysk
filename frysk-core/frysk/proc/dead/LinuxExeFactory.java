@@ -52,6 +52,7 @@ import frysk.rsl.Log;
 import frysk.solib.SOLibMapBuilder;
 import frysk.sysroot.SysRoot;
 import frysk.sysroot.SysRootCache;
+import frysk.sysroot.SysRootFile;
 
 public class LinuxExeFactory {
     private static final Log fine = Log.fine(LinuxExeFactory.class);
@@ -61,8 +62,10 @@ public class LinuxExeFactory {
      */
     private static DeadProc createElfProc(final File exeFile, String[] args) {
 	Elf exeElf = null;
+	final SysRootFile sysRootFile = new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), 
+		exeFile);
 	try {
-	    exeElf = new Elf(exeFile, ElfCommand.ELF_C_READ);
+	    exeElf = new Elf(sysRootFile.getSysRootedFile(), ElfCommand.ELF_C_READ);
 	    ElfEHeader eHeader = exeElf.getEHeader();
 	    class BuildExeMaps extends SOLibMapBuilder {
 		private final List metaData = new LinkedList();
@@ -72,7 +75,7 @@ public class LinuxExeFactory {
 		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
 					       permWrite, permExecute, false,
 					       offset, -1, -1, -1,
-					       exeFile.getAbsolutePath()));
+					       sysRootFile.getSysRootedFile().getAbsolutePath()));
 		}
 		MemoryMap[] getMemoryMaps() {
 		    MemoryMap[] memoryMaps = new MemoryMap[metaData.size()];
@@ -82,11 +85,10 @@ public class LinuxExeFactory {
 	    }
 	    BuildExeMaps SOMaps = new BuildExeMaps();
 	    // Add in case for executables maps.
-	    SOMaps.construct(exeFile, 0);
+	    SOMaps.construct(sysRootFile.getSysRootedFile(), 0);
 	    
 	    LinuxExeHost host
-		= new LinuxExeHost(exeFile, eHeader, SOMaps.getMemoryMaps(),
-				   args);
+		= new LinuxExeHost(sysRootFile, eHeader, SOMaps.getMemoryMaps(), args);
 	    return host.getProc();
 	} catch (ElfFileException e) {
 	    // File I/O is just bad; re-throw (need to catch it as
@@ -128,7 +130,7 @@ public class LinuxExeFactory {
 
     public static DeadProc createProc(String[] args) {
 	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
-	File exe = sysRoot.getPathViaSysRoot(args[0]).getSysRootedFile();
+	File exe = sysRoot.getPathViaSysRoot(args[0]).getFile();
 	fine.log("createProc exe", exe);
 	return createProc(exe, args);
     }

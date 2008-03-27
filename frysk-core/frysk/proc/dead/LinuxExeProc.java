@@ -42,17 +42,17 @@ package frysk.proc.dead;
 import lib.dwfl.ElfEHeader;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
-import java.io.File;
 import frysk.proc.Task;
+import frysk.sysroot.SysRootFile;
 
 public class LinuxExeProc extends DeadProc {
 
     private final MemoryMap[] memoryMaps;
     private final String[] argv;
-    private final File exeFile;
+    private final SysRootFile exeFile;
     private final LinuxExeTask mainTask;
 
-    public LinuxExeProc(LinuxExeHost host, File exeFile, ElfEHeader eHeader,
+    public LinuxExeProc(LinuxExeHost host, SysRootFile exeFile, ElfEHeader eHeader,
 			MemoryMap[] memoryMaps, String[] argv) {
 	super(host, null, 0);
 	this.exeFile = exeFile;
@@ -79,11 +79,15 @@ public class LinuxExeProc extends DeadProc {
     }
 
     public String getCommand() {
-	return exeFile.getName();
+	return exeFile.getFile().getName();
     }
 
     public String getExe() {
-	return exeFile.getAbsolutePath();
+	return exeFile.getSysRootedFile().getAbsolutePath();
+    }
+
+    public SysRootFile getExeFile() {
+	return exeFile;
     }
 
     public int getGID() {
