@@ -55,6 +55,7 @@ import frysk.proc.TaskObserver;
 import frysk.stepping.SteppingEngine;
 import frysk.util.CountDownLatch;
 import frysk.symtab.SymbolFactory;
+import frysk.symtab.DwflSymbol;
 import lib.dwfl.DwarfDie;
 
 /**
@@ -142,6 +143,15 @@ public class BreakpointManager extends Observable {
         setChanged();
         notifyObservers();
         return sourceBreakpoint;
+    }
+
+    /**
+     * Create a function breakpoint not associated with any process
+     * @param symbol the symbol to breakpoint at
+     * @return FunctionBreakpoint object
+     */
+    public FunctionBreakpoint addFunctionBreakpoint(DwflSymbol symbol) {
+	return addFunctionBreakpoint(symbol.getName(), symbol.getDie());
     }
 
     /**

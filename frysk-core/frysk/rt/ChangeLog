@@ -1,3 +1,8 @@
+2008-03-27  Petr Machata  <pmachata@redhat.com>
+
+	* BreakpointManager.java
+	(addFunctionBreakpoint(DwflSymbol)): New method.
+
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* BreakpointManager.java: Use ProcTasksAction and
