@@ -53,14 +53,14 @@ public class X8664Arch implements Arch {
     private X8664Arch() {
     }
   
-    public long getReturnAddress(Task task, Symbol symbol) { 
+    public long getReturnAddress(Task task) { 
 	ByteBuffer memBuf = task.getMemory();
 	long rsp = task.getRegister(X8664Registers.RSP);
 	long retAddr = memBuf.getLong(rsp);
 	return retAddr;
     }
 
-    private Object getCallArgument(Task task, Symbol symbol, int i) {
+    private Object getCallArgument(Task task, int i) {
 	Register reg;
 	ByteBuffer memBuf = task.getMemory();
 
@@ -79,14 +79,14 @@ public class X8664Arch implements Arch {
 	return new Long(task.getRegister(reg));
     }
   
-    public Object[] getCallArguments(Task task, Symbol symbol) {
+    public Object[] getCallArguments(Task task) {
 	Object[] ret = new Object[6];
 	for (int i = 0; i < ret.length; ++i)
-	    ret[i] = getCallArgument(task, symbol, i);
+	    ret[i] = getCallArgument(task, i);
 	return ret;
     }
   
-    public Object getReturnValue(Task task, Symbol symbol) { 
+    public Object getReturnValue(Task task) { 
 	return new Long(task.getRegister(X8664Registers.RAX));
     }
 }

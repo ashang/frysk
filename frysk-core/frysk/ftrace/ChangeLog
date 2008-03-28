@@ -2,6 +2,13 @@
 
 	* Ftrace.java (trace(Proc)): Replace trace(String[]).
 
+2008-03-28  Petr Machata  <pmachata@redhat.com>
+	
+	* Arch.java (getReturnAddress): Drop "symbol" parameter.
+	* X8664Arch.java (getReturnAddress): Likewise.
+	* IA32Arch.java (getReturnAddress): Likewise.
+	* Ltrace.java (updateHit): Adjust to above.
+
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Use ProcTasksAction and ProcTasksObserver.

@@ -152,7 +152,7 @@ public class Ltrace
 
 	    finest.log("Fetching retval.");
 	    final Symbol symbol = leave.tpi.tracePoint.symbol;
-	    final Object ret = arch.getReturnValue(task, symbol);
+	    final Object ret = arch.getReturnValue(task);
 	    eachObserver(leave.observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
 			return o.funcallLeave(task, symbol, ret);
@@ -219,7 +219,7 @@ public class Ltrace
 
 	    if (address != tpi.tracePoint.symbol.getParent().getEntryPoint()) {
 		// Install breakpoint to return address.
-		long retAddr = arch.getReturnAddress(task, tpi.tracePoint.symbol);
+		long retAddr = arch.getReturnAddress(task);
 		fine.log("It's enter tracepoint, return address 0x"
 				      + Long.toHexString(retAddr) + ".");
 		Long retAddrL = new Long(retAddr);
@@ -235,7 +235,7 @@ public class Ltrace
 		fine.log("It's _start, no return breakpoint established...");
 
 	    finest.log("Building arglist.");
-	    final Object[] args = arch.getCallArguments(task, tpi.tracePoint.symbol);
+	    final Object[] args = arch.getCallArguments(task);
 	    eachObserver(observers, new ObserverIterator() {
 		    public Action action(FunctionObserver o) {
 			return o.funcallEnter(task, tpi.tracePoint.symbol, args);

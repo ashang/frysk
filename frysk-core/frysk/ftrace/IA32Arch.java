@@ -52,14 +52,14 @@ public class IA32Arch implements Arch {
     private IA32Arch() {
     }
 
-    public long getReturnAddress(Task task, Symbol symbol) {
+    public long getReturnAddress(Task task) {
 	ByteBuffer memBuf = task.getMemory();
 	long esp = task.getRegister(IA32Registers.ESP);
 	long retAddr = memBuf.getUInt(esp);
 	return retAddr;
     }
 
-    public Object[] getCallArguments(Task task, Symbol symbol) {
+    public Object[] getCallArguments(Task task) {
 	ByteBuffer memBuf = task.getMemory();
 	long esp = task.getRegister(IA32Registers.ESP);
 	esp += 4;
@@ -91,7 +91,7 @@ public class IA32Arch implements Arch {
 	//}
     }
 
-    public Object getReturnValue(Task task, Symbol symbol) {
+    public Object getReturnValue(Task task) {
 	return new Long(task.getRegister(IA32Registers.EAX));
     }
 }

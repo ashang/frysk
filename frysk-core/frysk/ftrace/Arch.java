@@ -49,15 +49,15 @@ public interface Arch
   /**
    * Get a return address of current function call.
    */
-  long getReturnAddress(Task task, Symbol symbol);
+  long getReturnAddress(Task task);
 
   /**
    * Construct an array of function call arguments.
    */
-  Object[] getCallArguments(Task task, Symbol symbol);
+  Object[] getCallArguments(Task task);
 
   /**
    * Construct a return value of a function call.
    */
-  Object getReturnValue(Task task, Symbol symbol);
+  Object getReturnValue(Task task);
 }
