@@ -1119,10 +1119,10 @@ public class SteppingEngine {
 	    list.add(t);
 	    Proc proc = t.getProc();
 
-	    if (!(proc.getUID() == Manager.host.getSelf().getUID() || proc
-		    .getGID() == Manager.host.getSelf().getGID())) {
+	    if (!(proc.getUID() == Manager.host.getSelf().getUID()
+		  || proc.getGID() == Manager.host.getSelf().getGID())) {
 		System.err.println("Process " + proc
-			+ " is not owned by user/group.");
+				   + " is not owned by user/group.");
 		continue;
 	    }
 	}
