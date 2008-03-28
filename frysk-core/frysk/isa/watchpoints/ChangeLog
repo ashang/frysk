@@ -1,0 +1,16 @@
+2008-03-28  Phil Muldoon <pmuldoon@redhat.com>
+
+	* Watchpoint.java: New. Initial Implementation.
+	* WatchpointFactory.java: Ditto.
+	* IA32Watchpoint.java: Ditto.
+	* X8664Watchpoint.java: Ditto.
+	* TestWatchpoint.java: Ditto.
+	* package.html: Ditto.
+	
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
