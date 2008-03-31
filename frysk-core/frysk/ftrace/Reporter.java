@@ -53,10 +53,12 @@ class Reporter
     private Task lastTask = null;
     private HashMap levelMap = new HashMap();
     private final PrintStackOptions stackPrintOptions;
+    private final boolean showPC;
 
-    public Reporter(PrintWriter writer, PrintStackOptions stackPrintOptions) {
+    public Reporter(PrintWriter writer, PrintStackOptions stackPrintOptions, boolean show) {
 	this.writer = writer;
 	this.stackPrintOptions = stackPrintOptions;
+	this.showPC = show;
     }
 
     private int getLevel(Task task)
@@ -120,6 +122,21 @@ class Reporter
 	writer.print(")");
     }
 
+    private String formatTaskPC(Task task) {
+	if (!showPC)
+		return "";
+
+	long pc;
+	try {
+	    pc = task.getPC();
+	}
+	catch (RuntimeException exc) {
+	    pc = -1;
+	}
+
+	return "0x" + Long.toHexString(pc) + " ";
+    }
+
     public void eventEntry(Task task, Object item, String eventType,
 			    String eventName, Object[] args)
     {
@@ -130,9 +147,10 @@ class Reporter
 	if (lineOpened())
 	    writer.println('\\');
 
-	writer.print(pidInfo(task) + " "
-			 + spaces + eventType
-			 + " " + eventName);
+	writer.print(pidInfo(task)
+		     + " " + formatTaskPC(task)
+		     + spaces + eventType
+		     + " " + eventName);
 	printArgs(args);
 	writer.flush();
 
@@ -149,7 +167,10 @@ class Reporter
 	    if (lineOpened())
 		writer.println();
 	    String spaces = repeat(' ', level);
-	    writer.print(pidInfo(task) + " " + spaces + eventType + " " + eventName);
+	    writer.print(pidInfo(task)
+			 + " " + formatTaskPC(task)
+			 + spaces + eventType
+			 + " " + eventName);
 	}
 
 	writer.println(" = " + retVal);
@@ -168,7 +189,9 @@ class Reporter
 	int level = this.getLevel(task);
 	if (lineOpened())
 	    writer.println("\\");
-	writer.println(pidInfo(task) + " " + repeat(' ', level) + eventName);
+	writer.println(pidInfo(task)
+		       + " " + formatTaskPC(task)
+		       + repeat(' ', level) + eventName);
 
 	if (args != null)
 	    printArgs(args);

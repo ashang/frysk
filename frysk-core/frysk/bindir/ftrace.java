@@ -264,7 +264,12 @@ class ftrace {
 		    tracer.setTraceMmaps();
 		}
 	    });
-        group.add(new Option('i', "don't trace dynamic linker symbols") {
+        group.add(new Option("pc", "show program counter at traced events") {
+		public void parsed(String arg) throws OptionException {
+		    tracer.setShowPC(true);
+		}
+	    });
+        group.add(new Option("dl", "allow tracing of dynamic linker symbols") {
 		public void parsed(String arg) throws OptionException {
 		    allowInterpTracing = true;
 		}

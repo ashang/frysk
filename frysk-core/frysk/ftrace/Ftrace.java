@@ -67,7 +67,6 @@ public class Ftrace {
     
     public Ftrace(PrintStackOptions stackPrintOptions) {
 	this.stackPrintOptions = stackPrintOptions;
-	reporter = new Reporter(new PrintWriter(System.out), stackPrintOptions);
     }
 
     // Where to send output.
@@ -83,6 +82,8 @@ public class Ftrace {
 
     // The number of processes we're tracing.
     int numProcesses;
+
+    private boolean showPC = false;
 
     /**
      * Controller has to be implemented externally.  Each time a
@@ -182,12 +183,18 @@ public class Ftrace {
 	    throw new AssertionError("FtraceController already assigned.");
     }
 
+    public void setShowPC (boolean show) {
+	showPC = show;
+    }
+
     public void setWriter (PrintWriter writer) {
-	this.reporter = new Reporter(writer, stackPrintOptions);
+	this.reporter = new Reporter(writer, stackPrintOptions, showPC);
     }
 
     private void init() {
 	functionObserver = new MyFunctionObserver(reporter, stackTraceSetProvider);
+	if (reporter == null)
+	    setWriter(new PrintWriter(System.out));
     }
 
     public void addProc(Proc proc) {

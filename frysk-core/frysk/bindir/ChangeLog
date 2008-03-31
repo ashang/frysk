@@ -25,6 +25,11 @@
 	* fstack.xml: Use stack-options.xml, standard-options.xml, and
 	version.in.
 
+2008-03-31  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: New option "-pc".
+	Rename option "-i" to "-dl" and fix its description.
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* fexe.java (executeLive): Also show sysrooted exe path.

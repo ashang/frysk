@@ -5,6 +5,15 @@
 	* FtraceController.java: Introduce local loggers, use them.
 	* ObjectFile.java: Likewise.
 
+2008-03-31  Petr Machata  <pmachata@redhat.com>
+
+	* Reporter.java (ctor Reporter): New parameter "showPC"
+	(formatTaskPC): New private function
+	(eventEntry, eventLeave, eventSingle): Call formatTaskPC
+	* Ftrace.java (setShowPC): New function.
+	(ctor Ftrace): Move reporter initialization...
+	(init): ...here
+
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
 	
 	* Ftrace.java (trace(Proc)): Replace trace(String[]).
