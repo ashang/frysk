@@ -95,4 +95,17 @@ public class TestArithmetics extends TestCase {
     public void testTokenError() {
 	checkErrorExpr("1...2", "unexpected input: expecting '.', found '2'");
     }
+    
+    // Testing types
+    private void checkExprType (String expr, String resultType){
+	ExprSymTab symTab = new TestbedSymTab();
+	Expression e = ExpressionFactory.parse(symTab, expr);
+	assertEquals(expr, resultType, e.getType().getName());
+    }
+
+    public void testTypes() {
+	checkExprType("++a.kappa", "int32b_t");
+	checkExprType("a.alpha", "int32b_t");
+	checkExprType("a.alpha/1.0", "double");
+    }
 }

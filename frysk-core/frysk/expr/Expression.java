@@ -80,9 +80,11 @@ public class Expression {
      * Determine the expressions result type.
      */
     public Type getType() {
-	// XXX: Fixme; should be walking the tree, not evaluating the
-	// expresision.
-	return getValue().getType();
+	try {
+	    return new CTypeEvaluator(symTab).expr(ast);
+	} catch (antlr.RecognitionException r) {    
+	    throw new RuntimeException(r);
+	}  
     }
 
     /**

@@ -1,3 +1,9 @@
+2008-03-31  Teresa Thomas  <tthomas@redhat.com>
+
+	* CTypeEvaluator.g: New file.
+	* Expression.java (getType): Use CTypeEvaluator.
+	* TestArithmetics.java (testTypes): New.
+		
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCompletion.java (testCompleteStructMember()): Add "kappa" to
