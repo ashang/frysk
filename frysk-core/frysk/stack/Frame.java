@@ -170,18 +170,26 @@ public abstract class Frame {
 	writer.write(symbol.getDemangledName());
 	if (symbol != SymbolFactory.UNKNOWN)
 	    writer.write(" ()");
+	
 	if(printSource){
 	    // the library if known ...
 	    File library = new File(getLibraryName());
 	    if (library != null) {
 		writer.print(" from ");
-		if (fullpath) {
-		    writer.print(library.getAbsolutePath());
+	
+		if(library.getPath().contains("vdso") || library.getPath().contains("stack")){
+		    writer.print(library.getName());
 		}else{
-		    writer.print(".../"+library.getName());
+		
+		    if(fullpath){
+			writer.print(library.getPath());
+		    }else{
+			writer.print(".../"+library.getName());
+		    }
+		    
 		}
 	    }
-	}
+	}	    
     }
   
     public String getLibraryName() {
