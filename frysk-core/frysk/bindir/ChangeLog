@@ -1,5 +1,7 @@
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
 
+	* fstack.xml: Use abs_root_srcdir when specifying paths.
+	
 	* fstack.xml: Use stack-options.xml, standard-options.xml, and
 	version.in.
 

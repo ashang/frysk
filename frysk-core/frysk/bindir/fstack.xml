@@ -47,9 +47,9 @@
  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
 
  [
- <!ENTITY stackoptions SYSTEM "@abs_srcdir@/frysk/util/stack-options.xml">
- <!ENTITY standardoptions SYSTEM "@abs_srcdir@/frysk/util/standard-options.xml">
- <!ENTITY version SYSTEM "@abs_srcdir@/common/version.in">
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
  ]
 >
 

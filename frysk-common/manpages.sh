@@ -43,6 +43,8 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+abs_root_srcdir=$(cd $(dirname $(dirname $0)) && /bin/pwd)
+
 XMLTO=${XMLTO:-xmlto}
 template=$1 ; shift
 exec > manpages/index.new
@@ -68,7 +70,11 @@ EOF
 	name=`basename $xmlfile .xml`
 	n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $xmlfile`
 	echo "Generating man webpage for ${name}.${n}" 1>&2
-	${XMLTO} -o manpages html $xmlfile 
+	sed -e "s;@abs_root_srcdir@;${abs_root_srcdir};g" \
+	    < $xmlfile \
+	    > manpages/${name}.${n}.tmp
+	${XMLTO} -o manpages html manpages/${name}.${n}.tmp
+	rm -f manpages/${name}.${n}.tmp
 	mv manpages/index.html manpages/${name}.${n}.html 
 	
 	cat <<EOF
