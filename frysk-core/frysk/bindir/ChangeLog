@@ -1,5 +1,9 @@
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
 
+	* ftrace.java (commandAndArguments): Change type to Proc.
+	(run(String[])): Don't un-parse the commandAndArguments; pass to
+	Ftrace.trace(Proc).
+
 	* fstack.xml: Use abs_root_srcdir when specifying paths.
 	
 	* fstack.xml: Use stack-options.xml, standard-options.xml, and

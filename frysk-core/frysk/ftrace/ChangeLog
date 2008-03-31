@@ -1,3 +1,7 @@
+2008-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java (trace(Proc)): Replace trace(String[]).
+
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Use ProcTasksAction and ProcTasksObserver.

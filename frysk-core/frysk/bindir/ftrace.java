@@ -72,7 +72,7 @@ class ftrace {
     // True if a PID was requested.
     private boolean requestedPid;
     // Command and arguments to exec.
-    private ArrayList commandAndArguments;
+    private Proc commandAndArguments;
 
     // For configuration of overall working set.  We need to load and
     // apply rules separately, to get all log messages, that's the
@@ -314,10 +314,7 @@ class ftrace {
 
 		//@Override
 		public void parseCommand(Proc command) {
-		    String[] line = command.getCmdLine();
-		    commandAndArguments = new ArrayList();
-		    for (int i = 0; i < line.length; i++)
-			commandAndArguments.add(line[i]);
+		    commandAndArguments = command;
 		}
 
             //@Override
@@ -384,11 +381,10 @@ class ftrace {
 	}
 
         if (commandAndArguments != null) {
-            String[] cmd = (String[]) commandAndArguments.toArray(new String[0]);
-            tracer.trace(cmd);
-        }
-        else
+            tracer.trace(commandAndArguments);
+        } else {
             tracer.trace();
+	}
     }
 
     public ftrace()

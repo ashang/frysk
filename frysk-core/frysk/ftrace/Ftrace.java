@@ -189,7 +189,7 @@ public class Ftrace {
 	new ProcTasksAction(proc, tasksObserver);
     }
 
-    public void trace (String[] command) {
+    public void trace(Proc command) {
 	init();
 	Manager.host.requestCreateAttachedProc(command, attachedObserver);
 	Manager.eventLoop.run();
