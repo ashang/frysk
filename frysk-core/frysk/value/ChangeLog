@@ -1,3 +1,10 @@
+2008-03-31  Teresa Thomas  <tthomas@redhat.com>
+
+	* ArithmeticUnit.java (getResultType): New.
+	(getIntResultType): New.
+	* IntegerUnit.java (IntegerUnit): Remove 
+	irrelevant comment.
+
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Variable.java: Update; TypeEntry -> TypeFactory.
