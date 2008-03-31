@@ -1,3 +1,8 @@
+2008-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* fstack.xml: Use stack-options.xml, standard-options.xml, and
+	version.in.
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* fexe.java (executeLive): Also show sysrooted exe path.

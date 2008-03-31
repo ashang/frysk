@@ -1,3 +1,8 @@
+2008-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* standard-options.xml: New.
+	* stack-options.xml: New.
+
 2008-03-31  Mark Wielaard  <mwielaard@redhat.com>
 
 	* ProcFollowUtil.java (updateForkedOffspring): Remove debug output.
