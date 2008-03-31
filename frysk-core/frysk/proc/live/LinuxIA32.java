@@ -51,41 +51,7 @@ class LinuxIA32 implements Isa {
 
     private static final Instruction IA32Breakpoint
 	= new Instruction(new byte[] { (byte)0xcc }, false);
-
-    // Architecture Watchpoint Count
-    private final int NoOfWatchpoints = 7;
-
-    /**
-     * Builds a watchpoint. Takes a task, an address, a 
-     * range and a register index.
-     *
-     * @return boolean whether the watchpoint
-     * was set succesfully.
-     */
-    public final boolean setWatchpoint(Task task, long addr, 
-				       long range, int index) {
-	throw new RuntimeException("Watchpoints not supported on this arch");
-    }
-
-    /**
-     * Deletes a watchpoint. Takes a task, and a range.
-     *
-     * @return boolean whether the watchpoint
-     * was deleted succesfully.
-     */
-    public final boolean deleteWatchpoint(Task task, int index) {
-	throw new RuntimeException("Watchpoints not supported on this arch");
-    }
-
-    /**
-     * Returns number of watchpoints for this architecture
-     *
-     * @return int number of usable watchpoints.
-     */
-    public final int getWatchpointCount() {
-	return NoOfWatchpoints;
-    }
-
+  
     /**
      * Get the breakpoint instruction for IA32.
      */
@@ -188,13 +154,10 @@ class LinuxIA32 implements Isa {
 	return result;
     }
 
-
     private static LinuxIA32 isa;
     static LinuxIA32 isaSingleton () {
 	if (isa == null)
 	    isa = new LinuxIA32 ();
 	return isa;
     }
-
-
 }

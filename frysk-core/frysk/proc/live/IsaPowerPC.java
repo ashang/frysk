@@ -58,43 +58,6 @@ abstract class IsaPowerPC implements Isa {
    	new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
 				     (byte)0x10, (byte)0x08 }, false);
 
-
-    // Architecture Watchpoint Count
-    private final int NoOfWatchpoints = 1;
-
-    /**
-     * Builds a watchpoint. Takes a task, an address a 
-     * range and a register index.
-     *
-     * @return boolean whether the watchpoint
-     * was set succesfully.
-     */
-    public final boolean setWatchpoint(Task task, long addr, 
-				       long range, int index) {
-	throw new RuntimeException("Watchpoints not supported on this arch");
-    }
-
-    /**
-     * Deletes a watchpoint. Takes a task and a 
-     * range.
-     *
-     * @return boolean whether the watchpoint
-     * was deleted succesfully.
-     */
-    public final boolean deleteWatchpoint(Task task, int index) {
-	throw new RuntimeException("Watchpoints not supported on this arch");
-    }
-
-    /**
-     * Returns number of watchpoints for this architecture
-     *
-     * @return int number of usable watchpoints.
-     */
-    public final int getWatchpointCount() {
-	return NoOfWatchpoints;
-    }
-
-
   /**
    * Get the breakpoint instruction of the PowerPC platform.
    */

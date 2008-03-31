@@ -51,34 +51,6 @@ import inua.eio.ByteBuffer;
 
 public interface Isa {
 
-
-  /**
-   * Builds a watchpoint. Takes a task, an address, a 
-   * range and a register index.
-   *
-   * @return boolean whether the watchpoint
-   * was set succesfully.
-   */
-  boolean setWatchpoint(Task task, long addr, 
-			long range, int index);
-
-  /**
-   * Deletes a watchpoint. Takes a task, and a 
-   * register index.
-   *
-   * @return boolean whether the watchpoint
-   * was deleted succesfully.
-   */
-  boolean deleteWatchpoint(Task task, int index);
-
-
-  /**
-   * Returns number of watchpoints for this architecture
-   *
-   * @return int number of usable watchpoints.
-   */
-  int getWatchpointCount();
-
   /**
    * Get the breakpoint instruction.
    * 
