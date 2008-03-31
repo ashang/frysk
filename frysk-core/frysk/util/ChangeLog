@@ -1,3 +1,7 @@
+2008-03-31  Mark Wielaard  <mwielaard@redhat.com>
+
+	* ProcFollowUtil.java (updateForkedOffspring): Remove debug output.
+
 2008-03-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcRunUtil.java: Updated commnets

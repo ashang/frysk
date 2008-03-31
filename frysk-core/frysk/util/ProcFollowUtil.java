@@ -148,10 +148,6 @@ public class ProcFollowUtil {
       }
 
       public Action updateForkedOffspring (Task parent, Task offspring){
-	  System.out.println(".updateForkedOffspring()");
-	  System.out.println(".updateForkedOffspring()");
-	  System.out.println(".updateForkedOffspring()");
-	  
 	addObservers(offspring);
 	offspring.requestUnblock(this);
 	return Action.BLOCK;
