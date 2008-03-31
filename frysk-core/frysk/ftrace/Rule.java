@@ -62,7 +62,7 @@ public abstract class Rule {
     }
 
     public boolean apply(Collection candidates,
-		      Set workingSet, Set stackTraceSet)
+			 Set workingSet, Set stackTraceSet)
     {
 	boolean matched = false;
 
