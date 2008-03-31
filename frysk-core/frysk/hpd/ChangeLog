@@ -1,3 +1,9 @@
+2008-03-31  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Add ability to start/run with hpd notation.
+	* TestRunCommand.java: Add test for above.
+	* TestStartCommand.java: Ditto.
+
 2008-03-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Kill all processes on a re-run before
