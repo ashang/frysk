@@ -71,6 +71,18 @@ public class SysRootFile {
     }
 
     /**
+     * Get the file within the SysRoot for this SysRoot File.
+     * @return the file.
+     */
+    String getPath () {
+	try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    
+    /**
      * Get the absolute file, including the SysRoot, for this SysRoot File.
      * @return the absolute file.
      */
@@ -80,6 +92,21 @@ public class SysRootFile {
 		return new File(sysRoot, file.getPath()).getCanonicalFile();
 	    else
 		return file;
+	} catch (IOException e) {
+	    return null;
+	}
+    }
+
+    /**
+     * Get the absolute path, including the SysRoot, for this SysRoot File.
+     * @return the absolute path.
+     */
+    public String getSysRootedPath () {
+	try {
+	    if (file.getPath().startsWith("/"))
+		return new File(sysRoot, file.getPath()).getCanonicalPath();
+	    else
+		return file.getCanonicalPath();
 	} catch (IOException e) {
 	    return null;
 	}

@@ -110,13 +110,13 @@ public class TestLinuxExe extends TestLib {
 		Config.getBinFile("fdebugrpm").getPath(),
 		"arg"
 	    });
-	assertEquals("exe", "/bin/bash", proc.getExe());
+	assertEquals("exe", "/bin/bash", proc.getExeFile().getSysRootedPath());
     }
     
     public void testSysRootedProc() {
 	SysRootCache.setSysroot("funit-addresses", Config.getPkgLibFile("test-sysroot").getAbsolutePath());
 	Proc proc = LinuxExeFactory.createProc(new String[] {"funit-addresses", ""});
-	int testValue = proc.getExe().compareTo(Config.getPkgLibFile("test-sysroot").getAbsolutePath()
+	int testValue = proc.getExeFile().getSysRootedPath().compareTo(Config.getPkgLibFile("test-sysroot").getAbsolutePath()
 		+ "/usr/bin/funit-addresses");
 	assertEquals("exe", 0, testValue); 
 	testValue = proc.getExeFile().getFile().getAbsolutePath().compareTo("/usr/bin/funit-addresses");

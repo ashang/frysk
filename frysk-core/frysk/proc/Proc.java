@@ -90,12 +90,6 @@ public abstract class Proc implements Comparable {
     public abstract String getCommand();
 
     /**
-     * Return the full path of the program that this process is
-     * running.
-     */
-    public abstract String getExe();
-    
-    /**
      * Return the SysRoot path of the program that this process is
      * running.
      */

@@ -62,7 +62,7 @@ public class LinkMapFactory {
     private static final Log fine = Log.fine(LinkMapFactory.class);
 
     static LinkMap[] extractLinkMaps(Proc proc) {
-	File exeFile = new File(proc.getExe());
+	File exeFile = new File(proc.getExeFile().getSysRootedPath());
 	return extractLinkMaps(new Elf(exeFile, ElfCommand.ELF_C_READ),
 			       exeFile, proc.getMainTask().getMemory(),
 			       proc.getAuxv());

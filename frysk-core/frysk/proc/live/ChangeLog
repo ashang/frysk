@@ -1,3 +1,7 @@
+2008-03-31  Stan Cox  <scox@redhat.com>
+
+	* LinuxPtraceProc.java (getExe): Replace with getExeFile.
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* LinuxPtraceProc.java (getExeFile): New.

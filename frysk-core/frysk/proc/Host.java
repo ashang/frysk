@@ -121,7 +121,7 @@ public abstract class Host implements Comparable {
 					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc template", template,
 		 "observer", attachedObserver);
-	requestCreateAttachedProc(new File(template.getExe()),
+	requestCreateAttachedProc(new File(template.getExeFile().getSysRootedPath()),
 				  null, null, null,
 				  template.getCmdLine(),
 				  attachedObserver);

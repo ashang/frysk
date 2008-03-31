@@ -1,3 +1,10 @@
+2008-03-31  Stan Cox  <scox@redhat.com>
+
+	* LinuxExeFactory.java (createProc(String[],String): New.
+	* LinuxCoreProc.java (getExe): Remove in favor of getExeFile.  Replace all callers.
+	* LinuxExeProc.java (getExe): Likewise.
+	
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* TestLinuxExe.java (testSysRootedProc): New.

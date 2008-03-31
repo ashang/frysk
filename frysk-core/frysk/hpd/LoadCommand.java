@@ -115,7 +115,7 @@ public class LoadCommand extends ParameterizedCommand {
 		(new File(o.executable), cmd.stringArrayValue());
 	} else {
 	    SysRootCache.setSysroot(cmd.stringArrayValue()[0], o.sysroot);
-	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue());
+	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue(), o.sysroot);
 	}
 
 	load(exeProc, cli, o.sysroot);
@@ -149,7 +149,7 @@ public class LoadCommand extends ParameterizedCommand {
 	}
 
 	cli.addMessage("[" + procID + ".0] Loaded executable file: " + 
-		exeProc.getExe(), Message.TYPE_NORMAL);
+		exeProc.getExeFile().getSysRootedPath(), Message.TYPE_NORMAL);
     }
     
     /**
@@ -171,7 +171,7 @@ public class LoadCommand extends ParameterizedCommand {
 	    Map.Entry me = (Map.Entry) foo.next();
 	    Proc proc = (Proc) me.getKey();
 	    Integer taskid = (Integer) me.getValue();
-	    listing.add("[" + taskid.intValue() + ".0]\t\t" + proc.getExe());
+	    listing.add("[" + taskid.intValue() + ".0]\t\t" + proc.getExeFile().getSysRootedPath());
 	}
 	String alphaListing[] = (String[]) listing.toArray(new String[listing.size()]);
 	java.util.Arrays.sort(alphaListing);

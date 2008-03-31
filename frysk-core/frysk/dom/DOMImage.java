@@ -124,7 +124,7 @@ public class DOMImage
     public DOMSource addSource (Proc proc, SourceLocation line, DOMFrysk dom) throws IOException
     {
 //    Get the list of include file paths associated with this image
-      ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExe());
+      ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExeFile().getSysRootedPath());
       String includepaths[] = (String[]) arrayincpaths.toArray(new String[0]);
       File file = line.getFile();
       String sourcefile = file.getPath();

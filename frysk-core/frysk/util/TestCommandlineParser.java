@@ -72,7 +72,7 @@ public class TestCommandlineParser extends TestLib {
 		    assertEquals("Core file is correct", core.getName(),
 				 cores[0].getHost().getName());
 		    assertEquals("Exe file is correct", exe.getPath(),
-				 cores[0].getExe());
+				 cores[0].getExeFile().getSysRootedPath());
 		}
 		public void parsePids(Proc[] procs) {
 		    fail("Shouldn't have a pid");
@@ -107,7 +107,7 @@ public class TestCommandlineParser extends TestLib {
 	CommandlineParser parser = new CommandlineParser("test") {
 		public void parseCommand(Proc command) {
 		    fine.log("command", command);
-		    assertEquals("exe", "/bin/ls", command.getExe());
+		    assertEquals("exe", "/bin/ls", command.getExeFile().getSysRootedPath());
 		    assertEquals("arg0", "arg0", command.getCmdLine()[0]);
 		}
 	    };

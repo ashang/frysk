@@ -966,7 +966,7 @@ public class TestTaskObserverCode extends TestLib
   }
 
     DwarfDie getFunctionDie(String func) throws ElfException {
-	Elf elf = new Elf(new File(proc.getExe()), ElfCommand.ELF_C_READ);
+	Elf elf = new Elf(new File(proc.getExeFile().getSysRootedPath()), ElfCommand.ELF_C_READ);
 	Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	return DwarfDie.getDecl(dwarf, func);
     }

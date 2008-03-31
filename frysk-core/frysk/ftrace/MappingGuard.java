@@ -370,7 +370,7 @@ class MappingGuard
     {
 	fine.log("Entering....");
 
-	File f = new File(task.getProc().getExe());
+	File f = new File(task.getProc().getExeFile().getSysRootedPath());
 	ObjectFile objf = ObjectFile.buildFromFile(f);
 	String interp = objf.getInterp();
 	if (interp == null) {

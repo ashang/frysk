@@ -380,7 +380,7 @@ public class LinuxPtraceTask extends LiveTask {
     void initializeAttachedState() {
 	fine.log(this, "initializeAttachedState");
 	Ptrace.setOptions(tid, ptraceOptions);
-	// FIXME: This should use task.proc.getExe().  Only that
+	// FIXME: This should use task.proc.getExeFile().getSysRootedPath().  Only that
 	// causes wierd failures; take a rain-check :-(
 	currentISA = ElfMap.getISA(new File("/proc/" + tid + "/exe"));
     }

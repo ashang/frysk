@@ -279,7 +279,7 @@ public class WatchList implements SaveableXXX {
 	    // about code being loaded and un-loaded.
 
 	    varNode.setAttribute("expr", disp.getName());
-	    varNode.setAttribute("process", disp.getTask().getProc().getExe());
+	    varNode.setAttribute("process", disp.getTask().getProc().getExeFile().getSysRootedPath());
 	    varNode.setAttribute("frame", disp.getFrameIdentifier().toString());
 
 	    node.addContent(varNode);

@@ -67,7 +67,7 @@ public class DebugInfo {
     public DebugInfo (DebugInfoFrame frame) {
 	Proc proc = frame.getTask().getProc();
 	try {
-	    elf = new Elf(new File(proc.getExe()), ElfCommand.ELF_C_READ);
+	    elf = new Elf(new File(proc.getExeFile().getSysRootedPath()), ElfCommand.ELF_C_READ);
 	    dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	}
 	catch (lib.dwfl.ElfException ignore) {

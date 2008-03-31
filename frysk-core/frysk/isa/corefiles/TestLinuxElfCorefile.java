@@ -166,7 +166,7 @@ public class TestLinuxElfCorefile
 
     // Model the corefile, and get the Process.
     Proc coreProc = LinuxCoreFactory.createProc(testCore,
-						new File(ackProc.getExe()));
+						new File(ackProc.getExeFile().getSysRootedPath()));
     assertNotNull("Checking core file process", coreProc);    
    
     MemoryMap[] coreMaps = coreProc.getMaps();
@@ -241,7 +241,7 @@ public class TestLinuxElfCorefile
 
     // Model the corefile, and get the Process.
     Proc coreProc = LinuxCoreFactory.createProc(new File(core.getConstructedFileName()),
-						new File(ackProc.getExe()));
+						new File(ackProc.getExeFile().getSysRootedPath()));
     assertNotNull("Checking core file process", coreProc);    
    
     MemoryMap[] coreMaps = coreProc.getMaps();

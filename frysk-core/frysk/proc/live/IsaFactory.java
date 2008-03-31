@@ -86,7 +86,7 @@ public class IsaFactory {
     Isa getIsa(ProcessIdentifier pid) {
 	fine.log(this, "getIsa", pid);
 	
-	// FIXME: This should use task.proc.getExe().  Only that
+	// FIXME: This should use task.proc.getExeFile().getSysRootedPath().  Only that
 	// causes wierd failures; take a rain-check :-(
 	File exe = new File("/proc/" + pid + "/exe");
 	Elf elfFile = new Elf(exe, ElfCommand.ELF_C_READ);

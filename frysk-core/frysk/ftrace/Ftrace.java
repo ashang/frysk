@@ -271,7 +271,7 @@ public class Ftrace {
 
 	new ProcRemovedObserver(proc);
 
-	reporter.eventSingle(task, "attached " + proc.getExe());
+	reporter.eventSingle(task, "attached " + proc.getExeFile().getSysRootedPath());
 	++numProcesses;
     }
 

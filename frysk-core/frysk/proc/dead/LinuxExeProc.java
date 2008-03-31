@@ -82,10 +82,6 @@ public class LinuxExeProc extends DeadProc {
 	return exeFile.getFile().getName();
     }
 
-    public String getExe() {
-	return exeFile.getSysRootedFile().getAbsolutePath();
-    }
-
     public SysRootFile getExeFile() {
 	return exeFile;
     }

@@ -194,6 +194,6 @@ public class TestProcGet
 	ExecOffspring child = new ExecOffspring(cmd);
 	String file = new File(cmd.argv[0]).getCanonicalPath();
 	Proc proc = child.assertRunToFindProc();
-	assertEquals("exe", proc.getExe(), file);
+	assertEquals("exe", proc.getExeFile().getSysRootedPath(), file);
     }
 }

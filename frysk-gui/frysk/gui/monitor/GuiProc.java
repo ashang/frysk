@@ -132,7 +132,7 @@ public class GuiProc extends GuiCoreObjectWrapper{
       String newPath = "";
       
       try{
-	newPath = proc.getExe();
+	newPath = proc.getExeFile().getSysRootedPath();
 			
       }catch (Exception e) {
 	try {
@@ -180,7 +180,7 @@ public class GuiProc extends GuiCoreObjectWrapper{
                       owned = false;
             
             try{
-              proc.getExe();
+              proc.getExeFile().getSysRootedPath();
             }catch(Exception e){
               owned = false;
               return owned;
