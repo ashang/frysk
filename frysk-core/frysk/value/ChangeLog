@@ -1,5 +1,11 @@
 2008-03-31  Teresa Thomas  <tthomas@redhat.com>
 
+	* CompositeType.java (getMemberType): New.
+	* ArrayType.java (getSliceType): New.
+	* PointerType.java (getSliceType): New.
+	* Type.java (getSliceType): New.
+	(getType): New.
+	
 	* ArithmeticUnit.java (getResultType): New.
 	(getIntResultType): New.
 	* IntegerUnit.java (IntegerUnit): Remove 

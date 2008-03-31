@@ -179,7 +179,13 @@ public class PointerType
 
 	return new Value(resultType, loc);
     }
-
+    
+    public Type getSliceType() {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(-1));
+	return new ArrayType(type, 0, dims);
+    }
+    
     /* getALUs are double dispatch functions to determine
      * the ArithmeticUnit for an operation between two types.
      */

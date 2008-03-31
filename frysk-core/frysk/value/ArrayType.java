@@ -196,6 +196,12 @@ public class ArrayType
         
     }
     
+    public Type getSliceType() {
+	ArrayList dims = new ArrayList();
+	dims.add(new Integer(-1));
+	return new ArrayType(type, 0, dims);
+    }    
+    
     /**
      * Dereference operation on array type.
      */

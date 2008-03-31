@@ -186,6 +186,20 @@ public abstract class Type {
     	throw new InvalidOperatorException(this, "slice");	
     }
     
+    /**
+     * Get the type of slice.
+     */
+    public Type getSliceType() {
+	throw new InvalidOperatorException(this, "sliceType");
+    }
+    
+    /**
+     * Return the element type for array or pointer type.
+     */
+    public Type getType () {
+	throw new InvalidOperatorException(this, "getElementType");
+    }
+    
    /**
      * Assign VALUE to LOCATION; possibly performing type-conversion.
      */

@@ -395,14 +395,18 @@ public abstract class CompositeType
 	stringBuilderParm.insert(0, stringBuilder);
     }
     
-    public Value member(Value var1, String member)
-    {
+    public Value member(Value var1, String member) {
 	DynamicMember mem = (DynamicMember)nameToMember.get(member);
 	if (mem == null)
 	    throw new RuntimeException("Invalid data member: " + member);
 	return mem.getValue (var1);
     }
-
+    
+    public Type getMemberType(String member) {
+	DynamicMember mem = (DynamicMember)nameToMember.get(member);
+	return mem.type;
+    }
+    
     public boolean completeMember(String incomplete, List candidates) {
 	int completions = 0;
 	for (Iterator i = nameToMember.keySet().iterator(); i.hasNext(); ) {
