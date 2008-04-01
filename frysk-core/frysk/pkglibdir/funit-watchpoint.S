@@ -39,25 +39,44 @@
 
 #include "frysk-asm.h"
 
+// Function to write to a global var memory address and then exit.
+// This tests the ability of a the watchpoint code to catch
+// a dead simple and basic watchpoint test condition. If the
+// program exits before the Watchpoint fired, the test fails.
+//
+// This program is normally started, blocked at entry. Then the 
+// watchpoint is applied in the debugger. Then the program is set
+// to continue.
 FUNCTION_BEGIN(main,0)
 MAIN_PROLOGUE(0)
 NOP
-	
+
+// Load source variables address into GPR 1
 LOAD_IMMED_BYTE (REG1, source)
+
+// Load the literal value 0x77 into GPR3. The value isn't important
+// the actual writing of the data is.
 LOAD_IMMED_BYTE (REG3, 0x77)
+
+// Clear the decks ...
 NOP
 NOP
 NOP
+
+// Write 0x77 into the location of source (held by GPR1)
 STORE(REG3, REG1)
+
+// Clear the decks ....
 NOP
 NOP
 NOP
 
-
+// End. And exit
 MAIN_EPILOGUE(0)
 FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
+// Declare a global variable source. One byte and populate it
 .data
 .globl source
 source:						// Set up memory locations
