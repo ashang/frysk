@@ -197,7 +197,18 @@ class IA32Watchpoint extends Watchpoint {
 	    task.setRegister(IA32Registers.DEBUG_CONTROL, debugControl);
     }
 
-    
+    /**
+     * Reads the Debug Status Register and checks if 
+     * the breakpoint specified has fired.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     */
+    public boolean hasWatchpointTriggered(Task task, int index) {
+	long debugStatus = task.getRegister(IA32Registers.DEBUG_STATUS);	
+	return (debugStatus & (1L << index)) != 0;
+    }
+
 
     /**
      * Reads the Debug control register.

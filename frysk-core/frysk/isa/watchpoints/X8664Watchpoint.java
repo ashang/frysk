@@ -205,5 +205,17 @@ class X8664Watchpoint extends Watchpoint {
 	return task.getRegister(X8664Registers.DEBUG_CONTROL);
     }
 
+    /**
+     * Reads the Debug Status Register and checks if 
+     * the breakpoint specified has fired.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     */
+    public boolean hasWatchpointTriggered(Task task, int index) {
+	long debugStatus = task.getRegister(X8664Registers.DEBUG_STATUS);
+	return (debugStatus & (1L << index)) != 0;
+    }
+
 
 }

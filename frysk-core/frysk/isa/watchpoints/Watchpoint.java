@@ -94,6 +94,16 @@ public abstract class Watchpoint  {
      */
     public abstract long readControlRegister(Task task);
 
+    
+    /**
+     * Reads the Debug Status Register and checks if 
+     * the breakpoint specified has fired.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     */
+    public abstract boolean hasWatchpointTriggered(Task task, int index);
+
     /**
      * Returns number of watchpoints for this architecture
      *

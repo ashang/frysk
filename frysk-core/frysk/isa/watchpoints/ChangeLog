@@ -1,3 +1,9 @@
+2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Watchpoint.java (hasWatchpointTriggered): Define.
+	* IA32Watchpoint.java (hasWatchpointTriggered): Implement.
+	* X8664Watchpoint.java (hasWatchpointTriggered): Ditto.
+
 2008-03-28  Phil Muldoon <pmuldoon@redhat.com>
 
 	* Watchpoint.java: New. Initial Implementation.
