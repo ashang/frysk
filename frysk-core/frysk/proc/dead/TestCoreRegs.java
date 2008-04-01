@@ -55,7 +55,7 @@ public class TestCoreRegs extends RegsCase {
 	super.setUp();
 	// Replace the live task with a dead one.
 	Proc proc = task().getProc();
-	File exe = new File(proc.getExe());
+	File exe = new File(proc.getExeFile().getSysRootedPath());
 	File core = CorefileFactory.constructCore(proc);
 	Proc coreProc = LinuxCoreFactory.createProc(core, exe);
 	setTask(coreProc.getMainTask());

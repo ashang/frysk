@@ -115,7 +115,7 @@ class ViewsetCommand extends ParameterizedCommand {
 		cli.outWriter.print(task.getTid());
 		cli.outWriter.print("\t");
 		if (parent != temptd.getParentID()) {
-		    cli.outWriter.println(temptd.getTask().getProc().getExe());
+		    cli.outWriter.println(temptd.getTask().getProc().getExeFile().getSysRootedPath());
 		    parent = temptd.getParentID();
 		}
 		else {

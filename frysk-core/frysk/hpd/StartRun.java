@@ -61,6 +61,8 @@ abstract class StartRun extends ParameterizedCommand {
     
     final ArrayList procList = new ArrayList();
     
+    PTSet userSet;
+    
     StartRun(String command, String help1, String help2) {
 	super(command, help1, help2);
     }
@@ -126,6 +128,8 @@ abstract class StartRun extends ParameterizedCommand {
     
     public void interpretCmd(CLI cli, Input cmd, Object options,
 			     boolean runToBreak) {
+	
+	userSet = cli.getCommandPTSet(cmd);
 	// See if there are any tasks to be killed
 	if (killProcs(cli)) {
 	// See if there are any tasks in the current target set
@@ -139,7 +143,7 @@ abstract class StartRun extends ParameterizedCommand {
 	    return;
 	}
 	// Take care of loaded procs
-	Iterator foo = cli.targetset.getTaskData();
+	Iterator foo = userSet.getTaskData();
 	if (!foo.hasNext()) {
 	    cli.addMessage("No procs in targetset to run", Message.TYPE_NORMAL);
 	    return;
@@ -170,10 +174,12 @@ abstract class StartRun extends ParameterizedCommand {
      * killProcs loops through the current target set to see if there are any
      * tasks to kill, the philosophy being that all tasks should be killed before
      * 
+     * @param cli is the command line object
+     * @return true if there were procs to kill, false if there weren't
      */
     
     private boolean killProcs(CLI cli) {
-	Iterator foo = cli.targetset.getTaskData();
+	Iterator foo = userSet.getTaskData();
 	// No procs in target set return false
 	if (!foo.hasNext()) {
 	    return false;
@@ -211,16 +217,21 @@ abstract class StartRun extends ParameterizedCommand {
 	    int taskid) {
 	Runner runner = new Runner(cli);
 	String startrun = "";
-	    if (runToBreak)
-		startrun = "running";
-	    else
-		startrun = "starting";
-	if (cmd.size() == 0) {
+	if (runToBreak)
+	    startrun = "running";
+	else
+	    startrun = "starting";
+	
+	switch (cmd.size()) {
+	
+	case 0:
 	    cli.addMessage(startrun + " with this command: " + 
 			   asString(template.getCmdLine()),
 			   Message.TYPE_NORMAL);
 	    Manager.host.requestCreateAttachedProc(template, runner);
-	} else {
+	    break;
+	    
+	default:
 	    String[] args = new String[cmd.size() + 1];
 	    args[0] = template.getCmdLine()[0];
 	    for (int i = 1; i < args.length; i++)
@@ -248,6 +259,14 @@ abstract class StartRun extends ParameterizedCommand {
 		cli.taskID = -1;
 	}
     }
+    
+    /**
+     * asString takes an array of arguments and converts it to a single
+     *    string of args as would be appropriate for a commandline
+     * @param args is an array of arguments to pass to the process to be run
+     * @return a String of args that are to be passed to the process
+     *          on the commandline
+     */
 
     private String asString(String[] args) {
 	if (args == null || args.length <= 0)

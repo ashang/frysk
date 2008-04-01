@@ -57,7 +57,7 @@ class InfoExeCommand extends ParameterizedCommand {
 	    TaskData td = (TaskData) taskDataIter.next();
 	    Proc proc = td.getTask().getProc();
 	    td.printHeader(cli.outWriter);
-	    cli.outWriter.println(proc.getExe());
+	    cli.outWriter.println(proc.getExeFile().getSysRootedPath());
 	}
     }
 

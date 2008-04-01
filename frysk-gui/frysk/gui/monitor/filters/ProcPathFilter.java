@@ -63,7 +63,7 @@ public class ProcPathFilter
 
   public boolean filter (Proc proc)
   {
-    String otherPath = proc.getExe();
+    String otherPath = proc.getExeFile().getSysRootedPath();
     int i;
 
     for (i = otherPath.length() - 1; i > 0; i--)

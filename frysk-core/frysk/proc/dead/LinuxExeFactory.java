@@ -75,7 +75,7 @@ public class LinuxExeFactory {
 		    metaData.add(new MemoryMap(addrLow, addrHigh, permRead,
 					       permWrite, permExecute, false,
 					       offset, -1, -1, -1,
-					       sysRootFile.getSysRootedFile().getAbsolutePath()));
+					       sysRootFile.getSysRootedPath()));
 		}
 		MemoryMap[] getMemoryMaps() {
 		    MemoryMap[] memoryMaps = new MemoryMap[metaData.size()];
@@ -130,6 +130,13 @@ public class LinuxExeFactory {
 
     public static DeadProc createProc(String[] args) {
 	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
+	File exe = sysRoot.getPathViaSysRoot(args[0]).getFile();
+	fine.log("createProc exe", exe);
+	return createProc(exe, args);
+    }
+    
+    public static DeadProc createProc(String[] args, String sysroot) {
+	SysRoot sysRoot = new SysRoot(sysroot);
 	File exe = sysRoot.getPathViaSysRoot(args[0]).getFile();
 	fine.log("createProc exe", exe);
 	return createProc(exe, args);

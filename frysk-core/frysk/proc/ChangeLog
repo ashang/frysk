@@ -1,3 +1,7 @@
+2008-03-31  Stan Cox  <scox@redhat.com>
+
+	* Proc.java (getExe): Remove in favor of getExeFile.  Replace all callers.
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* Proc.java (getExeFile): New.

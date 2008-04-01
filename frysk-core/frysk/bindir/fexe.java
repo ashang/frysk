@@ -79,7 +79,8 @@ public class fexe
 	    if (sysRoot.compareTo("/") == 0)
 		sysRootedPath= "";
 	    else 
-		sysRootedPath = "\n(" + proc.getExe() + ")";
+		sysRootedPath = "\n(" + proc.getExeFile().getSysRootedPath() + ")";
+	    proc.getExeFile().getSysRootedPath();
 	    if (verbose) {
 		ProcessIdentifier pid
 		= ProcessIdentifierFactory.create(proc.getPid());
@@ -91,7 +92,7 @@ public class fexe
 			           + " "
 			           + sysRootedPath);
 	    } else 
-		System.out.println(proc.getExe());
+		System.out.println(proc.getExeFile().getSysRootedPath());
 	}
 	
 	public void executeDead(Proc proc) {
@@ -100,7 +101,7 @@ public class fexe
 	    if (sysRoot.compareTo("/") == 0)
 		sysRootedPath= "";
 	    else 
-		sysRootedPath = "\n(" + proc.getExe() + ")";
+		sysRootedPath = "\n(" + proc.getExeFile().getSysRootedFile() + ")";
 	    if (verbose) {
 		System.out.println(proc.getHost().getName()
 			           + " "
@@ -108,7 +109,7 @@ public class fexe
 			           + " "
 			           + sysRootedPath);
 	    } else {
-		System.out.println(proc.getExe());
+		System.out.println(proc.getExeFile().getSysRootedPath());
 	    }
 	}
     }

@@ -189,7 +189,7 @@ public class Ftrace {
 	new ProcTasksAction(proc, tasksObserver);
     }
 
-    public void trace (String[] command) {
+    public void trace(Proc command) {
 	init();
 	Manager.host.requestCreateAttachedProc(command, attachedObserver);
 	Manager.eventLoop.run();
@@ -271,7 +271,7 @@ public class Ftrace {
 
 	new ProcRemovedObserver(proc);
 
-	reporter.eventSingle(task, "attached " + proc.getExe());
+	reporter.eventSingle(task, "attached " + proc.getExeFile().getSysRootedPath());
 	++numProcesses;
     }
 

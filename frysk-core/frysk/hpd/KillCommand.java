@@ -130,12 +130,12 @@ public class KillCommand extends ParameterizedCommand {
 	    if ((proc.getPid() != procPID && pid < 0) ||
 		    proc.getPid() == pid) {
 		cli.addMessage("Killing process " + proc.getPid()
-			+ " that was created from " + proc.getExe(),
+			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
 			Message.TYPE_NORMAL);
 		cli.outWriter.flush();
 		// Save the procs we are killing so we can re-load them later
 		saveProcs.put(new Integer(taskData.getParentID()), proc
-			.getExe());
+			.getExeFile().getSysRootedPath());
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();

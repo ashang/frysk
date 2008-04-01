@@ -52,6 +52,10 @@ public class SysRoot {
 	sysRoot = path;
     }
 
+    public SysRoot (String string) {
+	sysRoot = new File(string);
+    }
+    
     /**
      * return a pathname of an executable.
      * 

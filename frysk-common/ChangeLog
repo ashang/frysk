@@ -1,3 +1,7 @@
+2008-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* manpages.sh: Handle @abs_root_srcdir@.
+
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (--enable-jar-compile): Default to yes.

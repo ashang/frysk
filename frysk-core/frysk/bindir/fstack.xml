@@ -44,20 +44,27 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ ]
+>
 
 <refentry id="fstack">
 
   <refentryinfo>
-    <title>fstack</title>
-    <date>March 14 2008</date>
+    <title>Frysk Utilities</title>
+    <date>March 31 2008</date>
   </refentryinfo>
   
   <refmeta>
     <refentrytitle>fstack</refentrytitle>
     <manvolnum>1</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
@@ -68,43 +75,21 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>fstack</command>
-       <arg choice="opt">
-        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
-      <arg choice="opt">
-        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
       <arg rep="repeat" choice="plain">
         <replaceable>pids</replaceable>
       </arg>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fstack</function> Runs the frysk stack tracing utility.</para>
+    <para><function>fstack</function> prints a stack back-trace of the
+    specified process, or core-file's threads.</para>
 
-    <para>fstack is a small utility that uses the frysk engine to display a process stack in a similar manner to pstack. </para>
+    &stackoptions;
+    &standardoptions;
 
-    <variablelist>
-    <varlistentry>
-	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
-        </listitem>
-      </varlistentry>      
-    </variablelist>
   </refsect1>
   
   <!-- refsect1>

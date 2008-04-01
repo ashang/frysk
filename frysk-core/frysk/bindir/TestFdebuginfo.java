@@ -60,7 +60,7 @@ public class TestFdebuginfo extends TestLib {
 		""+task.getProc().getPid() 
 	});
 	// Look for the path of executable
-	e.expect(task.getProc().getExe());	
+	e.expect(task.getProc().getExeFile().getSysRootedPath());	
     }
 
     public void testNoArguments() {

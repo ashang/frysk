@@ -74,7 +74,7 @@ public class TestLtrace
     static abstract class ObserverCreator {
 	abstract FunctionObserver createObserver();
 	public boolean shouldAcceptMapping(Task task, String name) {
-	    return task.getProc().getExe().equals(name);
+	    return task.getProc().getExeFile().getSysRootedPath().equals(name);
 	}
 	public boolean acceptTracepoint(Task task, TracePoint tp) {
 	    return tp.origin == TracePointOrigin.PLT;

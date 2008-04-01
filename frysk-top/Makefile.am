@@ -67,14 +67,16 @@ SOURCEDIRS = \
 	$(empty)
 
 
-# Generate html manpages
-# Use same xml sources, but generate html.
-# html is always put in index.html in output dir, so rename.
-# Use template file and just put in title, logo and a list of utils + href.
-# Replace ./ with ../ relative references (manpages is one dir down).
+# Generate html manpages.  Use same xml sources, but generate html.
+# html is always put in index.html in output dir, so rename.  Use
+# template file and just put in title, logo and a list of utils +
+# href.  Replace ./ with ../ relative references (manpages is one dir
+# down).
+
 TEMPLATE = $(srcdir)/htdocs/template.html
 .PHONY: manpages
-manpages:
+manpages: manpages/index.html
+manpages/index.html:
 	rm -rf manpages
 	mkdir -p manpages
 	XMLTO=$(XMLTO) \
@@ -191,7 +193,7 @@ upload-javadoc:
 CLEANFILES += javadoc
 
 .PHONY: upload-manpages
-upload-manpages:
+upload-manpages: manpages/index.html
 	$(UPLOAD) \
 		manpages/ \
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/manpages

@@ -56,7 +56,6 @@ public class IntegerUnit
     
     public IntegerUnit (IntegerType t1, int wordSize) {
 	super (wordSize);
-	// Return type should be the larger type.
 	retType =  t1 ;
     }    
 

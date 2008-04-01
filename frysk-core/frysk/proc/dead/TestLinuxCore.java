@@ -100,7 +100,7 @@ public class TestLinuxCore extends TestLib {
 	}
 
 	// Build relative exe path, and model core.
-	countPath = new File(relativeIntro+ackProc.getExe());
+	countPath = new File(relativeIntro+ackProc.getExeFile().getSysRootedPath());
 	Proc coreProc = LinuxCoreFactory.createProc(coreFileName, countPath);
 
 	// Guard: Build a stack trace. If a relative path is not being
@@ -291,7 +291,7 @@ public class TestLinuxCore extends TestLib {
 	assertEquals("PID", 26799, coreProc.getPid());
 	assertEquals("getParent", null, coreProc.getParent());
 	assertEquals("getCommand", "segfault", coreProc.getCommand());
-	assertEquals("getExe", "/home/pmuldoon/segfault", coreProc.getExe());
+	assertEquals("getExe", "/home/pmuldoon/segfault", coreProc.getExeFile().getSysRootedPath());
 	assertEquals("getUID", 500, coreProc.getUID());
 	assertEquals("getGID", 500, coreProc.getGID());
 	assertEquals("getMainTask", 26799, coreProc.getMainTask().getTid());
@@ -436,7 +436,7 @@ public class TestLinuxCore extends TestLib {
     
     // Create a teardown file
     TearDownFile xtestCore = new TearDownFile(coreFileName);
-    Proc coreProc = LinuxCoreFactory.createProc(xtestCore, new File(ackProc.getExe()));
+    Proc coreProc = LinuxCoreFactory.createProc(xtestCore, new File(ackProc.getExeFile().getSysRootedPath()));
     Task coreTask = coreProc.getMainTask();
 
     // Check that the breakpoint isn't visible.

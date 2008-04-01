@@ -188,4 +188,29 @@ public class TestRunCommand extends TestLib {
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
+    
+    /**
+     * This test case gives the run command a specific targetset to run
+     * 
+     */
+    
+    public void testRunHpdParam() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	"\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"\\[1\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"\\[2\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("[1.0] run", "Attached to process ([0-9]+).*" + "Creating new.*" +
+		"running.*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(1000); } catch (Exception e) {}
+	//e.sendCommandExpectPrompt("load", "\\[0\\.0\\].*funit-hello.*\\[2\\.0\\].*funit-threads.*");
+	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*" +
+		"\\[1\\.0\\]\t\t([0-9]+).*\\t([0-9]+).*\\[1\\.1\\]\t\t([0-9]+)\t([0-9]+).*" + 
+		"\\[2\\.0\\]\t\t0\t0.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
 }

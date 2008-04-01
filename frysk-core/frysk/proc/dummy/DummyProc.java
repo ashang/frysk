@@ -60,9 +60,6 @@ public class DummyProc extends Proc {
     public String getCommand() {
 	return "Foo";
     }
-    public String getExe() {
-	return null;
-    }
     public SysRootFile getExeFile() {
 	return null;
     }

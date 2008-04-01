@@ -118,7 +118,7 @@ public class UnloadCommand extends ParameterizedCommand {
 	while (foo.hasNext()) {
 	    Map.Entry me = (Map.Entry) foo.next();
 	    Proc newProc = (Proc) me.getKey();
-	    if (proc.getExe().equals(newProc.getExe())) {
+	    if (proc.getExeFile().getSysRootedPath().equals(newProc.getExeFile().getSysRootedPath())) {
 		synchronized (cli) {
 		    foo.remove();
 		}

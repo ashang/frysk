@@ -131,7 +131,7 @@ public class DwflCache {
 	if (!modMap.containsKey(task)) {
 	    fine.log("creating new dwfl for task", task);
 	    File sysrootFile = (File)SysRootCache.getSysRoot(task);
-	    File relativeSysroot = getRelativeSysRoot(task.getProc().getExe(), sysrootFile);
+	    File relativeSysroot = getRelativeSysRoot(task.getProc().getExeFile().getSysRootedPath(), sysrootFile);
 	    Dwfl dwfl = new Dwfl(relativeSysroot.getPath());
 	    DwflFactory.updateDwfl(dwfl, task);
 	    Mod mod = new Mod(dwfl, task.getMod());

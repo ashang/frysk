@@ -1,3 +1,13 @@
+2008-03-31  Stan Cox  <scox@redhat.com>
+
+	* LoadCommand.java (interpret): Pass sysroot to createProc.
+
+2008-03-31  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Add ability to start/run with hpd notation.
+	* TestRunCommand.java: Add test for above.
+	* TestStartCommand.java: Ditto.
+
 2008-03-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Kill all processes on a re-run before

@@ -190,9 +190,9 @@ public class FtraceController
 
 	    // MAIN is meta-soname meaning "main executable".
 	    if ((rule.sonamePattern.pattern().equals("MAIN")
-		 && task.getProc().getExe().equals(objf.getFilename().getPath()))
+		 && task.getProc().getExeFile().getSysRootedPath().equals(objf.getFilename().getPath()))
 		|| (rule.sonamePattern.pattern().equals("INTERP")
-		    && isInterpOf(objf, task.getProc().getExe()))
+		    && isInterpOf(objf, task.getProc().getExeFile().getSysRootedPath()))
 		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
 	    {
 		if (!candidatesInited) {

@@ -978,7 +978,7 @@ public class SourceWindow extends Window {
 		.getProcesses().iterator();
 	while (iter.hasNext()) {
 	    DebugProcess dProc = (DebugProcess) iter.next();
-	    if (dProc.getExecutablePath().equals(swProc[current].getExe()))
+	    if (dProc.getExecutablePath().equals(swProc[current].getExeFile().getSysRootedPath()))
 		return dProc;
 	}
 	/* should not get here */
@@ -2238,7 +2238,7 @@ public class SourceWindow extends Window {
     private void updateSourceLabel(DebugInfoFrame sf) {
 	boolean noDOMFunction = false;
 	if (sf == null) {
-	    String task_name = this.swProc[0].getExe();
+	    String task_name = this.swProc[0].getExeFile().getSysRootedPath();
 	    int proc_id = this.swProc[0].getPid();
 	    setSourceLabel("Unknown File for: ", task_name, proc_id, 0,
 		    false, null);
@@ -2246,7 +2246,7 @@ public class SourceWindow extends Window {
 	}
 
 	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-	String task_name = sf.getTask().getProc().getExe();
+	String task_name = sf.getTask().getProc().getExeFile().getSysRootedPath();
 	int proc_id = sf.getTask().getProc().getPid();
 	int task_id = sf.getTask().getTid();
 

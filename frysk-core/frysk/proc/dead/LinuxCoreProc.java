@@ -71,14 +71,9 @@ public class LinuxCoreProc extends DeadProc {
         return command;
     }
 
-    public String getExe() {
-	String exe = info.exeFile.getPath();
-	fine.log(this, "getExe()", exe);
-	return exe;
-    }
-
     public SysRootFile getExeFile() {
-	String exe = getExe();
+	String exe = info.exeFile.getPath();
+	fine.log(this, "getExeFile()", exe);
 	File exeFile = new File(exe);
 	return new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), exeFile); 
     }

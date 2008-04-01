@@ -226,7 +226,7 @@ public class LinuxPtraceProc extends LiveProc {
      * isn't :-).  Better yet have utrace handle it :-)
      */
     private String exe;
-    public String getExe() {
+    private String getExe() {
 	if (exe == null) {
 	    ProcessIdentifier pid
 		= ProcessIdentifierFactory.create(getPid());

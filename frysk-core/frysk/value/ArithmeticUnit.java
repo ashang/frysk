@@ -68,6 +68,21 @@ public abstract class ArithmeticUnit
 	this.wordSize = wordSize;
     }
     
+    /**
+     * Use to get result type of multiplicative, additive,
+     * shift, bitwise and assigment expressions.
+     */
+    public ArithmeticType getResultType() {
+	return retType;
+    }
+    /**
+     * Use to get result type of relational, equality
+     * and logical expressions.
+     */
+    public ArithmeticType getIntResultType() {
+	return intType;
+    }
+    
     // Multiplicative and Additive expressions
     public Value add(Value v1, Value v2) {
 	throw new InvalidOperatorException
