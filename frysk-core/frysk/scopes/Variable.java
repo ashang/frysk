@@ -37,10 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.scopes;
 
 import java.io.PrintWriter;
-
 import lib.dwfl.DwAttributeNotFoundException;
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
@@ -53,7 +52,10 @@ import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
-import frysk.scopes.SourceLocation;
+import frysk.value.ObjectDeclaration;
+import frysk.value.Type;
+import frysk.value.Value;
+import frysk.value.Format;
 
 /**
  * This class contains the static information corresponding to a
@@ -61,7 +63,7 @@ import frysk.scopes.SourceLocation;
  * corresponding to this Variable
  */
 
-public class Variable extends ObjectDeclaration{
+public class Variable extends ObjectDeclaration {
     
     private static Log fine = LogFactory.fine(Variable.class);
     private static Log finest = LogFactory.finest(Variable.class);

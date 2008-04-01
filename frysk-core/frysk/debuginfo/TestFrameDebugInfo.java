@@ -58,7 +58,7 @@ import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 public class TestFrameDebugInfo extends TestLib {
 

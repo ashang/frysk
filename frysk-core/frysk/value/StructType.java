@@ -45,7 +45,7 @@ package frysk.value;
 public class StructType
     extends CompositeType
 {
-    protected String getPrefix() {
+    public String getPrefix() {
 	return "struct";
     }
     public StructType(String name, int size) {

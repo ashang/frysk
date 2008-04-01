@@ -54,7 +54,6 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.TypeFactory;
 import frysk.value.ObjectDeclaration;
 import frysk.value.FunctionType;
-import frysk.value.Variable;
 
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.

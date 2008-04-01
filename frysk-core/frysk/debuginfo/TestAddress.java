@@ -48,7 +48,7 @@ import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.value.Value;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 public class TestAddress 
 	extends TestLib

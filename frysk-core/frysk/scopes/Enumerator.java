@@ -45,7 +45,6 @@ import frysk.value.ArithmeticType;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Variable;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.isa.ISA;
 

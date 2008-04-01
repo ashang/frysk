@@ -37,20 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.value;
+package frysk.debuginfo;
 
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.junit.TestCase;
 import frysk.proc.Task;
 import frysk.rsl.Log;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.config.BuildCompiler;
+import frysk.value.CompositeType;
+import frysk.value.Type;
+import frysk.scopes.Variable;
 
-public class TestClass extends TestCase {
+public class TestGccClass extends TestCase {
     
-    private static Log log = Log.fine(TestClass.class);
+    private static Log log = Log.fine(TestGccClass.class);
 
     private CompositeType getType(String program, String variableName) {
 	Task task = (new DaemonBlockedAtSignal(program)).getMainTask();

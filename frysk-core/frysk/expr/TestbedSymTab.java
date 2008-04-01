@@ -54,7 +54,7 @@ import frysk.value.ScratchLocation;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 class TestbedSymTab implements ExprSymTab {
     private final SourceLocation scratchSourceLocation = SourceLocation.UNKNOWN;

@@ -47,7 +47,7 @@ import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 import frysk.value.ObjectDeclaration;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 /**
  * Tests @link CppVariableSearchEngine.

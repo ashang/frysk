@@ -1,3 +1,11 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Variable.java: Move to here from frysk.value.Variable.
+	* TestDie.java: Update.
+	* Subprogram.java: Update.
+	* Scope.java: Update.
+	* Enumerator.java: Update.
+
 2008-03-15  Andrew Cagney  <cagney@redhat.com>
 
 	* ScopeFactory.java: Update; TypeEntry -> TypeFactory.

@@ -41,7 +41,7 @@ package frysk.value;
 
 public class InterfaceType extends CompositeType
 {
-    protected String getPrefix() {
+    public String getPrefix() {
 	return "interface";
     }
     public InterfaceType(String name, int size) {

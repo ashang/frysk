@@ -58,7 +58,7 @@ import frysk.scopes.Scope;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 /**
  * This engine implements the c++ scoping rules and uses when searching for

@@ -67,7 +67,7 @@ public class GccStructOrClassType
     }
 
     private String prefix = null;
-    protected String getPrefix() {
+    public String getPrefix() {
 	if (prefix == null) {
 	    if (isClassLike())
 		prefix = "class";

@@ -45,7 +45,7 @@ package frysk.value;
 public class ClassType
     extends CompositeType
 {
-    protected String getPrefix() {
+    public String getPrefix() {
 	return "class";
     }
     public ClassType(String name, int size) {

@@ -190,7 +190,7 @@ public abstract class CompositeType
     /**
      * Return the prefix (class, union, struct), or null.
      */
-    abstract protected String getPrefix();
+    public abstract String getPrefix();
 
     /**
      * Dump the contents of this object.

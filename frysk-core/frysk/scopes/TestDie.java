@@ -59,7 +59,6 @@ import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
-import frysk.value.Variable;
 
 public class TestDie
     extends TestLib

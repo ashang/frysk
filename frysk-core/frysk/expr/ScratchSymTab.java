@@ -46,7 +46,7 @@ import frysk.config.Config;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Variable;
+import frysk.scopes.Variable;
 
 public class ScratchSymTab implements ExprSymTab {
     /**
