@@ -1,3 +1,18 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* PrintStackOptions.java (printLocals(), setPrintLocals(boolean)):
+	Replace printScopes() and setPrintScopes(boolean).
+	(printInlineFunctions(), setPrintInlineFunctions(boolean)):
+	Replace printVirtualFrames() and setPrintVirtualFrames(boolean).
+	(setPrintFullPaths(boolean), printFullPaths()): Replace
+	fullPath(), setFullPath(boolean).
+	(setPrintLibraries(boolean), printLibraries()): Replace
+	setPrintLibrary(boolean) and printLibrary().
+	(elfOnly, setElfOnly()): Delete.
+	(elfOnly()): Re-implement.
+	* DebugInfoStackFactory.java: Update.
+	* TestFrameDebugInfo.java: Update.
+
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
 	* TestDebugInfoStackTrace: Use lib.dwfl.ElfSymbol instead of

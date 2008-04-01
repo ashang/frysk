@@ -59,7 +59,7 @@ import gnu.classpath.tools.getopt.OptionGroup;
 public class ferror {
     
     private static final PrintStackOptions stackPrintOptions
-	= new PrintStackOptions();
+	= new PrintStackOptions().setRich();
     private static final PrintWriter printWriter = new PrintWriter(System.out);
     private static Pattern writePattern;
     private static OptionGroup[] options() {
@@ -77,11 +77,6 @@ public class ferror {
     }
     
     public static void main(String[] args) {
-	stackPrintOptions.setPrintFullpath(false);
-	stackPrintOptions.setPrintParameters(true);
-	stackPrintOptions.setPrintVirtualFrames(true);
-	stackPrintOptions.setPrintLibrary(true);
-
 	ProcFollowUtil procRunningUtil = 
 	    new ProcFollowUtil("ferror",
 			    "ferror -e \"<error string>\" -- <executbale|PID> [ARGS]",

@@ -1,3 +1,7 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFactory.java: Update to match PrintStackOptions.
+
 2008-04-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java: replaced check for vdso string with isVDSO().
@@ -658,3 +662,10 @@
 	* TestFrame.java: Ditto.
 	* TestFrameIdentifier.java: Ditto.
 	* TestStackBacktrace.java: Ditto.	
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

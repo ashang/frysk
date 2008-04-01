@@ -226,7 +226,7 @@ public class Event extends GuiObject
     
     if(frame != null){
 	PrintStackOptions options = new PrintStackOptions();
-	options.setPrintParameters(true);
+	options.setPrintParams(true);
 	options.setNumberOfFrames(20);
 	DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame,options);
 	

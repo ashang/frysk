@@ -1,15 +1,18 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Update to match PrintStackOptions.
+
 2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* DeadTask.java (requestAddWatchObserver): Implement. 
 	requestDeleteWatchObserver: Ditto.
 
-
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* LinuxExeFactory.java (createProc(String[],String): New.
-	* LinuxCoreProc.java (getExe): Remove in favor of getExeFile.  Replace all callers.
+	* LinuxCoreProc.java (getExe): Remove in favor of getExeFile.
+	Replace all callers.
 	* LinuxExeProc.java (getExe): Likewise.
-	
 
 2008-03-27  Stan Cox  <scox@redhat.com>
 

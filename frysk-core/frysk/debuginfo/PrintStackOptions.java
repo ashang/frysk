@@ -41,65 +41,101 @@ package frysk.debuginfo;
 
 public class PrintStackOptions {
 
-    private boolean elfOnly;
-    
-    private int numberOfFrames;
-    private boolean printParameters;
-    private boolean printScopes;
-    private boolean fullpath;
-    private boolean printLibrary;
-    private boolean virtualFrames;
+    private int numberOfFrames = 10;
+
+    private boolean printFullPaths = false;
+
+    private boolean printParams = false;
+    private boolean printLocals = false;
+    private boolean printLibraries = false;
+    private boolean printInlineFunctions = false;
+    private boolean printDebugNames = false;
     
     public PrintStackOptions() {
     }
     
+    /**
+     * Set things up for a light-weight, or low-cost, back-trace by
+     * limiting things to just the elf information.
+     */
+    public PrintStackOptions setLite() {
+	printParams = false;
+	printLocals = false;
+	printLibraries = true;
+	printInlineFunctions = false;
+	printDebugNames = true;
+	return this;
+    }
+
+    /**
+     * Set things up for a rich, or detailed, back-trace by including
+     * inline frames and parameter information.
+     */
+    public PrintStackOptions setRich() {
+	printParams = true;
+	printLocals = true;
+	printLibraries = true;
+	printInlineFunctions = true;
+	printDebugNames = true;
+	return this;
+    }
+
+    /**
+     * Specify the number of frames to include in the back-trace, 0 to
+     * include all frames.
+     */
     public void setNumberOfFrames(int numberOfFrames) {
 	this.numberOfFrames = numberOfFrames;
     }
     public int numberOfFrames() {
 	return numberOfFrames;
     }
-    public void setPrintParameters(boolean printParameters) {
-	this.printParameters = printParameters;
+
+    public void setPrintParams(boolean printParams) {
+	this.printParams = printParams;
     }
-    public boolean printParameters() {
-	return printParameters;
-    }
-    public void setPrintScopes(boolean printScopes) {
-	this.printScopes = printScopes;
-    }
-    public boolean printScopes() {
-	return printScopes;
-    }
-    public void setPrintFullpath(boolean fullpath) {
-	this.fullpath = fullpath;
-    }
-    public boolean fullpath() {
-	return fullpath;
+    public boolean printParams() {
+	return printParams;
     }
 
-    public void setPrintLibrary(boolean printLibrary) {
-	this.printLibrary = printLibrary;
+    public void setPrintLocals(boolean printLocals) {
+	this.printLocals = printLocals;
+    }
+    public boolean printLocals() {
+	return printLocals;
     }
 
-    public boolean printLibrary() {
-	return printLibrary;
+    public void setPrintFullPaths(boolean printFullPaths) {
+	this.printFullPaths = printFullPaths;
+    }
+    public boolean printFullPaths() {
+	return printFullPaths;
     }
 
-    public void setPrintVirtualFrames(boolean virtualFrames) {
-	this.virtualFrames = virtualFrames;
+    public void setPrintLibraries(boolean printLibraries) {
+	this.printLibraries = printLibraries;
+    }
+    public boolean printLibraries() {
+	return printLibraries;
     }
 
-    public boolean printVirtualFrames() {
-	return virtualFrames;
+    public void setPrintInlineFunctions(boolean printInlineFunctions) {
+	this.printInlineFunctions = printInlineFunctions;
+    }
+    public boolean printInlineFunctions() {
+	return printInlineFunctions;
     }
 
-    public void setElfOnly(boolean elfOnly) {
-	this.elfOnly = elfOnly;
+    public void setPrintDebugNames(boolean printDebugNames) {
+	this.printDebugNames = printDebugNames;
+    }
+    public boolean printDebugNames() {
+	return printDebugNames;
     }
 
     public boolean elfOnly() {
-	return elfOnly;
+	return ! (printLocals || printInlineFunctions || printParams
+		  || printDebugNames);
     }
     
 }

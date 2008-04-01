@@ -50,7 +50,7 @@ import frysk.proc.Task;
 abstract class StackCommands extends ParameterizedCommand {
 
     private static class Options {
-	boolean printScopes;
+	boolean printLocals;
     }
     Object options() {
 	return new Options();
@@ -58,9 +58,9 @@ abstract class StackCommands extends ParameterizedCommand {
 
     StackCommands(String description, String syntax, String full) {
 	super(description, syntax, full);
-	add(new CommandOption("scopes", "include scopes") {
+	add(new CommandOption("locals", "include locals") {
 		void parse(String arg, Object options) {
-		    ((Options)options).printScopes = true;
+		    ((Options)options).printLocals = true;
 		}
 	    });
     }
@@ -73,9 +73,9 @@ abstract class StackCommands extends ParameterizedCommand {
 				   int stopLevel, Options options) {
 	PrintStackOptions printStackOptions = new PrintStackOptions();
 	printStackOptions.setNumberOfFrames(stopLevel);
-	printStackOptions.setPrintParameters(true);
-	printStackOptions.setPrintScopes(options.printScopes);
-	printStackOptions.setPrintFullpath(true);
+	printStackOptions.setPrintParams(true);
+	printStackOptions.setPrintLocals(options.printLocals);
+	printStackOptions.setPrintFullPaths(true);
 	
 	DebugInfoStackFactory.printStackTrace(cli.outWriter, frame,
 					      printStackOptions);
@@ -200,7 +200,7 @@ abstract class StackCommands extends ParameterizedCommand {
     static class Where extends StackCommands {
 	Where() {
 	    super("Display the current execution location and call stack",
-		  "where [ {num-levels ] [ -scopes ]",
+		  "where [ {num-levels ] [ -locals ]",
 		  ("The where command displays the current execution"
 		   + " location(s) and the call stack(s) - or sequence"
 		   + " of procedure calls - which led to that point."));

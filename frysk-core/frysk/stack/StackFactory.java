@@ -102,7 +102,8 @@ public class StackFactory
 		
 		frame.printLevel(writer);
 		writer.print(" ");
-		frame.toPrint(writer, options.printLibrary(), options.fullpath());
+		frame.toPrint(writer, options.printLibraries(),
+			      options.printFullPaths());
 		writer.println();
 	    }
 	}

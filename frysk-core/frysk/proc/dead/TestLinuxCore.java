@@ -113,7 +113,6 @@ public class TestLinuxCore extends TestLib {
 	StringWriter coreStackOutput = new StringWriter();
 	PrintStackOptions options = new PrintStackOptions();
 	options.setNumberOfFrames(20);
-	options.setElfOnly(true);
 
 	// Create a stackktrace of a the corefile process
 	coreStacktrace = new StacktraceAction(new PrintWriter(coreStackOutput),
@@ -214,7 +213,6 @@ public class TestLinuxCore extends TestLib {
     StringWriter coreStackOutput = new StringWriter();
     PrintStackOptions options = new PrintStackOptions();
     options.setNumberOfFrames(20);
-    options.setElfOnly(true);
     
     // Create a Stacktrace of the blocked live process
     liveStacktrace = new StacktraceAction(new PrintWriter(liveStackOutput),

@@ -77,8 +77,9 @@
     back-trace.  <replaceable>print-option</replaceable> can be any
     of: debug-names - use debug information, such as DWARF, to
     determine the name of functions; full-path - do not truncate file
-    paths; inline - include in-line function in back-trace; params -
-    include the values of any parameters.  To negate
+    paths; inline - include in-line function in back-trace; locals -
+    to include local variables from each frame; params - include the
+    values of any parameters.  To negate
     a <replaceable>print-option</replaceable> prefix it with
     "-".</para></listitem>
   </varlistentry>

@@ -137,7 +137,7 @@ public abstract class StacktraceAction implements ProcBlockObserver {
 	if(options.elfOnly()){
 	    StackFactory.printTaskStackTrace(printWriter,task,options);
 	}else{
-	    if(options.printVirtualFrames()){
+	    if(options.printInlineFunctions()){
 		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,options);
 	    }else{
 		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,options);

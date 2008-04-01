@@ -82,7 +82,7 @@ public class StressTestStackTraceAction extends TestLib {
 
     PrintStackOptions options = new PrintStackOptions();
     options.setNumberOfFrames(20);
-    options.setPrintParameters(true);
+    options.setPrintParams(true);
     
     StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
     {

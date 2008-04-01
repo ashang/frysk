@@ -60,86 +60,67 @@ public class StackPrintUtil {
      */
     public static OptionGroup options(final PrintStackOptions options) {
 	OptionGroup group = new OptionGroup("Stack print options");
-	group.add(new Option("number-of-frames", 'n',
-			     ("number of frames to print. Use -n 0 or"
-			      + " -n all to print all frames."),
+	group.add(new Option("number-of-frames",
+			     ("number of frames to print.  Specify '0' or"
+			      + "'all' to list all frames."),
 			     "NUMBER") {
 		public void parsed(String arg) throws OptionException {
 		    if(arg.equals("all")){
 			options.setNumberOfFrames(0);
-		    }else{
+		    } else {
 			options.setNumberOfFrames(Integer.parseInt(arg));
-			return;
 		    }
 		}
 	    });
-	group.add(new Option("full-path", 'f',
-			     "print the full path to object files") {
+	group.add(new Option("lite",
+			     "produce a low-cost or quick back-trace\n"
+			     + "only ELF symbols and ABI frames are "
+			     + "displayed") {
+		public void parsed(String argument) throws OptionException {
+		    options.setLite();
+		}
+	    });
+	group.add(new Option("rich",
+			     "produce a rich or detailed back-trace\n"
+			     + "in-line frames and parameters are displayed") {
+		public void parsed(String argument) throws OptionException {
+		    options.setRich();
+		}
+	    });
+	group.add(new Option
+		  ("print", "select the back-trace information to display\n"
+		   + "OPTION is:\n"
+		   + "debug-names: use debug-info names (e.g., DWARF)\n"
+		   + "full-path: include the full (untruncated) path to files\n"
+		   + "inline: include inlined frames\n"
+		   + "locals: include each functions local variables\n"
+		   + "params: include function parameters\n"
+		   + "OPTIONs can be negated by prefixing a '-'",
+		   "OPTION,...") {
 		public void parsed(String arg) throws OptionException {
-		    options.setPrintFullpath(true);
-		}
-	    });
-	group.add(new Option("all", 'a',
-			     ("Print all information that can be retrieved"
-			      + " about the stack"
-			      + "\nthis is equivalent to"
-			      + " -print functions,params,scopes,fullpath")) {
-		public void parsed(String argument) throws OptionException {
-		    options.setElfOnly(false);
-		    options.setPrintParameters(true);
-		    options.setPrintScopes(true);
-		    options.setPrintFullpath(true);
-		}
-	    });
-	group.add(new Option("virtual",
-			     'v',
-			     "Includes virtual frames in the stack trace.\n" +
-			     "Virtual frames are artificial frames corresponding" +
-			     " to calls to inlined functions") {
-		public void parsed(String argument) throws OptionException {
-		    options.setPrintVirtualFrames(true);
-		    options.setElfOnly(false);
-		}
-	    });
-	group.add(new Option("common", 'c', "print commonly used debug information:" +
-			     "this is equivalent to -print functions,params,fullpath") {
-		public void parsed(String argument) throws OptionException {
-		    options.setElfOnly(false);
-		    options.setPrintParameters(true);
-		    options.setPrintScopes(false);
-		    options.setPrintFullpath(true);
-		    options.setPrintVirtualFrames(true);
-		}
-	    });
-	group.add(new Option("print", "itmes to print. Possible items:\n" +
-			     "functions : print function names using debug information\n" +
-			     "scopes : print variables declared in each scope within the " +
-			     "function.\n" +
-			     "params : print function parameters\n" +
-			     "fullpath : print full executbale path" , "[item],...") {
-		public void parsed(String arg) throws OptionException {
-		    options.setElfOnly(true);
-		    options.setPrintParameters(false);
-		    options.setPrintScopes(false);
-		    options.setPrintFullpath(false);
-		    options.setPrintVirtualFrames(false);
 		    StringTokenizer st = new StringTokenizer(arg, ",");
 		    while (st.hasMoreTokens()) {
 			String name = st.nextToken();
-			if (name.equals("functions")) {
-			    options.setElfOnly(false);
+			boolean val;
+			if (name.startsWith("-")) {
+			    val = false;
+			    name = name.substring(1);
+			} else {
+			    val = true;
+			}
+			if (name.equals("debug-names")) {
+			    options.setPrintDebugNames(val);
+			} else if (name.equals("full-path")) {
+			    options.setPrintFullPaths(val);
+			} else if (name.equals("inline")) {
+			    options.setPrintInlineFunctions(val);
+			} else if (name.equals("locals")) {
+			    options.setPrintLocals(val);
 			} else if (name.equals("params")) {
-			    options.setElfOnly(false);
-			    options.setPrintParameters(true);
-			} else if (name.equals("scopes")) {
-			    options.setElfOnly(false);
-			    options.setPrintScopes(true);
-			} else if (name.equals("fullpath")) {
-			    options.setElfOnly(false);
-			    options.setPrintFullpath(true);
+			    options.setPrintParams(val);
 			} else {
 			    throw new OptionException
-				("unknown print parameter: " + name);
+				("unknown -print OPTION: " + name);
 			}
 		    }
 		}
@@ -155,7 +136,7 @@ public class StackPrintUtil {
 			     PrintWriter printWriter) {
           if (options.elfOnly()) {
               StackFactory.printTaskStackTrace(printWriter, task, options);
-          } else if (options.printVirtualFrames()) {
+          } else if (options.printInlineFunctions()) {
 	      DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,
 							       task,
 							       options);

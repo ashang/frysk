@@ -1,3 +1,19 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFstack.java: Ditto.
+	(testBackTraceWithDashA()): Delete.
+	(testBackTraceWithDashC()): Delete.
+	(testBackTraceWithDashV()): Delete.
+	(testBackTraceWithRich()): New.
+	(testBackTraceWithDashN(): Delete.
+	(testBackTraceWithNumberOfFramesAll()): New.
+	(testBackTraceWithNumberOfFrames0()): New.
+	(testBackTraceWithNumberOfFrames4()): New.
+	(testBackTraceWithNumberOfFrames5()): New.
+	(testBackTraceWithDashNDashA()): Delete.
+	(testBackTraceWithRichNumberOfFrames()): New
+	* ferror.java: Update to match PrintStackOptions.
+	
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java (commandAndArguments): Change type to Proc.

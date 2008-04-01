@@ -86,6 +86,46 @@ public class TestFstack extends TestLib {
 	e.expect ("main");
     }
     
+    public void testBackTraceWithDebugNamesAndParams() {
+	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
+		"-print", "debug-names,params"
+	    });
+	e.expect("\\#0 .* in third\\(int arg3\\) .*\\/funit-stack-outlined\\.c#");
+	e.expect("\\#1");
+    }
+
+    public void testBackTraceWithFullPath () {
+	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
+		"-rich", "-print", "full-path"
+	    });
+        e.expect (getCanonicalAbsRootSrcDir()
+		  + ".*"
+		  + "funit-stack-outlined"
+		  + ".c#");
+    }
+
+    public void testBackTraceWithInline() {
+	TearDownExpect e = fstack("funit-stack-inlined",
+				  new String[] { "--print", "inline" });
+	e.expect("\\#0 .* third");
+	e.expect("\\#1 .* second");
+	e.expect("\\#2 .* first");
+	e.expect("\\#3 .* main");
+    }
+
+    public void testBackTraceWithLocals() {
+	TearDownExpect e = fstack("funit-stack-outlined",
+			  new String[] { "-print", "locals" });
+        e.expect("\\#0 .* third\\(");
+        e.expect("int var3 = ");
+        e.expect("\\#1 .* second\\(");
+        e.expect("int var2 = ");
+        e.expect("\\#2 .* first\\(");
+        e.expect("int var1 = ");
+        e.expect("\\#3 .* main\\(");
+        e.expect("int some_int = ");
+    }
+
     public void testBackTraceWithParams () {
 	TearDownExpect e = fstack("funit-stack-outlined",
 			  new String[] { "-print", "params" });
@@ -95,85 +135,69 @@ public class TestFstack extends TestLib {
         e.expect("\\#3 .* main\\(\\)");
     }
 
-    public void testBackTraceWithScopes () {
-	TearDownExpect e = fstack("funit-stack-outlined",
-				  new String[] { "--print", "scopes" });
-	e.expect("\\#0 .* third\\(\\)");
-        e.expect("int var3");
-	e.expect("\\#1 .* second\\(\\)");
-        e.expect("int var2");
-	e.expect("\\#2 .* first\\(\\)");
-        e.expect("int var1");
-	e.expect("\\#3 .* main\\(\\)");
-        e.expect("int some_int");
-    }
-
-    public void testBackTraceWithFullpath () {
-	TearDownExpect e = fstack("funit-stack-outlined",
-				  new String[] { "--print", "fullpath" });
-        e.expect (getCanonicalAbsRootSrcDir()
-		  + ".*"
-		  + "funit-stack-outlined"
-		  + ".c#");
-    }
-
-    public void testBackTraceWithDashA () {
-	TearDownExpect e = fstack("funit-stack-outlined",
-				  new String[] { "-a" });
-	e.expect("\\#0 .* in third\\(int arg3\\)"
-		 + ".*" + getCanonicalAbsRootSrcDir()
-		 + ".*" + "funit-stack-outlined" + "\\.c#" 
-		 + ".*int var3.*");
-	e.expect("\\#1");
-    }
-
-    public void testBackTraceWithDashC () {
-	TearDownExpect e = fstack("funit-stack-outlined",
-				  new String[] { "-c" });
-	e.expect("\\#0 .* in third\\(int arg3\\)"
-		 + ".*" + getCanonicalAbsRootSrcDir()
-		 + ".*" + "funit-stack-outlined" + "\\.c#");
-	e.expect("\\#1");
-  }
-
-    public void testBackTraceWithDashV () {
+    public void testBackTraceWithRich() {
 	TearDownExpect e = fstack("funit-stack-inlined",
-				  new String[] { "-v", "-a" });
-        e.expect("\\#0 .*third[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#1 .*second[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#2 .*first[^\\r\\n]*\\[inline\\]");
-	e.expect("\\#3 .*main");
+				  new String[] { "-rich" });
+        e.expect("\\#0 .* third\\(int arg3.*\\)");
+        e.expect("\\#1 .* second\\(int arg2.*\\)");
+        e.expect("\\#2 .* first\\(int arg1.*\\)");
+        e.expect("\\#3 .* main\\(\\)");
     }
 
-    public void testBackTraceWithDashN () {
-	
-	TearDownExpect e = fstack("funit-long-stack", new String[]{"-n","5"});
+    public void testBackTraceWithRichWithoutInline() {
+	TearDownExpect e = fstack("funit-stack-inlined", new String[] {
+		"-rich", "-print", "-inline"
+	    });
+        e.expect("\\#0 .* main\\(\\)");
+    }
+
+    public void testBackTraceWithLite() {
+	TearDownExpect e = fstack("funit-stack-inlined",
+				  new String[] { "-lite" });
+        e.expect("\\#0 .*main");
+    }
+
+    public void testBackTraceWithNumberFrames5() {
+	TearDownExpect e = fstack("funit-long-stack", new String[]{
+		"-number-of-frames", "5"
+	    });
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#2 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#3 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#4 [^\r\n]*first[^\\r\\n]*");
 	e.expect("...");
-	e.close();
+    }
 	
-	e = fstack("funit-long-stack", new String[]{"-n","4"});
+    public void testBackTraceWithNumberFrames4() {
+	TearDownExpect e = fstack("funit-long-stack", new String[] {
+		"-number-of-frames", "4"
+	    });
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#2 [^\r\n]*first[^\\r\\n]*");
 	e.expect("\\#3 [^\r\n]*first[^\\r\\n]*");
 	e.expect("...");
-	e.close();
+    }
 	
-	e = fstack("funit-long-stack", new String[]{"-n","0"});
+    public void testBackTraceWithNumberFrames0() {
+	TearDownExpect e = fstack("funit-long-stack", new String[]{
+		"-number-of-frames", "0"
+	    });
 	e.expect("\\#51 .*first[^\\r\\n]*");
-	e.close();
-
     }
     
-    public void testBackTraceWithDashNDashA () {
-	
-	TearDownExpect e = fstack("funit-long-stack",
-				  new String[]{"-n","5", "-a"});
+    public void testBackTraceWithNumberFramesAll() {
+	TearDownExpect e = fstack("funit-long-stack", new String[]{
+		"-number-of-frames", "all"
+	    });
+	e.expect("\\#51 .*first[^\\r\\n]*");
+    }
+    
+    public void testBackTraceWithRichNumberOfFrames() {
+	TearDownExpect e = fstack("funit-long-stack", new String[] {
+		"-rich", "-number-of-frames", "5"
+	    });
 	e.expect("\\#0 .*crash[^\\r\\n]*");
 	e.expect("\\#1 .*first[^\\r\\n]*");
 	e.expect("\\#2 .*first[^\\r\\n]*");
@@ -182,7 +206,4 @@ public class TestFstack extends TestLib {
 	e.expect("...");
 	e.close();
     }
-    
-    
-
 }

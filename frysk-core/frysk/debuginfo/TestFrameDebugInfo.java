@@ -86,9 +86,9 @@ public class TestFrameDebugInfo extends TestLib {
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
     PrintStackOptions options = new PrintStackOptions();
     options.setNumberOfFrames(20);
-    options.setPrintParameters(true);
-    options.setPrintScopes(true);
-    options.setPrintFullpath(true);
+    options.setPrintParams(true);
+    options.setPrintLocals(true);
+    options.setPrintFullPaths(true);
     DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, options);
       
     String string = stringWriter.getBuffer().toString();
@@ -308,9 +308,9 @@ public class TestFrameDebugInfo extends TestLib {
     
     PrintStackOptions options = new PrintStackOptions();
     options.setNumberOfFrames(0);
-    options.setPrintParameters(true);
-    options.setPrintScopes(true);
-    options.setPrintFullpath(true);
+    options.setPrintParams(true);
+    options.setPrintLocals(true);
+    options.setPrintFullPaths(true);
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, options);
     
     assertTrue("contains inline", stringWriter.getBuffer().toString().contains("inline"));

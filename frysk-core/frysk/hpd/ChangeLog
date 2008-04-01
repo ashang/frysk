@@ -1,3 +1,8 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	* StackCommands.java: Update to match PrintStackOptions.
+	* TestStackCommands.java: Ditto.
+
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* LoadCommand.java (interpret): Pass sysroot to createProc.

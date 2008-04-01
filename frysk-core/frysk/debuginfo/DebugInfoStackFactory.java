@@ -51,13 +51,9 @@ import frysk.stack.StackFactory;
  */
 public class DebugInfoStackFactory {
 
-    public static final PrintStackOptions DEFAULT = new PrintStackOptions();
-    static{
-	DEFAULT.setPrintParameters(true);
-	DEFAULT.setPrintFullpath(false);
-	DEFAULT.setPrintScopes(false);
-	DEFAULT.setPrintVirtualFrames(true);
-    }
+    public static final PrintStackOptions DEFAULT
+	= new PrintStackOptions().setRich();
+
     /**
      * Create an ABI stack backtrace, make the simpler debug-info
      * methods.
@@ -146,9 +142,10 @@ public class DebugInfoStackFactory {
 
 	    frame.printLevel(writer);
 	    writer.print(" ");
-	    frame.toPrint(writer, options.printParameters(), options.fullpath());
+	    frame.toPrint(writer, options.printParams(),
+			  options.printFullPaths());
 	    writer.println();
-	    if (options.printScopes()) {
+	    if (options.printLocals()) {
 		frame.printScopes(writer);
 	    }
 	    writer.flush();

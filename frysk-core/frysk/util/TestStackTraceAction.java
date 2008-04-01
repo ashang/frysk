@@ -54,79 +54,70 @@ import frysk.testbed.SlaveOffspring;
 public class TestStackTraceAction extends TestLib {
     private static final Log fine = Log.fine(TestStackTraceAction.class);
 
-    static PrintStackOptions options = new PrintStackOptions();
-    
-    public void setUp() {
-	options.setNumberOfFrames(20);
-	options.setElfOnly(true);
-	options.setPrintFullpath(true);
-	options.setPrintLibrary(true);
+    public void testSingleThreadedDetached() {
+	SlaveOffspring ackProc = SlaveOffspring.createChild();
+	multiThreaded(ackProc, 0);
     }
-    
-  public void testSingleThreadedDetached ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createChild();
-    multiThreaded(ackProc, 0);
-  }
 
-  public void testSingleThreadedAckDaemon ()
-  {
-    SlaveOffspring ackProc = SlaveOffspring.createDaemon();
-    multiThreaded(ackProc, 0);
-  }
+    public void testSingleThreadedAckDaemon() {
+	SlaveOffspring ackProc = SlaveOffspring.createDaemon();
+	multiThreaded(ackProc, 0);
+    }
 
-    public void testMultiThreadedDetached () {
+    public void testMultiThreadedDetached() {
 	SlaveOffspring ackProc = SlaveOffspring.createChild()
 	    .assertSendAddClonesWaitForAcks(2);
 	multiThreaded(ackProc, 2);
     }
-
-    public void testMultiThreadedAckDaemon () {
+    
+    public void testMultiThreadedAckDaemon() {
 	SlaveOffspring ackProc = SlaveOffspring.createDaemon()
 	    .assertSendAddClonesWaitForAcks(2);
 	multiThreaded(ackProc, 2);
     }
 
-  public static void multiThreaded (SlaveOffspring ackProc,
-				    int numSecondaryThreads)
-  {
-      StringWriter stringWriter = new StringWriter();
+    static void multiThreaded(SlaveOffspring ackProc,
+			      int numSecondaryThreads) {
+	PrintStackOptions options = new PrintStackOptions();
+	options.setNumberOfFrames(20);
+	options.setPrintFullPaths(true);
+	options.setPrintLibraries(true);
+
+	StringWriter stringWriter = new StringWriter();
       
-    String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                        + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n\n";
+	String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+	    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n\n";
+	
+	String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+	    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n\n";
+	
+	final Proc proc = ackProc.assertRunToFindProc();
+	
+	StacktraceAction stacker;
+	
+	stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), options) {
 
-    String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\).*\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\).*\n\n";
-
-    final Proc proc = ackProc.assertRunToFindProc();
-
-    StacktraceAction stacker;
-    
-    stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new RequestStopEvent(Manager.eventLoop), options)
-    {
-
-      public void addFailed (Object observable, Throwable w)
-      {
-        fail("Proc add failed: " + w.getMessage());
-      }
-    };
-
-    new ProcBlockAction (proc, stacker);
-    assertRunUntilStop("perform backtrace");
-
-    String regex = new String();
-    regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
-             + "}";
-
-    String result = stringWriter.getBuffer().toString();
-    fine.log("result", result);
-    assertTrue(result + "should match: " + regex + " threads",
-               result.matches(regex));
-
-  }
+		public void addFailed (Object observable, Throwable w) {
+		    fail("Proc add failed: " + w.getMessage());
+		}
+	    };
+	
+	new ProcBlockAction (proc, stacker);
+	assertRunUntilStop("perform backtrace");
+	
+	String regex = new String();
+	regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
+	    + "}";
+	
+	String result = stringWriter.getBuffer().toString();
+	fine.log("result", result);
+	assertTrue(result + "should match: " + regex + " threads",
+		   result.matches(regex));
+	
+    }
 }

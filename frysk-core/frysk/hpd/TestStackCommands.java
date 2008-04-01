@@ -57,20 +57,20 @@ public class TestStackCommands extends TestLib {
 	checkWhere("funit-stack-outlined", "");
     }
     
-    private void checkWhereWithScopes(String program) {
+    private void checkWhereWithLocals(String program) {
 	e = HpdTestbed.hpdTerminatingProgram(program);
-        e.send("where -scopes\n");
+        e.send("where -locals\n");
         e.expect(".*var3");
 	e.expect(".*var2");
 	e.expect(".*var1");
 	e.expectPrompt(".*");
         e.close();
     }
-    public void testWhereWithVirtualScopes() {
-	checkWhereWithScopes("funit-stack-inlined");
+    public void testWhereWithVirtualLocals() {
+	checkWhereWithLocals("funit-stack-inlined");
     }
-    public void testWhereWithPhysicalScopes() {
-	checkWhereWithScopes("funit-stack-outlined");
+    public void testWhereWithPhysicalLocals() {
+	checkWhereWithLocals("funit-stack-outlined");
     }
 
     public void testWhereOne() {
