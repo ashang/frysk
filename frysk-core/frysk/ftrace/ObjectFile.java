@@ -370,49 +370,41 @@ public class ObjectFile
 		ElfDynamic.loadFrom(section, new ElfDynamic.Builder() {
 			public void entry (int tag, long value)
 			{
-			    if (tag == ElfDynamic.ELF_DT_STRTAB)
-				{
-				    FtraceLogger.finest.log(" * dynamic strtab at 0x" + Long.toHexString(value));
-				    ObjectFile.this.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
-				}
-			    else if (tag == ElfDynamic.ELF_DT_SONAME)
-				{
-				    FtraceLogger.finest.log(" * soname index = 0x" + Long.toHexString(value));
-				    assertFitsToInt(value, "SONAME index");
-				    locals.dynamicSonameIdx = (int)value;
-				}
-			    else if (tag == ElfDynamic.ELF_DT_SYMTAB)
-				{
-				    FtraceLogger.finest.log(" * dynamic symtab = 0x" + Long.toHexString(value));
-				    ObjectFile.this.dynamicSymtab = getElfSectionWithAddr(elfFile, value);
-				}
-			    else if (tag == ElfDynamic.ELF_DT_VERSYM)
-				{
-				    FtraceLogger.finest.log(" * versym = 0x" + Long.toHexString(value));
-				    ObjectFile.this.dynamicVersym = getElfSectionWithAddr(elfFile, value);
-				}
-			    else if (tag == ElfDynamic.ELF_DT_VERDEF)
-				{
-				    FtraceLogger.finest.log(" * verdef = 0x" + Long.toHexString(value));
-				    ObjectFile.this.dynamicVerdef = getElfSectionWithAddr(elfFile, value);
-				}
-			    else if (tag == ElfDynamic.ELF_DT_VERDEFNUM)
-				{
-				    FtraceLogger.finest.log(" * verdefnum = " + Long.toString(value));
-				    assertFitsToInt(value, "Count of VERDEF entries");
-				    ObjectFile.this.dynamicVerdefCount = (int)value;
-				}
-			    else if (tag == ElfDynamic.ELF_DT_VERNEED)
-				{
-				    FtraceLogger.finest.log(" * verneed = 0x" + Long.toHexString(value));
-				    ObjectFile.this.dynamicVerneed = getElfSectionWithAddr(elfFile, value);
-				}
-			    else if (tag == ElfDynamic.ELF_DT_VERNEEDNUM)
-				{
-				    FtraceLogger.finest.log(" * verneednum = " + Long.toString(value));
-				    assertFitsToInt(value, "Count of VERNEED entries");
-				    ObjectFile.this.dynamicVerneedCount = (int)value;
-				}
+			    if (tag == ElfDynamic.ELF_DT_STRTAB) {
+				FtraceLogger.finest.log(" * dynamic strtab at 0x" + Long.toHexString(value));
+				ObjectFile.this.dynamicStrtab = getElfSectionWithAddr(elfFile, value);
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_SONAME) {
+				FtraceLogger.finest.log(" * soname index = 0x" + Long.toHexString(value));
+				assertFitsToInt(value, "SONAME index");
+				locals.dynamicSonameIdx = (int)value;
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_SYMTAB) {
+				FtraceLogger.finest.log(" * dynamic symtab = 0x" + Long.toHexString(value));
+				ObjectFile.this.dynamicSymtab = getElfSectionWithAddr(elfFile, value);
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_VERSYM) {
+				FtraceLogger.finest.log(" * versym = 0x" + Long.toHexString(value));
+				ObjectFile.this.dynamicVersym = getElfSectionWithAddr(elfFile, value);
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_VERDEF) {
+				FtraceLogger.finest.log(" * verdef = 0x" + Long.toHexString(value));
+				ObjectFile.this.dynamicVerdef = getElfSectionWithAddr(elfFile, value);
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_VERDEFNUM) {
+				FtraceLogger.finest.log(" * verdefnum = " + Long.toString(value));
+				assertFitsToInt(value, "Count of VERDEF entries");
+				ObjectFile.this.dynamicVerdefCount = (int)value;
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_VERNEED) {
+				FtraceLogger.finest.log(" * verneed = 0x" + Long.toHexString(value));
+				ObjectFile.this.dynamicVerneed = getElfSectionWithAddr(elfFile, value);
+			    }
+			    else if (tag == ElfDynamic.ELF_DT_VERNEEDNUM) {
+				FtraceLogger.finest.log(" * verneednum = " + Long.toString(value));
+				assertFitsToInt(value, "Count of VERNEED entries");
+				ObjectFile.this.dynamicVerneedCount = (int)value;
+			    }
 			}
 		    });
 	    }
@@ -552,7 +544,7 @@ public class ObjectFile
 	    }
 	    catch (java.io.IOException e) {
 		FtraceLogger.warning.log(
-		    "Couldn't get canonical path of ELF interpreter `{0}'.",
+		    "Couldn't get canonical path of ELF interpreter",
 		    interppath);
 	    }
 	}
