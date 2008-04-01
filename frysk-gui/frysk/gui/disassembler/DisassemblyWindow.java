@@ -1023,7 +1023,7 @@ public class DisassemblyWindow
    */
   private synchronized void handleSymbol(String symbolName)
   {
-      LinkedList addressList = SymbolFactory.getSymbol(this.myTask, symbolName);
+      LinkedList addressList = SymbolFactory.getAddresses(this.myTask, symbolName);
       long startAddress = ((Long)addressList.getFirst()).longValue();
       Symbol symbol = SymbolFactory.getSymbol(this.myTask, startAddress);
       long endAddress = symbol.getAddress() + symbol.getSize();

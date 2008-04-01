@@ -954,7 +954,7 @@ public class MemoryWindow
    */
   private synchronized void handleSymbol(String symbolName)
   {
-      LinkedList addressList = SymbolFactory.getSymbol(this.myTask, symbolName);
+      LinkedList addressList = SymbolFactory.getAddresses(this.myTask, symbolName);
       long startAddress = ((Long)addressList.getFirst()).longValue();
       fromSpin.setValue((double)startAddress);
   }  

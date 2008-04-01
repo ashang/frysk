@@ -241,7 +241,7 @@ public class BreakpointManager extends Observable {
         managedProcs.add(proc);
 	// Assume that the Proc's main task is stopped.
         LinkedList sharedLibBptAddrs
-            = SymbolFactory.getSymbol(task, "_dl_debug_state");
+            = SymbolFactory.getAddresses(task, "_dl_debug_state");
         if (sharedLibBptAddrs.size() == 0)
             return;
         long sharedLibBptAddr

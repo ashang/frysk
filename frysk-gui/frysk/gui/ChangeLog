@@ -1,3 +1,8 @@
+2008-04-01  Petr Machata  <pmachata@redhat.com>
+
+	* disassembler/DisassemblyWindow.java: Call getAddresses instead of getSymbol.
+	* memory/MemoryWindow.java: Likewise.
+
 2008-03-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/StressTestJGMemory.java: New test.

@@ -161,7 +161,7 @@ public class SymbolFactory
      * @param name
      * @return address list
      */
-    public static LinkedList getSymbol(Task task, String name) {
+    public static LinkedList getAddresses(Task task, String name) {
 	Dwfl dwfl = DwflCache.getDwfl(task);
 	DwflModule[] modules = dwfl.getModules();
 	final LinkedList addrs = new LinkedList();
