@@ -75,5 +75,8 @@ lib::dwfl::DwflLine::dwfl_lineinfo_col(){
 jstring
 lib::dwfl::DwflLine::dwfl_linecomp_dir(){
 	const char *dir = ::dwfl_line_comp_dir(DWFL_LINE_POINTER);	
+	if(dir == NULL){
+	  return JvNewStringUTF("");
+	}
 	return JvNewStringUTF(dir);
 }

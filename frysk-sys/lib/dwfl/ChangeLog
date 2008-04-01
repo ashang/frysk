@@ -1,3 +1,8 @@
+2008-04-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/DwflLine.cxx (DwflLine::dwfl_linecomp_dir): added
+	NULL check.
+
 2008-03-13  Tim Moore  <timoore@redhat.com>
 
 	* cni/Dwfl.cxx: Add declaration for elfutils'
