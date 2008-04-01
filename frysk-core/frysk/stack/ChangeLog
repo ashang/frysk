@@ -1,3 +1,7 @@
+2008-04-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Frame.java: replaced check for vdso string with isVDSO().
+
 2008-03-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java: Added check to check for vdso before prepending path.

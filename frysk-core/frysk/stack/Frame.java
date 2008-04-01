@@ -47,6 +47,7 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import lib.dwfl.ElfSymbol;
 import frysk.dwfl.DwflCache;
+import frysk.dwfl.DwflFactory;
 import frysk.isa.registers.Register;
 import frysk.proc.Task;
 import frysk.rsl.Log;
@@ -177,7 +178,8 @@ public abstract class Frame {
 	    if (library != null) {
 		writer.print(" from ");
 	
-		if(library.getPath().contains("vdso") || library.getPath().contains("stack")){
+		if(DwflFactory.isVDSO(this.getTask().getProc(), this.getTask().getProc().getMap(getAdjustedAddress()))
+			|| library.getName().contains("[stack]")){
 		    writer.print(library.getName());
 		}else{
 		
