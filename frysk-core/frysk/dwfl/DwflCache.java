@@ -77,21 +77,21 @@ public class DwflCache {
      */
     private static WeakHashMap allDwfls = new WeakHashMap();
 
-/**
- * Given: a mock generated /sys/root/dir/usr/bin/program 
- *			   /sys/root/dir/usr/lib/debug/usr/bin/program.debug
- * Elfutils can be given an absolute or relative path to look for program.debug.
- * It will look in: 
- * 1. /sys/root/dir/usr/bin/program.debug 
- * 2. /sys/root/dir/usr/bin/a/relative/path/program.debug 
- * 3. /an/absolute/path/sys/root/dir/usr/bin/program.debug
- * It would be helpful if it also looked in /an/absolute/path/program.debug 
- * so it could be given /sys/root/dir/usr/lib/debug/usr/bin.  Lacking that we
- * need to generate a relative path that has the same effect.
- *
- * @param pathname of executable
- * @return a path where elfutils can find program.debug for separate debuginfo.
- */
+    /**
+     * Given: a mock generated /sys/root/dir/usr/bin/program 
+     *			   /sys/root/dir/usr/lib/debug/usr/bin/program.debug
+     * Elfutils can be given an absolute or relative path to look for program.debug.
+     * It will look in: 
+     * 1. /sys/root/dir/usr/bin/program.debug 
+     * 2. /sys/root/dir/usr/bin/a/relative/path/program.debug 
+     * 3. /an/absolute/path/sys/root/dir/usr/bin/program.debug
+     * It would be helpful if it also looked in /an/absolute/path/program.debug 
+     * so it could be given /sys/root/dir/usr/lib/debug/usr/bin.  Lacking that we
+     * need to generate a relative path that has the same effect.
+     *
+     * @param pathname of executable
+     * @return a path where elfutils can find program.debug for separate debuginfo.
+     */
 
     private static File getRelativeSysRoot(String execPathParm, File sysroot) {
         if (sysroot.getPath().equals("/"))
