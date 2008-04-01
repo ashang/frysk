@@ -261,6 +261,18 @@ public abstract class Task {
     public abstract void requestDeleteCodeObserver(TaskObserver.Code o, long a);
   
     /**
+     * Add TaskObserver.Watch to the TaskObserver pool.
+     */
+    public abstract void requestAddWatchObserver(TaskObserver.Watch o, long address, int length);
+
+    /**
+     * Delete TaskObserver.Watchfor the TaskObserver pool.
+     */
+    public abstract void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length);
+
+    
+    
+    /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.
      * <code>o.updateExecuted</code> is called as soon as the Task

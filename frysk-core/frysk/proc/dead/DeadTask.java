@@ -199,7 +199,21 @@ abstract class DeadTask extends Task {
 	throw new RuntimeException("requestDeleteSignaledObserver");
     }
 
-  
+    /**
+     * Add TaskObserver.Watch to the TaskObserver pool.
+     */
+    public void requestAddWatchObserver(TaskObserver.Watch o, long address, int length) {
+	throw new RuntimeException("requestAddWatchObserver");
+    }
+
+    /**
+     * Delete TaskObserver.Watch from the TaskObserver pool.
+     */
+    public  void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length) {
+	throw new RuntimeException("requestDeleteCodeObserver");
+    }
+
+    
     /**
      * Add TaskObserver.Code to the TaskObserver pool.
      */

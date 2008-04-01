@@ -1,3 +1,9 @@
+2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DeadTask.java (requestAddWatchObserver): Implement. 
+	requestDeleteWatchObserver: Ditto.
+
+
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* LinuxExeFactory.java (createProc(String[],String): New.

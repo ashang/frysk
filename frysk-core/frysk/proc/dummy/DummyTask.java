@@ -129,9 +129,20 @@ public class DummyTask extends Task {
     public void requestDeleteCodeObserver(TaskObserver.Code o, long a) {
 	throw new RuntimeException("oops!");
     }
+    
+    public void requestAddWatchObserver(TaskObserver.Watch o, long address, int length) {
+	throw new RuntimeException("requestAddWatchObserver");
+    }
+
+    public  void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length) {
+	throw new RuntimeException("requestDeleteCodeObserver");
+    }
+
     public void requestAddInstructionObserver(TaskObserver.Instruction o) {
 	throw new RuntimeException("oops!");
     }
+    
+    
     public void requestDeleteInstructionObserver(TaskObserver.Instruction o) {
 	throw new RuntimeException("oops!");
     }

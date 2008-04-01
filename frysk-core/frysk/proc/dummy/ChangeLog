@@ -1,3 +1,9 @@
+2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DummyTask.java (requestAddWatchObserver): Implement. 
+	requestDeleteWatchObserver: Ditto.
+
+
 2008-03-27  Stan Cox  <scox@redhat.com>
 
 	* DummyProc.java (getExeFile): New.

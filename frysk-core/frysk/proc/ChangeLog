@@ -1,3 +1,8 @@
+2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Task.java (requestAddWatchObserver): Publish. 
+	requestDeleteWatchObserver: Ditto.
+
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* Proc.java (getExe): Remove in favor of getExeFile.  Replace all callers.
