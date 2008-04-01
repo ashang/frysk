@@ -1,3 +1,13 @@
+2008-04-01  Andrew Cagney  <cagney@redhat.com>
+
+	Import 2008-03-20  Tom Tromey  <tromey@redhat.com>
+	* tools/gnu/classpath/tools/getopt/Parser.java (options): Don't
+	initialize.
+	(add, addFinal): Don't update options.
+	(requireOptions): New method.
+	(printHelp): Synchronize.  Call requireOptions.
+	(parse): Call requireOptions.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (getopt.jar): Pass JAVACFLAGS to JAVAC.
