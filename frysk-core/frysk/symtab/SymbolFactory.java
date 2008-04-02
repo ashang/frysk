@@ -84,7 +84,7 @@ public class SymbolFactory
 	if (dwfl == null)
 	    return UNKNOWN;
 
-	DwflModule module = dwfl.getModule(address);
+	final DwflModule module = dwfl.getModule(address);
 	if (module == null)
 	    return UNKNOWN;
 
@@ -99,7 +99,7 @@ public class SymbolFactory
 		    warning.log("Symbol", name, "reported on address", value,
 				"where symbol was already reported:", symbol.getName());
 		else if (name != null)
-		    symbol = new DwflSymbol (value, size, name, type);
+		    symbol = new DwflSymbol (value, size, name, type, null, module);
 	    }
 	}
 	Builder builder = new Builder();
@@ -116,7 +116,7 @@ public class SymbolFactory
      * Return symbols in given DwflModule.
      * @return List&lt;DwflSymbol&gt;
      */
-    public static List getSymbols(DwflModule module) {
+    public static List getSymbols(final DwflModule module) {
 	Map dwSymbols = new HashMap();
 	for (Iterator it = module.getPubNames().iterator(); it.hasNext(); ) {
 	    DwarfDie die = (DwarfDie)it.next();
@@ -129,7 +129,8 @@ public class SymbolFactory
 	    ElfSymbol sym = (ElfSymbol)it.next();
 	    DwarfDie die = (DwarfDie)dwSymbols.get(sym.getName());
 	    symbols.add(new DwflSymbol(sym.getAddress(), sym.getSize(),
-				       sym.getName(), sym.getType(), die));
+				       sym.getName(), sym.getType(),
+				       die, module));
 	    elfSymbols.put(sym.getName(), sym);
 	}
 	fine.log("Got", symbols.size(), "symbols after sweep over symtabs.");
@@ -146,7 +147,7 @@ public class SymbolFactory
 		    long size = die.getHighPC() - die.getLowPC();
 		    lib.dwfl.ElfSymbolType type = null; // XXX fixme
 		    symbols.add(new DwflSymbol(addr, size, die.getName(),
-					       type, die));
+					       type, die, module));
 		}
 	    }
 	}

@@ -44,26 +44,27 @@ package frysk.symtab;
  * portion, optionally carries over dwarf die portion.
  */
 
-import lib.dwfl.DwarfDie;
 import lib.dwfl.ElfSymbolType;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflModule;
 
 public class DwflSymbol
     extends Symbol
 {
     private final DwarfDie dwarfDie;
-
-    // package private constructor.
-    DwflSymbol(long address, long size, String name, ElfSymbolType type) {
-	super (address, size, name, type);
-	this.dwarfDie = null;
-    }
+    private final DwflModule dwflModule;
 
     // package private constructor.
     DwflSymbol(long address, long size, String name,
-	       ElfSymbolType type, DwarfDie dw)
+	       ElfSymbolType type, DwarfDie die, DwflModule module)
     {
 	super (address, size, name, type);
-	this.dwarfDie = dw;
+	this.dwarfDie = die;
+	this.dwflModule = module;
+    }
+
+    public DwflModule getModule() {
+	return this.dwflModule;
     }
 
     public DwarfDie getDie() {
