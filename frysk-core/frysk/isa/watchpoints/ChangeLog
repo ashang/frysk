@@ -1,3 +1,11 @@
+2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Watchpoint.java: Refactor to WatchpointFunctions.java
+	* IA32Watchpoint.java: Refactor to IA32WatchpointFunctions.java
+	* X8664Watchpoint.java: Refactor to X8664WatchpointFunctions.java
+	* WatchpointFactory.java: Refactor to WatchpointFunctionFactory.javs
+	* TestWatchpoints.java: Update.
+
 2008-04-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Watchpoint.java (hasWatchpointTriggered): Define.

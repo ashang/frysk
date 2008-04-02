@@ -58,7 +58,7 @@ public class TestWatchpoint extends TestLib {
 	Task task = proc.getMainTask();
 	long address = 0x1000;
 	long debugControlRegister;
-	Watchpoint wp = WatchpointFactory.getWatchpoint(task.getISA());
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
 	long savedDebugControlRegister = wp.readControlRegister(task);
 	for (int i=0; i<4; i++) {
 
@@ -111,7 +111,7 @@ public class TestWatchpoint extends TestLib {
 	Task task = proc.getMainTask();
 	long address = 0x1000;
 	long debugControlRegister;
-	Watchpoint wp = WatchpointFactory.getWatchpoint(task.getISA());
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
 	long savedDebugControlRegister = wp.readControlRegister(task);
 	for (int i=0; i<4; i++) {
 
@@ -166,7 +166,8 @@ public class TestWatchpoint extends TestLib {
 	Task task = proc.getMainTask();
 	long address = 0x0;
 	long debugControlRegister;	
-	Watchpoint wp = WatchpointFactory.getWatchpoint(task.getISA());
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
+
 	long savedDebugControlRegister = wp.readControlRegister(task);
 
 	for (int i=0; i<4; i++) {

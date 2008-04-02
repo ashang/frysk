@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,26 +39,26 @@
 
 package frysk.isa.watchpoints;
 
-import frysk.isa.registers.IA32Registers;
+import frysk.isa.registers.X8664Registers;
 import frysk.proc.Task;
 
-class IA32Watchpoint extends Watchpoint {
+class X8664WatchpointFunctions extends WatchpointFunctions {
 
     // Architecture Watchpoint Count. Number of usable
     // Address-Breakpoint Registers (DR0-DR3)
-    public IA32Watchpoint () {
+    public X8664WatchpointFunctions () {
 	noOfWatchpoints = 4;
     }
-
+   
     /**
      * Builds and sets a hardware watchpoint on a task.
      *
      * @param task - task to set a watchpoint on.
-     * @param index - watchpoint number to write. Architecture
-     * dependent.
+     * @param index - watchpoint number to write. 4 on
+     * x8664
      * @param addr - linear virtual address to watch.
      * @param range - length of range to watch. Normally
-     * 1,2 or 4 bytes.
+     * 1,24, or 8 bytes.
      * @param writeOnly - When true, only trigger when address is
      * written. False, trigger when address is read or written to.
      * @param localOnly - set local extant only.
@@ -68,16 +68,15 @@ class IA32Watchpoint extends Watchpoint {
 	       boolean writeOnly, 
 	       boolean localOnly) {
 
-	
 	// turn bit off (b = bit no): l &= ~(1L << b)
 	// turn bit on ( b= bit no):  l |= (1L << b);
-	if ((range == 1) || (range == 2) || (range == 4)) {
+	if ((range == 1) || (range == 2) || (range == 4) || (range == 8)) {
 	    
 	    // Set the Debug register with the linear address.
-	    task.setRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index],
+	    task.setRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     addr);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(IA32Registers.DEBUG_CONTROL);
+	    long debugControl = task.getRegister(X8664Registers.DEBUG_CONTROL);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -85,11 +84,11 @@ class IA32Watchpoint extends Watchpoint {
 	    
 	    // Calculate "Global Exact Breakpoint #index Enabled" bit to set
 	    int bitToSet = index * 2;
-	    
+
 	    if (localOnly) {
-		// Set "Local Exact Breakpoint #index Enabled" to 0
+		// Set "Local Exact Breakpoint #index Enabled" to 1
 		debugControl |= (1L << bitToSet);		
-		// Set Global Exact Breakpoint to 1
+		// Set Global Exact Breakpoint to 0
 		debugControl &= ~(1L << bitToSet+1);		
 	    } else {
 		// Set "Local Exact Breakpoint #index Enabled" to 0
@@ -97,7 +96,6 @@ class IA32Watchpoint extends Watchpoint {
 		// Set Global Exact Breakpoint to 1
 		debugControl |= (1L << bitToSet+1);
 	    }	    
-	    
 	    // Dending on the WP register to set, the next
 	    // 4 bits are offset 4 * WP Count. On x8664 
 	    // the control bits for DR0 start at bit 16,
@@ -109,7 +107,6 @@ class IA32Watchpoint extends Watchpoint {
 	    // bits 11 = read/write. bits 01 = write only.
 	    int typeOfWpTrap = 16 + (index *4);
 	    
-	    
 	    if (writeOnly) {
 		debugControl |= (1L << typeOfWpTrap);
 		debugControl &= ~(1L << typeOfWpTrap+1);		
@@ -117,7 +114,6 @@ class IA32Watchpoint extends Watchpoint {
 		debugControl |= (1L << typeOfWpTrap);
 		debugControl |= (1L << typeOfWpTrap+1);
 	    }
-
 	    // Set watch point length
 	    // 00 = 1 byte, 01 = 2 bytes, 11 = 4 bytes
 	    // 10 = 8 bytes
@@ -141,7 +137,7 @@ class IA32Watchpoint extends Watchpoint {
 		break;
 	    }
 
-	    task.setRegister(IA32Registers.DEBUG_CONTROL, debugControl);
+	    task.setRegister(X8664Registers.DEBUG_CONTROL, debugControl);
 	}
 	else
 	    throw new RuntimeException("Invalid size for watchpoint " +
@@ -157,8 +153,8 @@ class IA32Watchpoint extends Watchpoint {
      * @return long - value of register for watchpoint.
      */
     public long readWatchpoint(Task task, int index) {
-	return task.getRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
-    }		
+	return task.getRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
+    }	
 
     /**
      * Deletes a watchpoint. Takes a task, and an index.
@@ -170,10 +166,10 @@ class IA32Watchpoint extends Watchpoint {
      */
     public final void deleteWatchpoint(Task task, int index) {
 	    // Set the Debug register with the linear address.
-	    task.setRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index],
+	    task.setRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     0x0L);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(IA32Registers.DEBUG_CONTROL);
+	    long debugControl = task.getRegister(X8664Registers.DEBUG_CONTROL);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -194,7 +190,19 @@ class IA32Watchpoint extends Watchpoint {
 	    debugControl &= ~(1L << length);
 	    debugControl &= ~(1L << length+1);
 
-	    task.setRegister(IA32Registers.DEBUG_CONTROL, debugControl);
+	    task.setRegister(X8664Registers.DEBUG_CONTROL, debugControl);
+    }
+
+    
+
+    /**
+     * Reads the Debug control register.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     */
+    public long readControlRegister(Task task) {
+	return task.getRegister(X8664Registers.DEBUG_CONTROL);
     }
 
     /**
@@ -205,21 +213,9 @@ class IA32Watchpoint extends Watchpoint {
      * register from.
      */
     public boolean hasWatchpointTriggered(Task task, int index) {
-	long debugStatus = task.getRegister(IA32Registers.DEBUG_STATUS);	
+	long debugStatus = task.getRegister(X8664Registers.DEBUG_STATUS);
 	return (debugStatus & (1L << index)) != 0;
     }
 
 
-    /**
-     * Reads the Debug control register.
-     *
-     * @param task - task to read the debug control
-     * register from.
-     */
-    public long readControlRegister(Task task) {
-	return task.getRegister(IA32Registers.DEBUG_CONTROL);
-    }
-
 }
-
-

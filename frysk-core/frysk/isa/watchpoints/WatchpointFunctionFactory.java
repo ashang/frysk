@@ -46,13 +46,13 @@ import frysk.isa.ISAMap;
  * Watchpoint call database.
  */
 
-public class WatchpointFactory {
+public class WatchpointFunctionFactory {
     private static final ISAMap watchpointTables = new ISAMap("watchpoint table")
-	.put(ISA.IA32, new IA32Watchpoint())
-	.put(ISA.X8664, new X8664Watchpoint())
+	.put(ISA.IA32, new IA32WatchpointFunctions())
+	.put(ISA.X8664, new X8664WatchpointFunctions())
 	;
 
-    public static Watchpoint getWatchpoint(ISA isa) {
-	return (Watchpoint) watchpointTables.get(isa);
+    public static WatchpointFunctions getWatchpoint(ISA isa) {
+	return (WatchpointFunctions) watchpointTables.get(isa);
     }
 }
