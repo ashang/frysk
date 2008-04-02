@@ -44,20 +44,28 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "funit">
+ <!ENTITY volume "8">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="funit">
+<refentry>
 
   <refentryinfo>
-    <title>funit</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
@@ -185,29 +193,11 @@
           <para> Specify the test timeout value in seconds. Default is 5.</para>
         </listitem>
       </varlistentry>
-      
     </variablelist>
+
+    &standardoptions;
+
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
@@ -219,26 +209,6 @@
     <screen>@pkglib64dir@/funit</screen>
   </refsect1>
    
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-    <variablelist>
-      <varlistentry>
-	<term>An error message.</term>
-	<listitem>
-          <para> This error can appear when Funit is terminated
-          abruptly (as during a loss of power).  Typically you need to
-          manually open the perspectives and views that you want.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
     <para>
@@ -250,28 +220,9 @@
     </para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

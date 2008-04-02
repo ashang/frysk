@@ -45,115 +45,80 @@
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
-
  [
  <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
  <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
  <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fstack">
+ <!ENTITY volume "1">
  ]
 >
 
-<refentry id="fstack">
+<refentry>
 
   <refentryinfo>
-    <title>Frysk Utilities</title>
-    <date>March 31 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fstack</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
     <refmiscinfo class='source'>Frysk</refmiscinfo>
     <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fstack</refname>
-    <refpurpose>Runs the frysk stack trace utility</refpurpose>
+    <refpurpose>print a stack back-trace</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fstack</command>
-      <arg rep="repeat" choice="plain">
-        <replaceable>pids</replaceable>
+      <command>&command;</command>
+      <arg choice="opt">
+	<replaceable>options</replaceable>
       </arg>
+      <group choice="req">
+	<arg rep="repeat" choice="plain">
+          <replaceable>pid</replaceable>
+	</arg>
+	<arg rep="repeat" choice="plain">
+	  <arg choice="plain">
+            <replaceable>core-file</replaceable>
+	  </arg>
+	  <arg choice="opt">
+            <replaceable>core-executable</replaceable>
+	  </arg>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fstack</function> prints a stack back-trace of the
-    specified process, or core-file's threads.</para>
+    <para><function>fstack</function> prints a stack back-trace of all
+    threads of the specified process or core-file.</para>
 
     &stackoptions;
     &standardoptions;
 
   </refsect1>
   
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fstack pid [...]</screen>
+    <screen>&command; 1234</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7)</para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

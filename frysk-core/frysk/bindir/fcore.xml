@@ -44,159 +44,110 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fcore">
+ <!ENTITY volume "1">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="fcore">
+<refentry>
 
   <refentryinfo>
-    <title>fcore</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fcore</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fcore</refname>
-    <refpurpose>Runs the frysk core dump utility.</refpurpose>
+    <refpurpose>extract a core file from a process</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fcore</command>
+      <command>&command;</command>
       <arg choice="opt">
-        <option>-a </option>
+	<replaceable>options</replaceable>
       </arg>
-      <arg choice="opt">
-        <option>-s </option>
-      </arg>
-      <arg choice="opt">
-        <option>-o <replaceable>filename</replaceable></option>
-      </arg>
-      <arg choice="opt">
-        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
-      <arg choice="opt">
-        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
-     <arg rep="repeat" choice="plain">
-        <replaceable>pids</replaceable>
-      </arg>
+      <group choice="req">
+	<arg rep="repeat" choice="plain">
+          <replaceable>pid</replaceable>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fcore</function> Executes the frysk core dump utility.</para>
-
-    <para>fcore is a utility that constructs a core-file from a running process, and writes it to disk. </para>
+    <para><function>fcore</function> constructs a core-file from a
+    running process, and writes it to disk. </para>
 
     <variablelist>
       <varlistentry>
-	<term><option>-a, -allmaps</option></term>
+	<term>
+	  <option>-a</option>
+	</term>
+	<term>
+	  <option>-allmaps</option>
+	</term>
 	<listitem>
           <para> Write all readable segment maps. The default level is
-	to attempt to emulate gcore segment writing strategy. By
-	specifying this option, fcore will write all readable maps. 
-	</para>
+	    to attempt to emulate gcore segment writing strategy. By
+	    specifying this option, fcore will write all readable
+	    maps.
+	  </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-s, -segments <replaceable>regex</replaceable></option></term>
+	<term>
+	  <option>-s</option>
+	</term>
+	<term>
+	  <option>-segments <replaceable>regex</replaceable></option>
+	</term>
 	<listitem>
           <para> Writes only the segments that match the regex specified. Elide all other segments. </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-o <replaceable>output-file</replaceable></option></term>
+	<term>
+	  <option>-o <replaceable>output-file</replaceable></option>
+	</term>
 	<listitem>
           <para> Specifies the name of the core file. Default is core.
 	The core-file extension will still use the pid of the process being dumped.</para>
         </listitem>
       </varlistentry>
-      <varlistentry>
-	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
-        </listitem>
-      </varlistentry>
     </variablelist>
+
+    &standardoptions;
+
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fcore pid [...]</screen>
+    <screen>&command; 1234</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(8)</para>
+    <para>frysk(7)</para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

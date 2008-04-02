@@ -41,37 +41,42 @@
 
 -->
 
-<para>Standard Frysk options:</para>
+<refsect2>
 
-<variablelist>
+  <title>Standard Frysk Options</title>
 
-  <varlistentry>
-    <term><option>-exe</option></term>
-    <listitem><para>The full path of the executable to
-    read.</para></listitem>
-  </varlistentry>
+  <variablelist>
 
-  <varlistentry>
-    <term><option>-noexe</option></term>
-    <listitem><para>Do not attempt to read the corresponding
-    executable when loading a core file.</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-exe</option></term>
+      <listitem><para>The full path of the executable to
+	  read.</para></listitem>
+    </varlistentry>
 
-  <varlistentry>
-    <term><option>-sysroot <replaceable>directory</replaceable></option></term>
-    <listitem><para>The system root directory under which all
-    executables, libraries, and source are located.</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-noexe</option></term>
+      <listitem><para>Do not attempt to read the corresponding
+	  executable when loading a core file.</para></listitem>
+    </varlistentry>
 
-  <varlistentry>
-    <term><option>-debug <replaceable>class</replaceable>=<replaceable>level</replaceable>...</option></term>
-    <listitem><para>Set internal debug-tracing of the specified
-    Java <replaceable>class</replaceable>
-    to <replaceable>level</replaceable> (level can be NONE, INFO,
-    WARNING, FINE, and FINEST).  If
-    the <replaceable>level</replaceable> is absent, FINE is assumed;
-    if the <replaceable>class</replaceable> is absent, the global
-    level is set.</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-sysroot <replaceable>directory</replaceable></option></term>
+      <listitem><para>The system root directory under which all
+	  executables, libraries, and source are
+	  located.</para></listitem>
+    </varlistentry>
 
-</variablelist>
+    <varlistentry>
+      <term><option>-debug <replaceable>class</replaceable>=<replaceable>level</replaceable>...</option></term>
+      <listitem><para>Set internal debug-tracing of the specified
+	  Java <replaceable>class</replaceable>
+	  to <replaceable>level</replaceable> (level can be NONE,
+	  INFO, WARNING, FINE, and FINEST).  If
+	  the <replaceable>level</replaceable> is absent, FINE is
+	  assumed; if the <replaceable>class</replaceable> is absent,
+	  the global level is set.</para></listitem>
+    </varlistentry>
+    
+  </variablelist>
+
+</refsect2>

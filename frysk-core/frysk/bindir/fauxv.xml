@@ -44,128 +44,80 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fauxv">
+ <!ENTITY volume "1">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="fauxv">
+<refentry>
 
   <refentryinfo>
-    <title>fauxv</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fauxv</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fauxv</refname>
-    <refpurpose>Prints out a process or a corefile's auxv data.</refpurpose>
+    <refpurpose>print the auxiliary vector</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fauxv</command>
+      <command>&command;</command>
       <arg choice="opt">
-        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
+	<replaceable>options</replaceable>
       </arg>
-      <arg choice="opt">
-        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
-     <arg rep="repeat" choice="plain">
-        <replaceable>pids corefile</replaceable>
-      </arg>
+      <group choice="req">
+	<arg rep="repeat" choice="plain">
+          <replaceable>pid</replaceable>
+	</arg>
+	<arg rep="repeat" choice="plain">
+	  <arg choice="plain">
+            <replaceable>core-file</replaceable>
+	  </arg>
+	  <arg choice="opt">
+            <replaceable>core-executable</replaceable>
+	  </arg>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fauxv</function> Executes the frysk axuv dump utility.</para>
+    <para><function>fauxv</function>prints the auxiliary vector of the
+      specified process or core-file.</para>
 
-    <para>fauxv is a utility that prints out a process or a corefile's auxv data. </para>
+    &standardoptions;
 
-    <variablelist>
-      <varlistentry>
-	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fauxv pid [...]</screen>
+    <screen>&command; 1234</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7)</para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

@@ -41,47 +41,52 @@
 
 -->
 
-<para>Stack print options:</para>
+<refsect2>
 
-<variablelist>
+  <title>Stack Print Options</title>
 
-  <varlistentry>
-    <term><option>-number-of-frames <replaceable>count</replaceable></option></term>
-    <listitem>
-    <para>Limit the back-trace to <replaceable>count</replaceable>
-    frames.  The default is to limit the back-trace to 10 frames.
-    Specify 0 or "all" to print all frames.</para></listitem>
-  </varlistentry>
+  <variablelist>
 
-  <varlistentry>
-    <term><option>-lite</option></term>
-    <listitem>
-    <para>Perform a light-weight stack backtrace containing only
-    minimal information.  Equivalent to <command>-print
-    -</command>.</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-number-of-frames <replaceable>count</replaceable></option></term>
+      <listitem>
+	<para>Limit the back-trace to <replaceable>count</replaceable>
+	  frames.  The default is to limit the back-trace to 10
+	  frames.  Specify 0 or "all" to print all
+	  frames.</para></listitem>
+    </varlistentry>
 
-  <varlistentry>
-    <term><option>-rich</option></term>
-    <listitem>
-    <para>Perform a detailed stack back-trace that includes, where
-    possible, inlined function calls, parameter names and values, and
-    debug-names.  Equivalent to <command>-print
-    inline,params,debug-names</command>.</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-lite</option></term>
+      <listitem>
+	<para>Perform a light-weight stack backtrace containing only
+	  minimal information.  Equivalent to <command>-print
+	  -</command>.</para></listitem>
+    </varlistentry>
 
-  <varlistentry>
-    <term><option>-print <replaceable>print-option</replaceable>,...</option></term>
-    <listitem>
-    <para>Specify the level of detail to include in a stack
-    back-trace.  <replaceable>print-option</replaceable> can be any
-    of: debug-names - use debug information, such as DWARF, to
-    determine the name of functions; full-path - do not truncate file
-    paths; inline - include in-line function in back-trace; locals -
-    to include local variables from each frame; params - include the
-    values of any parameters.  To negate
-    a <replaceable>print-option</replaceable> prefix it with
-    "-".</para></listitem>
-  </varlistentry>
+    <varlistentry>
+      <term><option>-rich</option></term>
+      <listitem>
+	<para>Perform a detailed stack back-trace that includes, where
+	  possible, inlined function calls, parameter names and
+	  values, and debug-names.  Equivalent to <command>-print
+	  inline,params,debug-names</command>.</para></listitem>
+    </varlistentry>
 
-</variablelist>
+    <varlistentry>
+      <term><option>-print <replaceable>print-option</replaceable>,...</option></term>
+      <listitem>
+	<para>Specify the level of detail to include in a stack
+	  back-trace.  <replaceable>print-option</replaceable> can be
+	  any of: debug-names - use debug information, such as DWARF,
+	  to determine the name of functions; full-path - do not
+	  truncate file paths; inline - include in-line function in
+	  back-trace; locals - to include local variables from each
+	  frame; params - include the values of any parameters.  To
+	  negate a <replaceable>print-option</replaceable> prefix it
+	  with "-".</para></listitem>
+    </varlistentry>
+    
+  </variablelist>
+
+</refsect2>

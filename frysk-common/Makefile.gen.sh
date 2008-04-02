@@ -619,11 +619,15 @@ do
       *dir/* )
           # Only programs in bindir, pkglibdir et.al. get man pages.
           # extract the section number
-	  n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $xml`
+	  n=`sed -n <  $xml \
+	      -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' \
+	      -e 's,.*ENTITY volume "\([0-9]\)".*,\1,p'`
 	  d=`dirname $xml`
           # And the possible list of names.
-	  sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $xml \
-	          | while read title ; do
+	  sed -n < $xml \
+	      -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' \
+	      -e 's,.*ENTITY command "\([^"]*\)".*,\1,p' \
+	          | sort -u | while read title ; do
                   # Need to generate explicit rules
                   cat <<EOF
 man_MANS += ${d}/${title}.${n}

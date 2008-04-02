@@ -44,118 +44,80 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fcatch">
+ <!ENTITY volume "1">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="fcatch">
+<refentry>
 
   <refentryinfo>
-    <title>fcatch</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fcatch</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fcatch</refname>
-    <refpurpose>Runs the frysk application crash and signal stack tracing utility</refpurpose>
+    <refpurpose>print a stack back-trace of a program as it crashes</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fcatch [OPTIONS] -- PATH ARGS</command>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
+      <command>&command;</command>
+      <arg choice="opt">
+	<replaceable>options</replaceable>
+      </arg>
+      <group choice="req">
+	<arg choice="plain">
+	  <arg choice="plain">
+	    <replaceable>program</replaceable>
+	  </arg>
+	  <arg rep="repeat" choice="plain">
+            <replaceable>arg</replaceable>
+	  </arg>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fcatch</function> Runs the frysk application crash stack tracing utility</para>
+    <para><function>fcatch</function> generate stack backtraces from a
+    running application as it crashes, or upon receiving a variety of
+    signals.</para>
 
-    <para>fcatch is a small utility that uses the frysk engine to generate stack backtraces from an application crash, or upon receiving a variety of signals.</para>
+    &stackoptions;
+    &standardoptions;
 
-    <!-- variablelist>
-      <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
-	<listitem>
-          <para> Description of option. </para>
-          
-        </listitem>
-      </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fcatch /usr/bin/foo</screen>
-    <screen>fcatch -p [PID]</screen>
+    <screen>&command; 1234</screen>
+    <screen>&command; /usr/bin/foo</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(8)</para>
+    <para>frysk(7)</para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

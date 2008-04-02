@@ -44,100 +44,83 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fhpd">
+ <!ENTITY volume "1">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="fhpd">
+<refentry>
 
   <refentryinfo>
-    <title>fhpd</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fhpd</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fhpd</refname>
-    <refpurpose>The Frysk Debugger</refpurpose>
+    <refpurpose>a command line debugger</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fhpd</command>
+      <command>&command;</command>
       <arg choice="opt">
-        <replaceable>pid</replaceable>
+	<replaceable>options</replaceable>
       </arg>
-      <arg choice="opt">
-        <replaceable>executable</replaceable>
-      </arg>
-       <arg choice="opt">
-        <replaceable>core</replaceable>
-        <replaceable>execFile</replaceable>
-      </arg>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
+      <group choice="req">
+	<arg choice="plain">
+	  <arg choice="plain">
+	    <replaceable>program</replaceable>
+	  </arg>
+	  <arg rep="repeat" choice="plain">
+            <replaceable>arg</replaceable>
+	  </arg>
+	</arg>
+	<arg rep="repeat" choice="plain">
+          <replaceable>pid</replaceable>
+	</arg>
+	<arg rep="repeat" choice="plain">
+	  <arg choice="plain">
+            <replaceable>core-file</replaceable>
+	  </arg>
+	  <arg choice="opt">
+            <replaceable>core-executable</replaceable>
+	  </arg>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fhpd</function> 
-    is a command line oriented debugger based on the Frysk framework that
-    follows the HPD Version 1 standard.
+    <para><function>fhpd</function> is a command line oriented
+    debugger implemented using the frysk(7) framework with a command
+    set loosely based on the High Performance Debugger Forum's Version
+    1 standard.
     </para>
 
-    <!-- variablelist>
-      <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
-	<listitem>
-          <para> Description of option. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
+    &standardoptions;
+
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fhpd</screen>
+    <screen>&command; 1234</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7)</para>
@@ -150,23 +133,9 @@
     </para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

@@ -44,25 +44,34 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ ]
+>
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
 <refentry id="ftrace">
 
   <refentryinfo>
-    <title>ftrace</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
     <refentrytitle>ftrace</refentrytitle>
     <manvolnum>1</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>ftrace</refname>
-    <refpurpose>Runs the frysk systemcall and function call tracing utility</refpurpose>
+    <refpurpose>trace system and function calls</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -236,6 +245,10 @@
 	  </varlistentry>
 	</variablelist>
     </refsect2>
+
+    &stackoptions;
+    &standardoptions;
+
   </refsect1>
 
   <refsect1>

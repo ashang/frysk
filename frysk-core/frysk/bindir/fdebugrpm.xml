@@ -44,131 +44,90 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fdebugrpm">
+ <!ENTITY volume "1">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="fdebugrpm">
+<refentry>
 
   <refentryinfo>
-    <title>fdebugrpm</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fdebugrpm</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fdebugrpm</refname>
-    <refpurpose>Installs missing debuginfo packages as returned by utility, fdebuginfo</refpurpose>
+    <refpurpose>install missing debuginfo packages</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>fdebugrpm.sh</command>
-       <arg choice="opt">
-        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
-      </arg>
+      <command>&command;</command>
       <arg choice="opt">
-        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
+	<replaceable>options</replaceable>
       </arg>
-      <arg rep="repeat" choice="plain">
-        <replaceable>pids</replaceable>
-      </arg>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
+      <group choice="req">
+	<arg choice="plain">
+	  <arg choice="plain">
+	    <replaceable>program</replaceable>
+	  </arg>
+	  <arg rep="repeat" choice="plain">
+            <replaceable>arg</replaceable>
+	  </arg>
+	</arg>
+	<arg rep="repeat" choice="plain">
+          <replaceable>pid</replaceable>
+	</arg>
+	<arg rep="repeat" choice="plain">
+	  <arg choice="plain">
+            <replaceable>core-file</replaceable>
+	  </arg>
+	  <arg choice="opt">
+            <replaceable>core-executable</replaceable>
+	  </arg>
+	</arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fdebugrpm</function> Installs missing debuginfo packages as returned by utility, fdebuginfo</para>
+    <para><function>fdebugrpm</function> is a bash script that uses
+    the utility fdebuginfo(1) to determine any missing Debug
+    Information, allowing the user to install the missing debuginfo
+    packages.  User needs to be in the sudoers(5) file.</para>
 
-    <para>fdebugrpm is a bash script that runs the utility fdebuginfo and allows the user to install the missing debuginfo packages. User needs to be in the sudoers list for succesful install.</para>
+    &standardoptions;
 
-    <variablelist>
-    <varlistentry>
-	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
-	<listitem>
-          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
-        </listitem>
-      </varlistentry>      
-    </variablelist>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fstack pid [...]</screen>
+    <screen>&command; 1234</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
   
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
-
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7) fdebuginfo(1)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http://sourceware.org/frysk/"/></para>
+    <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
-
 </refentry>

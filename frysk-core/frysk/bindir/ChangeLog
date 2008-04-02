@@ -1,3 +1,17 @@
+2008-04-02  Andrew Cagney  <cagney@redhat.com>
+
+	* fstack.xml: Use a title and volume entity.
+	* fauxv.xml: Add standard options and version.
+	* fmaps.xml: Ditto.
+	* fhpd.xml: Ditto.
+	* fdebuginfo.xml: Ditto.
+	* fdebugrpm.xml: Ditto.
+	* fcore.xml: Ditto.
+	* fexe.xml: Ditto.
+	* ferror.xml: Add standard and stack options; and version.
+	* fcatch.xml: Ditto.
+	* ftrace.xml: Ditto.
+
 2008-04-01  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFstack.java: Ditto.
