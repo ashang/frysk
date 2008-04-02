@@ -117,6 +117,15 @@ find_file (Dwfl_Module *mod)
   mod->main.fd = (*mod->dwfl->callbacks->find_elf) (MODCB_ARGS (mod),
 						    &mod->main.name,
 						    &mod->main.elf);
+
+  /* Bail out on error, but if there was a pre-primed file name left
+     behind by the callback, try to open that file name.  */
+  if (mod->main.fd < 0 && mod->main.name == NULL)
+    {
+      mod->elferr = DWFL_E_CB;
+      return;
+    }
+
   mod->elferr = open_elf (mod, &mod->main);
 
   if (mod->elferr == DWFL_E_NOERROR && !mod->main.valid)
@@ -206,6 +215,12 @@ find_debuginfo (Dwfl_Module *mod)
 							   debuglink_file,
 							   debuglink_crc,
 							   &mod->debug.name);
+
+  /* Bail out on error, but if there was a pre-primed file name left
+     behind by the callback, try to open that file name.  */
+  if (mod->debug.fd < 0 && mod->debug.name == NULL)
+    return DWFL_E_CB;
+
   return open_elf (mod, &mod->debug);
 }
 

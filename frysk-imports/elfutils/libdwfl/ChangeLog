@@ -1,3 +1,9 @@
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+
+	* dwfl_module_getdwarf.c (find_debuginfo): Return DWFL_E_CB when
+	the callback results in an error.
+	(find_file): Likewise.
+
 2008-03-24  Stan Cox  <scox@redhat.com>
 
 	* dwfl_module_getdwarf.c (load_symtab): Keep looking for an external
