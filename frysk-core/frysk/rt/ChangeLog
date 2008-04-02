@@ -1,3 +1,12 @@
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+
+	* FunctionBreakpoint.java: Make fields final.
+	* SymbolBreakpoint.java: New file.
+	* BreakpointManager.java
+	(addBreakpoint): New private auxiliary
+	(addLineBreakpoint, addFunctionBreakpoint): Call addBreakpoint.
+	(addSymbolBreakpoint): New method.
+
 2008-04-01  Petr Machata  <pmachata@redhat.com>
 
 	* FunctionBreakpoint.java: Call getAddresses instead of getSymbol.

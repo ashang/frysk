@@ -162,7 +162,7 @@ public class SymbolFactory
      * @param name
      * @return address list
      */
-    public static LinkedList getAddresses(Task task, String name) {
+    public static LinkedList getAddresses(Task task, String name, ModuleMatcher matcher) {
 	Dwfl dwfl = DwflCache.getDwfl(task);
 	DwflModule[] modules = dwfl.getModules();
 	final LinkedList addrs = new LinkedList();
@@ -177,11 +177,17 @@ public class SymbolFactory
 	};
 	for (int i = 0; i < modules.length; i++) {
 	    DwflModule module = modules[i];
+	    if (matcher != null && !matcher.moduleMatches(module.getName()))
+		continue;
 	    module.getSymbolByName(name, builder);
 	}
 	if (addrs.size() == 0)
 	    throw new RuntimeException("Couldn't find symbol " + name);
 	else
 	    return addrs;
+    }
+
+    public static LinkedList getAddresses(Task task, String name) {
+	return getAddresses(task, name, null);
     }
 }

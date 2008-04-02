@@ -125,6 +125,12 @@ public class BreakpointManager extends Observable {
 
     private HashMap watchers = new HashMap();
 
+    private synchronized void addBreakpoint(SourceBreakpoint bp) {
+        breakpointMap.put(new Integer(bp.getId()), bp);
+        setChanged();
+        notifyObservers();
+    }
+
     /**
      * Create a line breakpoint that is not associated with any
      * process.
@@ -133,16 +139,14 @@ public class BreakpointManager extends Observable {
      * @param column column number in the file
      * @return LineBreakpoint object
      */
-    public synchronized LineBreakpoint addLineBreakpoint(String fileName,
-                                                         int lineNumber,
-                                                         int column) {
-        int bptId = CountManager.getNextId();
-        LineBreakpoint sourceBreakpoint
-            = new LineBreakpoint(bptId, fileName, lineNumber, column);
-        breakpointMap.put(new Integer(bptId), sourceBreakpoint);
-        setChanged();
-        notifyObservers();
-        return sourceBreakpoint;
+    public LineBreakpoint addLineBreakpoint(String fileName,
+					    int lineNumber,
+					    int column) {
+	LineBreakpoint sourceBreakpoint =
+	    new LineBreakpoint(CountManager.getNextId(),
+			       fileName, lineNumber, column);
+	addBreakpoint(sourceBreakpoint);
+	return sourceBreakpoint;
     }
 
     /**
@@ -150,8 +154,11 @@ public class BreakpointManager extends Observable {
      * @param symbol the symbol to breakpoint at
      * @return FunctionBreakpoint object
      */
-    public FunctionBreakpoint addFunctionBreakpoint(DwflSymbol symbol) {
-	return addFunctionBreakpoint(symbol.getName(), symbol.getDie());
+    public SymbolBreakpoint addSymbolBreakpoint(DwflSymbol symbol) {
+	SymbolBreakpoint sourceBreakpoint =
+	    new SymbolBreakpoint(CountManager.getNextId(), symbol);
+	addBreakpoint(sourceBreakpoint);
+	return sourceBreakpoint;
     }
 
     /**
@@ -163,13 +170,10 @@ public class BreakpointManager extends Observable {
      * @return FunctionBreakpoint object
      */
     public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die) {
-        int bptId = CountManager.getNextId();
-        FunctionBreakpoint sourceBreakpoint
-            = new FunctionBreakpoint(bptId, name, die);
-        breakpointMap.put(new Integer(bptId), sourceBreakpoint);
-        setChanged();
-        notifyObservers();
-        return sourceBreakpoint;
+	FunctionBreakpoint sourceBreakpoint =
+	    new FunctionBreakpoint(CountManager.getNextId(), name, die);
+	addBreakpoint(sourceBreakpoint);
+	return sourceBreakpoint;
     }
 
     /**

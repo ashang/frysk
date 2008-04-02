@@ -1,8 +1,14 @@
 2008-04-02  Petr Machata  <pmachata@redhat.com>
 
+	* ModuleMatcher.java: New file.
+	* SymbolFactory.java
+	(getAddresses(Task,String,ModuleMatcher)): New method.
+
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+
 	* DwflSymbol.java
 	(DwflSymbol(long,long,String,ElfSymbolType,DwarfDie)): Take extra
-	parametr for DwflModule of symbol's origin.
+	parameter for DwflModule of symbol's origin.
 	(DwflSymbol(long,long,String,ElfSymbolType)): Drop.
 	* SymbolFactory.java: Adjust to above.
 

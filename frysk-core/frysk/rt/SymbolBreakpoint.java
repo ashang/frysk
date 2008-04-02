@@ -40,81 +40,41 @@
 
 package frysk.rt;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
-import lib.dwfl.DwarfDie;
-import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
+import frysk.symtab.DwflSymbol;
+import frysk.symtab.ModuleMatcher;
 import frysk.symtab.SymbolFactory;
 
-public class FunctionBreakpoint
-  extends SourceBreakpoint {
-    protected final String name;
-    protected final DwarfDie die;
+public class SymbolBreakpoint
+  extends FunctionBreakpoint {
 
-    private boolean containsInlineInstances = false;
+    private final DwflSymbol symbol;
 
     /**
-     * Set a breakpoint based on a DwarfDie or just a name.
+     * Set a breakpoint based on a DwflSymbol.
      */
-    public FunctionBreakpoint(int id, String name, DwarfDie die) {
-        super(id);
-        this.name = name;
-        this.die = die;
+    public SymbolBreakpoint(int id, DwflSymbol symbol) {
+	super (id, symbol.getName(), symbol.getDie());
+	this.symbol = symbol;
     }
 
     public LinkedList getBreakpointRawAddresses(Task task) {
-	if (die != null) {
-	    ArrayList entryAddrs = die.getEntryBreakpoints();
-	    ArrayList inlineDies = null;
-	    if (die.isInlineDeclaration()) {
-		inlineDies = die.getInlinedInstances();
-	    }
-	    LinkedList addrs;
-	    if (entryAddrs == null)
-		addrs = new LinkedList();
-	    else
-		addrs = new LinkedList(entryAddrs);
-	    if (inlineDies != null) {
-                ListIterator iterator = inlineDies.listIterator();
-                while (iterator.hasNext()) {
-                    addrs.add(new Long(((InlinedSubroutine)iterator.next())
-                                       .getLowPC()));
-                }
-		containsInlineInstances = true;
-	    }
-	    return addrs;
-	}
+	if (die != null)
+	    return super.getBreakpointRawAddresses(task);
 	else {
             // Filter any null values that have sneaked in.
-            LinkedList addrs = SymbolFactory.getAddresses(task, name);
+	    ModuleMatcher matcher = new ModuleMatcher() {
+		    public boolean moduleMatches(String moduleName) {
+			return moduleName.equals(symbol.getModule().getName());
+		    }
+		};
+            LinkedList addrs = SymbolFactory.getAddresses(task, name, matcher);
             Long nullVal = new Long(0);
             while (addrs.remove(nullVal)) {
             }
 	    return addrs;
 	}
-    }
-
-    public long getRawAddress(Object addr) {
-        return ((Long)addr).longValue();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean containsInlineInstances() {
-        // XXX What about in different processes?
-        return containsInlineInstances;
-    }
-
-    public PrintWriter output(PrintWriter writer) {
-        writer.print(getName());
-        if (containsInlineInstances())
-            writer.print("*");
-        return writer;
     }
 }
