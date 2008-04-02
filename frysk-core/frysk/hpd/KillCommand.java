@@ -58,6 +58,8 @@ public class KillCommand extends ParameterizedCommand {
     	"killed and then reloaded and are then ready to be run again.";
     
     Map saveProcs = new HashMap();
+    
+    PTSet userSet;
 
     KillCommand() {
 	super("kill the current targetset or kill a specific PID", "kill", full);
@@ -65,34 +67,29 @@ public class KillCommand extends ParameterizedCommand {
 
     public void interpret(CLI cli, Input cmd, Object options) {
 	
-	if (cmd.size() > 2)
-	    throw new InvalidCommandException("Too many parameters");
+	userSet = cli.targetset;
 	    
 	switch (cmd.size()) {
 	
-	case 0:
+	default:
+	    throw new InvalidCommandException("Too many parameters");
 	
-	    killProc(-1, cli);
-	    cli.outWriter.flush();
+	case 0:
+	    // See if user specified an HPD notation on the command line
+	    if (cmd.getFullCommand().startsWith("[")) {
+		userSet = cli.getCommandPTSet(cmd);
+		killProc(-1, cli, cmd);
+	    }
+	    // If no HPD notation, kill all currently running procs
+	    else killRunningProcs(cli, cmd);
+	    break;
 	    
-	    synchronized (cli) {
-		// Clear the running procs set
-		cli.runningProcs.clear();
+	   /* synchronized (cli) {
 		// Clear the stepping engine structures
 		cli.steppingEngine.clear();
 		// Add back in the stepping observer for cli
 		cli.steppingEngine.addObserver(cli.steppingObserver);
-	    }
-	    // Now loop through and re-load all of the killed procs
-	    Iterator bar = saveProcs.keySet().iterator();
-	    while (bar.hasNext()) {
-		Integer procId = (Integer) bar.next();
-		String cmdline = (String) saveProcs.get(procId);
-		cli.taskID = procId.intValue();
-		cli.execCommand("load " + cmdline + "\n");
-	    }
-	    cli.taskID = -1;
-	    break;
+	    } */
 	
 	// This is the case where a PID was entered
 	case 1:
@@ -103,14 +100,26 @@ public class KillCommand extends ParameterizedCommand {
 		cli.addMessage("PID entered is not an integer", Message.TYPE_ERROR);
 		return;
 	    }
-	    if (!killProc(pid, cli))
+	    if (!killProc(pid, cli, cmd))
 		cli.addMessage("PID " + pid + " could not be found", Message.TYPE_ERROR);
 	}
+	
+	// Now loop through and re-load all of the killed procs
+	Iterator bar = saveProcs.keySet().iterator();
+	while (bar.hasNext()) {
+	    Integer procId = (Integer) bar.next();
+	    String cmdline = (String) saveProcs.get(procId);
+	    cli.taskID = procId.intValue();
+	    cli.execCommand("load " + cmdline + "\n");
+	}
+	saveProcs.clear();
+	cli.taskID = -1;
     }
 	
     /**
-     * killProc will kill all Procs or just the Proc specified by the PID
-     * passed to it.
+     * killProc will kill all Procs in the current target set or, if a PID
+     *     was passed as a parameter, kill just the Proc specified by the PID
+     *     passed to it.
      * 
      * @param pid
      *                is an int containing the PID that should be killed, if
@@ -118,11 +127,15 @@ public class KillCommand extends ParameterizedCommand {
      *                kill the process of the specified PID.
      * @param cli
      *                is the current command line interface object
+     * @param cmd
+     * 		      is the current Input object
+     * @return 	      
+     * 		      true if proc(s) were killed, false if none were
      */
 	
-    boolean killProc(int pid, CLI cli) {
-	int procPID = 0;
-	Iterator foo = cli.targetset.getTaskData();
+    boolean killProc(int pid, CLI cli, Input cmd) {
+	int procPID = -1;
+	Iterator foo = userSet.getTaskData();
 	while (foo.hasNext()) {
 	    TaskData taskData = (TaskData) foo.next();
 	    Task task = taskData.getTask();
@@ -132,7 +145,6 @@ public class KillCommand extends ParameterizedCommand {
 		cli.addMessage("Killing process " + proc.getPid()
 			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
 			Message.TYPE_NORMAL);
-		cli.outWriter.flush();
 		// Save the procs we are killing so we can re-load them later
 		saveProcs.put(new Integer(taskData.getParentID()), proc
 			.getExeFile().getSysRootedPath());
@@ -147,6 +159,57 @@ public class KillCommand extends ParameterizedCommand {
 	if (pid > 0)
 	    return false;
 	return true;
+    }
+    
+    /**
+     * killRunningProcs is called when the kill command is issued with no
+     *     parameters and no HPD notation in front of it.  This implies that
+     *     all of the processes currently running are to be killed and
+     *     reloaded.
+     *     
+     * @param cli
+     * 			is the current command line interface object
+     * @param cmd
+     * 			is the current command object
+     * @return
+     * 			true if indeed procs were killed, false if not
+     */
+    
+    boolean killRunningProcs(CLI cli, Input cmd) {
+	int tempId = -1;
+	int procId = 0;
+	boolean returnProc = false;
+    	Iterator foo = cli.runningProcs.iterator();
+    	if (!foo.hasNext()) {
+    	    cli.addMessage("No processes to kill", Message.TYPE_ERROR);
+    	    return false;
+    	}
+	while (foo.hasNext()) {
+	    Proc proc = (Proc) foo.next();
+	    Iterator bar = cli.targetset.getTaskData();
+	    while (bar.hasNext()) {
+		TaskData taskData = (TaskData) bar.next();
+		Proc taskProc = taskData.getTask().getProc();
+		procId = taskProc.getPid();
+		if (taskProc == proc && tempId != procId) {
+		    saveProcs.put(new Integer(taskData.getParentID()), proc
+				.getExeFile().getSysRootedPath());
+		    cli.addMessage("Killing process " + proc.getPid()
+			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
+			Message.TYPE_NORMAL);
+		    proc.requestKill();
+		    tempId = procId;
+		    returnProc = true;
+		}
+	    }
+	}
+	if (returnProc) {
+	    synchronized (cli) {
+		// Clear the running procs set
+		cli.runningProcs.clear();
+	    }
+	}
+	return returnProc;
     }
 
     int completer(CLI cli, Input input, int cursor, List completions) {

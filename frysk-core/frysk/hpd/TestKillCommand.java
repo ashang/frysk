@@ -195,6 +195,9 @@ java.lang.NullPointerException
 	e.close();
     }
     
+    /**
+     * Test entering a non-integer as a PID
+     */
     public void testKillError() {
 	SlaveOffspring newProc = SlaveOffspring.createDaemon();
 	int pid = newProc.getPid().intValue();
@@ -206,9 +209,29 @@ java.lang.NullPointerException
 	e.close();
     }
     
+    /**
+     * Test entering too many parameters
+     */
     public void testKillErrorTwo() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("kill a b c", "Too many parameters.*");
     }
     
+    /**
+     * Test kill using HPD notation ([1.0] kill)
+     */
+    public void testKillHpd() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	"Loaded executable file.*");
+	e.sendCommandExpectPrompt("run", "Attached to process.*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.sendCommandExpectPrompt("[1.0] kill", "Creating.*Killing process ([0-9]+).*funit-threads-looper.*" +
+		"\\[1\\.0\\] Loaded executable.*funit-threads-looper.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
 }

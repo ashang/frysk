@@ -1,3 +1,8 @@
+2008-04-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* KillCommand.java: Add ability to use HPD notation.
+	* TestKillCommand.java: Add test for above change.
+
 2008-04-01  Andrew Cagney  <cagney@redhat.com>
 
 	* StackCommands.java: Update to match PrintStackOptions.
