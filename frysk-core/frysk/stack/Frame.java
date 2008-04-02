@@ -45,12 +45,12 @@ import java.io.StringWriter;
 
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
-import lib.dwfl.ElfSymbol;
 import frysk.dwfl.DwflCache;
 import frysk.dwfl.DwflFactory;
 import frysk.isa.registers.Register;
 import frysk.proc.Task;
 import frysk.rsl.Log;
+import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import frysk.value.ScratchLocation;
 import frysk.value.Value;
@@ -166,7 +166,7 @@ public abstract class Frame {
 	    writer.write('0');
 	writer.write(addr);
 	// the symbol, if known append (), ..
-	ElfSymbol symbol = getSymbol();
+	Symbol symbol = getSymbol();
 	writer.write(" in ");
 	writer.write(symbol.getDemangledName());
 	if (symbol != SymbolFactory.UNKNOWN)
@@ -255,6 +255,6 @@ public abstract class Frame {
     /**
      * Return this frame's symbol; UNKNOWN if there is no symbol.
      */
-    public abstract ElfSymbol getSymbol ();
+    public abstract Symbol getSymbol ();
   
 }

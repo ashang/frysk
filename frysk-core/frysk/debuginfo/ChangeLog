@@ -21,11 +21,6 @@
 	* DebugInfoStackFactory.java: Update.
 	* TestFrameDebugInfo.java: Update.
 
-2008-03-21  Petr Machata  <pmachata@redhat.com>
-
-	* TestDebugInfoStackTrace: Use lib.dwfl.ElfSymbol instead of
-	frysk.symtab.Symbol.
-
 2008-03-19  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestDebugInfoStackTrace (frameAssertions): Also check for function

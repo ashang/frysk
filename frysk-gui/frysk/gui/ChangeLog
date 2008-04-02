@@ -1,8 +1,3 @@
-2008-03-21  Petr Machata  <pmachata@redhat.com>
-
-	* disassembler/DisassemblyWindow.java: Use lib.dwfl.ElfSymbol
-	instead of frysk.symtab.Symbol.
-
 2008-03-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/StressTestJGMemory.java: New test.

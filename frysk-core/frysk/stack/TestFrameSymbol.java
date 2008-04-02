@@ -39,7 +39,7 @@
 
 package frysk.stack;
 
-import lib.dwfl.ElfSymbol;
+import frysk.symtab.Symbol;
 import frysk.proc.Task;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
@@ -66,7 +66,7 @@ public class TestFrameSymbol
 	// the inner-most frame's symbol matches the expected.
 	Frame frame = StackFactory.createFrame(task);
 
-	ElfSymbol symbol = frame.getSymbol ();
+	Symbol symbol = frame.getSymbol ();
 	assertEquals ("symbol's demangled name", "global_st_size",
 		      symbol.getDemangledName ());
 	assertTrue ("symbol address valid", symbol.getAddress() != 0);

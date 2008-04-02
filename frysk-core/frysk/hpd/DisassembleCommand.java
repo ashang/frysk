@@ -43,10 +43,10 @@ import java.util.Iterator;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
+import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
-import lib.dwfl.ElfSymbol;
 
 public class DisassembleCommand extends ParameterizedCommand {
 
@@ -108,7 +108,7 @@ public class DisassembleCommand extends ParameterizedCommand {
 		continue;
 	    DebugInfoFrame frame = cli.getTaskFrame(task);
 	    long currentInstruction = frame.getAddress();
-	    ElfSymbol symbol = frame.getSymbol();
+	    Symbol symbol = frame.getSymbol();
 
 	    Disassembler disassembler = new Disassembler(task.getMemory());
 	    cli.outWriter.println("[" + data.getParentID() + "." + data.getID()
@@ -257,7 +257,7 @@ public class DisassembleCommand extends ParameterizedCommand {
 	}
 
 	public String toPrint(Instruction instruction) {
-	    ElfSymbol symbol = SymbolFactory.getSymbol(task, instruction.address);
+	    Symbol symbol = SymbolFactory.getSymbol(task, instruction.address);
 	    return printer.toPrint(instruction)
 		    + "<"
 		    + symbol.getName()

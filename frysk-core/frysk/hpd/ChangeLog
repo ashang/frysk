@@ -27,11 +27,6 @@
 	* TestListCommand.java (testListReverse): Test 'list -length' around PC.
 	* TestSysRoot.java (testHaveSysRoot()): Reactivate.
 
-2008-03-21  Petr Machata  <pmachata@redhat.com>
-
-	* DisassembleCommand.java: Use lib.dwfl.ElfSymbol instead of
-	frysk.symtab.Symbol.
-
 2008-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* StartRun.java: Use ProcTasksAction and ProcTasksObserver.

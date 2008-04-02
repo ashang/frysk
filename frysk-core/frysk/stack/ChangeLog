@@ -16,15 +16,6 @@
 
 	* Frame.java: Added check to check for vdso before prepending path.
 
-2008-03-21  Petr Machata  <pmachata@redhat.com>
-
-	* Frame.java: Use lib.dwfl.ElfSymbol instead of
-	frysk.symtab.Symbol.
-	* FrameDecorator.java: Likewise.
-	* LibunwindFrame.java: Likewise.
-	* TestFrameSymbol.java: Likewise.
-	* TestLibFunctionStepFrame.java: Likewise.
-
 2008-03-19  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestLibFunctionStepFrame.java: No longer unresolved on x86_64.

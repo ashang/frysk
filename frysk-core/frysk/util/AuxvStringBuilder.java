@@ -42,7 +42,7 @@ import inua.eio.ByteBuffer;
 import inua.elf.AT;
 import frysk.proc.Auxv;
 import frysk.proc.Proc;
-import lib.dwfl.ElfSymbol;
+import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
 
@@ -62,8 +62,8 @@ public abstract class AuxvStringBuilder
 	    value = "0x"+Long.toHexString(rawAuxv[i].val);
 	    break;
 	case 9:
-	    ElfSymbol symbol = SymbolFactory.getSymbol(mainProc.getMainTask(),
-						       rawAuxv[i].val);
+	    Symbol symbol = SymbolFactory.getSymbol(mainProc.getMainTask(), 
+		    rawAuxv[i].val);
 	    value = symbol.getName()+" (0x" +
 	    Long.toHexString(rawAuxv[i].val)+")";
 	    break;

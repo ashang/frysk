@@ -42,7 +42,6 @@ package frysk.symtab;
 import frysk.proc.Task;
 import frysk.testbed.TestLib;
 import frysk.testbed.DaemonBlockedAtSignal;
-import lib.dwfl.ElfSymbol;
 
 public class TestSymbol
     extends TestLib
@@ -63,7 +62,7 @@ public class TestSymbol
     	Task task = daemon.getMainTask();
 
 	long pc = task.getPC();
-	ElfSymbol symbol = SymbolFactory.getSymbol(task, pc);
+	Symbol symbol = SymbolFactory.getSymbol(task, pc);
 	assertEquals ("symbol name", name, symbol.getDemangledName ());
 	assertEquals ("symbol address valid", addressValid,
 		      symbol.getAddress() != 0);

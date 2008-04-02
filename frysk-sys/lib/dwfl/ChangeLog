@@ -10,7 +10,7 @@
 
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
-	* ElfSymbol.java: Merge in methods and field from
+	* ElfSymbol.java: Copy in methods and field from
 	frysk.symtab.Symbol.
 
 2008-03-20  Petr Machata  <pmachata@redhat.com>

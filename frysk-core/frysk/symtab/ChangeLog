@@ -1,14 +1,5 @@
 2008-03-21  Petr Machata  <pmachata@redhat.com>
 
-	* Symbol.java: Merged with lib.dwfl.ElfSymbol, dropped.
-	* SymbolFactory.java: Use lib.dwfl.ElfSymbol instead of
-	frysk.symtab.Symbol.
-	* TestSymbol.java: Likewise.
-	* UnknownSymbol.java: Likewise.
-	* DwflSymbol.java: Likewise.
-
-2008-03-21  Petr Machata  <pmachata@redhat.com>
-
 	* Symbol.java: Straighten dataflow here: internal data are set via
 	ctor and are final, instead of using "symbol" method for that.
 	(symbol): Two methods of that name erased.

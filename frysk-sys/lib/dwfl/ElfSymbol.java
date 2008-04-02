@@ -43,8 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lib.stdcpp.Demangler;
-
 /**
  * The object-file symbol.  Typically obtained by reading ELF
  * information.
@@ -58,7 +56,6 @@ public class ElfSymbol {
     private final long address;
     private final long size;
     private final String name;
-    protected String demangledName;
 
     protected ElfSymbol(long address, long size, String name) {
 	this.address = address;
@@ -89,19 +86,6 @@ public class ElfSymbol {
     public String getName ()
     {
 	return name;
-    }
-
-    /**
-     * Return the demangled name, or "" of the name isn't known.
-     *
-     * XXX: Is returning "" better than null?  Sounds like a cheat for
-     * code that should be conditional on the symbol being known.
-     */
-    public String getDemangledName ()
-    {
-	if (demangledName == null)
-	    demangledName = Demangler.demangle (name);
-	return demangledName;
     }
 
     /**
