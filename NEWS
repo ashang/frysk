@@ -1,0 +1,57 @@
+
+			Frysk
+			-----
+
+		http://sourceware.org/frysk/
+
+Frysk is an execution-analysis technology being developed using Java
+and C++.  It is aimed at providing developers and system
+administrators with the ability to examine and analyze multi-host,
+multi-process, and multi-threaded systems while they are running.
+
+
+Release 0.2, 2008-04-02:
+
+This initial release of frysk includes:
+
+-> command line utilities:
+
+   fauxv - print the auxiliary vector (new)
+   fcatch - catch and print the stack of a crashing process
+   fcore - extract a core file from a running process (faster, more correct)
+   fdebuginfo - list debug-info requirements of a process (new)
+   fdebugrpm - install debug-info requirements of a process (new)
+   ferror - catch and back-trace error calls (new)
+   fexe - print the executable path
+   fmaps - print the address map (new)
+   fstack - print each thread's stack (supports in-line back-traces)
+   fstep - single-step a process
+   ftrace - trace a processes system and (new) library calls
+
+   Known limitations: large resident set size; large executable size.
+
+-> Prototype command line debugger: fhpd
+
+   For single threaded programs, FHPD can: print the value, type, and
+   location, and modify the value of, arbitrarily located variable
+   (complex DWARF location expressions); correctly handle very-large
+   integers (>64-bit) and large floats (80-bit); display in-line
+   information in back-traces; control processes with the commands
+   load, core, dump, run, step, break, go, detach, kill, list, focus.
+
+   In addition to the command-line utility restrictions, the HPD has
+   the following known limitations: disassembler missing; limited
+   type-cast support in expressions; limited multi-thread support.
+
+-> Prototype visual debugging and monitoring tool (frysk)
+
+   Known limitations: work-flow limited to live processes (examining
+   core files, or creating processes is possible but very
+   non-intuitive).
+
+-> Prototype test-suite (funit)
+
+   Known limitations: test that are working in-tree fail when
+   installed.
+
+--

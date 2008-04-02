@@ -1,3 +1,7 @@
+2008-04-02  Andrew Cagney  <cagney@redhat.com>
+
+	* NEWS: Seed.
+
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (upload-manpages): Explicitly depend on
