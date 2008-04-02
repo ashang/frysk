@@ -75,8 +75,7 @@ SOURCEDIRS = \
 
 TEMPLATE = $(srcdir)/htdocs/template.html
 .PHONY: manpages
-manpages: manpages/index.html
-manpages/index.html:
+manpages manpages/index.html:
 	rm -rf manpages
 	mkdir -p manpages
 	XMLTO=$(XMLTO) \

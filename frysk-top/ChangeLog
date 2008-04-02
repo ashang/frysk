@@ -1,5 +1,7 @@
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (manpages): Make un-conditional.
+
 	* NEWS: Seed.
 
 2008-03-31  Andrew Cagney  <cagney@redhat.com>

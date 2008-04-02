@@ -1,5 +1,7 @@
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
+	* manpages.sh: Recognize ENTITY volumes.
+
 	* Makefile.gen.sh (.xml): Recognize ENTITY volumes and names.
 
 2008-03-31  Andrew Cagney  <cagney@redhat.com>
