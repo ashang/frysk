@@ -1,3 +1,17 @@
+2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java (requestAddWatchObserver): Add writeOnly flag.
+	(requestDeleteWatchObserver): Ditto.
+	* LinuxPtraceTask.java (requestAddWatchObserver): Call LinuxPtraceProc
+	implementation.
+	(requestDeleteWatchObserver): Ditto.
+	(notifyWatchpoint): New.
+	(WatchpointAction): Delete.
+	(requestAddWatchObserver): Delete private function.
+	(requestDeleteWatchObserver): Delete private function.
+	
+
+
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* LinuxPtraceProc.java (getExe): Replace with getExeFile.

@@ -221,6 +221,6 @@ public interface TaskObserver
 	 * a Proc share their breakpoints, so this method needs to
 	 * check the actual Task that got hit.
 	 */ 
-      Action updateHit (Task task, long address);
+      Action updateHit (Task task, long address, int length);
     }
 }

@@ -263,12 +263,14 @@ public abstract class Task {
     /**
      * Add TaskObserver.Watch to the TaskObserver pool.
      */
-    public abstract void requestAddWatchObserver(TaskObserver.Watch o, long address, int length);
+    public abstract void requestAddWatchObserver(TaskObserver.Watch o, long address, 
+	    					int length, boolean writeOnly);
 
     /**
      * Delete TaskObserver.Watchfor the TaskObserver pool.
      */
-    public abstract void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length);
+    public abstract void requestDeleteWatchObserver(TaskObserver.Watch o, long address, 
+	    					int length, boolean writeOnly);
 
     
     

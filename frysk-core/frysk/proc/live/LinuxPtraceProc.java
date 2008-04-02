@@ -625,7 +625,8 @@ public class LinuxPtraceProc extends LiveProc {
     void requestAddWatchObserver(Task task, TaskObservable observable,
 				TaskObserver.Watch observer,
 				final long address,
-				final int length) {
+				final int length,
+				boolean writeOnly) {
     }
 
     /**
@@ -635,7 +636,8 @@ public class LinuxPtraceProc extends LiveProc {
     void requestDeleteWatchObserver(Task task, TaskObservable observable,
 				   TaskObserver.Watch observer,
 				   final long address,
-				   final int length)    {
+				   final int length,
+				   boolean writeOnly)    {
     }
 
     /**
