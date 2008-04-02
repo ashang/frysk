@@ -68,7 +68,10 @@ EOF
         suffix="</ul>"
     else
 	name=`basename $xmlfile .xml`
-	n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $xmlfile`
+	n=`sed -n  < $xmlfile \
+	    -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' \
+	    -e 's,.*ENTITY volume "\([0-9]\)".*,\1,p' \
+	    `
 	echo "Generating man webpage for ${name}.${n}" 1>&2
 	sed -e "s;@abs_root_srcdir@;${abs_root_srcdir};g" \
 	    < $xmlfile \
