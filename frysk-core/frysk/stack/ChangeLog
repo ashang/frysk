@@ -1,3 +1,9 @@
+2008-04-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestLibFunctionStepFrame.java: Remove comment about
+	SteppingEngine not working with plt entry stepping.
+	The issue was fixed with the patch for bug #5907.
+
 2008-04-01  Andrew Cagney  <cagney@redhat.com>
 
 	* StackFactory.java: Update to match PrintStackOptions.

@@ -57,9 +57,7 @@ import lib.dwfl.ElfSymbol;
  * function are outer frames (in that order) of the inner frame.
  *
  * Note this checks the low level (libunwind) frames walking.  It
- * doesn't test anything at a higher level or with the SteppingEngine
- * (currently the SteppingEngine tries to explicitly step through the
- * plt entries even when instruction stepping).
+ * doesn't test anything at a higher level or with the SteppingEngine.
  */
 public class TestLibFunctionStepFrame
   extends TestLib
