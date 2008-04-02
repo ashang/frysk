@@ -42,7 +42,7 @@ package frysk.isa.watchpoints;
 
 import frysk.proc.Task;
 
-public abstract class Watchpoint  {
+public abstract class WatchpointFunctions  {
 
     // Architecture Watchpoint Count. Number of usable
     // Address-Breakpoint Registers 
