@@ -818,8 +818,8 @@ public class SteppingEngine {
 	while (i.hasNext()) {
 	    t = (Task) i.next();
 
-	    SteppingBreakpoint bpt = (SteppingBreakpoint) this.breakpointMap
-		    .get(t);
+	    SteppingBreakpoint bpt
+		= (SteppingBreakpoint) this.breakpointMap.get(t);
 
 	    if (bpt != null) {
 		this.breakpointMap.remove(t);
