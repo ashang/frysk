@@ -467,6 +467,11 @@ public final class Log {
 	    return;
 	prefix().print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
     }
+    public void log(String p1, long p2, String p3, long p4, String p5, Object p6) {
+	if (!logging)
+	    return;
+	prefix().print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
+    }
 
     // static 8 parameters
     public void log(String p1, int p2, String p3, Object p4, String p5, Object p6, String p7, int p8) {
