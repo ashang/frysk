@@ -56,8 +56,13 @@ import java.util.Set;
 import java.util.Iterator;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.debuginfo.PrintStackOptions;
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 
 public class Ftrace {
+    private static final Log finest = LogFactory.finest(FtraceController.class);
+    private static final Log fine = LogFactory.fine(FtraceController.class);
+
     private final PrintStackOptions stackPrintOptions;
     
     public Ftrace(PrintStackOptions stackPrintOptions) {
@@ -146,13 +151,13 @@ public class Ftrace {
 
     public void setTraceSyscalls (TracedSyscallProvider tracedSyscallProvider)
     {
-	FtraceLogger.finest.log("syscall tracing requested");
+	fine.log("syscall tracing requested");
 	this.tracedSyscallProvider = tracedSyscallProvider;
     }
 
     public void setTraceSignals (TracedSignalProvider tracedSignalProvider)
     {
-	FtraceLogger.finest.log("signal tracing requested");
+	fine.log("signal tracing requested");
 	this.tracedSignalProvider = tracedSignalProvider;
     }
 
@@ -229,7 +234,7 @@ public class Ftrace {
 	Proc proc = task.getProc();
 
 	if (tracedSyscallProvider != null) {
-	    FtraceLogger.finest.log("requesting syscall observer");
+	    finest.log("requesting syscall observer");
 	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
 	    observationRequested(task);
 	    Map workingSet
@@ -238,7 +243,7 @@ public class Ftrace {
 	}
 
 	if (tracedSignalProvider != null) {
-	    FtraceLogger.finest.log("requesting signal observer");
+	    finest.log("requesting signal observer");
 	    task.requestAddSignaledObserver(new MySignaledObserver());
 	    observationRequested(task);
 	    Map workingSet
@@ -294,7 +299,6 @@ public class Ftrace {
 
 	public void tracePoint(Task task, TracePoint tp)
 	{
-	    FtraceLogger.info.log("Request for tracing `" + tp.symbol.name + "'");
 	    tracePoints.add(tp);
 	}
 
@@ -305,7 +309,7 @@ public class Ftrace {
 		TracePoint tp = (TracePoint)it.next();
 		if (tp.offset >= part.offset
 		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-		    FtraceLogger.finest.log(
+		    finest.log(
 			"Will trace `" + tp.symbol.name + "', "
 			+ "address=0x" + Long.toHexString(tp.address) + "; "
 			+ "offset=0x" + Long.toHexString(tp.offset) + "; "
@@ -315,7 +319,7 @@ public class Ftrace {
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
 		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    FtraceLogger.info.log(
+		    fine.log(
 			"Will trace `" + tpi.tracePoint.symbol.name
 			+ "' at 0x" + Long.toHexString(tpi.address));
 
@@ -336,7 +340,7 @@ public class Ftrace {
 
 		    long actualAddress = tp.offset - part.offset + part.addressLow;
 		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    FtraceLogger.info.log(
+		    fine.log(
 			"Stopping tracing of `" + tpi.tracePoint.symbol.name
 			+ "' at 0x" + Long.toHexString(tpi.address));
 
@@ -476,7 +480,7 @@ public class Ftrace {
 
 	public void addedTo (Object observable)
 	{
-	    FtraceLogger.finest.log("syscall observer realized");
+	    finest.log("syscall observer realized");
 	    Task task = (Task) observable;
 	    observationRealized(task);
 	}
@@ -572,7 +576,7 @@ public class Ftrace {
 
     class MySignaledObserver implements TaskObserver.Signaled {
 	public Action updateSignaled(Task task, Signal signal) {
-	    FtraceLogger.finest.log("signal hit " + signal);
+	    finest.log("signal hit " + signal);
 	    String name = signal.getName();
 	    Map signalWorkingSet = (Map)signalSetForTask.get(task);
 	    Boolean stackTrace = (Boolean)signalWorkingSet.get(signal);
@@ -588,16 +592,15 @@ public class Ftrace {
 	}
 
 	public void addedTo (Object observable) {
-	    FtraceLogger.finest.log("signal observer realized for " + observable);
+	    finest.log("signal observer realized for " + observable);
 	    Task task = (Task) observable;
 	    observationRealized(task);
 	}
 	public void deletedFrom (Object observable) {
-	    FtraceLogger.finest.log("signal observer deleted from " + observable);
+	    finest.log("signal observer deleted from " + observable);
 	}
 	public void addFailed (Object observable, Throwable w) {
-	    FtraceLogger.finest.log("signal observer failure for "
-				    + observable + " with " + w);
+	    finest.log("signal observer failure for", observable, "with", w);
 	}
     }
 
