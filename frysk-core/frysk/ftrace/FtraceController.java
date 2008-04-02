@@ -64,7 +64,6 @@ public class FtraceController
 
     // ArrayList<SymbolRule>
     private final List pltRules = new ArrayList();
-    private final List dynRules = new ArrayList();
     private final List symRules = new ArrayList();
     private final List sysRules = new ArrayList();
     private final List sigRules = new ArrayList();
@@ -89,13 +88,8 @@ public class FtraceController
 	this.pltRules.addAll(rules);
     }
 
-    public void gotDynRules(List rules) {
-	fine.log("Got " + rules.size() + " DYNAMIC rules.");
-	this.dynRules.addAll(rules);
-    }
-
     public void gotSymRules(List rules) {
-	fine.log("Got " + rules.size() + " SYMTAB rules.");
+	fine.log("Got " + rules.size() + " symbol rules.");
 	this.symRules.addAll(rules);
     }
 
@@ -227,7 +221,6 @@ public class FtraceController
     public void fileMapped(final Task task, final ObjectFile objf, final Ftrace.Driver driver) {
 	try {
 	    applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
-	    applyTracingRules(task, objf, driver, dynRules, TracePointOrigin.DYNAMIC);
 	    applyTracingRules(task, objf, driver, symRules, TracePointOrigin.SYMTAB);
 	}
 	catch (lib.dwfl.ElfException ee) {

@@ -27,7 +27,7 @@
 	* fmaps.xml: Likewise.
 	
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
-
+	
 	* fstack.xml: Use a title and volume entity.
 	* fauxv.xml: Add standard options and version.
 	* fmaps.xml: Ditto.
@@ -39,6 +39,10 @@
 	* ferror.xml: Add standard and stack options; and version.
 	* fcatch.xml: Ditto.
 	* ftrace.xml: Ditto.
+
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+	
+	* ftrace.java: Drop dynamic entry point tracing.
 
 2008-04-01  Andrew Cagney  <cagney@redhat.com>
 

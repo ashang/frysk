@@ -1,5 +1,9 @@
 2008-04-02  Petr Machata  <pmachata@redhat.com>
 
+	* FtraceController.java: Drop dynamic entry point tracing.
+
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+
 	* FtraceLogger.java: Deleted.
 	* Ftrace.java: Likewise.
 	* FtraceController.java: Introduce local loggers, use them.

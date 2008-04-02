@@ -78,7 +78,6 @@ class ftrace {
     // apply rules separately, to get all log messages, that's the
     // reason we need these temporary array lists.
     private final List pltRules = new ArrayList();
-    private final List dynRules = new ArrayList();
     private final List symRules = new ArrayList();
     private final List sysRules = new ArrayList();
     private final List sigRules = new ArrayList();
@@ -289,12 +288,7 @@ class ftrace {
 		    pltRules.add(arg);
 		}
 	    });
-	group.add(new Option("dyn", "trace entry points from DYNAMIC symtab", "RULE[,RULE]...") {
-		public void parsed(String arg) {
-		    dynRules.add(arg);
-		}
-	    });
-	group.add(new Option("sym", "trace entry points from symbol table", "RULE[,RULE]...") {
+	group.add(new Option("sym", "trace function entry points", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    symRules.add(arg);
 		}
@@ -336,19 +330,16 @@ class ftrace {
             writer = new PrintWriter(System.out);
         tracer.setWriter(writer);
 
-	if (!pltRules.isEmpty() || !dynRules.isEmpty() || !symRules.isEmpty()) {
+	if (!pltRules.isEmpty() || !symRules.isEmpty()) {
 	    // If tracing dynamic linker disabled, generate implicit
 	    // -@INTERP rule at the end of the chain.
 	    if (!allowInterpTracing) {
 		pltRules.add("-@INTERP");
-		dynRules.add("-@INTERP");
 		symRules.add("-@INTERP");
 	    }
 
 	    for (Iterator it = pltRules.iterator(); it.hasNext(); )
 		controller.gotPltRules(parseSymbolRules((String)it.next()));
-	    for (Iterator it = dynRules.iterator(); it.hasNext(); )
-		controller.gotDynRules(parseSymbolRules((String)it.next()));
 	    for (Iterator it = symRules.iterator(); it.hasNext(); )
 		controller.gotSymRules(parseSymbolRules((String)it.next()));
 
