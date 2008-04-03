@@ -1,3 +1,23 @@
+2008-04-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestWatchpoint.java (Symbol.Symbol): New temporary class to resolve
+	Elf symbols. 
+	(getGlobalSymbolAddress): New function.
+	(testWatchFourBytesBitPattern): Adjust to use funit-watchpoints.S.
+	GetAddress from Watchpoint.java
+	(testWatchTwoBytesBitPattern): Ditto.
+	(testWatchOneByteBitPattern): Ditto.
+	(testGetAllWatchpoints): New.
+	* IA32WatchpointFunctions.java (setWatchpoint): Delete localOnly flag.
+	Remove local/global breakpoint bit logic.
+	(readWatchpoint): Rewrite. Return Watchpoint.
+	* X8664WatchpointFunctions.java (setWatchpoint): Delete localOnly flag.
+	Remove local/global breakpoint bit logic.
+	(readWatchpoint): Rewrite. Return Watchpoint.
+	* WatchpointFunctions.java (getAllWatchpoints): New. Implement.
+	(setWatchpoint): Remove localOnly flag.
+	(readWatchpoint): return a Watchpoint class over a long.
+
 2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Watchpoint.java: Refactor to WatchpointFunctions.java

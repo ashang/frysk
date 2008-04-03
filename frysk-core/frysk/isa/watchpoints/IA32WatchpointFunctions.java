@@ -65,8 +65,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
      */
     public void setWatchpoint(Task task, int index, 
 	       long addr, int range,
-	       boolean writeOnly, 
-	       boolean localOnly) {
+	       boolean writeOnly) { 
 
 	
 	// turn bit off (b = bit no): l &= ~(1L << b)
@@ -86,17 +85,10 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	    // Calculate "Global Exact Breakpoint #index Enabled" bit to set
 	    int bitToSet = index * 2;
 	    
-	    if (localOnly) {
-		// Set "Local Exact Breakpoint #index Enabled" to 0
-		debugControl |= (1L << bitToSet);		
-		// Set Global Exact Breakpoint to 1
-		debugControl &= ~(1L << bitToSet+1);		
-	    } else {
-		// Set "Local Exact Breakpoint #index Enabled" to 0
-		debugControl &= ~(1L << bitToSet);		
-		// Set Global Exact Breakpoint to 1
-		debugControl |= (1L << bitToSet+1);
-	    }	    
+	    // Set "Local Exact Breakpoint #index Enabled" to 0
+	    debugControl &= ~(1L << bitToSet);		
+	    // Set Global Exact Breakpoint to 1
+	    debugControl |= (1L << bitToSet+1);
 	    
 	    // Dending on the WP register to set, the next
 	    // 4 bits are offset 4 * WP Count. On x8664 
@@ -148,18 +140,53 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 				       "range. Has to be 1, 2, 4 or 8");
     }
 
+
     /**
      * Reads a watchpoint. Takes a task, and an index.
      *
      * @param task - task to read a watchpoint from.
      * @param index - watchpoint number to read.
-     *
-     * @return long - value of register for watchpoint.
-     */
-    public long readWatchpoint(Task task, int index) {
-	return task.getRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
-    }		
 
+     * @return Watchpoint - value of Watchpoint at
+     * register. 
+     */
+    public Watchpoint readWatchpoint(Task task, int index) {
+	// Get Address from watchpoint register
+	long address = task.getRegister(
+		IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
+	
+	// Get debug status register for all other values
+	long debugStatus = task.getRegister(IA32Registers.DEBUG_CONTROL);
+
+	boolean writeOnly = false;
+	
+	// To find write/read, or read only the bit setting is 0 + no of
+	// register to check * 4 bits (each register has four bits assigned
+	// for r/w and global/local bits.
+	int typeOfWpTrap = 16 + (index *4);        
+
+	// if 1 and 0 set, must be writeOnly.
+	if ( (testBit(debugStatus,typeOfWpTrap)) && (!testBit(debugStatus,typeOfWpTrap+1)))
+        	writeOnly = true;
+
+	// Move over +2 bits for length
+        int lengthOfWP = typeOfWpTrap + 2;
+        int length = 0;
+
+        // Test length on combination of bits. 00 = 1, 01 = 2
+        // 11 = 4.
+        if (!testBit(debugStatus,lengthOfWP)) 
+            if (!testBit(debugStatus,lengthOfWP+1))
+        	length = 1;
+            else
+        	length = 2;
+        else
+            if (testBit(debugStatus, lengthOfWP))
+        	length = 4;
+	return Watchpoint.create(address, length, index, writeOnly);
+    }	
+
+    
     /**
      * Deletes a watchpoint. Takes a task, and an index.
      *
@@ -218,6 +245,10 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
      */
     public long readControlRegister(Task task) {
 	return task.getRegister(IA32Registers.DEBUG_CONTROL);
+    }
+    
+    private boolean testBit(long register, int bitToTest) {
+	return (register & (1L << bitToTest)) != 0;
     }
 
 }

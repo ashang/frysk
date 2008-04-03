@@ -40,6 +40,17 @@
 
 package frysk.isa.watchpoints;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
+import lib.dwfl.ElfSymbolBinding;
+import lib.dwfl.ElfSymbolType;
+import lib.dwfl.ElfSymbolVisibility;
+import lib.dwfl.SymbolBuilder;
+import frysk.config.Config;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtEntry;
@@ -56,17 +67,17 @@ public class TestWatchpoint extends TestLib {
 	    return;
 	Proc proc = giveMeABlockedProc();
 	Task task = proc.getMainTask();
-	long address = 0x1000;
+	long address = getGlobalSymbolAddress(task,"source");
 	long debugControlRegister;
 	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
 	long savedDebugControlRegister = wp.readControlRegister(task);
 	for (int i=0; i<4; i++) {
 
 
-	    wp.setWatchpoint(task, i, address, 4, false, false);
+	    wp.setWatchpoint(task, i, address, 4, false);
 	    // simple first test. Does register contain address?
 	    assertEquals("Saved watchpoint and address are similar", 
-		 address, wp.readWatchpoint(task, i));
+		 address, wp.readWatchpoint(task, i).getAddress());
 	    
 	    debugControlRegister = wp.readControlRegister(task);
 	
@@ -92,7 +103,7 @@ public class TestWatchpoint extends TestLib {
 	for (int j=0; j < 4; j++) {	    
 	    wp.deleteWatchpoint(task,j);
 	    assertEquals("Deleted Watchpoint is 0", 
-		    wp.readWatchpoint(task, j),0);
+		    wp.readWatchpoint(task, j).getAddress(),0);
 	}
 
 	assertEquals("Debug control register is left as we originally found it", 
@@ -109,17 +120,17 @@ public class TestWatchpoint extends TestLib {
 	    return;
 	Proc proc = giveMeABlockedProc();
 	Task task = proc.getMainTask();
-	long address = 0x1000;
+	long address = getGlobalSymbolAddress(task,"source");
 	long debugControlRegister;
 	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
 	long savedDebugControlRegister = wp.readControlRegister(task);
 	for (int i=0; i<4; i++) {
 
 
-	    wp.setWatchpoint(task, i, address, 1, true, false);
+	    wp.setWatchpoint(task, i, address, 1, true);
 	    // simple first test. Does register contain address?
 	    assertEquals("Saved watchpoint and address are similar", 
-		 address, wp.readWatchpoint(task, i));
+		 address, wp.readWatchpoint(task, i).getAddress());
 	    
 	    debugControlRegister = wp.readControlRegister(task);
 	
@@ -145,7 +156,7 @@ public class TestWatchpoint extends TestLib {
 	for (int j=0; j < 4; j++) {	    
 	    wp.deleteWatchpoint(task,j);
 	    assertEquals("Deleted Watchpoint is 0", 
-		    wp.readWatchpoint(task, j),0);
+		    wp.readWatchpoint(task, j).getAddress(),0);
 	}
 
 	assertEquals("Debug control register is left as we originally found it", 
@@ -164,25 +175,25 @@ public class TestWatchpoint extends TestLib {
 	    return;
 	Proc proc = giveMeABlockedProc();
 	Task task = proc.getMainTask();
-	long address = 0x0;
+	long address = getGlobalSymbolAddress(task,"source");
 	long debugControlRegister;	
 	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
 
 	long savedDebugControlRegister = wp.readControlRegister(task);
 
 	for (int i=0; i<4; i++) {
-	    wp.setWatchpoint(task, i, address, 1, false, true);
+	    wp.setWatchpoint(task, i, address, 1, false);
 
 	    // simple first test. Does register contain address?
 	    assertEquals("Saved watchpoint and address are similar", 
-		 address, wp.readWatchpoint(task, i));
+		 address, wp.readWatchpoint(task, i).getAddress());
 	    
 	    debugControlRegister = wp.readControlRegister(task);
 	
-	    // Test Debug Control Register Bit Pattern. Local Exact.
-	    assertEquals(i + " wp local exact bit", true, 
+	    // Test Debug Control Register Bit Pattern. Global Exact.
+	    assertEquals(i + " wp local exact bit", false, 
 		    testBit(debugControlRegister, 0 + (i*2)));
-	    assertEquals(i + " wp global exact bit", false, 
+	    assertEquals(i + " wp global exact bit", true, 
 		    testBit(debugControlRegister,  1 + (i*2)));
 
 	    // Test Debug Control Register. Fire on Read and Write
@@ -201,7 +212,7 @@ public class TestWatchpoint extends TestLib {
 	for (int j=0; j < 4; j++) {	    
 	    wp.deleteWatchpoint(task,j);
 	    assertEquals("Deleted Watchpoint is 0", 
-		    wp.readWatchpoint(task, j),0);
+		    wp.readWatchpoint(task, j).getAddress(),0);
 	}
 
 	assertEquals("Debug control register is left as we originally found it", 
@@ -209,17 +220,103 @@ public class TestWatchpoint extends TestLib {
 
     }
 
+    public void testGetAllWatchpoints () {
+	// Set maximum number of watchpoints, then test them
+	// via getAll.
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	int lengthSet[]  = {1,1,2,4};
+	int count = 0;
+	Proc proc = giveMeABlockedProc();
+	Task task = proc.getMainTask();
+	long address = getGlobalSymbolAddress(task,"source");
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpoint(task.getISA());
+	for (int i=0; i<wp.getWatchpointCount(); i++) 
+	    wp.setWatchpoint(task, i, address, lengthSet[i], true);
+	
+	ArrayList watchpointSet = (ArrayList) wp.getAllWatchpoints(task);
+	Iterator i = watchpointSet.iterator();
+	while (i.hasNext()) {
+	    Watchpoint watchpoint = ((Watchpoint) i.next());
+	    assertNotNull("Check retrieved watchpoint is not null", watchpoint);
+	    assertEquals("address = source var address for Watchpoint " + i,
+		    address,watchpoint.getAddress());
+	    assertEquals("length = " + lengthSet[count], lengthSet[count],
+		    watchpoint.getRange());
+	    assertEquals("register allocation = " + count, count,
+		    watchpoint.getRegister());
+	    assertEquals("writeOnly ", true,
+		    watchpoint.isWriteOnly());
+	    count++;
+	}
+	
+	assertEquals("Returned count is correct", wp.getWatchpointCount(),count);
+    }
+
+    
     private boolean testBit(long register, int bitToTest) {
 	return (register & (1L << bitToTest)) != 0;
     }
     
-    private Proc giveMeABlockedProc ()
-    {
-      String[] nocmds = {};
-      DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(nocmds);
+    private Proc giveMeABlockedProc () {
+      DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
+	      Config.getPkgLibFile("funit-watchpoint"));
       assertNotNull(ackProc);
       return ackProc.getMainTask().getProc();
     }
 
+    /**
+     * Returns the address of a global label by quering the the Proc
+     * main Task's Dwlf.
+     */
+    long getGlobalSymbolAddress(Task task, String label)  {
+      Dwfl dwfl = DwflCache.getDwfl(task);
+      Symbol sym = Symbol.get(dwfl, label);
+      return sym.getAddress();
+    }
+    
+    
+    // Helper class since there there isn't a get symbol method in Dwfl,
+    // so we need to wrap it all in a builder pattern.
+    static class Symbol implements SymbolBuilder {
+      private String name;
+      private long address;
+
+      private boolean found;
+
+      private Symbol()  {
+        // properties get set in public static get() method.
+      }
+
+      static Symbol get(Dwfl dwfl, String name)  {
+        Symbol sym = new Symbol();
+        sym.name = name;
+        DwflModule[] modules = dwfl.getModules();
+        for (int i = 0; i < modules.length && ! sym.found; i++)
+  	modules[i].getSymbolByName(name, sym);
+        
+        if (sym.found)
+  	return sym;
+        else
+  	return null;
+      }
+
+      String getName() {
+        return name;
+      }
+
+      long getAddress() {
+        return address;
+      }
+
+      public void symbol(String name, long value, long size, ElfSymbolType type,
+	    ElfSymbolBinding bind, ElfSymbolVisibility visibility) {
+	  if (name.equals(this.name)) {
+	      this.address = value;
+	      this.found = true;
+	  }
+	
+      }
+    } 
 }    
 

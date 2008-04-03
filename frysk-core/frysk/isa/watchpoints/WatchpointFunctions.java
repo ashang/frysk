@@ -40,6 +40,9 @@
 package frysk.isa.watchpoints;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import frysk.proc.Task;
 
 public abstract class WatchpointFunctions  {
@@ -63,8 +66,7 @@ public abstract class WatchpointFunctions  {
     */
     public abstract void setWatchpoint(Task task, int index, 
 				       long addr, int range,
-				       boolean writeOnly, 
-				       boolean localOnly);
+				       boolean writeOnly); 
 
     /**
      * Reads a watchpoint. Takes a task, and an index.
@@ -74,7 +76,7 @@ public abstract class WatchpointFunctions  {
      *
      * @return long - value of register for watchpoint.
      */
-    public abstract long readWatchpoint(Task task, int index);
+    public abstract Watchpoint readWatchpoint(Task task, int index);
 
     /**
      * Deletes a watchpoint. Takes a task, and an index.
@@ -86,6 +88,23 @@ public abstract class WatchpointFunctions  {
      */
     public abstract void deleteWatchpoint(Task task, int index);
 
+    
+    /**
+     * Returns all the watchpoints know in the 
+     * debug control registers
+     *
+     * @param task - task on which to delete a watchpoint.
+     *
+     * @return List- List of watchpoints
+     *
+     **/
+    public List getAllWatchpoints(Task task) {
+	List listOfWP = new ArrayList();
+	for (int i=0; i<getWatchpointCount(); i++) {
+	    listOfWP.add(readWatchpoint(task,i));
+	}
+	return listOfWP;   
+    }
     /**
      * Reads the Debug control register.
      *
