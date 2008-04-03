@@ -1,3 +1,8 @@
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
+	* Symbol.java: Ctor takes new parameter, elf symbol type.
+	(isFunctionSymbol): New method.
+
 2008-04-02  Petr Machata  <pmachata@redhat.com>
 
 	* ModuleMatcher.java: New file.
