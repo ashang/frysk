@@ -124,11 +124,11 @@ git push origin $branch
 that:
 <pre>
 git checkout $branch
-echo $version > common/version.in
-cat common/version.in
-git add common/version.in
+echo $version > frysk-common/version.in
+cat frysk-common/version.in
+git add frysk-common/version.in
 git commit -m "Set version.in to $version"
-git push origin
+git push origin $branch
 </pre>
 </li>
 
@@ -182,7 +182,7 @@ rm -rf build-$release && mkdir build-$release
 <li>finally, assuming the results are good, tag the release and push
 it:
 <pre>
-git tag -u &lt;gpg-name&gt; -m frysk-$release $shar1
+git tag -u &lt;gpg-name&gt; -m frysk-$release frysk-$release $shar1
 git push --tags
 </pre>
 </li>
