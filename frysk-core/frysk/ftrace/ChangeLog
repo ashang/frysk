@@ -1,5 +1,11 @@
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java: New file.  Mix of code from
+	Ftrace.TracePointWorkingSet and former Ltrace.java.
+	Most of symbol tracing is performed here.
+
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
 	* MappingGuard.java: Realize observation in separate thread, not
 	to clash with locks indirectly grabbed by symtab.getAddresses.
 
