@@ -149,23 +149,40 @@ was set above:
 
 <ul>
 
-<li>First lets create a tar ball from the head of the branch.  It's a
-little convoluted since it find's the branch head's shar1 and then
-uses that.
-
+<li>First lets find the shar1 of the branch head (so that it can be
+refered to later), and the corresponding release tag:
 <pre>
-echo version=$version branch=$branch
+echo branch=$branch
 shar1=`git-rev-list -n1 $branch`
 echo shar1=$shar1
-rm -rf frysk-$version
-git archive --prefix=frysk-$version/ $shar1 | tar xpf -
-tar cfj frysk-$version.tar.bz2 frysk-$version
+release=`git show $shar1:frysk-common/version.in`
+echo release=$release
+</pre>
+
+<li>Then create a tar-ball using that shar1 marker:
+<pre>
+rm -rf frysk-$release
+git archive --prefix=frysk-$release/ $shar1 | tar xpf -
+tar cfj frysk-$release.tar.bz2 frysk-$release
 </pre>
 </li>
 
-<li>Assuming you're happy with that, tag the release:
+<li>as a sanity check try to build the tar-ball locally:
 <pre>
-git tag -u &lt;gpg-name&gt; -m frysk-$version $shar1
+rm -rf build-$release && mkdir build-$release
+( cd build-$release \
+  && bunzip2 < ../frysk-$release.tar.bz2 | tar xpf - \
+  && mkdir build \
+  && cd build \
+  && ../frysk-$release/autogen.sh \
+  && make -j2 )
+</pre>
+</li>
+
+<li>finally, assuming the results are good, tag the release and push
+it:
+<pre>
+git tag -u &lt;gpg-name&gt; -m frysk-$release $shar1
 git push --tags
 </pre>
 </li>
@@ -177,10 +194,18 @@ git push --tags
 <p>You might need access to sourceware for this:
 
 <pre>
-chmod a=r frysk-$version.tar.bz2
-scp frysk-$version.tar.bz2 'sourceware.org:~ftp/pub/frysk'
-printf "\n\t\t\tFrysk $version\n\n\t`md5sum frysk-$version.tar.bz2`\n\t$shar1 GIT\n\n" \
-  | ssh sourceware.org 'rm -f ~ftp/pub/frysk/.message && dd of=~ftp/pub/frysk/.message && chmod a=r ~ftp/pub/frysk/.message'
+chmod a=r frysk-$release.tar.bz2
+scp frysk-$release.tar.bz2 'sourceware.org:~ftp/pub/frysk'
+ssh sourceware.org 'rm -f ~ftp/pub/frysk/.message'
+cat &lt;&lt;EOF | ssh sourceware.org 'dd of=~ftp/pub/frysk/.message'
+
+            Frysk $release
+
+    `md5sum frysk-$release.tar.bz2`
+    $shar1   GIT SHAR1
+
+EOF
+ssh sourceware.org 'chmod a=r ~ftp/pub/frysk/.message'
 </pre>
 
               <!-- end text -->
