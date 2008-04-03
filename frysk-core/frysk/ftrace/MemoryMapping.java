@@ -39,7 +39,6 @@
 
 package frysk.ftrace;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +49,7 @@ import frysk.sys.proc.MapsBuilder;
 
 class MemoryMapping
 {
-    public File path;
+    public String path;
     public List parts; //List<Part>
 
     static class Part
@@ -97,7 +96,7 @@ class MemoryMapping
 	}
     }
 
-    public MemoryMapping(File path)
+    public MemoryMapping(String path)
     {
 	this.path = path;
 	this.parts = new ArrayList();
@@ -168,11 +167,10 @@ class MemoryMapping
 	  if (path.charAt(0) != '/')
 	      throw new AssertionError("Unexpected: first character of path in map is neither '[', nor '/'.");
 
-	  File file = new File(path);
-	  MemoryMapping mapping = (MemoryMapping)mappings.get(file);
+	  MemoryMapping mapping = (MemoryMapping)mappings.get(path);
 	  if (mapping == null) {
-	      mapping = new MemoryMapping(file);
-	      mappings.put(file, mapping);
+	      mapping = new MemoryMapping(path);
+	      mappings.put(path, mapping);
 	  }
 	  Part part = new Part(addressLow, addressHigh, offset,
 			       permRead, permWrite, permExecute);
