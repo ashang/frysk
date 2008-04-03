@@ -1,5 +1,10 @@
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
+	* MappingGuard.java: Realize observation in separate thread, not
+	to clash with locks indirectly grabbed by symtab.getAddresses.
+
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
 	* FunctionObserver.java: Drop.
 	* Ltrace.java: Drop.
 	* Symbol.java: Drop.

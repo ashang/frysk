@@ -44,9 +44,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import frysk.event.Event;
 import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
@@ -365,8 +367,11 @@ class MappingGuard
      */
     private static MappingGuardB setupDebugStateObserver(Task task)
     {
+	fine.log("trying to setup debugstate observer at", task);
+
         LinkedList sharedLibBptAddrs
             = SymbolFactory.getAddresses(task, "_dl_debug_state");
+	fine.log("got", sharedLibBptAddrs.size(), "addresses");
 	if (sharedLibBptAddrs.size() == 0) {
 	    fine.log("Symbol _dl_debug_state not found.");
 	    return null;
@@ -383,29 +388,40 @@ class MappingGuard
 	return new DebugStateMappingGuard(task, sharedLibBptAddr);
     }
 
-    private static void requestAddMappingObserver(Task task, MappingObserver observer,
-						  boolean preferDebugstate) {
-	MappingGuardB guard;
-	synchronized (MappingGuard.class) {
-	    guard = (MappingGuardB)guardsForTask.get(task);
-	    if (guard == null) {
-		// Admitedly this is ugly, but I don't think it pays
-		// off to invent some fancy OO way of doing the same
-		// when we have just two guard types in hand.
-		if (enableDebugstateObserver && preferDebugstate)
-		    guard = setupDebugStateObserver(task);
-		if (guard == null && enableSyscallObserver)
-		    guard = new SyscallMappingGuard(task);
-		if (guard == null && enableSyscallObserver && !preferDebugstate)
-		    guard = setupDebugStateObserver(task);
+    private static void requestAddMappingObserver(final Task task,
+						  final MappingObserver observer,
+						  final boolean preferDebugstate) {
+	class RealizeRequest
+	    extends Thread implements Event
+	{
+	    public void execute() {
+		start();
+	    }
+	    public void run() {
+		MappingGuardB guard;
+		synchronized (MappingGuard.class) {
+		    guard = (MappingGuardB)guardsForTask.get(task);
+		    if (guard == null) {
+			// Admitedly this is ugly, but I don't think it pays
+			// off to invent some fancy OO way of doing the same
+			// when we have just two guard types in hand.
+			if (enableDebugstateObserver && preferDebugstate)
+			    guard = setupDebugStateObserver(task);
+			if (guard == null && enableSyscallObserver)
+			    guard = new SyscallMappingGuard(task);
+			if (guard == null && enableSyscallObserver && !preferDebugstate)
+			    guard = setupDebugStateObserver(task);
 
-		if (guard != null)
-		    guardsForTask.put(task, guard);
-		else
-		    observer.addFailed(task, new UnsupportedOperationException("Couldn't initialize mapping guard."));
+			if (guard != null)
+			    guardsForTask.put(task, guard);
+			else
+			    observer.addFailed(task, new UnsupportedOperationException("Couldn't initialize mapping guard."));
+		    }
+		}
+		guard.addObserver(observer);
 	    }
 	}
-	guard.addObserver(observer);
+	Manager.eventLoop.add(new RealizeRequest());
     }
 
     public static void requestAddMappingObserver(Task task, MappingObserver observer) {
