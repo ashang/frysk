@@ -42,7 +42,6 @@ package frysk.isa.watchpoints;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import frysk.proc.Task;
 
 public abstract class WatchpointFunctions  {
@@ -62,7 +61,6 @@ public abstract class WatchpointFunctions  {
     * 1,2 or 4 bytes. 8 on 64 bit systems. Architecture dependent.
     * @param writeOnly - When true, only trigger when address is
     * written. False, trigger when address is read or written to.
-    * @param localOnly - set local extant only.
     */
     public abstract void setWatchpoint(Task task, int index, 
 				       long addr, int range,
@@ -105,15 +103,23 @@ public abstract class WatchpointFunctions  {
 	}
 	return listOfWP;   
     }
+
     /**
      * Reads the Debug control register.
      *
      * @param task - task to read the debug control
      * register from.
      */
-    public abstract long readControlRegister(Task task);
+    protected abstract long readControlRegister(Task task);
 
-    
+    /**
+     * Reads the Debug status register.
+     *
+     * @param task - task to read the debug status
+     * register from.
+     */
+    protected abstract long readStatusRegister(Task task);
+
     /**
      * Reads the Debug Status Register and checks if 
      * the breakpoint specified has fired.

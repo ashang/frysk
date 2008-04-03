@@ -61,7 +61,6 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
      * 1,2 or 4 bytes.
      * @param writeOnly - When true, only trigger when address is
      * written. False, trigger when address is read or written to.
-     * @param localOnly - set local extant only.
      */
     public void setWatchpoint(Task task, int index, 
 	       long addr, int range,
@@ -76,7 +75,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	    task.setRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     addr);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(IA32Registers.DEBUG_CONTROL);
+	    long debugControl = readControlRegister(task);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -155,8 +154,8 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	long address = task.getRegister(
 		IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
 	
-	// Get debug status register for all other values
-	long debugStatus = task.getRegister(IA32Registers.DEBUG_CONTROL);
+	// Get the Debug Control Register
+	long debugStatus = readControlRegister(task);
 
 	boolean writeOnly = false;
 	
@@ -200,7 +199,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	    task.setRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     0x0L);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(IA32Registers.DEBUG_CONTROL);
+	    long debugControl = readControlRegister(task);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -232,7 +231,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
      * register from.
      */
     public boolean hasWatchpointTriggered(Task task, int index) {
-	long debugStatus = task.getRegister(IA32Registers.DEBUG_STATUS);	
+	long debugStatus = readStatusRegister(task);	
 	return (debugStatus & (1L << index)) != 0;
     }
 
@@ -243,9 +242,20 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
      * @param task - task to read the debug control
      * register from.
      */
-    public long readControlRegister(Task task) {
+    protected long readControlRegister(Task task) {
 	return task.getRegister(IA32Registers.DEBUG_CONTROL);
     }
+    
+    /**
+     * Reads the Debug status register.
+     *
+     * @param task - task to read the debug status
+     * register from.
+     */
+    protected long readStatusRegister(Task task) {
+	return task.getRegister(IA32Registers.DEBUG_STATUS);
+    }
+
     
     private boolean testBit(long register, int bitToTest) {
 	return (register & (1L << bitToTest)) != 0;

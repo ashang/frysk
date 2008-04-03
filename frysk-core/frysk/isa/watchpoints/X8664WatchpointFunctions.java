@@ -61,7 +61,6 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
      * 1,24, or 8 bytes.
      * @param writeOnly - When true, only trigger when address is
      * written. False, trigger when address is read or written to.
-     * @param localOnly - set local extant only.
      */
     public void setWatchpoint(Task task, int index, 
 	       long addr, int range,
@@ -75,7 +74,7 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
 	    task.setRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     addr);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(X8664Registers.DEBUG_CONTROL);
+	    long debugControl = readControlRegister(task);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -152,8 +151,8 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
 		X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index]);
 	
 	// Get debug status register for all other values
-	long debugStatus = task.getRegister(X8664Registers.DEBUG_CONTROL);
-
+	long debugStatus = readControlRegister(task);
+	
 	boolean writeOnly = false;
 	
 	// To find write/read, or read only the bit setting is 0 + no of
@@ -197,7 +196,7 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
 	    task.setRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     0x0L);
 	    // Get the Debug Control Register
-	    long debugControl = task.getRegister(X8664Registers.DEBUG_CONTROL);
+	    long debugControl = readControlRegister(task);
 	    
 	    // First eight bits of register define the global/local
 	    // status of each of the four DR registers. Two bits per
@@ -222,15 +221,24 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
     }
 
     
-
     /**
      * Reads the Debug control register.
      *
      * @param task - task to read the debug control
      * register from.
      */
-    public long readControlRegister(Task task) {
+    protected long readControlRegister(Task task) {
 	return task.getRegister(X8664Registers.DEBUG_CONTROL);
+    }
+
+    /**
+     * Reads the Debug cstatus register.
+     *
+     * @param task - task to read the debug status
+     * register from.
+     */
+    protected long readStatusRegister(Task task) {
+	return task.getRegister(X8664Registers.DEBUG_STATUS);
     }
 
     /**
@@ -241,7 +249,7 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
      * register from.
      */
     public boolean hasWatchpointTriggered(Task task, int index) {
-	long debugStatus = task.getRegister(X8664Registers.DEBUG_STATUS);
+	long debugStatus = readStatusRegister(task);	
 	return (debugStatus & (1L << index)) != 0;
     }
 

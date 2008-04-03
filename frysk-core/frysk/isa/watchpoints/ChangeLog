@@ -1,5 +1,21 @@
 2008-04-03  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* WatchpointFunctions.java (readStatusRegister): Declare.
+	(readControlRegister): Reduce scope to protected.
+	* IA32WatchpointFunctions.java (readStatusRegister): Implement.
+	(hasWatchpointTriggered): Use readStatusRegister.
+	(deleteWatchpoint): Use readControlRegister.
+	(readWatchpoint): Ditto.
+	(setWatchpoint): Ditto. 
+	* X8664WatchpointFunctions.java (readStatusRegister): Ditto.
+	(hasWatchpointTriggered):  use readStatusRegister.
+	(deleteWatchpoint): Use readControlRegister.
+	(readWatchpoint): Ditto.
+	(setWatchpoint): Ditto.
+	
+
+2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
+
 	* TestWatchpoint.java (Symbol.Symbol): New temporary class to resolve
 	Elf symbols. 
 	(getGlobalSymbolAddress): New function.
