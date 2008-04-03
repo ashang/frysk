@@ -1,3 +1,8 @@
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
+	* MappingGuard.java: Use symtab.SymbolFactory to find
+	_dl_debug_state.
+
 2008-04-02  Petr Machata  <pmachata@redhat.com>
 
 	* FtraceController.java: Start using DwflSymbol instead of

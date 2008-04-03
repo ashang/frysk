@@ -39,21 +39,19 @@
 
 package frysk.ftrace;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+
 import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
-
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import frysk.symtab.SymbolFactory;
 
 /**
  * Use this pseudo-class to request that an map/unmap observer be
@@ -62,7 +60,6 @@ import java.util.Map;
 class MappingGuard
 {
     private static final Log fine = LogFactory.fine(MappingGuard.class);
-    private static final Log warning = LogFactory.warning(MappingGuard.class);
 
     static boolean enableSyscallObserver = true;
     static boolean enableDebugstateObserver = true;
@@ -368,66 +365,22 @@ class MappingGuard
      */
     private static MappingGuardB setupDebugStateObserver(Task task)
     {
-	fine.log("Entering....");
-
-	File f = new File(task.getProc().getExeFile().getSysRootedPath());
-	ObjectFile objf = ObjectFile.buildFromFile(f);
-	String interp = objf.getInterp();
-	if (interp == null) {
-	    // We're boned.
-	    warning.log("`{1}' has no interpreter.", f);
+        LinkedList sharedLibBptAddrs
+            = SymbolFactory.getAddresses(task, "_dl_debug_state");
+	if (sharedLibBptAddrs.size() == 0) {
+	    fine.log("Symbol _dl_debug_state not found.");
+	    return null;
+	}
+        long sharedLibBptAddr
+            = ((Long)sharedLibBptAddrs.getFirst()).longValue();
+	if (sharedLibBptAddr == 0) {
+	    fine.log("Symbol _dl_debug_state has offset 0.");
 	    return null;
 	}
 
-	File interppath = objf.resolveInterp();
-	ObjectFile interpf = ObjectFile.buildFromFile(interppath);
-	TracePoint tp = null;
-	try {
-	    tp = interpf.lookupTracePoint("_dl_debug_state",
-					  TracePointOrigin.DYNAMIC);
-	    if (tp == null) {
-		fine.log("Symbol _dl_debug_state not found in `{0}'.",
-			 interppath);
-		return null;
-	    }
-
-	    // Make sure we know the offset of the symbol data.
-	    // Necessary for lookup between mappings.
-	    if (tp.symbol.offset == 0) {
-		fine.log("Symbol _dl_debug_state has offset 0.",
-			 interppath);
-		return null;
-	    }
-	}
-	catch (lib.dwfl.ElfException e) {
-	    e.printStackTrace();
-	    warning.log("Problem reading DYNAMIC entry points from `{0}'",
-			interppath);
-	    return null;
-	}
-
-	// Load initial set of mapped files.
-	Map currentMappings = MemoryMapping.buildForPid(task.getTid());
-	MemoryMapping mm = (MemoryMapping)currentMappings.get(interppath);
-	if (mm == null) {
-	    fine.log("Couldn't obtain mappings of interpreter.");
-	    return null;
-	}
-
-	List parts = mm.lookupParts(tp.symbol.offset);
-	if (parts.size() != 1) {
-	    fine.log("Ambiguous mapping of interpreter, or the mapping couldn't be determined.");
-	    return null;
-	}
-	MemoryMapping.Part p = (MemoryMapping.Part)parts.get(0);
-	long relocation = p.addressLow - interpf.getBaseAddress();
-
-	// There we go!
-	long fin = tp.address + relocation;
-	fine.log("Success: tp.address=0x" + Long.toHexString(tp.address)
-		 + ", relocation=0x" + Long.toHexString(relocation)
-		 + ", fin=0x" + Long.toHexString(fin));
-	return new DebugStateMappingGuard(task, fin);
+	fine.log("setting up debugstate observer at",
+		 "0x" + Long.toHexString(sharedLibBptAddr));
+	return new DebugStateMappingGuard(task, sharedLibBptAddr);
     }
 
     private static void requestAddMappingObserver(Task task, MappingObserver observer,

@@ -231,8 +231,7 @@ public class ObjectFile
 	try {
 	    filename = new File(path).getCanonicalFile();
 	    // XXX sysroot!
-	}
-	catch (java.io.IOException ioexp) {
+	} catch (java.io.IOException ioexp) {
 	    fine.log("Couldn't get canonical file.");
 	    return null;
 	}
@@ -248,8 +247,6 @@ public class ObjectFile
 	    ElfEHeader eh = elfFile.getEHeader();
 	    objFile = new ObjectFile(filename, elfFile, eh);
 	} catch (ElfException eexp) {
-	    eexp.printStackTrace();
-	    System.err.println("load error: " + eexp);
 	    return null;
 	}
 
