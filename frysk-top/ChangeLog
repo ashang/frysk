@@ -1,3 +1,7 @@
+2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am (manpages): Check for refpurpose errors.
+
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (manpages): Make un-conditional.

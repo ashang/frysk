@@ -88,7 +88,8 @@ manpages manpages/index.html:
 		-"GNOME Interface" \
 		$(srcdir)/frysk-gui/frysk/bindir/*.xml \
 		-"Test framework" \
-		$(srcdir)/*/frysk/pkglibdir/*.xml
+		$(srcdir)/*/frysk/pkglibdir/*.xml \
+	    || (echo "Bad [not on one line] refpurpose tag found."; exit 1)
 	mv manpages/index.new manpages/index.html
 
 # Generate JAVADOC documentation.

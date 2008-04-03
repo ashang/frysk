@@ -83,7 +83,10 @@ EOF
 	cat <<EOF
 <li><tt><a href="${name}.${n}.html">${name}.${n}</a></tt>
 EOF
-	sed -n 's/<refpurpose>\(.*\)<\/refpurpose>/\1/ p' $xmlfile
+	# Catch empty (aka not on one line) refpurpose tags.
+	desc=$(sed -n 's/<refpurpose>\(.*\)<\/refpurpose>/\1/ p' $xmlfile)
+	if test -z "$desc"; then exit 1; fi
+	echo "$desc"
 	echo "</li>"
     fi
 done
