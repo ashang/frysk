@@ -57,6 +57,7 @@
 <p>
 <a href="#branch">Branch</a><br>
 <a href="#release">Release</a>
+<a href="#upload">Upload</a>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -170,6 +171,17 @@ git push --tags
 </li>
 
 </ul>
+
+<a name="release"><h2>Upload to Sourceware</h2></a>
+
+<p>You might need access to sourceware for this:
+
+<pre>
+chmod a=r frysk-$version.tar.bz2
+scp frysk-$version.tar.bz2 'sourceware.org:~ftp/pub/frysk'
+printf "\n\t\t\tFrysk $version\n\n\t`md5sum frysk-$version.tar.bz2`\n\t$shar1 GIT\n\n" \
+  | ssh sourceware.org 'rm -f ~ftp/pub/frysk/.message && dd of=~ftp/pub/frysk/.message && chmod a=r ~ftp/pub/frysk/.message'
+</pre>
 
               <!-- end text -->
               <p>&nbsp;</p>
