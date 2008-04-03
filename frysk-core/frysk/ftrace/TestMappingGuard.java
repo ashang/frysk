@@ -39,16 +39,18 @@
 
 package frysk.ftrace;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+
 import frysk.config.Config;
+import frysk.dwfl.ObjectFile;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.testbed.TestLib;
-import java.util.ArrayList;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.StopEventLoopWhenProcTerminated;
-import java.util.regex.Pattern;
-import java.util.Iterator;
+import frysk.testbed.TestLib;
 
 /**
  * This is a test for basic ltrace capabilities.

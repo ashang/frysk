@@ -1,3 +1,7 @@
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
+	* ObjectFile.java: Moved from frysk.ftrace
+
 2008-03-11  Stan Cox  <scox@redhat.com>
 
 	* DwflCache.java (Mod.sysroot): Remove

@@ -1,5 +1,9 @@
 2008-04-02  Petr Machata  <pmachata@redhat.com>
 
+	* ObjectFile.java: Strip down and move to frysk.dwfl
+
+2008-04-02  Petr Machata  <pmachata@redhat.com>
+
 	* FtraceController.java: Drop dynamic entry point tracing.
 
 2008-04-02  Petr Machata  <pmachata@redhat.com>
