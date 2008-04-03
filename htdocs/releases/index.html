@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Frysk System Monitor / Debugger: Making a Release</title>
+    <link rel="stylesheet" href="../frysk.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+  </head>
+
+  <body>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td valign="bottom" height="80">
+          <img src="../frysklogo.png" alt="Frysk logo">
+        </td>
+        <td valign="bottom" class="topnavright" align="right">
+          <a href="../">Home</a>
+          &nbsp;|&nbsp;
+          <a href="../wiki/">Wiki</a>
+          &nbsp;|&nbsp;
+          <a href="../usecases/">Use Cases</a>
+          &nbsp;|&nbsp;
+          <a href="../workflow/">Work Flows</a>
+          &nbsp;|&nbsp;
+          <a href="../questions/">FAQ</a>
+          &nbsp;|&nbsp;
+          <a href="../getinvolved/">Get Involved</a>
+          &nbsp;|&nbsp;
+          <a href="../bugzilla/">Bugzilla</a>
+          &nbsp;|&nbsp;
+          <a href="../build/">Build</a>
+          &nbsp;|&nbsp;
+          <a href="http://planet.fryskproject.org">Blog</a>
+          &nbsp;|&nbsp;
+          Documentation
+        </td>
+      </tr>
+    </table>
+    <div class="mainbackground">
+      <div class="maintextregion">
+        <img src="../fryskcorner.gif" alt="triangle">
+        <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
+          <tr>
+            <td width="200" valign="top" align="left">
+	      &nbsp;
+	    </td>
+            <td valign="bottom">
+<!-- start title -->
+        <h1>Making A Release</h1>
+	      <!-- end title -->
+            </td>
+          </tr>
+          <tr>
+	    <td valign="top">
+	      <!-- start logo -->
+<p>
+<a href="#branch">Branch</a><br>
+<a href="#release">Release</a>
+</p>
+	      <!-- end logo -->
+	    </td>
+            <td valign="top">
+	      <!-- start text -->
+
+<p><em>frysk</em> is making point release, cut from the Git
+repository's <tt>HEAD</tt>, on the first Wednesday of each month.
+This lets us deliver new features quickly, with a relatively low
+overhead.</p>
+
+<p>The relese branch is taken on the first Wednesday at <tt>00:00
+GMT</tt>, just in time for <em>frysk</em>'s Wednesday meeting.  We
+then, during the meeting, conduct a brief review, check the NEWS file,
+and make a go/no-go decision.  It is then pushed out, perhaps with a
+few minor fixes.</p>
+
+<p>The process is also relatively simplistic.  It assumes for
+instance:
+
+<ul>
+<li>there's never a pre-release tar-ball<br>that would require extra
+pre-release version numbers such as <tt>0.1.90</tt>... and then only
+at the last moment set the real version (<tt>0.2</tt>).
+</li>
+<li>if there's ever a need for a re-spin, it just gets assigned a
+patch-level number like <tt>0.2.1</tt> and use the original releases
+branch</li>
+</ul>
+
+<a name="branch"><h2>Cutting the Branch</h2></a>
+
+<p>Here's a suggested sequence:</p>
+
+<ul>
+
+<li>To make things easier, first lets set up a few standard shell
+variables; you'll want to set version to something more
+meaningful:
+
+<pre>
+version=0.2 ! ! ! change this
+echo $version
+date=`date -u +"%Y.%m.%d"`
+echo date=$date 1>&2
+shar1=`git-rev-list --before=$date -n1 HEAD`
+echo shar1=$shar1 1>&2
+branch=frysk/$version
+echo $branch
+</pre>
+</li>
+
+<li>Next we create a branch (frysk release branches are named
+frysk/&lt;version&gt;), and push that upstream:
+
+<pre>
+echo branch=$branch shar1=$shar1
+git branch $branch $shar1
+git push origin $branch
+</pre>
+</li>
+
+<li>Finally, we update the version number of the branch, and push
+that:
+<pre>
+git checkout $branch
+echo $version > common/version.in
+cat common/version.in
+git add common/version.in
+git commit -m "Set version.in to $version"
+git push origin
+</pre>
+</li>
+
+</ul>
+
+<p>The branch can then be checked out by everyone and build locally.
+Of course the keen will have already checked out the branch point
+using something like:
+
+<pre>
+git checkout `git-rev-list --before='00:00 GMT' -n1 HEAD`
+</pre>
+
+<a name="release"><h2>Making the Release</h2></a>
+
+<p>Here's a sequence for releasing frysk, we're assuming that $version
+was set above:
+
+<ul>
+
+<li>First lets create a tar ball from the head of the branch.  It's a
+little convoluted since it find's the branch head's shar1 and then
+uses that.
+
+<pre>
+echo version=$version branch=$branch
+shar1=`git-rev-list -n1 $branch`
+echo shar1=$shar1
+rm -rf frysk-$version
+git archive --prefix=frysk-$version/ $shar1 | tar xpf -
+tar cfj frysk-$version.tar.bz2 frysk-$version
+</pre>
+</li>
+
+<li>Assuming you're happy with that, tag the release:
+<pre>
+git tag -u &lt;gpg-name&gt; -m frysk-$version $shar1
+git push --tags
+</pre>
+</li>
+
+</ul>
+
+              <!-- end text -->
+              <p>&nbsp;</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td align="center" class="footer">
+          <a href="http://sources.redhat.com">sources.redhat.com</a>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
