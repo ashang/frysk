@@ -77,4 +77,8 @@ public class SymbolBreakpoint
 	    return addrs;
 	}
     }
+
+    public DwflSymbol getSymbol() {
+	return symbol;
+    }
 }
