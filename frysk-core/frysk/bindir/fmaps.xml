@@ -70,8 +70,7 @@
 
   <refnamediv>
     <refname>fmaps</refname>
-    <refpurpose>print the process or a corefile's address
-    maps.</refpurpose>
+    <refpurpose>print the process or a corefile's address maps.</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

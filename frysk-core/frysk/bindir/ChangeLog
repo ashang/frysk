@@ -1,3 +1,10 @@
+2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fdebuginfo.xml: Put refpurpose on one line.
+	* ferror.xml: Likewise.
+	* fexe.xml: Likewise.
+	* fmaps.xml: Likewise.
+	
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
 	* fstack.xml: Use a title and volume entity.

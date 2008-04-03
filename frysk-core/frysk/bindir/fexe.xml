@@ -70,8 +70,7 @@
 
   <refnamediv>
     <refname>fexe</refname>
-    <refpurpose>print a process or corefile's executable
-    path</refpurpose>
+    <refpurpose>print a process or corefile's executable path</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
