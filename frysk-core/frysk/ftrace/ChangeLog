@@ -1,5 +1,15 @@
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
+	* FunctionObserver.java: Drop.
+	* Ltrace.java: Drop.
+	* Symbol.java: Drop.
+	* TestLtrace.java: Drop.
+	* TracePoint.java: Drop.
+	* TracePointFilter.java: Drop.
+	* TracePointOrigin.java: Drop.
+
+2008-04-03  Petr Machata  <pmachata@redhat.com>
+
 	* MemoryMapping.java: Use String instead of java.io.File
 
 2008-04-03  Petr Machata  <pmachata@redhat.com>
