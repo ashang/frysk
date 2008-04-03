@@ -107,6 +107,9 @@ class Reporter
 
     private void printArgs(Object[] args)
     {
+	if (args == null)
+	    return;
+
 	writer.print("(");
 	for (int i = 0; i < args.length; ++i) {
 	    writer.print(i > 0 ? ", " : "");
@@ -189,12 +192,13 @@ class Reporter
 	int level = this.getLevel(task);
 	if (lineOpened())
 	    writer.println("\\");
-	writer.println(pidInfo(task)
-		       + " " + formatTaskPC(task)
-		       + repeat(' ', level) + eventName);
+	writer.print(pidInfo(task)
+		     + " " + formatTaskPC(task)
+		     + repeat(' ', level) + eventName);
 
 	if (args != null)
 	    printArgs(args);
+	writer.println();
 	writer.flush();
 
 	updateOpenLine(null, null);
