@@ -47,11 +47,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import frysk.dwfl.ObjectFile;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.proc.Task;
+import frysk.symtab.DwflSymbol;
 
 public class FtraceController
     implements Ftrace.Controller,
@@ -76,7 +78,7 @@ public class FtraceController
 	stackTraceEverything = true;
     }
 
-    public boolean shouldStackTraceOnSymbol(Symbol symbol) {
+    public boolean shouldStackTraceOnSymbol(DwflSymbol symbol) {
 	return stackTraceEverything
 	    || symbolsStackTraceSet.contains(symbol);
     }
@@ -153,33 +155,29 @@ public class FtraceController
 
     private boolean isInterpOf(ObjectFile objf, String exe)
     {
-	java.io.File exefn = new java.io.File(exe);
-	ObjectFile exef = ObjectFile.buildFromFile(exefn);
+	ObjectFile exef = ObjectFile.buildFromFile(exe);
 	java.io.File interpfn = exef.resolveInterp();
 	java.io.File objffn = objf.getFilename();
 	return objffn.equals(interpfn);
     }
 
-    public void applyTracingRules(final Task task, final ObjectFile objf, final Ftrace.Driver driver,
-				  final List rules, final TracePointOrigin origin)
+    private void applyTracingRules(final Task task, final ObjectFile objf,
+				   final List symbols,
+				   final Ftrace.Driver driver, final List rules)
 	throws lib.dwfl.ElfException
     {
-	fine.log("Building working set for origin " + origin + ".");
+	String path = objf.getFilename().getPath();
+	fine.log("Building working set for task", task, "and path", path);
 
 	// Skip the set if it's empty...
 	if (rules.isEmpty())
 	    return;
 
-	// Set<TracePoint>, all tracepoints in objfile.
-	final Set candidates = new HashSet();
-	// Set<TracePoint>, incrementally built working set.
+	// Set<DwflSymbol>, incrementally built working set.
 	final Set workingSet = new HashSet();
-	// Set<TracePoint>, incrementally built set of tracepoints
+	// Set<DwflSymbol>, incrementally built set of tracepoints
 	// that should stacktrace.
 	final Set stackTraceSet = new HashSet();
-
-	// Do a lazy init.  With symbol tables this can be very beneficial, because certain symbol 
-	boolean candidatesInited = false;
 
 	// Loop through all the rules, and use them to build
 	// workingSet from candidates.  Candidates are initialized
@@ -190,38 +188,27 @@ public class FtraceController
 
 	    // MAIN is meta-soname meaning "main executable".
 	    if ((rule.sonamePattern.pattern().equals("MAIN")
-		 && task.getProc().getExeFile().getSysRootedPath().equals(objf.getFilename().getPath()))
+		 && task.getProc().getExeFile().getSysRootedPath().equals(path))
 		|| (rule.sonamePattern.pattern().equals("INTERP")
 		    && isInterpOf(objf, task.getProc().getExeFile().getSysRootedPath()))
 		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
 	    {
-		if (!candidatesInited) {
-		    candidatesInited = true;
-		    objf.eachTracePoint(new ObjectFile.TracePointIterator() {
-			    public void tracePoint(TracePoint tp) {
-				if (candidates.add(tp))
-				    fine.log("candidate `" + tp.symbol.name + "'.");
-			    }
-			}, origin);
-		}
-
-		rule.apply(candidates, workingSet, stackTraceSet);
+		rule.apply(symbols, workingSet, stackTraceSet);
 	    }
 	}
 
 	// Finally, apply constructed working set.
-	fine.log("Applying working set for origin " + origin + ".");
-	for (Iterator it = workingSet.iterator(); it.hasNext(); )
-	    driver.tracePoint(task, (TracePoint)it.next());
-
+	fine.log("Applying working set for ", path);
 	for (Iterator it = stackTraceSet.iterator(); it.hasNext(); )
-	    symbolsStackTraceSet.add(((TracePoint)it.next()).symbol);
+	    symbolsStackTraceSet.add((DwflSymbol)it.next());
+	for (Iterator it = workingSet.iterator(); it.hasNext(); )
+	    driver.traceSymbol(task, (DwflSymbol)it.next());
     }
 
-    public void fileMapped(final Task task, final ObjectFile objf, final Ftrace.Driver driver) {
+    public void fileMapped(Task task, ObjectFile objf, List symbols, Ftrace.Driver driver) {
 	try {
-	    applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
-	    applyTracingRules(task, objf, driver, symRules, TracePointOrigin.SYMTAB);
+	    //applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
+	    applyTracingRules(task, objf, symbols, driver, symRules);
 	}
 	catch (lib.dwfl.ElfException ee) {
 	    ee.printStackTrace();
