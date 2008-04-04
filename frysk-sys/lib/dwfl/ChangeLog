@@ -1,5 +1,10 @@
 2008-04-04  Petr Machata  <pmachata@redhat.com>
 
+	* DwflModule.java (getPLTEntries): New native method.
+	* cni/DwflModule.cxx (getPLTEntries): ... and its implementation.
+
+2008-04-04  Petr Machata  <pmachata@redhat.com>
+
 	* DwflModule.java (getSymtab): Take "builder" parameter.
 	(get_symbol_table): Likewise.
 	* cni/DwflModule.cxx

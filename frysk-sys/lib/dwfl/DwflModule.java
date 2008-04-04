@@ -95,6 +95,7 @@ public class DwflModule
     private native void get_pubnames();
 
     public native void getSymtab(SymbolBuilder symbolBuilder);
+    public native void getPLTEntries(SymbolBuilder symbolBuilder);
 
 
     protected DwarfDie getDieByOffset(long offset){

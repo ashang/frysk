@@ -176,6 +176,158 @@ lib::dwfl::DwflModule::getSymtab(lib::dwfl::SymbolBuilder* symbolBuilder)
 }
 
 void
+lib::dwfl::DwflModule::getPLTEntries(lib::dwfl::SymbolBuilder* symbolBuilder)
+{
+  Dwfl_Module *module = (Dwfl_Module *)this->pointer;
+  GElf_Addr bias;
+
+  ::Elf *elf = ::dwfl_module_getelf (module, &bias);
+  ::GElf_Ehdr ehdr;
+  if (::gelf_getehdr (elf, &ehdr) == NULL)
+    return;
+
+  bool have_dynamic = false;
+  ::GElf_Off off_dynamic;
+  for (GElf_Half i = 0; i < ehdr.e_phnum; ++i)
+    {
+      ::GElf_Phdr ph;
+      if (::gelf_getphdr (elf, i, &ph) == NULL)
+	return;
+      if (ph.p_type == PT_DYNAMIC)
+	{
+	  have_dynamic = true;
+	  off_dynamic = ph.p_offset;
+	  break;
+	}
+    }
+  if (!have_dynamic)
+    return;
+
+  ::Elf_Data *dynsym_data = NULL;
+  ::GElf_Word dynsym_ct = 0;
+  ::Elf_Data *dynsym_str = NULL;
+
+  ::GElf_Addr relplt_addr = 0;
+  ::GElf_Word relplt_size = 0;
+
+  ::GElf_Addr plt_addr = 0;
+  ::GElf_Word plt_size = 0;
+
+  for (::GElf_Half i = 1; i < ehdr.e_shnum; ++i)
+    {
+      ::Elf_Scn *scn = ::elf_getscn(elf, i);
+      if (scn == NULL)
+	return;
+
+      ::GElf_Shdr shdr;
+      if (::gelf_getshdr(scn, &shdr) == NULL)
+	return;
+
+      const char *name = ::elf_strptr(elf, ehdr.e_shstrndx, shdr.sh_name);
+      if (name == NULL)
+	return;
+
+      if (shdr.sh_type == SHT_DYNSYM)
+	{
+	  dynsym_data = ::elf_getdata(scn, NULL);
+	  dynsym_ct = shdr.sh_size / shdr.sh_entsize;
+	  ::Elf_Scn *str_scn = ::elf_getscn(elf, shdr.sh_link);
+	  ::GElf_Shdr str_hdr;
+	  if (::gelf_getshdr(str_scn, &str_hdr) == NULL)
+	    return;
+	  dynsym_str = ::elf_getdata(str_scn, NULL);
+	  if (dynsym_str == NULL || ::elf_getdata(str_scn, dynsym_str) != NULL)
+	    return;
+	}
+      else if (shdr.sh_type == SHT_DYNAMIC)
+	{
+	  ::Elf_Data *data = ::elf_getdata(scn, NULL);
+	  if (data == NULL || ::elf_getdata(scn, data) != NULL)
+	    return;
+
+	  ::GElf_Word ct = shdr.sh_size / shdr.sh_entsize;
+	  for (::GElf_Word j = 0; j < ct; ++j)
+	    {
+	      ::GElf_Dyn dyn;
+	      if (::gelf_getdyn(data, j, &dyn) == NULL)
+		return;
+	      if (dyn.d_tag == DT_JMPREL)
+		relplt_addr = dyn.d_un.d_ptr;
+	      else if (dyn.d_tag == DT_PLTRELSZ)
+		relplt_size = dyn.d_un.d_val;
+	    }
+	}
+      else if (shdr.sh_type == SHT_PROGBITS
+	       || shdr.sh_type == SHT_NOBITS)
+	{
+	    if (strcmp(name, ".plt") == 0)
+	      {
+		plt_addr = shdr.sh_addr;
+		plt_size = shdr.sh_size;
+	      }
+	}
+    }
+
+  if (dynsym_data == NULL || dynsym_str == NULL)
+    return;
+  if (relplt_addr == 0 || plt_addr == 0)
+    return;
+  if (plt_addr == 0 || plt_size == 0)
+    return;
+
+  ::Elf_Data *relplt_data = NULL;
+  ::GElf_Word relplt_count = 0;
+  for (::GElf_Half i = 1; i<ehdr.e_shnum; ++i)
+    {
+      ::Elf_Scn *scn = ::elf_getscn(elf, i);
+      ::GElf_Shdr shdr;
+
+      if (scn == NULL || ::gelf_getshdr(scn, &shdr) == NULL)
+	return;
+
+      if (shdr.sh_addr == relplt_addr && shdr.sh_size == relplt_size)
+	{
+	  relplt_data = ::elf_getdata(scn, NULL);
+	  if (relplt_data == NULL || ::elf_getdata(scn, relplt_data) != NULL)
+	    return;
+	  relplt_count = shdr.sh_size / shdr.sh_entsize;
+	}
+    }
+
+  ::GElf_Word plt_entry_size = plt_size / (relplt_count + 1);
+  
+
+  for (::GElf_Word i = 0; i < relplt_count; ++i)
+    {
+      GElf_Rela rela;
+      GElf_Sym sym;
+      void *ret;
+
+      if (relplt_data->d_type == ELF_T_REL)
+	{
+	  GElf_Rel rel;
+	  ret = ::gelf_getrel(relplt_data, i, &rel);
+	  rela.r_offset = rel.r_offset;
+	  rela.r_info = rel.r_info;
+	  rela.r_addend = 0;
+	}
+      else
+	ret = ::gelf_getrela(relplt_data, i, &rela);
+
+      if (ret == NULL
+	  || ELF64_R_SYM(rela.r_info) >= dynsym_ct
+	  || ::gelf_getsym(dynsym_data, ELF64_R_SYM(rela.r_info), &sym) == NULL)
+	return;
+
+      const char *name = ((const char*)dynsym_str->d_buf) + sym.st_name;
+      ::GElf_Addr addr = plt_addr + (i + 1) * plt_entry_size + bias;
+
+      symbolBuilder->symbol(JvNewStringUTF(name), addr, plt_entry_size,
+			    NULL, NULL, NULL);
+    }
+}
+
+void
 lib::dwfl::DwflModule::getSymbolByName(jstring name,
 				     lib::dwfl::SymbolBuilder* symbolBuilder)
 {
