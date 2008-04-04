@@ -1,5 +1,8 @@
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* fsystest.xml-in: Add version information.
+	* funit-procmask.xml-in: Ditto.
+	
 	* fsystest.xml-in: Rename fsystest.xml.
 	* funit-procmask.xml-in: Rename funit-procmask.xml.
 

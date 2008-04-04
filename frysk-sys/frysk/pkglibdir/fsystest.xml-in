@@ -44,25 +44,33 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fsystest">
+ <!ENTITY volume "8">
+ ]
+>
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="fsystest">
+<refentry>
 
   <refentryinfo>
-    <title>fsystest</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fsystest</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fsystest</refname>
-    <refpurpose>runs frysk's system testsuite</refpurpose>
+    <refpurpose>run Frysk's system testsuite</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -74,89 +82,29 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para> <function>fsystest</function> runs frysk's system
+    <para><function>fsystest</function> runs frysk's system
     testsuite.  </para>
 
-    <para> Frysk's system testsuite checks for regressions in the
+    <para>Frysk's system testsuite checks for regressions in the
     underlying system, and not regressions in frysk. For instance,
     this testsuite checks that the kernel correctly traces an exec
-    system call (a problem in early 2.6.18 kernels). </para>
+    system call (a problem in early 2.6.18 kernels).</para>
 
   </refsect1>
-  
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para> <function>fsystest</function> exits with a zero status when
-    all tests pass, and non-zero when some tests fail. </para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
   
   <refsect1>
     <title>EXAMPLE</title>
     <screen>@pkglib32dir@/fsystest</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-    <variablelist>
-      <varlistentry>
-	<term>An error message.</term>
-	<listitem>
-          <para> This error can appear when Funit is terminated
-          abruptly (as during a loss of power).  Typically you need to
-          manually open the perspectives and views that you want.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7) funit(8)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk"/></para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>

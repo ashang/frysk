@@ -44,20 +44,28 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "funit-procmask">
+ <!ENTITY volume "8">
+ ]
+>
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="funit">
+<refentry>
 
   <refentryinfo>
-    <title>funit-procmask</title>
-    <date>2 August 2007</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit-procmask</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
@@ -70,10 +78,13 @@
     <cmdsynopsis>
       <command>funit-procmask</command>
       <arg choice="opt">
-        <option><replaceable>OPTION</replaceable></option>
+        <option>-y</option>
       </arg>
-      <arg choice="req">
-        <replaceable>SIGNAL_NUMBER</replaceable> ...
+      <arg choice="opt">
+        <option>-n</option>
+      </arg>
+      <arg rep="repeat" choice="plain">
+        <replaceable>signal-number</replaceable>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -88,28 +99,29 @@
     <variablelist>
 
       <varlistentry>
-	<term> <option>-y</option> </term><listitem><para>Test in the
-	affermative, only exit successfully when all the signals are
+	<term><option>-y</option></term>
+	<listitem><para>Test in the affermative, only exit
+	successfully when all the signals are
 	present.</para> </listitem>
       </varlistentry>
 
       <varlistentry>
-	<term> <option>-n</option> </term> <listitem> <para>Test in
-	the negative, only exit successfully when all the signals are
-	absent.</para> </listitem>
+	<term><option>-n</option></term>
+	<listitem><para>Test in the negative, only exit successfully
+	when all the signals are absent.</para> </listitem>
       </varlistentry>
 
     </variablelist>
 
-    <para>This program is used by <function>funit</function>, as part
-    of frysk's JUnit testsuite.</para>
+    <para>This program is used by <function>funit</function>(8), as
+    part of Frysk's testsuite.</para>
 
   </refsect1>
   
   <refsect1>
     <title>EXAMPLE</title>
 
-    <para>Check that SIGUSR1 (1) is absent from the default signal
+    <para>Test if SIGUSR1 (1) is absent from the default signal
     mask.</para>
 
 <screen>
@@ -117,54 +129,15 @@
 </screen>
 
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-    <variablelist>
-      <varlistentry>
-	<term>An error message.</term>
-	<listitem>
-          <para> This error can appear when Funit is terminated
-          abruptly (as during a loss of power).  Typically you need to
-          manually open the perspectives and views that you want.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7) funit(8)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk"/></para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>
