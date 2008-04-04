@@ -48,17 +48,11 @@ LOAD_IMMED_WORD (REG3, 0x12345678)
 
 LOAD_IMMED_WORD (REG2, memory)
 
-STORE (REG0, REG0)   				// To crash program
+STORE_WORD (REG0, REG0)				// To crash program
 
 MAIN_EPILOGUE(0)
 FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
-memory:						// Set up memory locations
-#if defined __powerpc64__
-	.8byte 0x12341234
-#elif defined __powerpc__
-	.4byte 0x1234
-#else
-	.word 0x1234
-#endif
+// Set up memory locations
+WORD(memory, 0x12341234)

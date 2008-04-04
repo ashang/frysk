@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 // Copyright 2007, IBM Corp.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -46,6 +46,10 @@
 // abstract machine.  The frysk-isa is emulated using the host's
 // instruction set.
 
+#if defined(__i386__) || defined(__x86_64__)
+#define __x86__ 1
+#endif
+
 
 
 // The FRYSK Load-Store Instruction Set Architecture:
@@ -55,10 +59,10 @@
 // sequence:
 
 //   LOAD_IMMED_WORD(REG1, memory_addres)
-//   LOAD(REG2, REG1)
+//   LOAD_WORD(REG2, REG1)
 //   LOAD_IMMED_BYTE(REG3, 1)
 //   ADD(REG2, REG3)
-//   STORE(REG2, REG1)
+//   STORE_WORD(REG2, REG1)
 
 // Note that while the i386 has an instruction for directly
 // incrementing memory, load-store ISAs such as the PowerPC do not.
@@ -85,7 +89,19 @@
 // original ALPHA ISA only supported (64-bit) word sized memory
 // accesses.
 
-#define WORD(NAME, VALUE) .data ; NAME: .word VALUE ; .text
+#define WORD(NAME, VALUE) \
+		.data ; \
+	NAME: \
+		.long VALUE ; \
+		.size NAME, . - NAME ; \
+		.text
+
+#define BYTE(NAME, VALUE) \
+		.data ; \
+	NAME: \
+		.byte VALUE ; \
+		.size NAME, . - NAME ; \
+		.text
 
 
 
@@ -154,52 +170,70 @@
 
 //    NO_OP ; NO_OP ; NO_OP
 
-#if defined __i386__
-#  define NO_OP nop
-#elif defined __x86_64__
+#if defined __x86__
 #  define NO_OP nop
 #elif defined __powerpc__
-#  define NO_OP nop
-#elif defined __powerpc64__
 #  define NO_OP nop
 #else
 #  warning "No no-operation instruction defined"
 #endif
 
+// Illegal-operation instruction (generates SIGILL)
+
+#if defined __i386__
+#  define ILLEGAL_INSTRUCTION .word 0xffff
+#elif defined __x86_64__
+#  define ILLEGAL_INSTRUCTION .word 0xffff
+#elif defined __powerpc__
+#  define ILLEGAL_INSTRUCTION .4byte 0xffffffff
+#else
+#  warning "No no-operation instruction defined"
+#endif
 
 
 
 // Load-store instructions:
 
-// Only two instructions are available for performing WORD sized
+// Two instructions are available for performing WORD sized
 // memory-register transfers.
 
 // For instance, to move a WORD sized value from the address
 // designated by REG1 to that designated by REG2 use the sequence:
 
-//   LOAD(REG3,REG1)
-//   STORE(REG3, REG2)
+//   LOAD_WORD(REG3, REG1)
+//   STORE_WORD(REG3, REG2)
 
-//#if defined __i386__
-//#  define LOAD(DEST_REG,BASE_REG) //???
-//#elif defined __x86_64__
-//#  define LOAD(DEST_REG,BASE_REG) //???
-//#elif defined __powerpc__
-//#  define LOAD(DEST_REG,BASE_REG) //???
-//#elif defined __powerpc64__
-//#  define LOAD(DEST_REG,BASE_REG) //???
-//#else
-// #  warning "No load instruction defined"
-//#endif
-
-#if defined __i386__
-#  define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
-#elif defined __x86_64__
-#  define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#if defined __x86__
+#  define LOAD_WORD(DEST_REG,BASE_REG) mov (BASE_REG), DEST_REG
 #elif defined __powerpc__
-#  define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
-#elif defined __powerpc64__
-#  define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+#  define LOAD_WORD(DEST_REG,BASE_REG) ldw DEST_REG, 0(BASE_REG)
+#else
+#  warning "No load instruction defined"
+#endif
+
+#if defined __x86__
+#  define STORE_WORD(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#elif defined __powerpc__
+#  define STORE_WORD(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+#else
+#  warning "No store instruction defined"
+#endif
+
+// Two instructions are available for performing BYTE sized
+// memory-register transfers.
+
+#if defined __x86__
+#  define LOAD_BYTE(DEST_REG,BASE_REG) movb (BASE_REG), DEST_REG
+#elif defined __powerpc__
+#  define LOAD_BYTE(DEST_REG,BASE_REG) ldb DEST_REG, 0(BASE_REG)
+#else
+#  warning "No load instruction defined"
+#endif
+
+#if defined __x86__
+#  define STORE_BYTE(SOURCE_REG,BASE_REG) movb SOURCE_REG, (BASE_REG)
+#elif defined __powerpc__
+#  define STORE_BYTE(SOURCE_REG,BASE_REG) stb SOURCE_REG, 0(BASE_REG)
 #else
 #  warning "No store instruction defined"
 #endif
@@ -217,7 +251,7 @@
 // For instance, to load the WORD at VARIABLE, use the sequence:
 
 //        LOAD_IMMED_WORD(REG1, variable)
-//        LOAD(REG1, REG1)
+//        LOAD_WORD(REG1, REG1)
 
 // And then to increment REG1 by 1 use:
 
@@ -230,21 +264,15 @@
 // instructions will implement LOAD_IMMED_WORD as two 16-bit immediate
 // instructions.
 
-#if defined __i386__
+#if defined __x86__
 #  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
-#elif defined __x86_64__
-#  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
-#elif defined __powerpc64__
-#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
 #elif defined __powerpc__
 #  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
 #else
 #  warning "No load immediate instruction sequence defined"
 #endif
 
-#if defined __i386__
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
-#elif defined __x86_64__
+#if defined __x86__
 #  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __powerpc64__
 //  PowerPC instructions have a fixed length
@@ -298,8 +326,6 @@
 #  define ADD(DEST_REG, SOURCE_REG) addl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define ADD(DEST_REG, SOURCE_REG) addq DEST_REG, SOURCE_REG
-#elif defined __powerpc64__
-#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, DEST_REG, SOURCE_REG
 #elif defined __powerpc__
 #  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, DEST_REG, SOURCE_REG
 #else
@@ -310,8 +336,6 @@
 #  define SUB(DEST_REG, SOURCE_REG) subl DEST_REG, SOURCE_REG
 #elif defined __x86_64__
 #  define SUB(DEST_REG, SOURCE_REG) subq DEST_REG, SOURCE_REG
-#elif defined __powerpc64__
-#  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
 #elif defined __powerpc__
 #  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
 #else
@@ -322,8 +346,6 @@
 #  define MOV(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
 #elif defined __x86_64__
 #  define MOV(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
-#elif defined __powerpc64__
-#  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
 #elif defined __powerpc__
 #  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
 #else
@@ -347,9 +369,7 @@
 // Conditional, and uncondition jumps, and a register indirect jump
 // are supported.
 
-#if defined __i386__
-#  define JUMP_EQ(LABEL) je LABEL
-#elif defined __x86_64__
+#if defined __x86__
 #  define JUMP_EQ(LABEL) je LABEL
 #elif defined __powerpc__
 #  define JUMP_EQ(LABEL) beq cr7, LABEL
@@ -357,9 +377,7 @@
 #  warning "No jump equal instruction defined"
 #endif
 
-#if defined __i386__
-#  define JUMP_NE(LABEL) jne LABEL
-#elif defined __x86_64__
+#if defined __x86__
 #  define JUMP_NE(LABEL) jne LABEL
 #elif defined __powerpc__
 #  define JUMP_NE(LABEL) bne cr7, LABEL
@@ -367,27 +385,21 @@
 #  warning "No jump not-equal instruction defined"
 #endif
 
-#if defined __i386__
-#  define JUMP(LABEL) jmp LABEL
-#elif defined __x86_64__
+#if defined __x86__
 #  define JUMP(LABEL) jmp LABEL
 #elif defined __powerpc__
-#  define JUMP(LABEL) b LABEL
-#elif defined __powerpc64__
 #  define JUMP(LABEL) b LABEL
 #else
 #  warning "No unoconditional jump instruction defined"
 #endif
 
-#if defined __i386__
-#  define JUMP_REG(REG) jmp *REG
-#elif defined __x86_64__
+#if defined __x86__
 #  define JUMP_REG(REG) jmp *REG
 #elif defined __powerpc__
 // PowerPC do not have a instructio for jumping for a REG,
 // so the solution is to use a special reg (here counter reg)
 // copy the value to him, and them jump. The problem is that you
-// will lose the old value of CTR reg
+// will lose the old value of CTR reg.
 #  define JUMP_REG(REG) mtctr REG; bctrl
 #else
 #  warning "No indirect or register jump instruction defined"
@@ -471,13 +483,9 @@
 // calling-conventions is _not_ supported!  By convention, parameters
 // are passed in REG's 1-3, and the return value is in REG0.
 
-#if defined __i386__
-#  define FUNCTION_CALL(LABEL) call LABEL
-#elif defined __x86_64__
+#if defined __x86__
 #  define FUNCTION_CALL(LABEL) call LABEL
 #elif defined __powerpc__
-#  define FUNCTION_CALL(LABEL) bl LABEL
-#elif defined __powerpc64__
 #  define FUNCTION_CALL(LABEL) bl LABEL
 #else
 #  warning "No function-call instruction defined"
@@ -489,9 +497,7 @@
 	.type FUNC, @function ; \
     FUNC: \
 	.cfi_startproc
-#if defined __i386__
-#  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
-#elif defined __x86_64__
+#if defined __x86__
 #  define FUNCTION_BEGIN(FUNC,SLOTS) SANE_FUNCTION_BEGIN(FUNC)
 #elif defined __powerpc64__
 #  define FUNCTION_BEGIN(FUNC,SLOTS) \
@@ -575,12 +581,8 @@
 #  warning "No function-epilogue instruction sequence defined"
 #endif
 
-#if defined __i386__
+#if defined __x86__
 #  define FUNCTION_RETURN(FUNC,SLOTS) ret
-#elif defined __x86_64__
-#  define FUNCTION_RETURN(FUNC,SLOTS) ret
-#elif defined __powerpc64__
-#  define FUNCTION_RETURN(FUNC,SLOTS) blr
 #elif defined __powerpc__
 #  define FUNCTION_RETURN(FUNC,SLOTS) blr
 #else
@@ -590,9 +592,7 @@
 #define SANE_FUNCTION_END(FUNC) \
 	.cfi_endproc; \
 	.size FUNC, . - FUNC
-#if defined __i386__
-#  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
-#elif defined __x86_64__
+#if defined __x86__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
 #elif defined __powerpc64__
 #  define FUNCTION_END(FUNC,SLOTS) SANE_FUNCTION_END(FUNC)
@@ -640,9 +640,9 @@
 //#  define STACK_LOAD(DEST_REG,SLOT)
 //#elif defined __x86_64__
 //#  define STACK_LOAD(DEST_REG,SLOT)
-//#elif defined __powerpc__
-//#  define STACK_LOAD(DEST_REG,SLOT)
 //#elif defined __powerpc64__
+//#  define STACK_LOAD(DEST_REG,SLOT)
+//#elif defined __powerpc__
 //#  define STACK_LOAD(DEST_REG,SLOT)
 //#else
 //#  warning "No stack-load instruction defined"
@@ -652,9 +652,9 @@
 //#  define STACK_STORE(SOURCE_REG,SLOT)
 //#elif defined __x86_64__
 //#  define STACK_STORE(SOURCE_REG,SLOT)
-//#elif defined __powerpc__
-//#  define STACK_STORE(SOURCE_REG,SLOT)
 //#elif defined __powerpc64__
+//#  define STACK_STORE(SOURCE_REG,SLOT)
+//#elif defined __powerpc__
 //#  define STACK_STORE(SOURCE_REG,SLOT)
 //#else
 //#  warning "No stack-store instruction sequence defined"

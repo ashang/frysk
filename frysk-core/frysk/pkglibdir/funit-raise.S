@@ -48,14 +48,10 @@
 // Architecture dependent divide by zero and illegal instruction operator.
 #if defined(__i386__) || defined(__x86_64__)
 	#define DIV_ZERO(REG)	div REG;
-	#define ILL_INST	.word 0xffff;
 #elif defined __powerpc64__
 	#define DIV_ZERO(REG)	li 5, 0; divw 6, REG, 5
-	//PowePC64 has fixed size instructions upcodes, 16 bytes (64bits) long
-	#define ILL_INST	.8byte 0xffffffffffffffff;
 #elif defined __powerpc__
 	#define DIV_ZERO(REG)	li 5, 0; divw 6, REG, 5
-	#define ILL_INST	.4byte 0xffffffff; 
 #else
 	#error unsuported architecture
 #endif
@@ -80,13 +76,13 @@ RAISE_FUNCTION_END(div_zero)
 RAISE_FUNCTION_START(bad_addr_segv)
 	LOAD_IMMED_BYTE (REG0, 0)
 bad_addr_segv_label:
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP			;  // never reached
 RAISE_FUNCTION_END(bad_addr_segv)
 
 RAISE_FUNCTION_START(bad_inst_ill)
 bad_inst_ill_label:
-	ILL_INST
+	ILLEGAL_INSTRUCTION
 	NO_OP			;  // never reached
 RAISE_FUNCTION_END(bad_inst_ill)
 

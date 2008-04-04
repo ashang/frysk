@@ -1,5 +1,11 @@
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-asm.S: Update to match frysk-asm.h's STORE_WORD.
+	* funit-watchpoint.S: Ditto.
+	* funit-symbols.S: Ditto.
+	* funit-location.S: Ditto.
+	* funit-raise.S (bad_addr_segv_label): Ditto.
+
 	* fparser.xml-in: Rename fparser.xml.
 	* funit-exec.xml-in: Rename funit-exec.xml.
 	* funit-exit.xml-in: Rename funit-exit.xml.

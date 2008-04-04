@@ -45,7 +45,7 @@
 	// A known global symbol for checking the PC.
 .global crash
 crash:
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NOP
 
 	FUNCTION_BEGIN(main,0)

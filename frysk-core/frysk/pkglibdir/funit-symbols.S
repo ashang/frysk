@@ -53,7 +53,7 @@
 # A global symbol that includes its size.
 GLOBAL(global_st_size)
 	LOAD_IMMED_BYTE (REG0, 0)
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP
 	SIZE(global_st_size)
 
@@ -62,7 +62,7 @@ GLOBAL(global_st_size)
 # A local symbol that includes its size.
 LOCAL(local_st_size)	
 	LOAD_IMMED_BYTE (REG0, 0)
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP
 	SIZE(local_st_size)
 
@@ -71,7 +71,7 @@ LOCAL(local_st_size)
 # A global symbol that has zero size.
 GLOBAL(global_st_size_0)
 	LOAD_IMMED_BYTE (REG0, 0)
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP
 	
 
@@ -79,7 +79,7 @@ GLOBAL(global_st_size_0)
 # A local symbol that has zero size.
 LOCAL(local_st_size_0)
 	LOAD_IMMED_BYTE (REG0, 0)
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP
 	
 
@@ -87,18 +87,18 @@ LOCAL(local_st_size_0)
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
 GLOBAL(global_outer)
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 GLOBAL(global_in_global)
-	STORE (REG0, REG0)
+	STORE_WORD (REG0, REG0)
 	NO_OP
 	SIZE(global_in_global)
 LOCAL(local_in_global)
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	SIZE(local_in_global)
 .Lglobal_outer:
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	SIZE(global_outer)
 
@@ -106,7 +106,7 @@ LOCAL(local_in_global)
 	
 # Code with no symbol after a global symbol with size.
 .Lno_global:
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	
 
@@ -114,18 +114,18 @@ LOCAL(local_in_global)
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
 LOCAL(local_outer)
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NO_OP
 GLOBAL(global_in_local)
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	SIZE(global_in_local)
 LOCAL(local_in_local)
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	SIZE(local_in_local)
 .Llocal_outer:
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	SIZE(local_outer)
 
@@ -133,7 +133,7 @@ LOCAL(local_in_local)
 
 # Code with no symbol after a local symbol with size.
 .Lno_local:
-	STORE (REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 	
 
@@ -144,20 +144,20 @@ LOCAL(local_in_local)
 GLOBAL(global_after_0)
 	NO_OP
 GLOBAL(global_0_in_global)
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 LOCAL(local_0_in_global)
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 .Lglobal_after_0:
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	SIZE(global_after_0)
 
 
 
 # Code with no symbol after a global with nexted zero-sized symbols.
 .Lafter_global_containing_0:
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 
 
@@ -168,20 +168,20 @@ LOCAL(local_0_in_global)
 LOCAL(local_after_0)
 	NO_OP
 GLOBAL(global_0_in_local)
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 LOCAL(local_0_in_local)
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 .Llocal_after_0:
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	SIZE(local_after_0)
 
 
 
 # Code with no symbol after a local with nexted zero-sized symbols.
 .Lafter_local_containing_0:
-	STORE(REG0, REG0)
+	STORE_WORD(REG0, REG0)
 	NO_OP
 
 
@@ -189,7 +189,7 @@ LOCAL(local_0_in_local)
 
 GLOBAL(large_global_at_small_global)
 GLOBAL(small_global_at_large_global)
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NO_OP
 	SIZE(small_global_at_large_global)
 	NO_OP
@@ -201,7 +201,7 @@ GLOBAL(small_global_at_large_global)
 
 GLOBAL(large_global_at_small_local)
 LOCAL(small_local_at_large_global)
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NO_OP
 	SIZE(small_local_at_large_global)
 	NO_OP
@@ -213,7 +213,7 @@ LOCAL(small_local_at_large_global)
 
 LOCAL(large_local_at_small_global)
 GLOBAL(small_global_at_large_local)
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NO_OP
 	SIZE(small_global_at_large_local)
 	NO_OP
@@ -225,7 +225,7 @@ GLOBAL(small_global_at_large_local)
 
 LOCAL(large_local_at_small_local)
 LOCAL(small_local_at_large_local)
-	STORE(REG0,REG0)
+	STORE_WORD(REG0,REG0)
 	NO_OP
 	SIZE(small_local_at_large_local)
 	NO_OP

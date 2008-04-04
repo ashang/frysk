@@ -52,7 +52,7 @@ MAIN_PROLOGUE(0)
 NOP
 
 // Load source variables address into GPR 1
-LOAD_IMMED_BYTE (REG1, source)
+LOAD_IMMED_WORD(REG1, source)
 
 // Load the literal value 0x77 into GPR3. The value isn't important
 // the actual writing of the data is.
@@ -64,7 +64,7 @@ NOP
 NOP
 
 // Write 0x77 into the location of source (held by GPR1)
-STORE(REG3, REG1)
+STORE_WORD(REG3, REG1)
 
 // Clear the decks ....
 NOP
@@ -77,9 +77,7 @@ FUNCTION_RETURN(main,0)
 FUNCTION_END(main,0)
 
 // Declare a global variable source. One byte and populate it
-.data
 .globl source
-source:						// Set up memory locations
-	.byte 0x99
+WORD(source, 0x99)
 
 
