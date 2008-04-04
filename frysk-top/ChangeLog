@@ -1,5 +1,7 @@
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk-common/frysk.7): Fix typo; $<, not $@.tmp.
+	
 	* Makefile.am (CLEANFILES): Add frysk-common/frysk.xml.
 	(manpages manpages/index.html): Get man pages from build
 	directory.

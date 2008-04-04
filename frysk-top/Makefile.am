@@ -243,4 +243,4 @@ CLEANFILES += frysk-common/frysk.7
 CLEANFILES += frysk-common/frysk.xml
 frysk-common/frysk.7: frysk-common/frysk.xml
 	mkdir -p `dirname $@`
-	$(XMLTO) -o `dirname $@` man $@.tmp
+	$(XMLTO) -o `dirname $@` man $<
