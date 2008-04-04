@@ -39,13 +39,26 @@
 
 package frysk.stack;
 
-import frysk.rsl.Log;
+import java.util.Iterator;
+import java.util.List;
+
+//import frysk.proc.Proc;
+import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.testbed.TestLib;
+import frysk.rsl.Log;
+import frysk.symtab.DwflSymbol;
+import frysk.symtab.SymbolFactory;
+import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.SlaveOffspring;
+import frysk.testbed.StopEventLoopWhenProcTerminated;
+import frysk.testbed.TestLib;
+
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
+import lib.dwfl.ElfException;
 
 public class TestFrame extends TestLib {
     private static final Log fine = Log.fine(TestFrame.class);
@@ -79,7 +92,7 @@ public class TestFrame extends TestLib {
       Manager.eventLoop.requestStop();
     }
   }
-    
+
   public Frame backtrace(Task task, BlockingObserver blocker)
   {
     task.requestAddInstructionObserver(blocker);
@@ -127,5 +140,78 @@ public class TestFrame extends TestLib {
     assertNotSame("Frames should be different", frame, otherFrame);
     
   }
-  
+
+
+    class Info {
+	private Task task;
+	public Info(Task task) {
+	    this.task = task;
+	}
+
+	private DwflModule getModuleForFile(String path) {
+	    Dwfl dwfl = frysk.dwfl.DwflCache.getDwfl(task);
+	    DwflModule[] modules = dwfl.getModulesForce();
+	    for (int i = 0; i < modules.length; ++i) {
+		String name = modules[i].getName();
+		if (name.equals(path))
+		    return modules[i];
+	    }
+	    return null;
+	}
+
+	public long getFunctionEntryAddress(String func) throws ElfException
+	{
+	    String path = task.getProc().getExeFile().getSysRootedPath();
+	    DwflModule module = getModuleForFile(path);
+	    List symbols = SymbolFactory.getSymbols(module);
+	    for (Iterator it = symbols.iterator(); it.hasNext();) {
+		DwflSymbol symbol = (DwflSymbol)it.next();
+		if (symbol.getName().equals(func))
+		    return symbol.getAddress();
+	    }
+	    return 0;
+	}
+    }
+
+    public void testBogusAddressPrevFrame() throws ElfException {
+	if (unresolved(6029))
+	    return;
+    	class CodeObserver1 implements TaskObserver.Code
+	{
+	    public boolean hit = false;
+
+	    public Action updateHit (Task task, long address) {
+		hit = true;
+		long addr = StackFactory.createFrame(task).getOuter().getAddress();
+		assertTrue("Return adress makes sense",
+			    addr < -1 || addr > 4096);
+		Manager.eventLoop.requestStop();
+		return Action.BLOCK;
+	    }
+
+	    public void addFailed (Object observable, Throwable w) { }
+	    public void addedTo (Object observable) {
+		Manager.eventLoop.requestStop();
+	    }
+	    public void deletedFrom (Object observable) {
+		Manager.eventLoop.requestStop();
+	    }
+	}
+
+	String[] cmd = {Config.getPkgLibFile("funit-empty-functions-nodebug").getPath()};
+	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+	Task task = child.getMainTask();
+	Info info = new Info(task);
+
+	long address = info.getFunctionEntryAddress("__libc_csu_init");
+	CodeObserver1 code = new CodeObserver1();
+	task.requestAddCodeObserver(code, address);
+	assertRunUntilStop("add breakpoint observer");
+
+	new StopEventLoopWhenProcTerminated(child);
+	child.requestRemoveBlock();
+	assertFalse(code.hit);
+	assertRunUntilStop("wait for hit");
+	assertTrue(code.hit);
+    }
 }
