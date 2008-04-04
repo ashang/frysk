@@ -1,3 +1,9 @@
+2008-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (CLEANFILES): Add frysk-common/frysk.xml.
+	(manpages manpages/index.html): Get man pages from build
+	directory.
+
 2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am (manpages): Clarify error message.

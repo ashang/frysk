@@ -39,7 +39,7 @@
 # exception.
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <template> -<heading> <xml-man-page> ..."
+    echo "Usage: $0 <template> -<heading> <xml-man-page> ..." 1>&2
     exit 1
 fi
 
@@ -57,7 +57,8 @@ sed -n < ${template} \
 
 # Generate the body for the man pages.
 
-refpurposegrep=$(cat << EOF
+refpurposegrep() {
+    sed -n '
 /<refpurpose>/{
  :loop
    /<\/refpurpose>/b break
@@ -72,8 +73,8 @@ refpurposegrep=$(cat << EOF
    p
    q
 }
-EOF
-)
+'
+}
 
 suffix=
 for xmlfile in "$@" ; do
@@ -91,19 +92,19 @@ EOF
 	    -e 's,.*ENTITY volume "\([0-9]\)".*,\1,p' \
 	    `
 	echo "Generating man webpage for ${name}.${n}" 1>&2
-	sed -e "s;@abs_root_srcdir@;${abs_root_srcdir};g" \
-	    < $xmlfile \
-	    > manpages/${name}.${n}.tmp
-	${XMLTO} -o manpages html manpages/${name}.${n}.tmp
+	${XMLTO} -o manpages html $xmlfile
 	rm -f manpages/${name}.${n}.tmp
 	mv manpages/index.html manpages/${name}.${n}.html 
 	
 	cat <<EOF
 <li><tt><a href="${name}.${n}.html">${name}.${n}</a></tt>
 EOF
-	# Catch empty (aka not on one line) refpurpose tags.
-	desc=$(sed -n "$refpurposegrep" $xmlfile)
-	if test -z "$desc"; then exit 1; fi
+	# Catch missing refpurpose tags.
+	desc=$(refpurposegrep < $xmlfile)
+	if test -z "$desc"; then
+	    echo "$xmlfile has no refpurpose tag" 1>&2
+	    exit 1
+	fi
 	echo "$desc"
 	echo "</li>"
     fi

@@ -1,3 +1,18 @@
+2008-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* fauxv.xml-in: Rename fauxv.xml.
+	* fcatch.xml-in: Rename fcatch.xml.
+	* fcore.xml-in: Rename fcore.xml.
+	* fdebuginfo.xml-in: Rename fdebuginfo.xml.
+	* fdebugrpm.xml-in: Rename fdebugrpm.xml.
+	* ferror.xml-in: Rename ferror.xml.
+	* fexe.xml-in: Rename fexe.xml.
+	* fhpd.xml-in: Rename fhpd.xml.
+	* fmaps.xml-in: Rename fmaps.xml.
+	* fstack.xml-in: Rename fstack.xml.
+	* fstep.xml-in: Rename fstep.xml.
+	* ftrace.xml-in: Rename ftrace.xml.
+
 2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
 
 	* fdebuginfo.xml: Put refpurpose tag on multiple lines.

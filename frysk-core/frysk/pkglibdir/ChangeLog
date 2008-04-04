@@ -1,3 +1,11 @@
+2008-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* fparser.xml-in: Rename fparser.xml.
+	* funit-exec.xml-in: Rename funit-exec.xml.
+	* funit-exit.xml-in: Rename funit-exit.xml.
+	* funit-slave.xml-in: Rename funit-slave.xml.
+	* funit-threads.xml-in: Rename funit-threads.xml.
+
 2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-exit.xml: Put refpurpose tag on multiple lines.

@@ -314,6 +314,19 @@ SUFFIXES += .cxx-in
 SUFFIXES += .c-in
 .c-in.c:
 	$(SUBST)
+SUFFIXES += .xml-in
+.xml-in.xml:
+	$(SUBST)
+.xml.1:
+	mkdir -p `dirname $@`
+	$(XMLTO) -o `dirname $@` man $<
+.xml.7:
+	mkdir -p `dirname $@`
+	$(XMLTO) -o `dirname $@` man $<
+.xml.8:
+	mkdir -p `dirname $@`
+	$(XMLTO) -o `dirname $@` man $<
+
 TestRunner.java: common/TestRunner.java-in
 	$(SUBST)
 $(GEN_SOURCENAME)/JUnitTests.java: files-java.list

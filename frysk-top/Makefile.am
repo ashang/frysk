@@ -82,14 +82,13 @@ manpages manpages/index.html:
 	sh $(srcdir)/frysk-common/manpages.sh \
 		$(TEMPLATE) \
 		-"Overview" \
-		$(srcdir)/frysk-common/frysk.xml \
+		frysk-common/frysk.xml \
 		-"Command Line Utilities" \
-		$(srcdir)/frysk-core/frysk/bindir/*.xml \
+		frysk-core/frysk/bindir/*.xml \
 		-"GNOME Interface" \
-		$(srcdir)/frysk-gui/frysk/bindir/*.xml \
+		frysk-gui/frysk/bindir/*.xml \
 		-"Test framework" \
-		$(srcdir)/*/frysk/pkglibdir/*.xml \
-	    || (echo "Bad xml file or no refpurpose tag found."; exit 1)
+		*/frysk/pkglibdir/*.xml
 	mv manpages/index.new manpages/index.html
 
 # Generate JAVADOC documentation.
@@ -241,8 +240,7 @@ eclipse/.settings/%.prefs: frysk-top/%.prefs.in
 
 man_MANS += frysk-common/frysk.7
 CLEANFILES += frysk-common/frysk.7
+CLEANFILES += frysk-common/frysk.xml
 frysk-common/frysk.7: frysk-common/frysk.xml
 	mkdir -p `dirname $@`
-	$(SUBST_SED) < $< > $@.tmp
 	$(XMLTO) -o `dirname $@` man $@.tmp
-	rm -f $@.tmp

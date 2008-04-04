@@ -107,7 +107,7 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z0-9_]*\.glade" -print \
     -o -name "[A-Za-z0-9_]*\.png" -print \
     -o -name "[A-Za-z0-9_]*\.gif" -print \
-    -o -name "[A-Za-z0-9_]*\.xml" -print \
+    -o -name "[A-Za-z0-9_]*\.xml-in" -print \
     -o -path "*dir/[A-Za-z_]*\.[sS]" -print \
     -o -path "*dir/[A-Za-z_]*\.in" -print \
     -o -path "*dir/[A-Za-z_]*\.uu" -print \
@@ -171,8 +171,8 @@ check_MANS ()
     # bin/ directories require a man page.
     case "$1" in
 	*bindir/* )
-          if test ! -r $1.xml ; then
-	      echo "error: no $(basename $(dirname $1))/$(basename $1).xml man page" 1>&2
+          if test ! -r $1.xml-in ; then
+	      echo "error: no $(basename $(dirname $1))/$(basename $1).xml-in man page" 1>&2
 	      exit 1
 	  fi
 	  ;;
@@ -609,11 +609,11 @@ do
 done | sort -u
 
 
-# Generate rules for all .xml files, assume that they are converted to
-# man pages.
+# Generate rules for all .xml-in files, assume that they are converted
+# to man pages.
 
-print_header "... .xml"
-grep -e '\.xml$' files.list | while read xml
+print_header "... .xml-in"
+grep -e '\.xml-in$' files.list | while read xml
 do
   case "$xml" in
       *dir/* )
@@ -632,11 +632,9 @@ do
                   cat <<EOF
 man_MANS += ${d}/${title}.${n}
 CLEANFILES += ${d}/${title}.${n}
-${d}/${title}.${n}: $xml
-	mkdir -p ${d}
-	\$(SUBST_SED) < \$< > \$@.tmp
-	\$(XMLTO) -o ${d} man \$@.tmp
-	rm -f \$@.tmp
+CLEANFILES += ${d}/${title}.xml
+${d}/${title}.xml: $xml
+${d}/${title}.${n}: ${d}/${title}.xml
 EOF
 	  done
 	  ;;

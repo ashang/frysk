@@ -1,3 +1,7 @@
+2008-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.xml-in: Rename frysk.xml.
+
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk.xml: Add version and standard options.

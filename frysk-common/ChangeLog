@@ -1,3 +1,15 @@
+2008-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* manpages.sh: Don't apply SUBST.
+	(refpurposegrep): Change to a function.
+	* frysk.xml-in: Rename frysk.xml.
+	* Makefile.rules (SUFFIXES): Add .xml-in.
+	(.xml-in.xml): New.
+	(.xml.1): New.
+	(.xml.7): New.
+	(.xml.8): New.
+	* Makefile.gen.sh (.xml-in): Replace .xml.
+
 2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
 	    Petr Machata <pmachata@redhat.com>
 
