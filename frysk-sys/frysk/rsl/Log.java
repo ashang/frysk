@@ -39,11 +39,8 @@
 
 package frysk.rsl;
 
-import frysk.sys.Tid;
-import frysk.sys.Pid;
 import inua.util.PrintWriter;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 
 /**
  * Generate log information when enabled.
@@ -111,244 +108,25 @@ public final class Log {
     }
 
     // Static?
-    private static PrintWriter out = new PrintWriter(System.out);
-    static PrintWriter set(PrintStream out) {
-	PrintWriter old = Log.out;
-	Log.out = new PrintWriter(out);
-	return old;
-    }
-    static PrintWriter set(PrintWriter out) {
-	PrintWriter old = Log.out;
+    private static Printer out = new Printer(new PrintWriter(System.out));
+    static Printer set(Printer out) {
+	Printer old = Log.out;
 	Log.out = out;
 	return old;
     }
-
-    private static final long startTime = System.currentTimeMillis();
-
-    private void prefixTimeAndPid() {
-	if (level.compareTo(Level.DEFAULT) <= 0) {
-	    // Prefix user visible log messages with the severity; but
-	    // leave it off debugging messages.
-	    out.print(level.toPrint());
-	    out.print(": ");
-	}
-	long time = System.currentTimeMillis() - startTime;
-	long millis = time % 1000;
-	time = time / 1000;
-	long secs = time % 60;
-	time = time / 60;
-	long mins = time % 60;
-	time = time / 60;
-	long hrs = time % 24;
-	time = time / 24;
-	long days = time;
-	if (days > 0) {
-	    out.print(days);
-	    out.print(' ');
-	}
-	out.print(2, '0', hrs);
-	out.print(':');
-	out.print(2, '0', mins);
-	out.print(':');
-	out.print(2, '0', secs);
-	out.print('.');
-	out.print(3, '0', millis);
-	out.print(' ');
-	out.print(Pid.get());
-	out.print('.');
-	out.print(Tid.get());
-	out.print(' ');
+    static Printer set(PrintStream out) {
+	return set(new Printer(new PrintWriter(out)));
+    }
+    static Printer set(PrintWriter out) {
+	return set(new Printer(out));
+    }
+    public Printer prefix() {
+	return out.prefix(this);
+    }
+    public Printer prefix(Object self) {
+	return out.prefix(this, self);
     }
 
-    public Log prefix() {
-	prefixTimeAndPid();
-	out.print(path);
-	out.print(":");
-	return this;
-    }
-
-    public Log prefix(Object o) {
-	prefixTimeAndPid();
-	out.print("[");
-	out.print(o.toString());
-	out.print("]:");
-	return this;
-    }
-
-    public void suffix() {
-	out.println();
-	out.flush();
-    }
-  
-    /**
-     * Use poorly implemented reflection to dump Objects.
-     */
-    public Log print(Object o) {
-	out.print(' ');
-	dump(o);
-	return this;
-    }
-    private void dump(Object o) {
-	if (o == null) {
-	    out.print("<<null>>");
-	} else if (o instanceof char[]) {
-	    dump((char[])o);
-	} else if (o instanceof boolean[]) {
-	    dump((boolean[])o);
-	} else if (o instanceof int[]) {
-	    dump((int[])o);
-	} else if (o instanceof long[]) {
-	    dump((long[])o);
-	} else if (o.getClass().isArray()) {
-	    out.print("[");
-	    for (int i = 0; i < Array.getLength(o); i++) {
-		if (i > 0)
-		    out.print(",");
-		dump(o, i);
-	    }
-	    out.print("]");
-	} else if (o instanceof Throwable) {
-	    dump((Throwable) o);
-	} else if (o instanceof String) {
-	    dump((String)o);
-	} else {
-	    out.print("<<");
-	    out.print(o.toString());
-	    out.print(">>");
-	}
-    }
-    /**
-     * Throwables get their message printed; along with any root
-     * causes.
-     */
-    private void dump(Throwable t) {
-	out.print("<<exception ");
-	out.print(t.toString());
-	for (Throwable cause = t.getCause(); cause != null;
-	     cause = cause.getCause()) {
-	    out.print(" <caused-by> ");
-	    out.print(cause.toString());
-	}
-	out.print(">>");
-    }
-    private void dump(String s) {
-	out.print("\"");
-	out.print(s
-		.replaceAll("\"", "\\\\\"")
-		.replaceAll("\'", "\\\\\'")
-		.replaceAll("\r", "\\\\r")
-		.replaceAll("\n", "\\\\n")
-		.replaceAll("\t", "\\\\t")
-		.replaceAll("\f", "\\\\f"));
-	out.print("\"");
-    }
-    /**
-     * Dump the array object's i'th element
-     * @param o the array object
-     * @param i the array index
-     */
-    private void dump(Object o, int i) {
-	// for moment assume the array contains Objects; dump recursively.
-	dump(Array.get(o, i));
-    }
-    
-    /**
-     * Booleans are printed as strings.
-     */
-    public Log print(boolean b) {
-	out.print(' ');
-	dump(b);
-	return this;
-    }
-    private void dump(boolean b) {
-	out.print(b);
-    }
-    private void dump(boolean[] a) {
-	out.print('[');
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(',');
-	    dump(a[i]);
-	}
-	out.print(']');
-    }
-
-    /**
-     * Chars are printed in quotes.
-     */
-    public Log print(char c) {
-	out.print(' ');
-	dump(c);
-	return this;
-    }
-    private void dump(char c) {
-	out.print('\'');
-	out.print(c);
-	out.print('\'');
-    }
-    private void dump(char[] a) {
-	out.print('[');
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(',');
-	    dump(a[i]);
-	}
-	out.print(']');
-    }
-
-    /**
-     * Integers are printed in decimal.
-     */
-    public Log print(int i) {
-	out.print(' ');
-	dump(i);
-	return this;
-    }
-    private void dump(int i) {
-	out.print(i);
-    }
-    private void dump(int[] a) {
-	out.print('[');
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(',');
-	    dump(a[i]);
-	}
-	out.print(']');
-    }
-
-    /**
-     * Longs are printed in hex.
-     */
-    public Log print(long l) {
-	out.print(' ');
-	dump(l);
-	return this;
-    }
-    private void dump(long l) {
-	out.print("0x");
-	out.printx(l);
-
-    }
-    private void dump(long[] a) {
-	out.print('[');
-	for (int i = 0; i < a.length; i++) {
-	    if (i > 0)
-		out.print(',');
-	    dump(a[i]);
-	}
-	out.print(']');
-    }
-
-    /**
-     * Strings are just copied.
-     */
-    public Log print(String s) {
-	out.print(" ");
-	out.print(s);
-	return this;
-    }
-    
     // static 1 parameter
     public void log(String p1) {
 	if (!logging)

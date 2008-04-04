@@ -46,18 +46,18 @@ import java.io.StringWriter;
  * Class for constructing a backtrace string.
  */
 public class TestCallers extends TestLib {
-    private PrintWriter oldPrintWriter;
+    private Printer oldPrinter;
     public void tearDown() {
-	if (oldPrintWriter != null) {
-	    Log.set(oldPrintWriter);
-	    oldPrintWriter = null;
+	if (oldPrinter != null) {
+	    Log.set(oldPrinter);
+	    oldPrinter = null;
 	}
     }
 
     public void testCALLER() {
 	StringWriter buf = new StringWriter();
 	// XXX: Restored during tearDown
-	oldPrintWriter = Log.set(new PrintWriter(buf));
+	oldPrinter = Log.set(new PrintWriter(buf));
 	Log log = get("").set(Level.FINE).get(Level.FINE);
 	log.log("caller", Log.CALLER);
 	assertTrue("log", buf.toString().contains(" caller "));
