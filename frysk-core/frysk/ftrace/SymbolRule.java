@@ -41,7 +41,7 @@ package frysk.ftrace;
 
 import java.util.regex.Pattern;
 import frysk.util.Glob;
-import lib.dwfl.ElfSymbolVersion;
+import frysk.symtab.DwflSymbol;
 
 public class SymbolRule extends Rule {
 
@@ -70,7 +70,9 @@ public class SymbolRule extends Rule {
     }
 
 
-    private boolean checkVersionMatches(final TracePoint tp)
+    // XXX Version support didn't arrive yet.
+    /*
+    private boolean checkVersionMatches(final DwflSymbol symbol)
     {
 	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
 	    ? (ElfSymbolVersion[])tp.symbol.verneeds
@@ -90,27 +92,29 @@ public class SymbolRule extends Rule {
 
 	return false;
     }
+    */
 
-    private boolean checkNameMatches(final TracePoint tp)
+    private boolean checkNameMatches(final DwflSymbol symbol)
     {
-	Symbol symbol = tp.symbol;
-
-	if (this.namePattern.matcher(symbol.name).matches())
+	if (this.namePattern.matcher(symbol.getName()).matches())
 	    return true;
 
+	// XXX Alias support didn't arrive yet.
+	/*
 	if (symbol.aliases != null)
 	    for (int i = 0; i < symbol.aliases.size(); ++i) {
 		String alias = (String)symbol.aliases.get(i);
 		if (this.namePattern.matcher(alias).matches())
 		    return true;
 	    }
+	*/
 
 	return false;
     }
 
     public boolean matches(Object traceable) {
-	TracePoint tp = (TracePoint)traceable;
-	return checkNameMatches(tp)
-	    && checkVersionMatches(tp);
+	DwflSymbol sym = (DwflSymbol)traceable;
+	return checkNameMatches(sym)
+	    /*&& checkVersionMatches(sym)*/;
     }
 }
