@@ -62,7 +62,8 @@
 
   <refnamediv>
     <refname>fparser</refname>
-    <refpurpose>Runs the frysk standalone source code parser utility.</refpurpose>
+    <refpurpose>runs the frysk standalone source code parser
+                utility</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

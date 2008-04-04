@@ -57,6 +57,24 @@ sed -n < ${template} \
 
 # Generate the body for the man pages.
 
+refpurposegrep=$(cat << EOF
+/<refpurpose>/{
+ :loop
+   /<\/refpurpose>/b break
+   N
+   b loop
+
+ :break
+   s,^.*<refpurpose>,,
+   s,</refpurpose>.*$,,
+   s,\(^[[:space:]]*\|[[:space:]]*$\),,g
+   s,[[:space:]]\+, ,g
+   p
+   q
+}
+EOF
+)
+
 suffix=
 for xmlfile in "$@" ; do
     if expr x"${xmlfile}" : "x-" > /dev/null ; then
@@ -84,7 +102,7 @@ EOF
 <li><tt><a href="${name}.${n}.html">${name}.${n}</a></tt>
 EOF
 	# Catch empty (aka not on one line) refpurpose tags.
-	desc=$(sed -n 's/<refpurpose>\(.*\)<\/refpurpose>/\1/ p' $xmlfile)
+	desc=$(sed -n "$refpurposegrep" $xmlfile)
 	if test -z "$desc"; then exit 1; fi
 	echo "$desc"
 	echo "</li>"

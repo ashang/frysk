@@ -70,7 +70,8 @@
 
   <refnamediv>
     <refname>fdebuginfo</refname>
-    <refpurpose>display the debug-info paths for a process and its shared modules</refpurpose>
+    <refpurpose>display the debug-info paths for a process
+                and its shared modules</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

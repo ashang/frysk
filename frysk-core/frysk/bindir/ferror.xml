@@ -70,7 +70,8 @@
 
   <refnamediv>
     <refname>ferror</refname>
-    <refpurpose>print a stack trace when the given message is printed by the traced program</refpurpose>
+    <refpurpose>print a stack trace when the given message is printed
+                by the traced program</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

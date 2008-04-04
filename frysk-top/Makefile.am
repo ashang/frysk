@@ -89,7 +89,7 @@ manpages manpages/index.html:
 		$(srcdir)/frysk-gui/frysk/bindir/*.xml \
 		-"Test framework" \
 		$(srcdir)/*/frysk/pkglibdir/*.xml \
-	    || (echo "Bad [not on one line] refpurpose tag found."; exit 1)
+	    || (echo "Bad xml file or no refpurpose tag found."; exit 1)
 	mv manpages/index.new manpages/index.html
 
 # Generate JAVADOC documentation.

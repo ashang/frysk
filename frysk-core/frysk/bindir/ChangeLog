@@ -1,3 +1,9 @@
+2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
+
+	* fdebuginfo.xml: Put refpurpose tag on multiple lines.
+	* fexe.xml: Likewise.
+	* fmaps.xml: Likewise.
+
 2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* fdebuginfo.xml: Put refpurpose on one line.

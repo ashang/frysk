@@ -1,3 +1,7 @@
+2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.am (manpages): Clarify error message.
+
 2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.am (manpages): Check for refpurpose errors.

@@ -62,7 +62,8 @@
 
   <refnamediv>
     <refname>funit-exit</refname>
-    <refpurpose>exits with specified status, or terminates with the specified signal</refpurpose>
+    <refpurpose>exits with specified status,
+                or terminates with the specified signal</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>

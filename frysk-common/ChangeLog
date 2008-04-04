@@ -1,3 +1,10 @@
+2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
+	    Petr Machata <pmachata@redhat.com>
+
+	* frysk.xml: Split refpurpose tag over multiple lines.
+	* manpages.sh (refpurposegrep): New.
+	(suffix): Use refpurposegrep.
+
 2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* manpages.sh: Catch bad refpurpose tags.

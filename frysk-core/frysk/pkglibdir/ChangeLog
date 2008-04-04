@@ -1,3 +1,8 @@
+2008-04-04  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-exit.xml: Put refpurpose tag on multiple lines.
+	* fparser.xml: Likewise.
+
 2008-04-03  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-procmask.xml: Put refpurpose on one line by itself.

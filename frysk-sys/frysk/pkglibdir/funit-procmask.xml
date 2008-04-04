@@ -62,7 +62,8 @@
 
   <refnamediv>
     <refname>funit-procmask</refname>
-    <refpurpose>Test the processes signal mask for the presence (or absence) of a list if signals</refpurpose>
+    <refpurpose>test the processes signal mask for the presence
+                (or absence) of a list if signals</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
