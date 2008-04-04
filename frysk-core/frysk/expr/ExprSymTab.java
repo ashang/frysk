@@ -44,7 +44,6 @@ import inua.eio.ByteOrder;
 
 import java.util.List;
 
-import frysk.scopes.Variable;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Value;
 
@@ -66,10 +65,6 @@ public interface ExprSymTab
      * Return the task's memory buffer
      */
     ByteBuffer taskMemory();
-    /**
-     * Return the variable's value.
-     */
-    Value getValue(Variable v);
     /**
      * Return the wordsize.
      */    

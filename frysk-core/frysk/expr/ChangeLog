@@ -1,7 +1,11 @@
+2008-04-04  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* ExprSymTab.java: Removed getValue().
+	
 2008-04-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ExprSymTab.java: Removed getType().
-
+	
 2008-04-01  Andrew Cagney  <cagney@redhat.com>
 
 	* ExprSymTab.java: Update; Variable moved.

@@ -56,7 +56,6 @@ import frysk.isa.registers.Registers;
 import frysk.isa.registers.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
-import frysk.scopes.Variable;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Value;
 
@@ -70,12 +69,10 @@ import frysk.value.Value;
 public class ObjectDeclarationSearchEngine implements ExprSymTab{
 
     private final DebugInfoFrame frame;
-//    private final ISA isa;
     private final Task task;
 
     public ObjectDeclarationSearchEngine(DebugInfoFrame frame) {
 	this.frame = frame;
-//	this.isa = frame.getTask().getISA();
 	this.task = frame.getTask();
     }
     
@@ -111,10 +108,6 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	
 	ObjectDeclaration objectDeclaration = this.getVariable(s);
 	return objectDeclaration.getValue(frame);
-    }
-
-    public Value getValue(Variable v) {
-	return v.getValue(frame);
     }
 
     public ByteOrder order()
