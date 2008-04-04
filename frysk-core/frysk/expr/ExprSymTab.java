@@ -41,11 +41,12 @@ package frysk.expr;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+
 import java.util.List;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
-import frysk.value.Value;
+
 import frysk.scopes.Variable;
+import frysk.value.ObjectDeclaration;
+import frysk.value.Value;
 
 public interface ExprSymTab
 {
@@ -69,10 +70,6 @@ public interface ExprSymTab
      * Return the variable's value.
      */
     Value getValue(Variable v);
-    /**
-     * Given a variable, return its type.
-     */
-    Type getType(Variable variable);
     /**
      * Return the wordsize.
      */    

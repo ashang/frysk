@@ -39,26 +39,26 @@
 
 package frysk.debuginfo;
 
-import frysk.dwfl.DwflCache;
-import java.util.Iterator;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
-import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
-import lib.dwfl.DwarfDie;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
+import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
-import frysk.isa.ISA;
 import frysk.isa.registers.Register;
 import frysk.isa.registers.Registers;
 import frysk.isa.registers.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
-import frysk.value.Value;
 import frysk.scopes.Variable;
+import frysk.value.ObjectDeclaration;
+import frysk.value.Value;
 
 /**
  * This engine implements the c++ scoping rules and uses when searching for
@@ -70,12 +70,12 @@ import frysk.scopes.Variable;
 public class ObjectDeclarationSearchEngine implements ExprSymTab{
 
     private final DebugInfoFrame frame;
-    private final ISA isa;
+//    private final ISA isa;
     private final Task task;
 
     public ObjectDeclarationSearchEngine(DebugInfoFrame frame) {
 	this.frame = frame;
-	this.isa = frame.getTask().getISA();
+//	this.isa = frame.getTask().getISA();
 	this.task = frame.getTask();
     }
     
@@ -93,10 +93,6 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	}
 	
 	throw new ObjectDeclarationNotFoundException(name);
-    }
-
-    public Type getType(Variable variable) {
-	return variable.getType(isa);
     }
 
     public Value getValue(String s) {
