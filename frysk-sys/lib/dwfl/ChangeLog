@@ -1,3 +1,10 @@
+2008-04-04  Petr Machata  <pmachata@redhat.com>
+
+	* DwflModule.java (getSymtab): Take "builder" parameter.
+	(get_symbol_table): Likewise.
+	* cni/DwflModule.cxx
+	(get_symbol_table): Rewrite to use builder callout.
+
 2008-04-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* cni/DwflLine.cxx (DwflLine::dwfl_linecomp_dir): added

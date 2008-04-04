@@ -160,7 +160,7 @@ lib::dwfl::DwflModule::getSymbol(jlong address,
 }
 
 void
-lib::dwfl::DwflModule::get_symbol_table()
+lib::dwfl::DwflModule::getSymtab(lib::dwfl::SymbolBuilder* symbolBuilder)
 {
   Dwfl_Module *module = (Dwfl_Module *)this->pointer;
   int count = ::dwfl_module_getsymtab (module);
@@ -171,11 +171,7 @@ lib::dwfl::DwflModule::get_symbol_table()
     {
       ::GElf_Sym sym;
       char const* name = ::dwfl_module_getsym (module, i, &sym, NULL);
-      ElfSymbolType * type
-	= ElfSymbolType::intern(ELF64_ST_TYPE(sym.st_info));
-      lib::dwfl::ElfSymbol *elf_symbol
-	= new ElfSymbol(sym.st_value, sym.st_size, JvNewStringUTF(name), type);
-      this->symbolTable->add(elf_symbol);
+      ::builder_callout (symbolBuilder, JvNewStringUTF(name), &sym);
     }
 }
 

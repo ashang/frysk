@@ -94,14 +94,7 @@ public class DwflModule
     }
     private native void get_pubnames();
 
-    public LinkedList getSymtab() {
-	if (this.symbolTable == null) {
-	    this.symbolTable = new LinkedList();
-	    get_symbol_table();
-	}
-	return symbolTable;
-    }
-    private native void get_symbol_table();
+    public native void getSymtab(SymbolBuilder symbolBuilder);
 
 
     protected DwarfDie getDieByOffset(long offset){
