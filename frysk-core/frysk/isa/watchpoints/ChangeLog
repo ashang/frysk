@@ -1,3 +1,12 @@
+2008-04-04  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestWatchpoint.java (testWatchpointTrigger): New.
+	(WatchpointObserver): New.
+	(TerminatedObserver): New.
+	* WatchpointFunctionFactory.java (getWatchpointFunctions): Renamed from
+	getWatchpoint.
+	* TestWatchpoint: Update getWatchpoint -> getWatchpointFunctions.
+
 2008-04-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WatchpointFunctions.java (readStatusRegister): Declare.

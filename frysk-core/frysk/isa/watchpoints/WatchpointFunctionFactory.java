@@ -52,7 +52,7 @@ public class WatchpointFunctionFactory {
 	.put(ISA.X8664, new X8664WatchpointFunctions())
 	;
 
-    public static WatchpointFunctions getWatchpoint(ISA isa) {
+    public static WatchpointFunctions getWatchpointFunctions(ISA isa) {
 	return (WatchpointFunctions) watchpointTables.get(isa);
     }
 }

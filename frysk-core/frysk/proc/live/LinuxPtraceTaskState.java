@@ -41,6 +41,8 @@ package frysk.proc.live;
 
 import frysk.sys.SignalSet;
 import frysk.sys.proc.Status;
+import frysk.isa.watchpoints.WatchpointFunctionFactory;
+import frysk.isa.watchpoints.WatchpointFunctions;
 import frysk.proc.TaskObserver;
 import frysk.proc.Observer;
 import frysk.proc.Observable;
@@ -942,9 +944,22 @@ abstract class LinuxPtraceTaskState extends State {
 	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
 	    fine.log("handleTrappedEvent", task);
 	  
+	    // First test if this is a watchpoint event.
+	    WatchpointFunctions watchpointFunction = WatchpointFunctionFactory.getWatchpointFunctions(task.getISA());
+	    for (int i=0; i<watchpointFunction.getWatchpointCount();  i++) {
+		// Test if a watchpoint has fired
+		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
+		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
+		    int blockers = task.notifyWatchpoint(trigger.getAddress(), trigger.getRange());
+		    if (blockers == 0)
+			return sendContinue(task, Signal.NONE);
+		    else
+			return blockedContinue;
+		}
+	    }
+
 	    Isa isa;
 	    isa = task.getIsaFIXME();
-
 	    // First see if this was just an indication the we stepped.
 	    // And see if we were stepping a breakpoint.  Or whether we
 	    // installed a breakpoint at the address.  Otherwise it is a
@@ -1062,7 +1077,22 @@ abstract class LinuxPtraceTaskState extends State {
 	 */
 	LinuxPtraceTaskState handleTrappedEvent(LinuxPtraceTask task) {
 	    fine.log("handleTrappedEvent", task);
-      
+
+	    // First test if this is a watchpoint event.
+	    WatchpointFunctions watchpointFunction = WatchpointFunctionFactory.getWatchpointFunctions(task.getISA());
+	    for (int i=0; i<watchpointFunction.getWatchpointCount();  i++) {
+		// Test if a watchpoint has fired
+		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
+		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
+		    int blockers = task.notifyWatchpoint(trigger.getAddress(), trigger.getRange());
+		    if (blockers == 0)
+			return sendContinue(task, Signal.NONE);
+		    else
+			return blockedContinue;
+		}
+	    }
+
+	    
 	    Isa isa;
 	    isa = task.getIsaFIXME();
       

@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -65,7 +66,7 @@ public class WatchpointAddresses
    * Proc used to set watchpoints and which sents us notifications
    * when watchpoints are hit.
    */
-  private final Task task;
+  private final Proc proc;
 
   /**
    * Maps watchpoints addresses/length to a list of observers.  We assume the
@@ -82,9 +83,9 @@ public class WatchpointAddresses
   /**
    * Package private constructor used by the Proc when created.
    */
-  public WatchpointAddresses(Task task)
-  {
-    this.task = task;
+  public WatchpointAddresses(Proc proc)  {
+    this.proc = proc;
+    this.proc.getClass();
     map = new HashMap();
     watchpoints = new TreeSet();
   }
@@ -96,21 +97,18 @@ public class WatchpointAddresses
    * added to the list of objects to notify when the watchpoint is
    * hit (and the method returns false).
    */
-  public boolean addWatchpoint(TaskObserver.Watch observer, long address, int length)
-  {
-    Watchpoint watchpoint = Watchpoint.create(address, length, task);
+  public boolean addWatchpoint(TaskObserver.Watch observer, Task task, long address, int length, boolean writeOnly) {
 
+    Watchpoint watchpoint = Watchpoint.create(address, length, writeOnly, task);
     ArrayList list = (ArrayList) map.get(watchpoint);
-    if (list == null)
-      {
-	  watchpoints.add(watchpoint);
+    if (list == null)  {
+	watchpoints.add(watchpoint);
 	list = new ArrayList();
 	map.put(watchpoint, list);
 	list.add(observer);
 	return true;
       }
-    else
-      {
+    else {
 	list.add(observer);
 	return false;
       }
@@ -126,16 +124,14 @@ public class WatchpointAddresses
    *
    * @throws IllegalArgumentException if the observer was never added.
    */
-  public boolean removeWatchpoint(TaskObserver.Watch observer, long address, int length)
-  {
-    Watchpoint watchpoint = Watchpoint.create(address, length, task);
+  public boolean removeWatchpoint(TaskObserver.Watch observer, Task task, long address, int length, boolean writeOnly) {
+    Watchpoint watchpoint = Watchpoint.create(address, length, writeOnly, task);
     ArrayList list = (ArrayList) map.get(watchpoint);
     if (list == null || ! list.remove(observer))
-      throw new IllegalArgumentException("No breakpoint installed: "
+      throw new IllegalArgumentException("No watchpoint installed: "
 					 + watchpoint);
     
-    if (list.isEmpty())
-      {
+    if (list.isEmpty()) {
 	watchpoints.remove(watchpoint);
 	map.remove(watchpoint);
 	return true;
@@ -149,9 +145,9 @@ public class WatchpointAddresses
      * Collection of TaskObserver.Watch observers interested in the given
      * address or null when no Watch observer was installed on this address.
      */
-    public Collection getWatchObservers(long address, int length) {
+    public Collection getWatchObservers(Task task, long address, int length, boolean writeOnly) {
 	ArrayList observers;
-	Watchpoint watchpoint = Watchpoint.create(address, length, task);
+	Watchpoint watchpoint = Watchpoint.create(address, length, writeOnly, task);
 	ArrayList list = (ArrayList) map.get(watchpoint);
 	if (list == null)
 	    return null;
@@ -162,9 +158,9 @@ public class WatchpointAddresses
 	return observers;
     }
 
-  public Watchpoint getWatchpoint(long address, int length)
+  public Watchpoint getWatchpoint(Task task, long address, int length, boolean writeOnly)
   {
-    Watchpoint breakpoint = Watchpoint.create(address, length, task);
+    Watchpoint breakpoint = Watchpoint.create(address, length, writeOnly, task);
     Object observer = map.get(breakpoint);
     if (observer == null)
       return null;

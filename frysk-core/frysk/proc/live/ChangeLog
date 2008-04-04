@@ -1,3 +1,25 @@
+2008-04-04  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java (LinuxPtraceProc): Instatiate watchpoint
+	address manager.
+	(WatchpointAction): New. Install watchpoints.
+	(requestAddWatchObserver): Implement.
+	(requestDeleteWatchObserver): Ditto.
+	* WatchpointAddresses.java (proc): Store a proc, not a task.
+	(addWatchpoint): Take a length, and a write only flag.
+	(removeWatchpoint): Ditto.
+	(getWatchObservers): Ditto.
+	(getWatchpoint): Ditto.
+	* Watchpoint.java (Watchpoint): Take a task and a writeOnly flag.
+	(create): Ditto
+	(getLength): New.
+	(isWriteOnly): New.
+	(set): Actually set the watchpoint.
+	(reset): Delete the watchpoint.
+	* LinuxPtraceTaskState.java (Running.handleTrappedEvent): Add watchpoint
+	catch/test.
+	(Stepping.handleTrappedEvent): Ditto.
+
 2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceProc.java (requestAddWatchObserver): Add writeOnly flag.
@@ -9,8 +31,6 @@
 	(WatchpointAction): Delete.
 	(requestAddWatchObserver): Delete private function.
 	(requestDeleteWatchObserver): Delete private function.
-	
-
 
 2008-03-31  Stan Cox  <scox@redhat.com>
 

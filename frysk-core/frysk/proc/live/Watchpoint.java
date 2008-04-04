@@ -40,7 +40,9 @@
 
 package frysk.proc.live;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import frysk.proc.Task;
 
@@ -55,6 +57,7 @@ public class Watchpoint implements Comparable
   // These two fields define a Breakpoint
   private final long address;
   private final int length;
+  private final boolean writeOnly;
   private final Task task;
 
 
@@ -67,7 +70,7 @@ public class Watchpoint implements Comparable
    * Private constructor called by create to record address and
    * proc.
    */
-  private Watchpoint(long address, int length, Task task)
+  private Watchpoint(long address, int length, boolean writeOnly, Task task)
   {
     if (task == null)
       throw new NullPointerException("Cannot place a watchpoint when task == null.");
@@ -75,7 +78,7 @@ public class Watchpoint implements Comparable
     this.address = address;
     this.task = task;
     this.length = length;
-
+    this.writeOnly = writeOnly;
     if (this.length <= 0)
 	throw new RuntimeException("Watchpoint length has to be > 0");
   }
@@ -86,9 +89,9 @@ public class Watchpoint implements Comparable
    * host type. If a Breakpoint for this address and proc is already
    * installed that Breakpoint will be returned.
    */
-  public static Watchpoint create(long address, int length, Task task)
+  public static Watchpoint create(long address, int length, boolean writeOnly, Task task)
   {
-    Watchpoint watchpoint = new Watchpoint(address, length, task);
+    Watchpoint watchpoint = new Watchpoint(address, length, writeOnly, task);
 
     // If possible return an existing installed breakpoint.
     synchronized (installedWatchpoints)
@@ -105,6 +108,15 @@ public class Watchpoint implements Comparable
     return address;
   }
 
+  public int getLength()
+  {
+    return length;
+  }
+
+  public boolean isWriteOnly()
+  {
+    return writeOnly;
+  }
 
   /**
    * Installs breakpoint. Caller must make sure there is no breakpoint set
@@ -130,16 +142,28 @@ public class Watchpoint implements Comparable
    */
   private void set(Task task)
   {
-//      ByteBuffer buffer = ((LinuxPtraceTask)task).getRawMemory();
-//    Isa isa = ((LinuxPtraceTask)task).getIsaFIXME();
-//    Instruction bpInstruction = isa.getBreakpointInstruction();
-//    
-//    origInstruction = isa.getInstruction(buffer, address);
-//
-//    // Put in the breakpoint.
-//    byte[] bs = bpInstruction.getBytes();
-//    buffer.position(address);
-//    buffer.put(bs);
+      // XXX: Need a get empty watchpoint locator. It's a bit 
+      // much for the set() to find the empty watchpoint. Also
+      // question the value of optimizing at this point.
+      int watchpointIndex = -1;
+      frysk.isa.watchpoints.WatchpointFunctions wpf = 
+	  frysk.isa.watchpoints.WatchpointFunctionFactory.
+      		getWatchpointFunctions(task.getISA());
+      ArrayList watchpointList = (ArrayList) wpf.getAllWatchpoints(task);
+      Iterator i = watchpointList.iterator();
+      while (i.hasNext()) {
+	  frysk.isa.watchpoints.Watchpoint emptyTest = 
+	      ((frysk.isa.watchpoints.Watchpoint)i.next());
+	  if (emptyTest.getAddress() == 0) {
+	      watchpointIndex = emptyTest.getRegister();
+	      break;
+	  }
+      }
+   
+      if (watchpointIndex == -1)
+	  throw new RuntimeException("Run out of Watchpoints");
+            
+      wpf.setWatchpoint(task, watchpointIndex, address, length, writeOnly);
   }
 
   /**
@@ -160,20 +184,31 @@ public class Watchpoint implements Comparable
   /**
    * Actually removes the breakpoint.
    */
-  private void reset(Task task)
-  {
-//      ByteBuffer buffer = ((LinuxPtraceTask)task).getRawMemory();
-//    buffer.position(address);
-//    
-//    Isa isa = ((LinuxPtraceTask)task).getIsaFIXME();
-//    Instruction bpInstruction = isa.getBreakpointInstruction();
-//    byte[] bp = bpInstruction.getBytes();
-//
-//    byte[] bs = origInstruction.getBytes();
-//
-//    // Only need to put back the part of the original instruction
-//    // covered by the breakpoint instruction bytes.
-//    buffer.put(bs, 0, bp.length);
+  private void reset(Task task)  {
+      
+      // XXX: Does not take optimization and watchpoint movement
+      // into account.
+      boolean deletedWatchpoint = false;
+      frysk.isa.watchpoints.WatchpointFunctions wpf = 
+	  frysk.isa.watchpoints.WatchpointFunctionFactory.
+      		getWatchpointFunctions(task.getISA());
+      ArrayList watchpointList = (ArrayList) wpf.getAllWatchpoints(task);
+      Iterator i = watchpointList.iterator();
+      while (i.hasNext()) {
+	  frysk.isa.watchpoints.Watchpoint deleteTest = 
+	      ((frysk.isa.watchpoints.Watchpoint)i.next());
+	  if ((deleteTest.getAddress() == this.address) &&
+	     (deleteTest.getRange() == this.length) &&
+	     (deleteTest.isWriteOnly() == this.writeOnly)) {
+	      	wpf.deleteWatchpoint(task, deleteTest.getRegister());
+	      	deletedWatchpoint = true;
+	  }
+      }
+   
+      if (deletedWatchpoint == false)
+	  throw new RuntimeException("Cannot delete watchpoint at 0x"+Long.toHexString(this.address) +
+		  " for task " + task+". Cannot find it in debug registers.");
+            
   }
 
 

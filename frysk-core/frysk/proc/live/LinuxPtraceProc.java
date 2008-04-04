@@ -86,6 +86,7 @@ public class LinuxPtraceProc extends LiveProc {
 	this.newState = LinuxPtraceProcState.initial(false);
 	this.stat = stat;
 	this.breakpoints = new BreakpointAddresses(this);
+	this.watchpoints = new WatchpointAddresses(this);
 	((LinuxPtraceHost)host).addProc(this);
     }
 
@@ -97,6 +98,7 @@ public class LinuxPtraceProc extends LiveProc {
 	super(task, fork);
 	this.newState = LinuxPtraceProcState.initial(true);
 	this.breakpoints = new BreakpointAddresses(this);
+	this.watchpoints = new WatchpointAddresses(this);
 	((LinuxPtraceHost)getHost()).addProc(this);
     }
 
@@ -617,27 +619,105 @@ public class LinuxPtraceProc extends LiveProc {
     
 
     /**
-     * (Internal) Tell the process to add the specified Code
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting a Code observer.
+     */
+    final class WatchpointAction implements Runnable {
+	private final TaskObserver.Watch watch;
+
+	private final Task task;
+
+	private final long address;
+	
+	private final int length;
+	
+	private final boolean writeOnly;
+	
+	private final boolean addition;
+
+	WatchpointAction(TaskObserver.Watch watch, Task task, long address,
+			 int length, boolean writeOnly, boolean addition) {
+	    this.watch = watch;
+	    this.task = task;
+	    this.address = address;
+	    this.addition = addition;
+	    this.length = length;
+	    this.writeOnly = writeOnly;
+
+	}
+
+	public void run() {
+	    if (addition) {
+		boolean mustInstall = watchpoints.addWatchpoint(watch, task, address, length, writeOnly);
+		if (mustInstall) {
+		    Watchpoint watchpoint;
+		    watchpoint = Watchpoint.create(address, length, writeOnly, task);
+		    watchpoint.install(task);
+		}
+	    } else {
+		boolean mustRemove = watchpoints.removeWatchpoint(watch, task, address, length, writeOnly);
+		if (mustRemove) {
+		    Watchpoint watchpoint;
+		    watchpoint = Watchpoint.create(address, length, writeOnly, task);
+		    watchpoint.remove(task);
+		}
+	    }
+	}
+    }
+
+    
+    /**
+     * (Internal) Tell the process to add the specified Watch
      * Observation, attaching to the process if necessary. Adds a
      * TaskCodeObservation to the eventloop which instructs the task
-     * to install the breakpoint if necessary.
+     * to install the watchpoint if necessary.
      */
-    void requestAddWatchObserver(Task task, TaskObservable observable,
+    void requestAddWatchObserver(final Task task, TaskObservable observable,
 				TaskObserver.Watch observer,
 				final long address,
 				final int length,
-				boolean writeOnly) {
+				final boolean writeOnly) {
+	fine.log(this, "requestAddWatchObserver");
+	WatchpointAction wpa = new WatchpointAction(observer, task, address, length, writeOnly, true);
+	TaskObservation to;
+	to = new TaskObservation((LinuxPtraceTask) task, observable, observer, wpa, true) {
+	    public void execute() {
+		handleAddObservation(this);
+	    }
+	    public boolean needsSuspendedAction() {
+		return watchpoints.getWatchObservers(task, address, length, writeOnly) == null;
+	    }
+	    };
+	Manager.eventLoop.add(to);
+
+    
     }
 
     /**
      * (Internal) Tell the process to delete the specified Code
      * Observation, detaching from the process if necessary.
      */
-    void requestDeleteWatchObserver(Task task, TaskObservable observable,
+    void requestDeleteWatchObserver(final Task task, TaskObservable observable,
 				   TaskObserver.Watch observer,
 				   final long address,
 				   final int length,
-				   boolean writeOnly)    {
+				   final boolean writeOnly)    {
+	
+	fine.log(this, "requestDeleteWatchObserver");
+	WatchpointAction wpa = new WatchpointAction(observer, task, address, length, writeOnly, false);
+	TaskObservation to;
+	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, wpa, false) {
+		public void execute() {
+		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
+		}
+
+		public boolean needsSuspendedAction() {
+		    return watchpoints.getWatchObservers(task, address, length, writeOnly).size() == 1;
+		}
+	    };
+
+	Manager.eventLoop.add(to);
+
     }
 
     /**
@@ -756,6 +836,7 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: Should not be public.
      */
     public final BreakpointAddresses breakpoints;
+    public final WatchpointAddresses watchpoints;
     
     // List of available addresses for out of line stepping.
     // Used a lock in getOutOfLineAddress() and doneOutOfLine().
