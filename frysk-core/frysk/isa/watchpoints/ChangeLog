@@ -1,5 +1,11 @@
 2008-04-04  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* X8664WatchpointFunctions.java (setWatchpoint): Set 2 byte watch to
+	binary flags: 01, not 10. Set 8 bytes watch binary flag to 10, not 01.
+	(readWatchpoint): Fix bit settings to detect above on read.
+	* IA32WatchpointFunctions.java (setWatchpoint): Set 2 byte watch to
+	binary flag 01, not 10. Delete 8 byte case, not relevant in IA32.
+	 
 	* TestWatchpoint.java (testWatchpointTrigger): New.
 	(WatchpointObserver): New.
 	(TerminatedObserver): New.

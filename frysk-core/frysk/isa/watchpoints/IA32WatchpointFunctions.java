@@ -119,16 +119,12 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 		debugControl &= ~(1L << length+1);
 		break;
 	    case 2:
-		debugControl &= ~(1L << length);
-		debugControl |= (1L << length+1);
+		debugControl |= (1L << length);
+		debugControl &= ~(1L << length+1);
 		break;
 	    case 4:
 		debugControl |=(1L << length);
 		debugControl |= (1L << length+1);
-		break;
-	    case 8:
-		debugControl |= (1L << length);
-		debugControl &= ~(1L << length+1);
 		break;
 	    }
 
@@ -174,14 +170,16 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 
         // Test length on combination of bits. 00 = 1, 01 = 2
         // 11 = 4.
-        if (!testBit(debugStatus,lengthOfWP)) 
+        if (!testBit(debugStatus,lengthOfWP)) {
             if (!testBit(debugStatus,lengthOfWP+1))
-        	length = 1;
+                length = 1;
+        } else {
+            if (!testBit(debugStatus,lengthOfWP+1))
+                length = 2;
             else
-        	length = 2;
-        else
-            if (testBit(debugStatus, lengthOfWP))
-        	length = 4;
+                length = 4;
+        }
+
 	return Watchpoint.create(address, length, index, writeOnly);
     }	
 

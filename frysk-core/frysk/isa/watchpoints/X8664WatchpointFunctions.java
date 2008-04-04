@@ -116,16 +116,16 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
 		debugControl &= ~(1L << length+1);
 		break;
 	    case 2:
-		debugControl &= ~(1L << length);
-		debugControl |= (1L << length+1);
+		debugControl |= (1L << length);
+		debugControl &= ~(1L << length+1);
 		break;
 	    case 4:
 		debugControl |=(1L << length);
 		debugControl |= (1L << length+1);
 		break;
 	    case 8:
-		debugControl |= (1L << length);
-		debugControl &= ~(1L << length+1);
+		debugControl &= ~(1L << length);
+		debugControl |= (1L << length+1);
 		break;
 	    }
 
@@ -167,17 +167,17 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
 	// Move over +2 bits for length
         int lengthOfWP = typeOfWpTrap + 2;
         int length = 0;
-
+        
         // Test length on combination of bits. 00 = 1 bytes, 01 = 2
         // 11 = 4 and 10 = 8
         if (!testBit(debugStatus,lengthOfWP)) 
             if (!testBit(debugStatus,lengthOfWP+1))
         	length = 1;
             else
-        	length = 2;
-        else
-            if (!testBit(debugStatus, lengthOfWP))
         	length = 8;
+        else
+            if (!testBit(debugStatus, lengthOfWP+1))
+        	length = 2;
             else
         	length = 4;
 	return Watchpoint.create(address, length, index, writeOnly);
