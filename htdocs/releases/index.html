@@ -58,6 +58,7 @@
 <a href="#branch">Branch</a><br>
 <a href="#release">Release</a>
 <a href="#upload">Upload</a>
+<a href="#upload">Announce</a>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -207,6 +208,31 @@ cat &lt;&lt;EOF | ssh sourceware.org 'dd of=~ftp/pub/frysk/.message'
 EOF
 ssh sourceware.org 'chmod a=r ~ftp/pub/frysk/.message'
 </pre>
+
+<a name="release"><h2>Announce the Release</h2></a>
+
+<p>Some people like to immediatly post the announcement, while others
+prefer to delay it a day or so giving the distros a chance to prepare
+local frysk packages.  Either way, the announcement should at least
+include:
+
+<ul>
+<li>All the contributors to this release (you can get this by going
+through GIT and, perhaps, the <tt>ChangeLog</tt> files; something
+like: <tt> git-log --after=frysk/0.2 --pretty=format:"%an %ae" | sort
+-u</tt>
+<li>The contents of the NEWS entry.
+</ul>
+
+<p>and might also include:
+
+<ul>
+<li>Where to download frysk
+<li>file check-sums
+<li>a description of frysk
+<li>???
+</ul>
+
 
               <!-- end text -->
               <p>&nbsp;</p>
