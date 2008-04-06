@@ -1,5 +1,11 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java (getReturnAddress): Fetch the return address
+	from Arch code again, before reliable data can be got from prev
+	frame computation.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* TaskTracer.java (updateHit): Changed the way of PLT denotation
 	from plt(*) to plt:*
 
