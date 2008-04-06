@@ -201,12 +201,8 @@ class TaskTracer
 	    }
 
 	    String symbolName = tracePoint.getName();
-	    String eventName = "#" + getLibraryName(sym) + "#";
-
-	    if (isPlt)
-		eventName += "plt(" + symbolName + ')';
-	    else
-		eventName += symbolName;
+	    String eventName = "#" + getLibraryName(sym)
+		+ "#" + (isPlt ? "plt:" : "") + symbolName;
 
 	    if (retAddress == 0)
 		ftrace.reporter.eventSingle(task, "call " + eventName, arch.getCallArguments(task));

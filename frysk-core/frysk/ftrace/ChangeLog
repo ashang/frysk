@@ -1,5 +1,10 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java (updateHit): Changed the way of PLT denotation
+	from plt(*) to plt:*
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* TaskTracer.java (updateHit): Pass the right token to the
 	shouldStackTraceOn* query.
 
