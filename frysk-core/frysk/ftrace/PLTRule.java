@@ -39,84 +39,20 @@
 
 package frysk.ftrace;
 
-import java.util.regex.Pattern;
-import frysk.util.Glob;
 import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
 
-public class SymbolRule extends Rule {
+public class PLTRule extends SymbolRule {
 
-    /** See namePattern */
-    final public Pattern sonamePattern, versionPattern;
-
-    /**
-     * Object that performs a pattern matching of a symbol name. null
-     * for "anything" matcher.
-     */
-    final public Pattern namePattern;
-
-    public SymbolRule(boolean addition, boolean stackTrace,
-		      String nameRe, String sonameRe, String versionRe) {
-	super (addition, stackTrace);
-	this.sonamePattern = Glob.compile((sonameRe != null) ? sonameRe : "*");
-	this.versionPattern = Glob.compile((versionRe != null) ? versionRe : "*");
-	this.namePattern = Glob.compile((nameRe != null) ? nameRe : "*");
-    }
-
-    public String toString() {
-	return super.toString()
-	    + this.namePattern.pattern()
-	    + "@" + this.sonamePattern.pattern()
-	    + "@@" + this.versionPattern.pattern();
-    }
-
-
-    protected boolean checkVersionMatches(final DwflSymbol symbol)
-    {
-	return true;
-
-	// XXX Version support didn't arrive yet.
-	/*
-	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
-	    ? (ElfSymbolVersion[])tp.symbol.verneeds
-	    : (ElfSymbolVersion[])tp.symbol.verdefs;
-
-	// When there is no version assigned to symbol, we pretend it has
-	// a version of ''.  Otherwise we require one of the versions to
-	// match the version pattern.
-	if (vers.length == 0) {
-	    if (this.versionPattern.matcher("").matches())
-		return true;
-	}
-	else
-	    for (int i = 0; i < vers.length; ++i)
-		if (this.versionPattern.matcher(vers[i].name).matches())
-		    return true;
-
-	return false;
-	*/
-    }
-
-    protected boolean checkNameMatches(final DwflSymbol symbol)
-    {
-	if (this.namePattern.matcher(symbol.getName()).matches())
-	    return true;
-
-	// XXX Alias support didn't arrive yet.
-	/*
-	if (symbol.aliases != null)
-	    for (int i = 0; i < symbol.aliases.size(); ++i) {
-		String alias = (String)symbol.aliases.get(i);
-		if (this.namePattern.matcher(alias).matches())
-		    return true;
-	    }
-	*/
-
-	return false;
+    public PLTRule(boolean addition, boolean stackTrace,
+		   String nameRe, String sonameRe, String versionRe) {
+	super (addition, stackTrace, nameRe, sonameRe, versionRe);
     }
 
     public boolean matches(Object traceable) {
-	DwflSymbol sym = (DwflSymbol)traceable;
+	PLTEntry entry = (PLTEntry)traceable;
+	DwflSymbol sym = entry.getSymbol();
 	return checkNameMatches(sym)
-	    /*&& checkVersionMatches(sym)*/;
+	    && checkVersionMatches(sym);
     }
 }

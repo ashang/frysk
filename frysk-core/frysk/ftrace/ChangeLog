@@ -1,3 +1,10 @@
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
+	* SymbolRule.java (checkVersionMatches): Uncomment, but make is a
+	dummy that always answers true.  Make protected.
+	(checkNameMatches): Make protected.
+	* PLTRule.java: New file.
+
 2008-04-04  Petr Machata  <pmachata@redhat.com>
 
 	* SymbolRule.java: Comment out unsupported alias and symbol
