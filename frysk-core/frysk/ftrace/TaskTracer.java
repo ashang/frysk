@@ -188,12 +188,15 @@ class TaskTracer
 
 	    long retAddress = getReturnAddress(task);
 	    TracePoint tracePoint;
+	    Object token;
 
 	    if (isPlt) {
 		PLTEntry entry = ((PLTBreakpoint)breakpoint).getEntry();
+		token = entry;
 		tracePoint = new TracePoint(entry);
 	    } else {
 		DwflSymbol symbol = ((SymbolBreakpoint)breakpoint).getSymbol();
+		token = symbol;
 		tracePoint = new TracePoint(symbol);
 	    }
 
@@ -222,7 +225,7 @@ class TaskTracer
 
 	    // If this symbol is in the stack tracing set, get a
 	    // stack trace before continuing on.
-	    if (ftrace.stackTraceSetProvider.shouldStackTraceOnTracePoint(sym))
+	    if (ftrace.stackTraceSetProvider.shouldStackTraceOnTracePoint(token))
 		ftrace.reporter.generateStackTrace(task);
 
 	    // And on we go...

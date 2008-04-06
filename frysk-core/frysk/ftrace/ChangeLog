@@ -1,5 +1,10 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java (updateHit): Pass the right token to the
+	shouldStackTraceOn* query.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* Reporter.java (repeat): Moved to frysk.util.ArchFormatter.
 	(formatTaskPC): Call out to ArchFormatter to get value padded to
 	architecture word width.
