@@ -42,12 +42,10 @@ package frysk.symtab;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
@@ -112,54 +110,101 @@ public class SymbolFactory
 	return builder.symbol;
     }
 
-
-    /**
-     * Return symbols in given DwflModule.
-     * @return List&lt;DwflSymbol&gt;
-     */
-    public static List getSymbols(final DwflModule module) {
+    private static Map getPublicTable(final DwflModule module) {
 	final Map dwSymbols = new HashMap();
 	for (Iterator it = module.getPubNames().iterator(); it.hasNext(); ) {
 	    DwarfDie die = (DwarfDie)it.next();
 	    dwSymbols.put(die.getName(), die);
 	}
+	return dwSymbols;
+    }
 
-	final Set names = new HashSet();
-	final List symbols = new LinkedList();
+    public static Map getSymbolTable(final DwflModule module) {
+
+	final Map publicTable = getPublicTable(module);
+
+	final Map table = new HashMap();
 	SymbolBuilder builder = new SymbolBuilder() {
 		public void symbol(String name, long value, long size,
 				   lib.dwfl.ElfSymbolType type,
 				   lib.dwfl.ElfSymbolBinding bind,
 				   lib.dwfl.ElfSymbolVisibility visibility)
 		{
-		    DwarfDie die = (DwarfDie)dwSymbols.get(name);
+		    DwarfDie die = publicTable == null ? null
+			: (DwarfDie)publicTable.get(name);
+		    int index;
+		    if ((index = name.indexOf('@')) != -1)
+			name = name.substring(0, index);
 		    DwflSymbol sym
 			= new DwflSymbol(value, size, name, type, die, module);
-		    names.add(name);
-		    symbols.add(sym);
+		    table.put(name, sym);
 		}
 	};
 	module.getSymtab(builder);
+	fine.log("Got", table.size(), "symbols after sweep over symtab.");
 
 	// This will probably not add anything, but just to make sure...
-	for (Iterator it = dwSymbols.entrySet().iterator(); it.hasNext(); ) {
+	for (Iterator it = publicTable.entrySet().iterator(); it.hasNext(); ) {
 	    Map.Entry entry = (Map.Entry)it.next();
 	    String name = (String)entry.getKey();
-	    if (!names.contains(name)) {
+	    if (!table.containsKey(name)) {
 		DwarfDie die = (DwarfDie)entry.getValue();
 		ArrayList entries = die.getEntryBreakpoints();
 		if (entries != null) {
 		    long addr = ((Long)entries.get(0)).longValue();
 		    long size = die.getHighPC() - die.getLowPC();
 		    lib.dwfl.ElfSymbolType type = null; // XXX fixme
-		    symbols.add(new DwflSymbol(addr, size, die.getName(),
-					       type, die, module));
+		    table.put(name, new DwflSymbol(addr, size, die.getName(),
+						   type, die, module));
 		}
 	    }
 	}
-	fine.log("Got", symbols.size(), "symbols after sweep over debuginfo.");
+	fine.log("Got", table.size(), "symbols after sweep over debuginfo.");
+
+	return table;
+    }
+
+    /**
+     * Return symbols in given DwflModule.
+     * @return List&lt;DwflSymbol&gt;
+     */
+    public static List getSymbols(final DwflModule module) {
+
+	Map symbolTable = getSymbolTable(module);
+	List symbols = new ArrayList();
+	symbols.addAll(symbolTable.values());
 
 	return symbols;
+    }
+
+    /**
+     * Return list of PLTSymbol objects representing PLT entries in
+     * this module.
+     *
+     * @param symbols Symbol table previously loaded through
+     * getSymbolTable.  May be null, in that case new symbol table
+     * will be loaded by the method.
+     */
+    public static List getPLTEntries(final DwflModule module,
+				     final Map symbols) {
+
+	final Map symtab = symbols != null ? symbols : getSymbolTable(module);
+
+	final List entries = new LinkedList();
+	SymbolBuilder builder = new SymbolBuilder() {
+		public void symbol(String name, long value, long size,
+				   lib.dwfl.ElfSymbolType type,
+				   lib.dwfl.ElfSymbolBinding bind,
+				   lib.dwfl.ElfSymbolVisibility visibility)
+		{
+		    DwflSymbol ref = (DwflSymbol)symtab.get(name);
+		    PLTEntry sym = new PLTEntry(value, ref);
+		    entries.add(sym);
+		}
+	};
+	module.getPLTEntries(builder);
+
+	return entries;
     }
 
     /**
@@ -168,7 +213,8 @@ public class SymbolFactory
      * @param name
      * @return address list
      */
-    public static LinkedList getAddresses(Task task, String name, ModuleMatcher matcher) {
+    public static LinkedList getAddresses(Task task, String name,
+					  ModuleMatcher matcher) {
 	Dwfl dwfl = DwflCache.getDwfl(task);
 	DwflModule[] modules = dwfl.getModules();
 	final LinkedList addrs = new LinkedList();

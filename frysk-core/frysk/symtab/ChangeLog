@@ -1,3 +1,9 @@
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
+	* PLTEntry.java: New file.
+	* SymbolFactory.java (getPLTEntries): New static method, wraps
+	recently introduced DwflModule.getPLTEntries for high-level use.
+
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
 	* SymbolFactory.java (getSymbols): Rewrite to use builder.
