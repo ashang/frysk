@@ -1,5 +1,10 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* Ftrace.java: Mostly complete rewrite to use frysk breakpoint
+	infrastructure.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* SymbolRule.java (checkVersionMatches): Uncomment, but make is a
 	dummy that always answers true.  Make protected.
 	(checkNameMatches): Make protected.

@@ -39,49 +39,60 @@
 
 package frysk.ftrace;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import inua.util.PrintWriter;
+
+import frysk.debuginfo.PrintStackOptions;
+import frysk.dwfl.ObjectFile;
+import frysk.event.Event;
+import frysk.isa.signals.Signal;
+import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcTasksObserver;
 import frysk.proc.ProcTasksAction;
+import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.isa.syscalls.Syscall;
-import frysk.isa.signals.Signal;
-import inua.util.PrintWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
 import frysk.proc.TaskAttachedObserverXXX;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
+import frysk.stepping.SteppingEngine;
+import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
+import frysk.symtab.SymbolFactory;
+
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflModule;
 
 public class Ftrace {
-    private static final Log finest = LogFactory.finest(FtraceController.class);
-    private static final Log fine = LogFactory.fine(FtraceController.class);
+    static private final Log fine = LogFactory.fine(Ftrace.class);
+    static private final Log finest = LogFactory.finest(Ftrace.class);
 
     private final PrintStackOptions stackPrintOptions;
-    
+
     public Ftrace(PrintStackOptions stackPrintOptions) {
 	this.stackPrintOptions = stackPrintOptions;
     }
 
-    // Where to send output.
+    // These two are package private so that TaskTracer can touch it.
+    static final SteppingEngine steppingEngine = new SteppingEngine();
     Reporter reporter;
 
     // True if we're tracing children as well.
-    boolean traceChildren = false;
+    private boolean traceChildren = false;
 
     // True if we're tracing mmaps/unmaps.
-    boolean traceMmapUnmap = false;
-
-    HashMap syscallCache = new HashMap();
+    private boolean traceMmapUnmap = false;
 
     // The number of processes we're tracing.
-    int numProcesses;
+    private int numProcesses;
 
     private boolean showPC = false;
 
@@ -95,17 +106,21 @@ public class Ftrace {
 	 * New library FILE was mapped in task TASK.  Use DRIVER to tell
 	 * ltrace what to do.
 	 */
-	void fileMapped(frysk.proc.Task task, ObjectFile file, Driver driver);
+	void fileMapped(Task task, ObjectFile objf,
+			List symbols, List pltEntries,
+			Driver driver);
     }
 
     /**
      * External entity implementing this interface is called out each
      * time an entry point is hit.  It can decide whether the stack
      * trace should be generated or not.
-     * XXX: Ideally, this would also operate on tracepoints.
      */
     public static interface StackTracedSymbolsProvider {
-	boolean shouldStackTraceOnSymbol(Symbol symbol);
+	/**
+	 * @param tracePoint is either DwflSymbol or PLTEntry.
+	 */
+	boolean shouldStackTraceOnTracePoint(Object tracePoint);
     }
 
     /**
@@ -131,12 +146,12 @@ public class Ftrace {
     }
 
     /**
-     * Driver implementation is placed here in Ftrace, and handed over
-     * via this interface to allow external controller to aid which
-     * tracepoints should be traced.
+     * An object implementing this interface is handed over to allow
+     * external controller to aid which tracepoints should be traced.
      */
     public static interface Driver {
-	void tracePoint(Task task, TracePoint tp);
+	void traceSymbol(Task task, DwflSymbol symbol);
+	void tracePLTEntry(Task task, PLTEntry entry);
     }
 
     // Non-null if we're using ltrace.
@@ -192,7 +207,6 @@ public class Ftrace {
     }
 
     private void init() {
-	functionObserver = new MyFunctionObserver(reporter, stackTraceSetProvider);
 	if (reporter == null)
 	    setWriter(new PrintWriter(System.out));
     }
@@ -264,7 +278,7 @@ public class Ftrace {
 	task.requestAddClonedObserver(clonedObserver);
 	observationRequested(task);
 
-	task.requestAddTerminatedObserver(new MyTerminatedObserver());
+	task.requestAddTerminatingObserver(new MyTerminatingObserver());
 	observationRequested(task);
 
 	if (ftraceController != null || traceMmapUnmap) {
@@ -277,7 +291,6 @@ public class Ftrace {
 		MappingGuard.requestAddSyscallBasedMappingObserver(task, o);
 	    else
 		MappingGuard.requestAddMappingObserver(task, o);
-
 	    observationRequested(task);
 	}
 
@@ -288,7 +301,7 @@ public class Ftrace {
     }
 
     /** Remembers working set preferences for each task.
-	Map&lt;Task, TracePointWorkingSet&gt; */
+	Map&lt;Task, Driver&gt; */
     private final HashMap driversForTask = new HashMap();
 
     /** Remembers traced syscall set for each task.
@@ -298,66 +311,6 @@ public class Ftrace {
     /** Remembers traced signal set for each task.
         Map&lt;Task, Map&lt;String, Boolean&gt;&gt; */
     private final HashMap signalSetForTask = new HashMap();
-
-    private class TracePointWorkingSet
-	implements Driver
-    {
-	private Set tracePoints = new HashSet();
-
-	public void tracePoint(Task task, TracePoint tp)
-	{
-	    tracePoints.add(tp);
-	}
-
-	public void populateBreakpoints(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-	{
-	    Set request = new HashSet();
-	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-		TracePoint tp = (TracePoint)it.next();
-		if (tp.offset >= part.offset
-		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-		    finest.log(
-			"Will trace `" + tp.symbol.name + "', "
-			+ "address=0x" + Long.toHexString(tp.address) + "; "
-			+ "offset=0x" + Long.toHexString(tp.offset) + "; "
-			+ "part at=0x" + Long.toHexString(part.addressLow)
-			+ ".." + Long.toHexString(part.addressHigh) + "; "
-			+ "part off=0x" + Long.toHexString(part.offset) + ";");
-
-		    long actualAddress = tp.offset - part.offset + part.addressLow;
-		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    fine.log(
-			"Will trace `" + tpi.tracePoint.symbol.name
-			+ "' at 0x" + Long.toHexString(tpi.address));
-
-		    request.add(tpi);
-		}
-	    }
-	    if (!request.isEmpty())
-		Ltrace.requestAddFunctionObserver(task, functionObserver, request);
-	}
-
-	public void evacuateBreakpoints(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-	{
-	    Set request = new HashSet();
-	    for (Iterator it = tracePoints.iterator(); it.hasNext(); ) {
-		TracePoint tp = (TracePoint)it.next();
-		if (tp.offset >= part.offset
-		    && tp.offset < part.offset + part.addressHigh - part.addressLow) {
-
-		    long actualAddress = tp.offset - part.offset + part.addressLow;
-		    TracePoint.Instance tpi = new TracePoint.Instance(tp, actualAddress);
-		    fine.log(
-			"Stopping tracing of `" + tpi.tracePoint.symbol.name
-			+ "' at 0x" + Long.toHexString(tpi.address));
-
-		    request.add(tpi);
-		}
-	    }
-	    if (!request.isEmpty())
-		Ltrace.requestDeleteFunctionObserver(task, functionObserver, request);
-	}
-    }
 
     private ProcTasksObserver tasksObserver = new ProcTasksObserver() {
 	    public void existingTask(Task task) {
@@ -386,17 +339,17 @@ public class Ftrace {
      * exits.
      */
     private class ProcRemovedObserver
-	implements TaskObserver.Terminated
+	implements TaskObserver.Terminating
     {
 	ProcRemovedObserver (Proc proc) {
-	    proc.getMainTask().requestAddTerminatedObserver(this);
+	    proc.getMainTask().requestAddTerminatingObserver(this);
 	}
 
 	public void addedTo (Object observable)	{}
 	public void addFailed (Object observable, Throwable arg1) {}
 	public void deletedFrom (Object observable) {}
 
-	public Action updateTerminated(Task task, Signal signal, int status) {
+	public Action updateTerminating(Task task, Signal signal, int status) {
 	    synchronized (Ftrace.this) {
 		--numProcesses;
 		if (numProcesses == 0)
@@ -412,11 +365,35 @@ public class Ftrace {
      */
     class MyAttachedObserver implements TaskAttachedObserverXXX {
 	private Set procs = new HashSet();
-	public synchronized Action updateAttached (Task task)
+	public synchronized Action updateAttached (final Task task)
 	{
-	    Proc proc = task.getProc();
+	    finest.log("attached to", task);
+
+	    final Proc proc = task.getProc();
 	    if (!procs.contains(proc)) {
 		procs.add(proc);
+
+		if (ftraceController != null) {
+		    steppingEngine.addProc(proc);
+		    steppingEngine.continueExecution(proc.getTasks());
+		    steppingEngine.setRunning(proc.getTasks());
+
+		    class AddProcToBreakpointManager
+			extends Thread implements Event
+		    {
+			public void execute() {
+			    start();
+			}
+			public void run() {
+			    finest.log("Attaching breakpoint manager");
+			    steppingEngine.getBreakpointManager().manageProcess(proc);
+			    observationRealized(task);
+			}
+		    }
+		    Manager.eventLoop.add(new AddProcToBreakpointManager());
+		    observationRequested(task);
+		}
+
 		addProc(task.getProc());
 	    }
 
@@ -564,12 +541,13 @@ public class Ftrace {
     }
     TaskObserver.Cloned clonedObserver = new MyClonedObserver();
 
-    class MyTerminatedObserver implements TaskObserver.Terminated {
-	public Action updateTerminated (Task task, Signal signal, int value) {
+    class MyTerminatingObserver implements TaskObserver.Terminating {
+	public Action updateTerminating (Task task, Signal signal, int value) {
 	    if (signal != null)
 		reporter.eventSingle(task, "killed by " + signal);
 	    else
 		reporter.eventSingle(task, "exited with status " + value);
+
 	    return Action.CONTINUE;
 	}
 
@@ -620,32 +598,52 @@ public class Ftrace {
 	    this.tracingController = controller;
 	}
 
-	public Action updateMappedFile(frysk.proc.Task task, MemoryMapping mapping)
+	private DwflModule getModuleForFile(Task task, String path) {
+	    Dwfl dwfl = frysk.dwfl.DwflCache.getDwfl(task);
+	    DwflModule[] modules = dwfl.getModulesForce();
+	    for (int i = 0; i < modules.length; ++i) {
+		String name = modules[i].getName();
+		if (name.equals(path))
+		    return modules[i];
+	    }
+	    return null;
+	}
+
+	public Action updateMappedFile(Task task, MemoryMapping mapping)
 	{
+	    String path = mapping.path;
 	    if (traceMmapUnmap)
-		reporter.eventSingle(task, "map " + mapping.path);
+		reporter.eventSingle(task, "map " + path);
 
 	    if (this.tracingController == null)
 		return Action.CONTINUE;
 
-	    java.io.File path = mapping.path;
-	    if (path.getPath().equals("/SYSV00000000 (deleted)")) {
+	    if (path.equals("/SYSV00000000 (deleted)")) {
 		// This is most probably artificial name of SYSV
 		// shared memory "file".
 		return Action.CONTINUE;
 	    }
-	    ObjectFile objf = ObjectFile.buildFromFile(path);
+	    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
 	    if (objf == null)
 		return Action.CONTINUE;
 
-	    TracePointWorkingSet driver = new TracePointWorkingSet();
+	    DwflModule module = getModuleForFile(task, path);
+	    Map symbolTable = SymbolFactory.getSymbolTable(module);
+	    List pltEntries = SymbolFactory.getPLTEntries(module, symbolTable);
+	    List symbols = new ArrayList(symbolTable.values());
+	    if (symbols.size() == 0)
+		// In that case we also know there are no PLT entries,
+		// because each PLT entry is defined on a symbol.
+		return Action.CONTINUE;
+
 	    Map drivers = (Map)driversForTask.get(task);
 	    if (drivers == null) {
 		drivers = new HashMap();
 		driversForTask.put(task, drivers);
 	    }
+	    Driver driver = new TaskTracer(Ftrace.this, task);
 	    drivers.put(mapping.path, driver);
-	    this.tracingController.fileMapped(task, objf, driver);
+	    this.tracingController.fileMapped(task, objf, symbols, pltEntries, driver);
 
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
@@ -658,52 +656,14 @@ public class Ftrace {
 	    return Action.CONTINUE;
 	}
 
-	private TracePointWorkingSet getDriver(Task task, MemoryMapping mapping) {
-	    // This has to be non-null.
-	    Map drivers = (Map)driversForTask.get(task);
-	    // This can be null for non-elf files.  We don't care about
-	    // these.
-	    return (TracePointWorkingSet)drivers.get(mapping.path);
-	}
-
-	private boolean processMappedPart(MemoryMapping.Part part) {
-	    // Ignore non-executable mappings.
-	    // Ignore mappedPart messages if we don't trace symbols.
-	    return part.permExecute && this.tracingController != null;
-	}
-
 	public Action updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
 	{
-	    if (!processMappedPart(part))
-		return Action.CONTINUE;
-
-	    TracePointWorkingSet driver = getDriver(task, mapping);
-	    if (driver == null)
-		return Action.CONTINUE;
-
-	    // At this point we already know client preferences
-	    // regarding which tracepoints should be in working set.
-	    // Just apply this knowledge on new mapped part: all working
-	    // set elements that fall into this part should be observed.
-	    driver.populateBreakpoints(task, mapping, part);
-
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
+	    return Action.CONTINUE;
     	}
 
 	public Action updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
 	{
-	    if (!processMappedPart(part))
-		return Action.CONTINUE;
-
-	    TracePointWorkingSet driver = getDriver(task, mapping);
-	    if (driver == null)
-		return Action.CONTINUE;
-
-	    driver.evacuateBreakpoints(task, mapping, part);
-
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
+	    return Action.CONTINUE;
     	}
 
 	public void addedTo (Object observable) {
@@ -713,45 +673,4 @@ public class Ftrace {
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
     }
-
-
-    private class MyFunctionObserver
-	implements FunctionObserver
-    {
-	// Reporting tool.
-	private Reporter reporter;
-	private StackTracedSymbolsProvider stackTraceSetProvider;
-
-	MyFunctionObserver(Reporter reporter, StackTracedSymbolsProvider stackTraceSetProvider) {
-	    this.reporter = reporter;
-	    this.stackTraceSetProvider = stackTraceSetProvider;
-	}
-
-	public synchronized Action funcallEnter(Task task, Symbol symbol, Object[] args)
-	{
-	    String symbolName = symbol.name;
-	    String callerLibrary = symbol.getParent().getSoname();
-	    String eventName = callerLibrary + "->" + /*libraryName + ":" +*/ symbolName;
-	    reporter.eventEntry(task, symbol, "call", eventName, args);
-
-	    // If this systsysem call is in the stack tracing HashSet,
-	    // get a stack trace before continuing on.
-	    if (stackTraceSetProvider.shouldStackTraceOnSymbol(symbol))
-		reporter.generateStackTrace(task);
-
-	    return Action.CONTINUE;
-	}
-
-	public synchronized Action funcallLeave(Task task, Symbol symbol, Object retVal)
-	{
-	    reporter.eventLeave(task, symbol, "leave", symbol.name, retVal);
-	    return Action.CONTINUE;
-	}
-
-	public void addedTo (Object observable) { }
-	public void deletedFrom (Object observable) { }
-	public void addFailed (Object observable, Throwable w) { }
-    }
-
-    public MyFunctionObserver functionObserver = null;
 }
