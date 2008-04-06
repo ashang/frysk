@@ -1,5 +1,9 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
-	
+
+	* ftrace.xml: Fix man page to reflect recent changes.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Support plt tracing using new ftrace
 	infrastructure.
 

@@ -71,21 +71,21 @@
 
   <refnamediv>
     <refname>ftrace</refname>
-    <refpurpose>trace system and function calls</refpurpose>
+    <refpurpose>trace system calls, function calls and signals</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>ftrace</command>
       <arg choice="opt">-c</arg>
-      <arg choice="opt">-i</arg>
+      <arg choice="opt">-dl</arg>
       <arg choice="opt">-m</arg>
       <arg choice="opt">-o=<replaceable>FILE</replaceable></arg>
       <arg choice="opt" rep="repeat">-p=<replaceable>PID</replaceable></arg>
+      <arg choice="opt">-pc</arg>
       <arg choice="opt">-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
       <arg choice="opt">-sig=<replaceable>SIG</replaceable>[,<replaceable>SIG</replaceable>...]</arg>
       <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
-      <arg choice="opt">-dyn=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-stack</arg>
       <arg choice="opt">--</arg>
@@ -150,16 +150,6 @@
 	      <replaceable>SIGNAL</replaceable> syntax.</para>
 	    </listitem>
 	  </varlistentry>
-
-	  <varlistentry>
-	    <term>-stack</term>
-	    <listitem>
-	      <para>Stack trace when traced system call is hit.  Note
-	      that this option also applies to traced symbols.  If you
-	      need to cherry-pick which event should stack trace, use
-	      # operator described in sections below.</para>
-	    </listitem>
-	  </varlistentry>
 	</variablelist>
     </refsect2>
 
@@ -168,7 +158,7 @@
 
 	<variablelist>
 	  <varlistentry>
-	    <term>-i</term>
+	    <term>-dl</term>
 	    <listitem>
 	      <para>Trace inside dynamic linker.  When this option is
 	      not present, <function>ftrace</function> will function
@@ -192,7 +182,7 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term>-dyn=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
+	    <term>-sym=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
 	    <listitem>
 	      <para>Trace calls through the symbol entry points.  By
 	      tracing entry points, you catch all calls that end up at
@@ -208,14 +198,26 @@
 	    </listitem>
 	  </varlistentry>
 
+	</variablelist>
+    </refsect2>
+
+    <refsect2>
+	<title>Other Options</title>
+
+	<variablelist>
 	  <varlistentry>
-	    <term>-sym=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
+	    <term>-m</term>
 	    <listitem>
-	      <para>Just like <option>-dyn</option>, but doesn't look for
-	      symbols in dynamic symbol table, but normal symbol table.
-	      (Which doesn't have to be present, e.g. when a binary is
-	      stripped.)  See below for description of
-	      <replaceable>SYMBOL</replaceable> rule syntax.</para>
+	      <para>Print each file mapped to or unmapped from address
+    	      space of the traced process.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-pc</term>
+	    <listitem>
+	      <para>Show the value of instruction pointer at each
+	      reported event.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -226,21 +228,6 @@
 	      this option also applies to traced system calls.  If you
 	      need to cherry-pick which event should stack trace, use
 	      # operator described in sections below.</para>
-	    </listitem>
-	  </varlistentry>
-
-	</variablelist>
-    </refsect2>
-
-    <refsect2>
-	<title>Other Traceable Events</title>
-
-	<variablelist>
-	  <varlistentry>
-	    <term>-m</term>
-	    <listitem>
-	      <para>Print each file mapped to or unmapped from address
-    	      space of the traced process.</para>
 	    </listitem>
 	  </varlistentry>
 	</variablelist>
@@ -298,7 +285,7 @@
     against version associated with symbol.  If the symbol has no
     associated version, it is considered to be an empty string.  (It
     is possible to request symbol without a version with the pattern
-    "foo@@".)</para>
+    "foo@@".)  NOTE: This is currently not implemented.</para>
 
     <para>Empty rule is considered to miss all components.</para>
   </refsect1>
