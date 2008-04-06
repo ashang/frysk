@@ -1,3 +1,8 @@
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+	
+	* ftrace.java: Support plt tracing using new ftrace
+	infrastructure.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* fauxv.xml-in: Rename fauxv.xml.

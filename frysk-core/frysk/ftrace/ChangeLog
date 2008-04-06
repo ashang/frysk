@@ -1,5 +1,10 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java: Support PLT tracing.
+	* FtraceController.java: Likewise.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java: Mostly complete rewrite to use frysk breakpoint
 	infrastructure.
 

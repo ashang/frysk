@@ -52,11 +52,13 @@ import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 import frysk.rt.BreakpointManager;
+import frysk.rt.PLTBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
 import frysk.rt.SymbolBreakpoint;
 import frysk.stack.StackFactory;
 import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
 
 import lib.dwfl.DwflModule;
 
@@ -82,6 +84,20 @@ class TaskTracer
 	this.ftrace = ftrace;
     }
 
+    private class TracePoint
+    {
+	private String name;
+	public TracePoint(DwflSymbol symbol) {
+	    this.name = symbol.getName();
+	}
+	public TracePoint(PLTEntry entry) {
+	    this (entry.getSymbol());
+	}
+	public String getName() {
+	    return this.name;
+	}
+    }
+
     private class FunctionReturnObserver
 	implements TaskObserver.Code
     {
@@ -91,15 +107,15 @@ class TaskTracer
 	    task.requestAddCodeObserver(this, address);
 	}
 
-	public void add(DwflSymbol symbol) {
-	    symbolList.addLast(symbol);
+	public void add(TracePoint tracePoint) {
+	    symbolList.addLast(tracePoint);
 	}
 
-	public Action updateHit (Task task, long address)
+	public Action updateHit(Task task, long address)
 	{
 	    fine.log("Return breakpoint at 0x" + Long.toHexString(address));
 
-	    DwflSymbol symbol = (DwflSymbol)symbolList.removeLast();
+	    TracePoint tracePoint = (TracePoint)symbolList.removeLast();
 	    Action action = Action.CONTINUE;
 
 	    // Retract lowlevel breakpoint when the last return has
@@ -116,8 +132,8 @@ class TaskTracer
 
 	    fine.log("Fetching retval.");
 	    Object ret = arch.getReturnValue(task);
-	    ftrace.reporter.eventLeave(task, symbol,
-				"leave", symbol.getName(), ret);
+	    ftrace.reporter.eventLeave(task, tracePoint,
+				"leave", tracePoint.getName(), ret);
 	    fine.log("Breakpoint handled.");
 
 	    return action;
@@ -132,8 +148,16 @@ class TaskTracer
 	implements SourceBreakpointObserver
     {
 	private final DwflSymbol sym;
+	private final boolean isPlt;
+
 	public FunctionEnterObserver(DwflSymbol sym) {
 	    this.sym = sym;
+	    this.isPlt = false;
+	}
+
+	public FunctionEnterObserver(PLTEntry entry) {
+	    this.sym = entry.getSymbol();
+	    this.isPlt = true;
 	}
 
 	private long getReturnAddress(Task task) {
@@ -144,21 +168,47 @@ class TaskTracer
 	    }
 	}
 
+	private String getLibraryName(DwflSymbol sym) {
+	    DwflModule module = sym.getModule();
+	    if (module != null) {
+		String path = sym.getModule().getName();
+		ObjectFile of = ObjectFile.buildFromFile(path);
+		if (of != null)
+		    return of.getSoname();
+		else
+		    return path;
+	    } else
+		return "???";
+	}
+
     	public void updateHit(SourceBreakpoint breakpoint, Task task, long address) {
-	    if (sym.getAddress() != address)
+	    if (!isPlt && sym.getAddress() != address)
 		warning.log("Breakpoint requested for", sym.getAddress(),
 			    "hits at", address, "for symbol", sym);
 
 	    long retAddress = getReturnAddress(task);
-	    SymbolBreakpoint symbolBreakpoint = (SymbolBreakpoint)breakpoint;
-	    String symbolName = symbolBreakpoint.getName();
-	    String eventName = "#" + getLibraryName(sym) + "#" + symbolName;
-	    DwflSymbol symbol = symbolBreakpoint.getSymbol();
+	    TracePoint tracePoint;
+
+	    if (isPlt) {
+		PLTEntry entry = ((PLTBreakpoint)breakpoint).getEntry();
+		tracePoint = new TracePoint(entry);
+	    } else {
+		DwflSymbol symbol = ((SymbolBreakpoint)breakpoint).getSymbol();
+		tracePoint = new TracePoint(symbol);
+	    }
+
+	    String symbolName = tracePoint.getName();
+	    String eventName = "#" + getLibraryName(sym) + "#";
+
+	    if (isPlt)
+		eventName += "plt(" + symbolName + ')';
+	    else
+		eventName += symbolName;
 
 	    if (retAddress == 0)
 		ftrace.reporter.eventSingle(task, "call " + eventName, arch.getCallArguments(task));
 	    else {
-		ftrace.reporter.eventEntry(task, symbol, "call", eventName, arch.getCallArguments(task));
+		ftrace.reporter.eventEntry(task, tracePoint, "call", eventName, arch.getCallArguments(task));
 
 		Long retAddressL = new Long(retAddress);
 		FunctionReturnObserver retObserver
@@ -167,12 +217,12 @@ class TaskTracer
 		    retObserver = new FunctionReturnObserver(task, retAddress);
 		    functionReturnObservers.put(retAddressL, retObserver);
 		}
-		retObserver.add(symbol);
+		retObserver.add(tracePoint);
 	    }
 
 	    // If this symbol is in the stack tracing set, get a
 	    // stack trace before continuing on.
-	    if (ftrace.stackTraceSetProvider.shouldStackTraceOnSymbol(sym))
+	    if (ftrace.stackTraceSetProvider.shouldStackTraceOnTracePoint(sym))
 		ftrace.reporter.generateStackTrace(task);
 
 	    // And on we go...
@@ -184,25 +234,13 @@ class TaskTracer
 	public void deletedFrom (Object observable) {}
     }
 
-    private String getLibraryName(DwflSymbol sym) {
-	DwflModule module = sym.getModule();
-	if (module != null) {
-	    String path = sym.getModule().getName();
-	    ObjectFile of = ObjectFile.buildFromFile(path);
-	    if (of != null)
-		return of.getSoname();
-	    else
-		return path;
-	} else
-	    return "???";
-    }
-
     private final Set alreadyTracing = new HashSet();
     public void traceSymbol(Task task, DwflSymbol sym)
     {
 	if (alreadyTracing.contains(sym))
 	    return;
 
+	fine.log("Request for tracing symbol", sym);
 	if (sym.isFunctionSymbol() && sym.getAddress() != 0) {
 	    alreadyTracing.add(sym);
 	    BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
@@ -210,5 +248,18 @@ class TaskTracer
 	    bp.addObserver(new FunctionEnterObserver(sym));
 	    bpManager.enableBreakpoint(bp, task);
 	}
+    }
+
+    public void tracePLTEntry(Task task, PLTEntry entry)
+    {
+	if (alreadyTracing.contains(entry))
+	    return;
+
+	fine.log("Request for tracing PLT", entry.getSymbol());
+	alreadyTracing.add(entry);
+	BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
+	final PLTBreakpoint bp = bpManager.addPLTBreakpoint(entry);
+	bp.addObserver(new FunctionEnterObserver(entry));
+	bpManager.enableBreakpoint(bp, task);
     }
 }

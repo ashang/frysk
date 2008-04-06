@@ -48,12 +48,13 @@ import java.util.Map;
 import java.util.Set;
 
 import frysk.dwfl.ObjectFile;
-import frysk.rsl.Log;
-import frysk.rsl.LogFactory;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.proc.Task;
+import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
 
 public class FtraceController
     implements Ftrace.Controller,
@@ -71,16 +72,16 @@ public class FtraceController
     private final List sigRules = new ArrayList();
 
     // Which symbols should yield a stack trace.
-    private HashSet symbolsStackTraceSet = new HashSet();
+    private HashSet tracePointStackTraceSet = new HashSet();
     private boolean stackTraceEverything = false;
 
     public void stackTraceEverything() {
 	stackTraceEverything = true;
     }
 
-    public boolean shouldStackTraceOnSymbol(DwflSymbol symbol) {
+    public boolean shouldStackTraceOnTracePoint(Object tracePoint) {
 	return stackTraceEverything
-	    || symbolsStackTraceSet.contains(symbol);
+	    || tracePointStackTraceSet.contains(tracePoint);
     }
 
     public FtraceController() { }
@@ -161,9 +162,13 @@ public class FtraceController
 	return objffn.equals(interpfn);
     }
 
+    interface RuleHandler {
+	void applyTracePoint(Object tracePoint);
+    }
+
     private void applyTracingRules(final Task task, final ObjectFile objf,
-				   final List symbols,
-				   final Ftrace.Driver driver, final List rules)
+				   final List tracePoints, final List rules,
+				   RuleHandler handler)
 	throws lib.dwfl.ElfException
     {
 	String path = objf.getFilename().getPath();
@@ -193,22 +198,38 @@ public class FtraceController
 		    && isInterpOf(objf, task.getProc().getExeFile().getSysRootedPath()))
 		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
 	    {
-		rule.apply(symbols, workingSet, stackTraceSet);
+		rule.apply(tracePoints, workingSet, stackTraceSet);
 	    }
 	}
 
 	// Finally, apply constructed working set.
 	fine.log("Applying working set for ", path);
-	for (Iterator it = stackTraceSet.iterator(); it.hasNext(); )
-	    symbolsStackTraceSet.add((DwflSymbol)it.next());
+	tracePointStackTraceSet.addAll(stackTraceSet);
 	for (Iterator it = workingSet.iterator(); it.hasNext(); )
-	    driver.traceSymbol(task, (DwflSymbol)it.next());
+	    handler.applyTracePoint(it.next());
     }
 
-    public void fileMapped(Task task, ObjectFile objf, List symbols, Ftrace.Driver driver) {
+    public void fileMapped(final Task task, ObjectFile objf,
+			   List symbols, List pltEntries,
+			   final Ftrace.Driver driver) {
 	try {
-	    //applyTracingRules(task, objf, driver, pltRules, TracePointOrigin.PLT);
-	    applyTracingRules(task, objf, symbols, driver, symRules);
+	    applyTracingRules
+		(task, objf, pltEntries, pltRules,
+		 new RuleHandler() {
+		     public void applyTracePoint(Object tracePoint) {
+			 PLTEntry entry = (PLTEntry)tracePoint;
+			 driver.tracePLTEntry(task, entry);
+		     }
+		 });
+
+	    applyTracingRules
+		(task, objf, symbols, symRules,
+		 new RuleHandler() {
+		     public void applyTracePoint(Object tracePoint) {
+			 DwflSymbol symbol = (DwflSymbol)tracePoint;
+			 driver.traceSymbol(task, symbol);
+		     }
+		 });
 	}
 	catch (lib.dwfl.ElfException ee) {
 	    ee.printStackTrace();

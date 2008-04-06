@@ -39,29 +39,32 @@
 
 package frysk.bindir;
 
-import frysk.debuginfo.PrintStackOptions;
-import frysk.util.StackPrintUtil;
-import inua.util.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.OptionGroup;
+import inua.util.PrintWriter;
+
+import frysk.debuginfo.PrintStackOptions;
 import frysk.ftrace.Ftrace;
+import frysk.ftrace.FtraceController;
+import frysk.ftrace.PLTRule;
+import frysk.ftrace.Rule;
+import frysk.ftrace.SymbolRule;
 import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Proc;
+import frysk.rsl.Log;
 import frysk.util.CommandlineParser;
 import frysk.util.Glob;
+import frysk.util.StackPrintUtil;
 import frysk.util.Util;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionGroup;
-import gnu.classpath.tools.getopt.OptionException;
-import frysk.ftrace.Rule;
-import frysk.ftrace.SymbolRule;
-import frysk.ftrace.FtraceController;
-import frysk.rsl.Log;
 
 class ftrace {
     private static final Log fine = Log.fine(ftrace.class);
@@ -88,7 +91,12 @@ class ftrace {
 	= new PrintStackOptions();
     private final Ftrace tracer = new Ftrace(stackPrintOptions);
 
-    private List parseSymbolRules(String arg) {
+    private interface SymbolRuleCreator {
+	Rule createRule(boolean addition, boolean stackTrace,
+			String nameRe, String sonameRe, String versionRe);
+    }
+
+    private List parseSymbolRules(String arg, SymbolRuleCreator creator) {
 	String[] strs = arg.split(",", -1);
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
@@ -139,8 +147,10 @@ class ftrace {
 	    else
 		symbolRe = null;
 
-	    fine.log(i + ": " + str + ": symbol=" + symbolRe + ", soname=" + sonameRe + ", version=" + versionRe);
-	    SymbolRule rule = new SymbolRule(addition, stackTrace, symbolRe, sonameRe, versionRe);
+	    fine.log(i + ": " + str + ": symbol=" + symbolRe
+		     + ", soname=" + sonameRe + ", version=" + versionRe);
+	    Rule rule = creator.createRule(addition, stackTrace,
+					   symbolRe, sonameRe, versionRe);
 	    rules.add(rule);
 	}
 	return rules;
@@ -338,10 +348,33 @@ class ftrace {
 		symRules.add("-@INTERP");
 	    }
 
-	    for (Iterator it = pltRules.iterator(); it.hasNext(); )
-		controller.gotPltRules(parseSymbolRules((String)it.next()));
-	    for (Iterator it = symRules.iterator(); it.hasNext(); )
-		controller.gotSymRules(parseSymbolRules((String)it.next()));
+	    class SymbolCreator implements SymbolRuleCreator {
+		public Rule createRule(boolean addition, boolean stackTrace,
+				       String nameRe, String sonameRe,
+				       String versionRe) {
+		    return new SymbolRule(addition, stackTrace,
+					  nameRe, sonameRe, versionRe);
+		}
+	    }
+	    SymbolRuleCreator symbolCreator = new SymbolCreator();
+	    for (Iterator it = symRules.iterator(); it.hasNext(); ) {
+		List rules = parseSymbolRules((String)it.next(), symbolCreator);
+		controller.gotSymRules(rules);
+	    }
+
+	    class PLTCreator implements SymbolRuleCreator {
+		public Rule createRule(boolean addition, boolean stackTrace,
+				       String nameRe, String sonameRe,
+				       String versionRe) {
+		    return new PLTRule(addition, stackTrace,
+				       nameRe, sonameRe, versionRe);
+		}
+	    }
+	    SymbolRuleCreator pltCreator = new PLTCreator();
+	    for (Iterator it = pltRules.iterator(); it.hasNext(); ) {
+		List rules = parseSymbolRules((String)it.next(), pltCreator);
+		controller.gotPltRules(rules);
+	    }
 
 	    tracer.setTraceFunctions(controller, controller);
 	}
