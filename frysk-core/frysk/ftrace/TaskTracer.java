@@ -85,15 +85,67 @@ class TaskTracer
 
     private class TracePoint
     {
-	private String name;
+	private final DwflSymbol symbol;
+	private final boolean isPlt;
+	private boolean chained = false;
+	private boolean frozen = false;
+
 	public TracePoint(DwflSymbol symbol) {
-	    this.name = symbol.getName();
+	    this.symbol = symbol;
+	    this.isPlt = false;
 	}
+
 	public TracePoint(PLTEntry entry) {
-	    this (entry.getSymbol());
+	    this.symbol = entry.getSymbol();
+	    this.isPlt = true;
 	}
+
+	public DwflSymbol getSymbol() {
+	    return this.symbol;
+	}
+
 	public String getName() {
-	    return this.name;
+	    return this.symbol.getName();
+	}
+
+	public void freeze() {
+	    this.frozen = true;
+	}
+
+	public boolean isFrozen() {
+	    return this.frozen;
+	}
+
+	public void setChained() {
+	    this.chained = true;
+	}
+
+	public boolean isChained() {
+	    return this.chained;
+	}
+
+	public boolean isPlt() {
+	    return this.isPlt;
+	}
+
+    	private String getLibraryName(DwflSymbol sym) {
+	    DwflModule module = sym.getModule();
+	    if (module != null) {
+		String path = sym.getModule().getName();
+		ObjectFile of = ObjectFile.buildFromFile(path);
+		if (of != null)
+		    return of.getSoname();
+		else
+		    return path;
+	    } else
+		return "???";
+	}
+
+	public String toString() {
+	    String symbolName = getName();
+	    String eventDescription = "#" + getLibraryName(this.symbol)
+		+ "#" + (isPlt ? "plt:" : "") + symbolName;
+	    return eventDescription;
 	}
     }
 
@@ -107,14 +159,21 @@ class TaskTracer
 	}
 
 	public void add(TracePoint tracePoint) {
+	    if (!symbolList.isEmpty()) {
+		TracePoint previous = (TracePoint)symbolList.getLast();
+		if (!previous.isFrozen()
+		    && previous.isPlt() && !tracePoint.isPlt()
+		    && previous.getSymbol() == tracePoint.getSymbol())
+		    tracePoint.setChained();
+
+		previous.freeze();
+	    }
 	    symbolList.addLast(tracePoint);
 	}
 
-	public Action updateHit(Task task, long address)
+	private Action handleReturn(Task task, TracePoint tracePoint,
+				    long address)
 	{
-	    fine.log("Return breakpoint at 0x" + Long.toHexString(address));
-
-	    TracePoint tracePoint = (TracePoint)symbolList.removeLast();
 	    Action action = Action.CONTINUE;
 
 	    // Retract lowlevel breakpoint when the last return has
@@ -131,9 +190,23 @@ class TaskTracer
 
 	    fine.log("Fetching retval.");
 	    Object ret = arch.getReturnValue(task);
-	    ftrace.reporter.eventLeave(task, tracePoint,
-				"leave", tracePoint.getName(), ret);
+	    ftrace.reporter.eventLeave(task, tracePoint, "leave",
+				       "" + tracePoint, ret);
 	    fine.log("Breakpoint handled.");
+	    return action;
+	}
+
+	public Action updateHit(Task task, long address)
+	{
+	    fine.log("Return breakpoint at 0x" + Long.toHexString(address));
+
+	    TracePoint tracePoint = (TracePoint)symbolList.removeLast();
+	    Action action = handleReturn(task, tracePoint, address);
+
+	    if (tracePoint.isChained()) {
+		tracePoint = (TracePoint)symbolList.getLast();
+		action = handleReturn(task, tracePoint, address);
+	    }
 
 	    return action;
 	}
@@ -168,19 +241,6 @@ class TaskTracer
 	    }
 	}
 
-	private String getLibraryName(DwflSymbol sym) {
-	    DwflModule module = sym.getModule();
-	    if (module != null) {
-		String path = sym.getModule().getName();
-		ObjectFile of = ObjectFile.buildFromFile(path);
-		if (of != null)
-		    return of.getSoname();
-		else
-		    return path;
-	    } else
-		return "???";
-	}
-
     	public void updateHit(SourceBreakpoint breakpoint, Task task, long address) {
 	    if (!isPlt && sym.getAddress() != address)
 		warning.log("Breakpoint requested for", sym.getAddress(),
@@ -200,10 +260,7 @@ class TaskTracer
 		tracePoint = new TracePoint(symbol);
 	    }
 
-	    String symbolName = tracePoint.getName();
-	    String eventName = "#" + getLibraryName(sym)
-		+ "#" + (isPlt ? "plt:" : "") + symbolName;
-
+	    String eventName = "" + tracePoint;
 	    if (retAddress == 0)
 		ftrace.reporter.eventSingle(task, "call " + eventName, arch.getCallArguments(task));
 	    else {

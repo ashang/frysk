@@ -1,5 +1,17 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java
+	(FunctionReturnObserver.handleReturn): New function, refactored
+	from updateHit.
+	(FunctionReturnObserver.updateHit): Handle the case where one
+	return address hit signalizes two return events: from PLT and from
+	function.
+	(TracePoint): Support chaining.
+	(TracePoint.getLibraryName): Moved here from TaskTracer class.
+	(TracePoint.toString): Event name formatting moved here.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* TaskTracer.java (getReturnAddress): Fetch the return address
 	from Arch code again, before reliable data can be got from prev
 	frame computation.
