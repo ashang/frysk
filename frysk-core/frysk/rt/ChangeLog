@@ -1,3 +1,8 @@
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
+	* PLTBreakpoint.java: New class.
+	* BreakpointManager.java (addPLTBreakpoint): New method.
+
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
 	* SymbolBreakpoint.java (getSymbol): New function.

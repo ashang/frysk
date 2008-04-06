@@ -45,17 +45,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.TreeMap;
-import frysk.rsl.Log;
+
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcTasksAction;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.rsl.Log;
 import frysk.stepping.SteppingEngine;
-import frysk.util.CountDownLatch;
-import frysk.symtab.SymbolFactory;
 import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
+import frysk.symtab.SymbolFactory;
+import frysk.util.CountDownLatch;
+
 import lib.dwfl.DwarfDie;
 
 /**
@@ -150,13 +153,25 @@ public class BreakpointManager extends Observable {
     }
 
     /**
-     * Create a function breakpoint not associated with any process
+     * Create a symbol breakpoint not associated with any process
      * @param symbol the symbol to breakpoint at
      * @return FunctionBreakpoint object
      */
     public SymbolBreakpoint addSymbolBreakpoint(DwflSymbol symbol) {
 	SymbolBreakpoint sourceBreakpoint =
 	    new SymbolBreakpoint(CountManager.getNextId(), symbol);
+	addBreakpoint(sourceBreakpoint);
+	return sourceBreakpoint;
+    }
+
+    /**
+     * Create a PLT breakpoint not associated with any process
+     * @param entry the PLT entry to breakpoint at
+     * @return PLTBreakpoint object
+     */
+    public PLTBreakpoint addPLTBreakpoint(PLTEntry entry) {
+	PLTBreakpoint sourceBreakpoint =
+	    new PLTBreakpoint(CountManager.getNextId(), entry);
 	addBreakpoint(sourceBreakpoint);
 	return sourceBreakpoint;
     }
