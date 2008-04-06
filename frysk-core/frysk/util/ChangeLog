@@ -1,3 +1,8 @@
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
+	* ArchFormatter.java: New file.  Code moved from
+	frysk.ftrace.Reporter and frysk.stack.Frame.
+
 2008-04-02  Andrew Cagney  <cagney@redhat.com>
 
 	* stack-options.xml: Make refsect2.

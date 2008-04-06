@@ -1,5 +1,11 @@
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
+	* Reporter.java (repeat): Moved to frysk.util.ArchFormatter.
+	(formatTaskPC): Call out to ArchFormatter to get value padded to
+	architecture word width.
+
+2008-04-06  Petr Machata  <pmachata@redhat.com>
+
 	* TaskTracer.java: Support PLT tracing.
 	* FtraceController.java: Likewise.
 

@@ -39,12 +39,14 @@
 
 package frysk.ftrace;
 
-import frysk.debuginfo.PrintStackOptions;
-import frysk.util.StackPrintUtil;
-import frysk.proc.Task;
-import inua.util.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
+
+import inua.util.PrintWriter;
+
+import frysk.debuginfo.PrintStackOptions;
+import frysk.proc.Task;
+import frysk.util.ArchFormatter;
+import frysk.util.StackPrintUtil;
 
 class Reporter
 {
@@ -91,15 +93,6 @@ class Reporter
 	lastTask = task;
     }
 
-    private String repeat(char c, int count)
-    {
-	// Taken from code by Stephen Friedrich
-	// http://weblogs.java.net/blog/skelvin/archive/2004/08/big_severe_logg.html
-	char[] fill = new char[count];
-	Arrays.fill(fill, c);
-	return new String(fill);
-    }
-
     private String pidInfo(Task task)
     {
 	return "" + task.getProc().getPid() + "." + task.getTid();
@@ -137,14 +130,14 @@ class Reporter
 	    pc = -1;
 	}
 
-	return "0x" + Long.toHexString(pc) + " ";
+	return ArchFormatter.toHexString(task, pc) + " ";
     }
 
     public void eventEntry(Task task, Object item, String eventType,
 			    String eventName, Object[] args)
     {
 	int level = this.getLevel(task);
-	String spaces = repeat(' ', level);
+	String spaces = ArchFormatter.repeat(' ', level);
 	this.setLevel(task, ++level);
 
 	if (lineOpened())
@@ -169,7 +162,7 @@ class Reporter
 	if (!myLineOpened(task, item)) {
 	    if (lineOpened())
 		writer.println();
-	    String spaces = repeat(' ', level);
+	    String spaces = ArchFormatter.repeat(' ', level);
 	    writer.print(pidInfo(task)
 			 + " " + formatTaskPC(task)
 			 + spaces + eventType
@@ -194,7 +187,8 @@ class Reporter
 	    writer.println("\\");
 	writer.print(pidInfo(task)
 		     + " " + formatTaskPC(task)
-		     + repeat(' ', level) + eventName);
+		     + ArchFormatter.repeat(' ', level)
+		     + eventName);
 
 	if (args != null)
 	    printArgs(args);

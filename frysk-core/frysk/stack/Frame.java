@@ -52,6 +52,7 @@ import frysk.proc.Task;
 import frysk.rsl.Log;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
+import frysk.util.ArchFormatter;
 import frysk.value.ScratchLocation;
 import frysk.value.Value;
 
@@ -158,13 +159,7 @@ public abstract class Frame {
      * @param printWriter
      */
     public void toPrint (PrintWriter writer, boolean printSource, boolean fullpath) {
-	// the address, padded with 0s based on the task's word size, ...
-	writer.write("0x");
-	String addr = Long.toHexString(getAddress());
-	int padding = 2 * getTask().getISA().wordSize() - addr.length();
-	for (int i = 0; i < padding; ++i)
-	    writer.write('0');
-	writer.write(addr);
+	writer.write(ArchFormatter.toHexString(getTask(), getAddress()));
 	// the symbol, if known append (), ..
 	Symbol symbol = getSymbol();
 	writer.write(" in ");
