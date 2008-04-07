@@ -52,9 +52,7 @@ typedef __u32 u32;
 #include "elf.h"
 #include "libelf.h"
 #include "gelf.h"
-
-#include "asm/elf.h"
-#include "asm/user.h"
+#include "sys/user.h"
 #include "lib/dwfl/ElfPrstatus.h"
 #include "lib/dwfl/ElfData.h"
 #include "lib/dwfl/ElfException.h"

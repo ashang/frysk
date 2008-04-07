@@ -1,6 +1,6 @@
 2008-04-07  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* cni/ElfPrPrinfo.cxx: Delete not needed
+	* cni/ElfPrstatus.cxx: Delete not needed
 	asm/elf.h import. Change asm/user.h to
 	sys/user.h.
 	
