@@ -149,7 +149,7 @@ processStatus(frysk::sys::ProcessIdentifier* pid, int status,
     {
       int termSig = WTERMSIG (status);
       frysk::sys::Signal* signal = frysk::sys::Signal::valueOf (termSig);
-      builder->terminated(pid, signal, -termSig, WCOREDUMP (status));
+      builder->terminated(pid, signal, -termSig, !! WCOREDUMP (status));
     }
   else if (WIFSTOPPED (status)) {
     switch (WSTOPEVENT (status)) {
@@ -192,7 +192,7 @@ processStatus(frysk::sys::ProcessIdentifier* pid, int status,
 	} else if (WIFSIGNALED (exitStatus)) {
 	  int termSig = WTERMSIG (exitStatus);
 	  frysk::sys::Signal* signal = frysk::sys::Signal::valueOf (termSig);
-	  builder->exitEvent(pid, signal, -termSig, WCOREDUMP (exitStatus));
+	  builder->exitEvent(pid, signal, -termSig, !! WCOREDUMP (exitStatus));
 	} else {
 	  throwRuntimeException ("unknown exit event", "status", exitStatus);
 	}
