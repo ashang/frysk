@@ -75,23 +75,71 @@ available as both a research and development platform.</p>
 
 <h2>News</h2>
 
-<p>
+<h3>Frysk 0.2.1 released</h3>
 
-Need to debug two programs
-simultaneously?  <tt>fhpd</tt>'s <tt>start</tt>> command now works
-with multiple-processes:
+<p>We, that is, Adam Jocksch, Alexandre Oliva, Andrew Cagney, Carlos
+Eduardo Seo, Chris Moller, Diego Novillo, Elena Zannoni, Frank
+Ch. Eigler, Igor Foox, Ivan Pantuyev, Jan Kratochvil, Jeff Johnston,
+Jose Flavio Paulino, Kris Van Hees, Len DiMaggio, Mark Wielaard, Mike
+Behm, Mike Cvet, Nurdin Premji, Petr Machata, Phil Muldoon, Richard
+Henderson, Rick Moseley, Sami Wagiaalla, Stan Cox, Stepan Kasal, Tarun
+Khanna, Teresa Thomas, Thomas Girard, Tim Moore, Tom Tromey, Wu Zhou,
+Yao Qi, Yong Zheng, and Zhao Shujing are pleased to announce our first
+official release of Frysk, version 0.2.1.</p>
+
+<p>This initial release includes:
+
+<ul>
+
+<li>command line utilities:<br>
+
+  fauxv - print the auxiliary vector<br>
+  fcatch - catch and print the stack of a crashing process<br>
+  fcore - extract a core file from a running process<br>
+  fdebuginfo - list debug-info requirements of a process<br>
+  fdebugrpm - install debug-info requirements of a process<br>
+  ferror - catch and back-trace error calls<br>
+  fexe - print the executable path<br>
+  fmaps - print the address map<br>
+  fstack - print each thread's stack<br>
+  fstep - single-step a process<br>
+  ftrace - trace a processes system and (new) library calls<br>
+
+  Known limitations: large resident set size; large executable size.
+
+<li>Prototype command line debugger: fhpd<br>
+
+  For single threaded programs, FHPD can: print the value, type, and
+  location, and modify the value of, arbitrarily located variable
+  (complex DWARF location expressions); correctly handle very-large
+  integers (>64-bit) and large floats (80-bit); display in-line
+  information in back-traces; control processes with the commands
+  load, core, dump, run, step, break, go, detach, kill, list, focus.<br>
+
+  In addition to the command-line utility restrictions, the HPD has
+  the following known limitations: disassembler missing; limited
+  type-cast support in expressions; limited multi-thread support.
+
+<li>Prototype visual debugging and monitoring tool (frysk)<br>
+
+  Known limitations: work-flow limited to live processes (examining
+  core files, or creating processes is possible but very
+  non-intuitive).
+
+<li>Prototype test-suite (funit)<br>
+
+  Known limitations: some test that are working in-tree fail when
+  installed.
+
+</li>
+
+<p>To download this release, go to:</p>
 
 <pre>
-$ ./frysk/bindir/fhpd
-(fhpd) load /bin/bash
-Loaded executable file: /bin/bash
-(fhpd) load /bin/ls
-Loaded executable file: /bin/ls
-(fhpd) start
-Attached to process 17686
-Attached to process 17687
-(fhpd) 
+ftp://sourceware.org/pub/frysk/frysk-0.2.1.tar.bz2
 </pre>
+
+<p>or check for an update in your local GNU/Linux distro.</p>
 
 <h2>Where Next?</h2>
 
