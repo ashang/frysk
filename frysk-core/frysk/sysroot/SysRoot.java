@@ -94,6 +94,25 @@ public class SysRoot {
 	else
 	    return new SysRootFile(sysRoot, f);
     }
+    
+    /**
+     * return a pathname of an executable.
+     * 
+     * @return this executable's library pathname, in the special 
+     * 		root directory.
+     */
+    public String getLibPathViaSysRoot () {
+	String libraryPath = "";
+	if (! sysRoot.equals("/")) {
+	    if (new File(sysRoot, "/lib").exists())
+		libraryPath += sysRoot + "/lib:";
+	    if (new File(sysRoot, "/usr/lib").exists())
+		libraryPath += sysRoot + "/usr/lib";
+	}
+        
+        return libraryPath;
+    }
+
 
     private File findExe(String pathVar, String arg0) {
         if (pathVar == null) {

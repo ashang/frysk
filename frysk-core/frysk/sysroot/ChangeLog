@@ -1,3 +1,7 @@
+2008-04-07  Stan Cox  <scox@redhat.com>
+
+	* SysRoot.java (getLibPathViaSysRoot): New.
+
 2008-03-31  Stan Cox  <scox@redhat.com>
 
 	* SysRootFile.java (getSysRootedPath): New.

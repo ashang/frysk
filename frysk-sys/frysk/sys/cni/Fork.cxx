@@ -73,7 +73,7 @@ reopen (jstring file, const char *mode, FILE *stream)
 
 int
 spawn(java::io::File* exe, jstring in, jstring out, jstring err,
-      jstringArray args, jint trace)
+      jstringArray args, jstring libs, jint trace)
 {
   // Convert args into argv, argc, filename.
   char *filename = ALLOCA_STRING(exe->getPath());
@@ -120,7 +120,19 @@ spawn(java::io::File* exe, jstring in, jstring out, jstring err,
     case frysk::sys::Fork::NO_TRACE:
       break;
     }
-    ::execv (filename, argv);
+     if (libs->length() > 0) 
+       {
+ 	char *libs_str = (char *) alloca (libs->length() + 1);
+ 	JvGetStringUTFRegion (libs, 0, libs->length (), libs_str);
+	libs_str[libs->length()] = '\0';
+	static char* libenv;
+	if (asprintf (&libenv, "LD_LIBRARY_PATH=%s", libs_str) < 0)
+	  ::perror ("asprintf");
+	char * const env[] = {libenv, (char*)0};
+ 	::execve (filename, argv, env);
+       }
+     else
+      ::execv (filename, argv);
     // This should not happen.
     ::perror ("execvp");
     ::_exit (errno);
@@ -130,8 +142,8 @@ spawn(java::io::File* exe, jstring in, jstring out, jstring err,
 frysk::sys::ProcessIdentifier*
 frysk::sys::Fork::spawn(java::io::File* exe,
 			jstring in, jstring out, jstring err,
-			jstringArray args, jint trace) {
-  int pid = ::spawn(exe, in, out, err, args, trace);
+			jstringArray args, jstring libs, jint trace) {
+  int pid = ::spawn(exe, in, out, err, args, libs, trace);
   return frysk::sys::ProcessIdentifierFactory::create(pid);
 }
 
@@ -148,7 +160,7 @@ frysk::sys::Fork::daemon (java::io::File* exe, jstring in, jstring out,
   // process id ends up in PID.
 
   if (v == 0) {
-    pid = ::spawn(exe, in, out, err, args, frysk::sys::Fork::NO_TRACE);
+    pid = ::spawn(exe, in, out, err, args, JvNewStringUTF (""), frysk::sys::Fork::NO_TRACE);
     _exit (0);
   }
 

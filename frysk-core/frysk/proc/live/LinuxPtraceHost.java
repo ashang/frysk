@@ -262,6 +262,7 @@ public class LinuxPtraceHost extends LiveHost {
 					  final String stdout,
 					  final String stderr,
 					  final String[] args,
+					  final String libs,
 					  final TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc");
 	Manager.eventLoop.add(new Event() {
@@ -270,7 +271,7 @@ public class LinuxPtraceHost extends LiveHost {
 			     "execute - requestCreateAttachedProc",
 			     exe);
 		    ProcessIdentifier pid
-			= Fork.ptrace(exe, stdin, stdout, stderr, args);
+			= Fork.ptrace(exe, stdin, stdout, stderr, args, libs);
 		    // See if the Host knows about this task.
 		    ProcessIdentifier myTid = Tid.get();
 		    LinuxPtraceTask myTask = getTask(myTid);

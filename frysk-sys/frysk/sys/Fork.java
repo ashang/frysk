@@ -42,7 +42,7 @@ package frysk.sys;
 import java.io.File;
 
 /**
- * Create a child process (using fork) that immediatly performs some
+ * Create a child process (using fork) that immediately performs some
  * sort of exec.
  */
 
@@ -53,9 +53,10 @@ public final class Fork {
     private static native ProcessIdentifier spawn(File exe,
 						  String in, String out,
 						  String err,
-						  String[] args, int trace);
+						  String[] args, 
+						  String libs, int trace);
     private static ProcessIdentifier spawn(String[] args, int trace) {
-	return spawn(new File(args[0]), null, null, null, args, trace);
+	return spawn(new File(args[0]), null, null, null, args, "", trace);
     }
 
     /**
@@ -66,7 +67,7 @@ public final class Fork {
     public static ProcessIdentifier exec(File exe,
 					 String in, String out,
 					 String err, String[] args) {
-	return spawn(exe, in, out, err, args, NO_TRACE);
+	return spawn(exe, in, out, err, args, "", NO_TRACE);
     }
     /**
      * Create a child process running EXE with arguments ARGS[0..].
@@ -75,7 +76,7 @@ public final class Fork {
      */
     public static ProcessIdentifier exec(String in, String out,
 					 String err, String[] args) {
-	return spawn(new File(args[0]), in, out, err, args, NO_TRACE);
+	return spawn(new File(args[0]), in, out, err, args, "", NO_TRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments
@@ -93,8 +94,8 @@ public final class Fork {
      */
     public static ProcessIdentifier ptrace(File exe,
 					   String in, String out,
-					   String err, String[] args) {
-	return spawn(exe, in, out, err, args, PTRACE);
+					   String err, String[] args, String libs) {
+	return spawn(exe, in, out, err, args, libs, PTRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments
@@ -113,7 +114,7 @@ public final class Fork {
     public static ProcessIdentifier utrace(File exe,
 					   String in, String out,
 					   String err, String[] args) {
-	return spawn(exe, in, out, err, args, UTRACE);
+	return spawn(exe, in, out, err, args, "", UTRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments

@@ -59,7 +59,7 @@ import java.io.File;
 abstract class DeadHost extends Host {
     public void requestCreateAttachedProc(File exe,
 					  String in, String out, String err,
-					  String[] args,
+					  String[] args, String libs,
 					  TaskAttachedObserverXXX attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }

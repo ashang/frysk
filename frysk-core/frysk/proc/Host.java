@@ -42,6 +42,8 @@ package frysk.proc;
 import java.io.File;
 import java.util.Collection;
 import frysk.rsl.Log;
+import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootFile;
 
 /**
  * A host machine.
@@ -78,29 +80,30 @@ public abstract class Host implements Comparable {
      * Tell the host to create a running child process.
      *
      * Unlike other requests, this operation is bound to an explicit
-     * call-back.  Doing this means that the requestor has a robust
-     * way of receiving an acknolwedge of the operation.  Without this
+     * call-back.  Doing this means that the requester has a robust
+     * way of receiving an acknowledge of the operation.  Without this
      * there would be no reliable way to bind to the newly created
      * process - frysk's state machine could easily detach before the
-     * requestor had an oportunity to add an attached observer.
+     * requester had an opportunity to add an attached observer.
      */
     public abstract void requestCreateAttachedProc(File exe,
 						   String stdin,
 						   String stdout,
 						   String stderr,
 						   String[] args,
+						   String libs,
 						   TaskAttachedObserverXXX attachedObserver);
     /**
      * Request that a new attached and running process(with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
     public void requestCreateAttachedProc(String stdin, String stdout,
-					  String stderr, String[] args,
+					  String stderr, String[] args, 
 					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
 	requestCreateAttachedProc(new File(args[0]), stdin, stdout, stderr,
-				  args, attachedObserver);
+				  args, "", attachedObserver);
     }
     /**
      * Request that a new attached and running process(with stdin,
@@ -111,7 +114,7 @@ public abstract class Host implements Comparable {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
 	requestCreateAttachedProc(new File(args[0]), null, null, null,
-				  args, attachedObserver);
+				  args, "", attachedObserver);
     }
     /**
      * Request that a new attached and running process based on
@@ -121,9 +124,11 @@ public abstract class Host implements Comparable {
 					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc template", template,
 		 "observer", attachedObserver);
-	requestCreateAttachedProc(new File(template.getExeFile().getSysRootedPath()),
+	SysRootFile sysRootFile = template.getExeFile();
+	requestCreateAttachedProc(new File(sysRootFile.getSysRootedPath()),
 				  null, null, null,
 				  template.getCmdLine(),
+				  new SysRoot(sysRootFile.getSysRoot()).getLibPathViaSysRoot(),
 				  attachedObserver);
     }					  
 

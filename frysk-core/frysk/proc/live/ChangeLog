@@ -1,3 +1,7 @@
+2008-04-07  Stan Cox  <scox@redhat.com>
+
+	* LinuxPtraceHost.java (requestCreateAttachedProc): Add libs parameter.
+
 2008-04-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceTaskState.java (Stepping.handleTrappedEvent): Reset 

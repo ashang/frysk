@@ -1,3 +1,9 @@
+2008-04-07  Stan Cox  <scox@redhat.com>
+
+	* Fork.java (spawn): Add libs parameter.
+	(ptrace): Likewise.
+	* cni/Fork.cxx (spawn): New parameter libs.  Use execve if we have libs.
+
 2008-04-07  Petr Machata  <pmachata@redhat.com>
 
 	* cni/Wait.cxx (processStatus): Normalize status to boolean in

@@ -58,7 +58,7 @@ public class DummyHost extends Host {
 
     public void requestCreateAttachedProc(File exe,
 					  String stdin, String stdout,
-					  String stderr, String[] args,
+					  String stderr, String[] args, String libs,
 					  TaskAttachedObserverXXX attached) {
 	throw new RuntimeException("requestCreateAttachedProc");
     }
