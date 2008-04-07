@@ -233,6 +233,19 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	return (debugStatus & (1L << index)) != 0;
     }
 
+    /**
+     * Resets the appropriate bit in the debug status register
+     * after a watchpoint has triggered, thereby reseting it.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     * @param index - Debug register to reset.
+     */
+    public void resetWatchpoint(Task task, int index) {
+	long debugStatus = readStatusRegister(task);	
+	debugStatus &= ~(1L << index);
+	task.setRegister(IA32Registers.DEBUG_STATUS, debugStatus);
+    }
 
     /**
      * Reads the Debug control register.

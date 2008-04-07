@@ -950,6 +950,7 @@ abstract class LinuxPtraceTaskState extends State {
 		// Test if a watchpoint has fired
 		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
 		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
+		    watchpointFunction.resetWatchpoint(task, i);
 		    int blockers = task.notifyWatchpoint(trigger.getAddress(), trigger.getRange());
 		    if (blockers == 0)
 			return sendContinue(task, Signal.NONE);
@@ -1084,6 +1085,7 @@ abstract class LinuxPtraceTaskState extends State {
 		// Test if a watchpoint has fired
 		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
 		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
+		    watchpointFunction.resetWatchpoint(task, i);
 		    int blockers = task.notifyWatchpoint(trigger.getAddress(), trigger.getRange());
 		    if (blockers == 0)
 			return sendContinue(task, Signal.NONE);

@@ -126,8 +126,20 @@ public abstract class WatchpointFunctions  {
      *
      * @param task - task to read the debug control
      * register from.
+     * @param index - Debug register to check
+
      */
     public abstract boolean hasWatchpointTriggered(Task task, int index);
+
+    /**
+     * Resets the appropriate bit in the debug status register
+     * after a watchpoint has triggered, thereby reseting it.
+     *
+     * @param task - task to read the debug control
+     * register from.
+     * @param index - Debug register to reset.
+     */
+    public abstract void resetWatchpoint(Task task, int index);
 
     /**
      * Returns number of watchpoints for this architecture

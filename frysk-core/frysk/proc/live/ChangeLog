@@ -1,3 +1,9 @@
+2008-04-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceTaskState.java (Stepping.handleTrappedEvent): Reset 
+	watchpoint after noting trigger.
+	(Running.handleTrappedEvent): Ditto.
+
 2008-04-07  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxPtraceTaskState.java (Stepping.handleTrappedEvent):
