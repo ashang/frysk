@@ -1,3 +1,7 @@
+2008-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SymbolObjectDeclaration.java: New class.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* PLTEntry.java: New file.

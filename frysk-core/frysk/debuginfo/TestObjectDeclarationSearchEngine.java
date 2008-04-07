@@ -43,11 +43,11 @@ import java.io.File;
 
 import frysk.config.Config;
 import frysk.proc.Task;
+import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
 import frysk.value.ObjectDeclaration;
-import frysk.scopes.Variable;
 
 /**
  * Tests @link CppVariableSearchEngine.
@@ -137,6 +137,16 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     }
     
     
+    public void testFindFirstElfSymbols(){
+	String variableName = "first"; 
+	String fileName = "funit-elf-symbols";
+	String valueString = "{12,34,56,78}";
+	
+	verifyVariableByValue(variableName, valueString, fileName);
+	
+    }
+    
+    
     /**
          * Runs the given executable until it sigfaults then searches for the
          * variable with the given name from that point. Then it verifies that
@@ -183,4 +193,47 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	
     }
 
+    /**
+     * This function should only be used when it is not possible to use
+     * verifyVariable, since it relies on the expression evaluation code
+     * and the type system.
+     * 
+     * Runs the given executable until it sigfaults then searches for the
+     * variable with the given name from that point. Then it verifies that
+     * variable has the expected value.
+     * 
+     * @param variableName
+     *                Name of the variable to search for.
+     * @param variableToken
+     *                a token string from the source file that is found on
+     *                the same line as the variable.
+     * @param fileName
+     *                name of the test file.
+     * @param execPath
+     *                path to the executable to be run.
+     */
+    private void verifyVariableByValue(String variableName,
+	    String valueString,
+	    String fileName){
+	
+	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
+	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+	assertNotNull("frame object created",  frame);
+	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getVariable(variableName);
+
+	assertNotNull("Variable found", objectDeclaration);
+	assertEquals("Correct name", variableName, objectDeclaration.getName() );
+	assertEquals("Variable value", valueString, objectDeclaration.getValue(frame).toPrint());
+	
+	//Negative test:
+	try {
+	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getVariable("NOT"+variableName);
+	    assertTrue("Exception was not thrown", false);
+	} catch (ObjectDeclarationNotFoundException e) {
+	    // exception was thrown
+	}
+	
+	
+}
 }

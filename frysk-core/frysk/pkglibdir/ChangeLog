@@ -1,3 +1,7 @@
+2008-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-elf-symbols.S: New test file.
+
 2008-04-07  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-loop-signal.c: New test.

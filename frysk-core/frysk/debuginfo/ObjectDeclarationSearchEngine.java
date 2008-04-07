@@ -49,6 +49,8 @@ import java.util.List;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflModule;
+import lib.dwfl.SymbolBuilder;
 import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
 import frysk.isa.registers.Register;
@@ -56,6 +58,7 @@ import frysk.isa.registers.Registers;
 import frysk.isa.registers.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
+import frysk.symtab.SymbolObjectDeclaration;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Value;
 
@@ -88,10 +91,50 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	    }
 	    scope = scope.getOuter();
 	}
+
+	return getObjectUsingBinaryInfo(name);
+    }
+
+    public ObjectDeclaration getObjectUsingBinaryInfo(String name){
+	Dwfl dwfl = DwflCache.getDwfl(task);
+
+	DwflModule module = dwfl.getModule(this.frame.getAdjustedAddress());
+	
+	if(module == null){
+	    throw new RuntimeException("Module could not be found for this process");
+	}
+	final String objectName = name;
+	
+	class Builder implements SymbolBuilder {
+	    ObjectDeclaration objectDeclaration = null;
+	    
+	    public void symbol(String name, long value, long size,
+			       lib.dwfl.ElfSymbolType type,
+			       lib.dwfl.ElfSymbolBinding bind,
+			       lib.dwfl.ElfSymbolVisibility visibility)
+	    {
+		if(name.equals(objectName)){
+		    objectDeclaration =  new SymbolObjectDeclaration(name, type, value, size);
+		}
+	    }
+	}
+	Builder builder = new Builder();
+
+	//Search module containing current pc first
+	module.getSymbolByName(name, builder);
+	if(builder.objectDeclaration != null ) return builder.objectDeclaration;
+	
+	//Still now found... now search all modules
+	//XXX: should this restrect to objects with global visibility ??
+	DwflModule[] modules = dwfl.getModules();
+	for (int i = 0; i < modules.length; i++){
+	    modules[i].getSymbolByName(name, builder);
+	    if(builder.objectDeclaration != null ) return builder.objectDeclaration;
+	}
 	
 	throw new ObjectDeclarationNotFoundException(name);
     }
-
+    
     public Value getValue(String s) {
 	if (s.charAt(0) == '$') {
 	    Registers regs = RegistersFactory.getRegisters(frame.getTask()
@@ -110,21 +153,6 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	return objectDeclaration.getValue(frame);
     }
 
-    public ByteOrder order()
-    {
-	return task.getISA().order();
-    }
-    
-    public ByteBuffer taskMemory()
-    {
-	return task.getMemory();
-    }
-    
-    public int getWordSize()
-    {
-	return task.getISA().wordSize();
-    }
-
     /**
      * XXX: Who knows if this works; it is certainly not implemented
      * correctly as it should use the ObjectDeclaration.
@@ -141,4 +169,22 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
             candidates.add(sNext);
         }
     }
+    
+    
+    public ByteOrder order()
+    {
+	return task.getISA().order();
+    }
+    
+    public ByteBuffer taskMemory()
+    {
+	return task.getMemory();
+    }
+    
+    public int getWordSize()
+    {
+	return task.getISA().wordSize();
+    }
+    
+    
 }
