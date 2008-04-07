@@ -1,3 +1,7 @@
+2008-04-07  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-loop-signal.c: New test.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-asm.S: Update to match frysk-asm.h's STORE_WORD.

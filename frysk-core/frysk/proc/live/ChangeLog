@@ -1,3 +1,9 @@
+2008-04-07  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxPtraceTaskState.java (Stepping.handleTrappedEvent):
+	Explicitly notify Instruction observers in special
+	"no step bit set" cases.
+
 2008-04-04  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceProc.java (LinuxPtraceProc): Instatiate watchpoint

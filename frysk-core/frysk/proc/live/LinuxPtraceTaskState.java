@@ -1152,12 +1152,16 @@ abstract class LinuxPtraceTaskState extends State {
 		    // trapping instruction) that we should ignore (this
 		    // would be nice to use to support syscall tracking
 		    // during stepping, but it doesn't happen on all
-		    // architectures).
+		    // architectures). In all these cases a step is actually
+		    // made so we should notify any instruction observers.
 		    if ((task.sigSendXXX != Signal.NONE
 			 || task.syscallSigretXXX
 			 || isa.hasExecutedSpuriousTrap(task)))
+		      if (task.notifyInstruction() > 0)
+			return blockedContinue();
+		      else
 			return sendContinue(task, Signal.NONE);
-	      
+
 		    // Deliver the real Trap event to the Task.  This is
 		    // somewhat weird, we are either stepping a trapping
 		    // instruction (breakpoint) that we didn't install, or
