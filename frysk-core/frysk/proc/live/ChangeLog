@@ -1,3 +1,11 @@
+2008-04-08  Phil Muldoon  <pmuldoon@redhat.com>
+	    Mark Wielaard  <mwielaard@redhat.com>
+			
+	* LinuxPtraceTaskState.java (Running.checkWatchpoint): New.
+	(Running.handleTrappedEvent): Rewrite sequence to accumulate
+	blockers for all sigtrap events, then return.
+	(Stepping.handleTrappedEvent): Ditto.
+	
 2008-04-07  Stan Cox  <scox@redhat.com>
 
 	* LinuxPtraceHost.java (requestCreateAttachedProc): Add libs parameter.
