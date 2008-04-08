@@ -94,64 +94,14 @@ manpages manpages/index.html:
 # Generate JAVADOC documentation.
 JAVADOC = javadoc
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
+CLEANFILES += javadoc
 .PHONY: javadoc
-javadoc: all
-	for scope in public private ; do \
-		rm -rf javadoc/$$scope javadoc/source/$$scope ; \
-		mkdir -p javadoc/$$scope ; \
-		mkdir -p javadoc/source/$$scope ; \
-		for path in $(SOURCEDIRS) ; do \
-			test -d $$path || continue ; \
-			d=`dirname $$path` ; \
-			b=`basename $$path` ; \
-			echo "Copying $$d : $$b" ; \
-			( \
-				cd $$d ; \
-				find $$b \
-				-path '*/*dir/*' -prune \
-				-path '*/*tmp/*' -prune \
-				-o -name '[A-Za-z]*\.java' -print \
-				-o -name 'package.html' -print \
-				-o -path '*/doc-files/*.jpg' -print \
-				| tar cfT - - ; \
-			) | ( \
-				cd javadoc/source/$$scope ; \
-				tar xpf - ; \
-			) \
-		done ; \
-		case $$scope in \
-			public ) find javadoc/source/$$scope \
-				-name 'Test[A-Z]*' -print \
-				-o -name 'Stress[A-Z]*' -print \
-				| xargs rm \
-				;; \
-		esac ; \
-		jg=http://developer.gnome.org/doc/API/java-gnome ; \
-		CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
-			$(JAVADOC) \
-			-$$scope \
-			-link http://developer.classpath.org/doc/ \
-			-link $${jg}/glib-java-0.4.0/api/ \
-			-link $${jg}/cairo-java-1.0.6/api/ \
-			-link $${jg}/libgtk-java-2.10.0/api/ \
-			-link $${jg}/libglade-java-2.12.7/api/ \
-			-link $${jg}/libgnome-java-2.12.6/api/ \
-			-link $${jg}/libgconf-java-2.12.5/api/ \
-			-link $${jg}/libvte-java-0.12.2/api/ \
-			-overview $(srcdir)/overview.html \
-			-source 1.4 \
-			-d javadoc/$$scope \
-			-use \
-			-linksource \
-			-doctitle '<em>frysk</em> - Execution Analysis And Debugging Technology' \
-			-windowtitle 'FRYSK' \
-			-group "<em>frysk</em> Packages" 'frysk*' \
-			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
-			-group "Native Bindings" 'lib*' \
-			-sourcepath javadoc/source/$$scope \
-			-subpackages frysk:lib:inua:jline:junit:gnu \
-		; \
-	done
+javadoc javadoc/private/index.html:
+	CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
+	sh $(srcdir)/frysk-common/javadocs.sh \
+		$(JAVADOC) \
+		$(srcdir)/overview.html \
+		$(SOURCEDIRS)
 
 UPLOAD_FLAGS =	--fuzzy \
 		--delete-during \
@@ -185,11 +135,10 @@ UPLOAD = echo "Don't worry too much about directory permission warnings" ; \
 	 rsync $(UPLOAD_FLAGS)
 
 .PHONY: upload-javadoc
-upload-javadoc:
+upload-javadoc: javadoc/private/index.html
 	$(UPLOAD) \
 		javadoc/public javadoc/private \
 		sourceware.org:/sourceware/www/sourceware/htdocs/frysk/javadoc
-CLEANFILES += javadoc
 
 .PHONY: upload-manpages
 upload-manpages: manpages/index.html

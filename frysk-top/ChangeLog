@@ -1,3 +1,7 @@
+2008-04-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (javadoc): Use frysk-common/javadocs.sh.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk-common/frysk.7): Fix typo; $<, not $@.tmp.
