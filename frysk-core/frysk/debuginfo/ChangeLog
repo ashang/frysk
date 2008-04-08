@@ -1,3 +1,9 @@
+2008-04-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java: moved getSymbolDie(String input)
+	from DebugInfo to ObjectDeclarationSearchEngine.
+	* DebugInfo.java: Ditto.
+
 2008-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java: Now searches binary (elf) symbol table.

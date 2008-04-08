@@ -39,7 +39,16 @@
 
 package frysk.hpd;
 
-import frysk.debuginfo.DebugInfo;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import lib.dwfl.DwarfDie;
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.DebugInfoStackFactory;
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -48,12 +57,6 @@ import frysk.rt.FunctionBreakpoint;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import lib.dwfl.DwarfDie;
-import java.util.List;
 
 class BreakpointCommand extends ParameterizedCommand {
 
@@ -138,11 +141,13 @@ class BreakpointCommand extends ParameterizedCommand {
 	} else {
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-		DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-		if (debugInfo != null) {
+		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+		
+		if (declarationSearchEngine != null) {
 		    DwarfDie die;
 		    try {
-			die = debugInfo.getSymbolDie(breakpt);
+			die = declarationSearchEngine.getSymbolDie(breakpt);
 		    } catch (RuntimeException e) {
 			// Symbol not yet visible.
 			die = null;

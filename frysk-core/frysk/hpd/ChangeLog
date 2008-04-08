@@ -1,3 +1,9 @@
+2008-04-08  Sami Wagiaalla  <swagiaal@redhat.com> 
+	
+	moved getSymbolDie(String input) from DebugInfo to ObjectDeclarationSearchEngine
+	* ListCommand.java: Updated.
+	* BreakpointCommand.java: Updated
+
 2008-04-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* KillCommand.java: Add ability to use HPD notation.

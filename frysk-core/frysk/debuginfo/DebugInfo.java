@@ -76,17 +76,6 @@ public class DebugInfo {
     }
 
     /**
-     * Get the DwarfDie for a function symbol
-     */
-    public DwarfDie getSymbolDie(String input) {
-	DwarfDie result = DwarfDie.getDecl(dwarf, input);
-	if (result == null)
-	    throw new RuntimeException("symbol " + input + " not found.");
-	else
-	    return result;
-    }
- 
-    /**
      * Implement the cli what request
      * 
      * @param sInput

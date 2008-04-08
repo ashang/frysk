@@ -52,7 +52,7 @@ import lib.dwfl.DwarfDie;
 import lib.dwfl.DwTag; 
 import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfo;
+import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.dwfl.DwflCache;
 import frysk.sysroot.SysRoot;
 import frysk.sysroot.SysRootCache;
@@ -210,9 +210,11 @@ class ListCommand extends ParameterizedCommand {
 	    return frame.getLine().getLine();
 	else {
 	    DwarfDie funcDie = null;
-	    DebugInfo debugInfo = cli.getTaskDebugInfo(task);
-	    if (debugInfo != null) {
-		funcDie = debugInfo
+	    
+	    ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+		
+	    if (declarationSearchEngine != null) {
+		funcDie = declarationSearchEngine
 		.getSymbolDie(cmdParm);
 	    }
 	    if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {

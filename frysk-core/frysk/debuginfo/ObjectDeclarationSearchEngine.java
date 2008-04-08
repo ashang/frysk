@@ -42,14 +42,19 @@ package frysk.debuginfo;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import lib.dwfl.Dwarf;
+import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
 import lib.dwfl.SymbolBuilder;
 import frysk.dwfl.DwflCache;
 import frysk.expr.ExprSymTab;
@@ -78,7 +83,27 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	this.frame = frame;
 	this.task = frame.getTask();
     }
-    
+
+    /**
+     * Get the DwarfDie for a function symbol
+     * XXX: this code has been moved here from DebugInfo
+     * should be modified to
+     * - use frysk search ({@link ObjectDeclarationSearchEngine})
+     * - handle # syntax
+     * - return ObjectDeclaration
+     * ...   
+     */
+    public DwarfDie getSymbolDie(String input) {
+	Elf elf = new Elf(new File(task.getProc().getExeFile().getSysRootedPath()), ElfCommand.ELF_C_READ);
+	Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+	
+	DwarfDie result = DwarfDie.getDecl(dwarf, input);
+	if (result == null)
+	    throw new RuntimeException("symbol " + input + " not found.");
+	else
+	    return result;
+    }
+ 
     public ObjectDeclaration getVariable(String name){
 	ObjectDeclaration declaredObject = null;
 	
