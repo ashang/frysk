@@ -75,7 +75,30 @@ available as both a research and development platform.</p>
 
 <h2>News</h2>
 
-<h3>Frysk 0.2.1 released</h3>
+<script type="text/javascript">
+  rssFile=document.implementation.createDocument("","",null);
+  rssFile.async=false;
+  rssFile.load("atom.xml");
+
+  document.write("<h3>"+ 
+    rssFile.getElementsByTagName("entry")[0]
+    .getElementsByTagName("title")[0].childNodes[0].nodeValue+
+    " by <i>" + 
+      rssFile.getElementsByTagName("entry")[0]
+      .getElementsByTagName("author")[0]
+      .getElementsByTagName("name")[0]
+      .childNodes[0].nodeValue
+      + "</i> " 
+    + "</h3>");
+  
+  document.write("<p>"+ 
+    rssFile.getElementsByTagName("entry")[0]
+    .getElementsByTagName("content")[0].childNodes[0].nodeValue+ "</p>");
+
+</script>
+<h2>Release</h2>
+
+<h3>0.2.1</h3>
 
 <p>We, that is, Adam Jocksch, Alexandre Oliva, Andrew Cagney, Carlos
 Eduardo Seo, Chris Moller, Diego Novillo, Elena Zannoni, Frank
