@@ -44,25 +44,33 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "funit-threads">
+ <!ENTITY volume "8">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="funit">
+<refentry>
 
   <refentryinfo>
-    <title>funit-threads</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit-threads</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>funit-threads</refname>
-    <refpurpose>Slave program for frysk's JUnit tests</refpurpose>
+    <refpurpose>
+      creates lots and lots of threads
+    </refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -77,8 +85,8 @@
       <arg choice="opt">
         <option>--loop</option>
       </arg>
-      <arg choice="req"> <!-- XXX: is "req" correct -->
-        <replaceable>tid</replaceable>
+      <arg choice="req">
+        <replaceable>pid</replaceable>
       </arg>
       <arg choice="req">
         <replaceable>signal</replaceable>
@@ -100,7 +108,8 @@
     <variablelist>
       <varlistentry>
 	<term><option>--clone</option></term>
-	<listitem><para>Each thread will repeatedly clone itself (default).</para></listitem>
+	<listitem><para>Each thread will repeatedly clone itself
+	(default).</para></listitem>
       </varlistentry>
     </variablelist>
 
@@ -121,22 +130,27 @@
 
     <variablelist>
       <varlistentry>
-	<term><replaceable>tid</replaceable></term>
-	<listitem><para>Thread ID to send <replaceable>signal</replaceable> to once all threads have been created.</para></listitem>
+	<term><replaceable>pid</replaceable></term>
+	<listitem><para>Thread ID to
+	send <replaceable>signal</replaceable> to once all threads
+	have been created.</para></listitem>
       </varlistentry>
     </variablelist>
 
     <variablelist>
       <varlistentry>
 	<term><replaceable>signal</replaceable></term>
-	<listitem><para>The signal to send to <replaceable>tid</replaceable> once all threads have been started.</para></listitem>
+	<listitem><para>The signal to send
+	to <replaceable>tid</replaceable> once all threads have been
+	started.</para></listitem>
       </varlistentry>
     </variablelist>
 
     <variablelist>
       <varlistentry>
 	<term><replaceable>seconds</replaceable></term>
-	<listitem><para>Number of seconds to wait before the program exits.</para></listitem>
+	<listitem><para>Number of seconds to wait before the program
+	exits.</para></listitem>
       </varlistentry>
     </variablelist>
 
@@ -149,78 +163,19 @@
 
   </refsect1>
   
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>EXAMPLE</title>
     <screen>@pkglib32dir@/funit-threads</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-    <variablelist>
-      <varlistentry>
-	<term>An error message.</term>
-	<listitem>
-          <para> This error can appear when Funit is terminated
-          abruptly (as during a loss of power).  Typically you need to
-          manually open the perspectives and views that you want.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7) funit(8)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk"/></para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>

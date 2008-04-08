@@ -44,26 +44,33 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fparser">
+ <!ENTITY volume "8">
+ ]
+>
 
 <refentry id="fparser">
 
   <refentryinfo>
-    <title>fparser</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>fparser</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>fparser</refname>
-    <refpurpose>runs the frysk standalone source code parser
-                utility</refpurpose>
+    <refpurpose>
+      parse source code marking it up with XML
+    </refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -84,17 +91,20 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fparser</function> Executes the frysk standalone source code parser utility.</para>
-
-    <para>fparser is a utility that will parse the source files listed in the header of an executable.
-                  It is used to test the internal parser for the frysk source window. </para>
+    <para>
+      <function>fparser</function> is a utility that will parse the
+      source files listed in the header of an executable.  It is used
+      to test the internal parser for the frysk source window.
+    </para>
 
     <variablelist>
       <varlistentry>
 	<term>-o <replaceable>[file to write DOM to]</replaceable></term>
 	<listitem>
-          <para> This allows a DOM to be output to an xml file that can be viewed/analyzed 
-          with an editor.</para>
+          <para>
+	    This allows a DOM to be output to an xml file that can be
+            viewed/analyzed with an editor.
+	  </para>
         </listitem>
       </varlistentry>
     <varlistentry>
@@ -106,68 +116,19 @@
     </variablelist>
   </refsect1>
   
-  <!-- refsect1>
-    <title>EXIT STATUS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>RETURN VALUES</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ENVIRONMENT</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>FILES</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>EXAMPLE</title>
     <screen>fparser /home/foo/bar</screen>
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-      <para></para>   
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>

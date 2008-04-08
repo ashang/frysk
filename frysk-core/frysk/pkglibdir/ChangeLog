@@ -1,3 +1,11 @@
+2008-04-08  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-threads.xml-in: Add version information.
+	* fparser.xml-in: Ditto.
+	* funit-exec.xml-in: Ditto.
+	* funit-exit.xml-in: Ditto.
+	* funit-slave.xml-in: Ditto.
+
 2008-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-elf-symbols.S: New test file.

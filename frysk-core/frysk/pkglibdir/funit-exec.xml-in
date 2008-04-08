@@ -44,25 +44,33 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "funit-exec">
+ <!ENTITY volume "8">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="funit">
+<refentry>
 
   <refentryinfo>
-    <title>funit-exec</title>
-    <date>March 14 2008</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit-exec</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>
     <refname>funit-exec</refname>
-    <refpurpose>Slave program for frysk's JUnit tests</refpurpose>
+    <refpurpose>
+      on CNTRL-C exec the specified program
+    </refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -72,7 +80,10 @@
         <option><replaceable>OPTION</replaceable></option>
       </arg>
       <arg choice="req">
-        <replaceable>PROGRAM-ARGS</replaceable>
+        <replaceable>program</replaceable>
+      </arg>
+      <arg rep="repeat" choice="opt">
+	<replaceable>arg</replaceable>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -80,57 +91,101 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para>Wait for a SIGINT (cntrl-c) signal and then exec
-    <replaceable>PROGRAM-ARGS</replaceable>, the first parameter being
-    the executable and the remainder being arguments.  Sending a
-    SIGUSR1 signal will cause a random non-main thread to make the
-    exec call.</para>
+    <para>
+      Wait for a SIGINT (cntrl-c) signal and then exec
+      <replaceable>program</replaceable> passing
+      it <replaceable>args</replaceable>.
+    </para>
+
+    <para>
+      Sending a SIGUSR1 signal will cause a random non-main thread to
+      make the exec call.
+    </para>
 
     <variablelist>
 
       <varlistentry>
-	<term> <option>-m <replaceable>PID</replaceable>
-	</option> </term> <listitem><para>The PID of the master
-	process that should be sent a signal once this program is
-	running (default 0).</para> </listitem>
-      </varlistentry>
-
-      <varlistentry>
-	<term> <option>-s <replaceable>SIGNAL</replaceable>
-	</option> </term> <listitem> <para>The SIGNAL to send to the
-	master process once this program is running (default
-	0).</para> </listitem>
-      </varlistentry>
-
-      <varlistentry>
-	<term> <option>-t <replaceable>TIMEOUT</replaceable> </option>
-	</term> <listitem> <para>Exit after TIMEOUT seconds exit</para>
+	<term>
+	  <option>-m <replaceable>pid</replaceable></option>
+	</term>
+	<listitem>
+	  <para>
+	    The <replaceable>pid</replaceable> of the master process
+	    that should be sent a signal once this program is running
+	    (default 0).
+	  </para>
 	</listitem>
       </varlistentry>
 
       <varlistentry>
-	<term> <option>-c <replaceable>COUNT</replaceable> </option>
-	</term> <listitem> <para>Create COUNT threads before sending
-	the master TIMEOUT seconds exit</para> </listitem>
+	<term>
+	  <option>-s <replaceable>signal</replaceable></option>
+	</term>
+	<listitem>
+	  <para>
+	    The <replaceable>signal</replaceable> to send to the
+	    master process once this program is running (default
+	    0).
+	  </para>
+	</listitem>
       </varlistentry>
 
       <varlistentry>
-	<term> <option>-e <replaceable>EXECUTABLE</replaceable>
-	</option> </term> <listitem> <para>The EXECUTABLE to exec
-	(default is the first PROGRAM-ARGS parameter).</para>
+	<term>
+	  <option>-t <replaceable>timeout</replaceable></option>
+	</term>
+	<listitem>
+	  <para>
+	    Exit after <replaceable>timeout</replaceable> seconds.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <option>-c <replaceable>count</replaceable></option>
+	</term>
+	<listitem>
+	  <para>
+	    Create <replaceable>count</replaceable> threads.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <option>-e <replaceable>executable</replaceable></option>
+	</term>
+	<listitem>
+	  <para>
+	    The <replaceable>executable</replaceable> to exec (default
+	    is the <replaceable>program</replaceable>).
+	  </para>
 	</listitem>
       </varlistentry>
 
        <varlistentry>
-	<term> <option>-b</option> </term> <listitem> <para>Brand the
-	exec with the thread that initiated it by setting argv[0] to
-	the string TID:PID.</para> </listitem>
+	<term>
+	  <option>-b</option>
+	</term>
+	<listitem>
+	  <para>
+	    Brand the exec with the thread that initiated it by
+	    setting argv[0] to the string TID:PID.
+	  </para>
+	</listitem>
       </varlistentry>
 
       <varlistentry>
-	<term><replaceable>PROGRAM-ARGS</replaceable></term>
-	<listitem><para>The program and arguments to pass to the exec
-	call.</para></listitem> </varlistentry>
+	<term>
+	  <replaceable>program</replaceable> <replaceable>arg</replaceable>...
+	</term>
+	<listitem>
+	  <para>
+	    The program and arguments to pass to the exec call.
+	  </para>
+	</listitem>
+      </varlistentry>
 
     </variablelist>
 
@@ -161,54 +216,15 @@
 </screen>
 
   </refsect1>
-   
-  <!-- refsect1>
-    <title>DIAGNOSTICS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>ERRORS</title>
-    <variablelist>
-      <varlistentry>
-	<term>An error message.</term>
-	<listitem>
-          <para> This error can appear when Funit is terminated
-          abruptly (as during a loss of power).  Typically you need to
-          manually open the perspectives and views that you want.
-          </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </refsect1 -->    
 
   <refsect1>
     <title>SEE ALSO</title>
     <para>frysk(7) funit(8)</para>
   </refsect1>
   
-  <!-- refsect1>
-    <title>STANDARDS</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>HISTORY</title>
-    <para></para>
-  </refsect1 -->
-  
-  <!-- refsect1>
-    <title>AUTHORS</title>
-    <para></para>
-  </refsect1 -->
-  
   <refsect1>
     <title>BUGS</title>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/frysk"/></para>
   </refsect1>
-  
-  <!-- refsect1>
-    <title>SECURITY CONSIDERATIONS</title>
-  </refsect1 -->
 
 </refentry>
