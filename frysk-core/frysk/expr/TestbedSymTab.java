@@ -95,7 +95,7 @@ class TestbedSymTab implements ExprSymTab {
     /**
      * Lookup S, assuming S is a variable.
      */
-    public ObjectDeclaration getVariable(String s) {
+    public ObjectDeclaration getObjectInScope(String s) {
 	throw new RuntimeException("no variables");
     }
     /**

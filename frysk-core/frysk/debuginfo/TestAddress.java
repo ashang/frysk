@@ -83,7 +83,7 @@ public class TestAddress
 	
 	/* Evaluate the location of the variable.
 	 */ 
-	Variable var = (Variable) declarationSearchEngine.getVariable(variable);
+	Variable var = (Variable) declarationSearchEngine.getObjectInScope(variable);
 	DwarfDie varDie = var.getVariableDie();
 	List ops = varDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExpr = new LocationExpression(varDie);
@@ -92,7 +92,7 @@ public class TestAddress
 
 	 /* Get the value of the address.
 	 */
-	Variable addr = (Variable) declarationSearchEngine.getVariable(address);
+	Variable addr = (Variable) declarationSearchEngine.getObjectInScope(address);
 	DwarfDie addrDie = addr.getVariableDie();
 	List opsAddr = addrDie.getFormData(frame.getAdjustedAddress());
 	LocationExpression locExprAddr = new LocationExpression(

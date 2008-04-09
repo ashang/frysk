@@ -1,3 +1,11 @@
+2008-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Renamed ObjectDeclarationSearchEngine.getVariable to 
+	getObjectInScope.
+	* TestbedSymTab.java: Updated. 
+	* ScratchSymTab.java: Updated.
+	* ExprSymTab.java: Updated.
+
 2008-04-04  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* ExprSymTab.java: Removed getValue().

@@ -56,7 +56,7 @@ public interface ExprSymTab
     /**
      * Lookup S, assuming S is a variable.
      */
-    ObjectDeclaration getVariable(String s);
+    ObjectDeclaration getObjectInScope(String s);
     /**
      * The byte order to use when creating new values.
      */

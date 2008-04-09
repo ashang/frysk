@@ -68,7 +68,7 @@ public class TestGccClass extends TestCase {
 	log.log(this, "Got search engine: ", objectDeclarationSearchEngine);
 
 	Variable variable = (Variable) objectDeclarationSearchEngine
-		.getVariable(variableName);
+		.getObjectInScope(variableName);
 
 	assertNotNull("Variable found", variable);
 	
