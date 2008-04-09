@@ -1,3 +1,8 @@
+2008-04-09  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxPtraceTaskState.java (Running.handleExecedEvent): Mark
+	Task as justStarted.
+
 2008-04-08  Phil Muldoon  <pmuldoon@redhat.com>
 	    Mark Wielaard  <mwielaard@redhat.com>
 			
