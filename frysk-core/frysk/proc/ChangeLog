@@ -1,3 +1,10 @@
+2008-04-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestTaskObserverWatchpoint.java: New.
+	(testSteppingInstructionAndWatchpoint): New test.
+	(testRunningAndWatchpoint): Moved and rewritten
+	from -> isa/watchpoints/TestWatchpoint. testWatchpointTrigger.
+
 2008-04-07  Stan Cox  <scox@redhat.com>
 
 	* Host.java (requestCreateAttachedProc): Add libs parameter.  Change 

@@ -51,92 +51,13 @@ import lib.dwfl.ElfSymbolVisibility;
 import lib.dwfl.SymbolBuilder;
 import frysk.config.Config;
 import frysk.dwfl.DwflCache;
-import frysk.isa.signals.Signal;
-import frysk.proc.Action;
-import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
 
 public class TestWatchpoint extends TestLib {
-  
-
-    public void testWatchpointTrigger () {
-	if (unresolvedOnPPC(5991)) 
-	    return;
-	
-	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
-	assertNotNull(ackProc);
-	
-	Proc proc = ackProc.getMainTask().getProc();
-	Task task = proc.getMainTask();
-	long address = getGlobalSymbolAddress(task,"source");
-	
-	WatchpointObserver wpo = new WatchpointObserver(address,4);
-	task.requestAddWatchObserver(wpo, address, 4, true);
-	assertRunUntilStop("Add Observer");
-	TerminatedObserver terminated = new TerminatedObserver();
-	task.requestAddTerminatedObserver(terminated);
-	assertRunUntilStop("Add Observer");
-	ackProc.requestUnblock();
-	assertRunUntilStop("Test");
-    }
-
-    static class WatchpointObserver 
-    	implements TaskObserver.Watch
-    {
-
-	long address;
-	int length;
-	
-	WatchpointObserver(long address, int length) {
-	    this.address = address;
-	    this.length = length;
-	    
-	}
-	public Action updateHit(Task task, long address, int length) {
-	    assertEquals("Triggered watchpoint address matches expected", this.address, address);
-	    assertEquals("Triggered watchpoint length matches expected", this.length, length);
-	    return Action.CONTINUE;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    fail("TaskOberer.Watch failed to be added to te task");
-	}
-
-	public void addedTo(Object observable) {
-	    Manager.eventLoop.requestStop();
-	}
-
-	public void deletedFrom(Object observable) {
-	}
-
-    }
-
-    static class TerminatedObserver 
-    	implements TaskObserver.Terminated
-    {
-
-	public void addFailed(Object observable, Throwable w) {
-	}
-
-	public void addedTo(Object observable) {
-	    Manager.eventLoop.requestStop();
-	}
-
-	public void deletedFrom(Object observable) {
-	}
-
-	public Action updateTerminated(Task task, Signal signal, int value) {
-	    Manager.eventLoop.requestStop();
-	    return Action.CONTINUE;
-	}
-
-    }
-
+ 
     public void testWatchFourBytesBitPattern() {
 	// Test Four byte bit pattern in a cumulative fasion
 	// across all WP registers. Assume global exact and 
