@@ -5,6 +5,10 @@
 	(testRunningAndWatchpoint): Moved and rewritten
 	from -> isa/watchpoints/TestWatchpoint. testWatchpointTrigger.
 
+2008-04-09  Mark Wielaard  <mwielaard@redhat.com>
+	* TestTaskObserverInstruction (testFirstInstructionAtEntry):
+	New test.
+
 2008-04-07  Stan Cox  <scox@redhat.com>
 
 	* Host.java (requestCreateAttachedProc): Add libs parameter.  Change 

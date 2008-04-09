@@ -43,6 +43,9 @@ import frysk.testbed.TestLib;
 import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
 
+import frysk.testbed.DaemonBlockedAtEntry;
+import frysk.config.Config;
+
 public class TestTaskObserverInstruction extends TestLib
 {
   public void testInstruction()
@@ -134,6 +137,30 @@ public class TestTaskObserverInstruction extends TestLib
     sao.task.requestDeleteAttachedObserver(sao);
     assertRunUntilStop("DeleteAttachedObserver and wait for step");
     assertTrue("InstructionObserver hit", instr.hit == 2);
+  }
+
+  /**
+   * Tests stepping the very first instruction (actualy the start of the
+   * dynamic loader which is going to load the actual program). This is
+   * a nasty corner case since this isn't a "real step" but actually the
+   * kernel adjusting the task so that it will start running.
+   */
+  public void testFirstInstructionAtEntry()
+  {
+    DaemonBlockedAtEntry daemon;
+    daemon = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-child"));
+    Task task = daemon.getMainTask();
+
+    InstructionObserver instr = new InstructionObserver();
+    task.requestAddInstructionObserver(instr);
+    assertRunUntilStop("add InstructionObserver");
+    assertTrue("InstructionObserver added", instr.added);
+    assertTrue("InstructionObserver hit", instr.hit == 1);
+
+    daemon.requestUnblock();
+    task.requestUnblock(instr);
+    assertRunUntilStop("step first instruction");
+    assertTrue("InstructionObserver hit again", instr.hit == 2);
   }
 
   private class StepAttachedObserver implements TaskAttachedObserverXXX

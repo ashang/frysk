@@ -891,6 +891,10 @@ abstract class LinuxPtraceTaskState extends State {
 		((TaskObservation) i.next()).delete();
 	    }
 
+	    // Mark this LinuxPtraceTask as just started.  See
+	    // Running.handleTrapped for more explanation.
+	    task.justStartedXXX = true;
+
 	    if (task.notifyExeced() > 0) {
 		return (task.syscallObservers.numberOfObservers() > 0
 			? syscallBlockedInSyscallContinue
