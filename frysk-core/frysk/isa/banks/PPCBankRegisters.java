@@ -56,8 +56,8 @@ public class PPCBankRegisters {
 
     public static final BankArrayRegisterMap PPC64BE
 	= new BankArrayRegisterMap()
-	.add(2, LinuxPPCRegisterBanks.GREGS64)
-	.add(3, LinuxPPCRegisterBanks.FPREGS64)
+	.add(0, LinuxPPCRegisterBanks.GREGS64)
+	.add(1, LinuxPPCRegisterBanks.FPREGS64)
 	;
 
     public static final BankArrayRegisterMap PPC32BE_ON_PPC64BE

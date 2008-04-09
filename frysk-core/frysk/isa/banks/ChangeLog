@@ -1,3 +1,8 @@
+2008-04-09  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* PPCBankRegisters.java (PPC64BE): Fix bank indexes for GREGS64
+	and FPREGS64.
+
 2008-01-24  Andrew Cagney  <cagney@redhat.com>
 
 	* BankArrayRegister.java: Update; Register moved to
