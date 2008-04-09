@@ -54,21 +54,22 @@ public class TestSysRoot extends TestLib {
 
     public void testHaveSysRoot() {
 	File testSysRootDir = Config.getPkgLibFile("test-sysroot");
-	File testPath = Config.getPkgLibFile("funit-addresses");
+	File testPath = Config.getPkgLibFile("funit-quicksort");
 	e.sendCommandExpectPrompt("load "  
-		+ testSysRootDir.getAbsolutePath() + "/usr/bin/" + testPath.getName()
+		+ testPath.getName()
 		+ " -sysroot " + testSysRootDir.getAbsolutePath(), 
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
-        e.send("go\n");
-        e.expect("go.*\n" + prompt + "Breakpoint");
-	e.sendCommandExpectPrompt("list",".*int main.int argc, char. argv.*");
-	e.sendCommandExpectPrompt("step", ".*stopped.*");
-	e.sendCommandExpectPrompt("step", ".*stopped.*");
-	e.sendCommandExpectPrompt("step", ".*stopped.*");
-	e.sendCommandExpectPrompt("print static_int", ".*22.*");
-	e.sendCommandExpectPrompt("print volatile_int", ".*33.*");
+	        e.send("go\n");
+        e.expect("go.*\n" + prompt + "Breakpoint.*");
+	e.sendCommandExpectPrompt("list",".*84.*84.*85.*85.*");
+	e.sendCommandExpectPrompt("next","Task stopped at line.*");
+	e.sendCommandExpectPrompt("next","Task stopped at line.*");
+	e.sendCommandExpectPrompt("next","Task stopped at line.*");
+	e.sendCommandExpectPrompt("print littlest", "-49.*");
+	e.sendCommandExpectPrompt("print biggest", "49.*");
+	e.sendCommandExpectPrompt("go", ".*Running.*");
 	e.send("quit");
 	e.close();
     }

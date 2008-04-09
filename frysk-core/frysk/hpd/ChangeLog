@@ -1,6 +1,12 @@
+2008-04-08  Stan Cox  <scox@redhat.com>
+
+	* TestSysRoot.java (testHaveSysRoot): Use funit-quicksort instead of 
+	funit-addresses.
+
 2008-04-08  Sami Wagiaalla  <swagiaal@redhat.com> 
 	
-	moved getSymbolDie(String input) from DebugInfo to ObjectDeclarationSearchEngine
+	Moved getSymbolDie(String input) from DebugInfo to 
+	ObjectDeclarationSearchEngine.
 	* ListCommand.java: Updated.
 	* BreakpointCommand.java: Updated
 

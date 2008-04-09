@@ -231,19 +231,23 @@ frysk_pkglibdir_funit_quicksort_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-b
 
 # Create sysroot for TestSysRoot.java
 
-pkglib_PROGRAMS += frysk/pkglibdir/funit-addresses-stripped
-frysk_pkglibdir_funit_addresses_stripped_SOURCES =
-frysk/pkglibdir/funit-addresses-stripped: frysk/pkglibdir/funit-addresses
-	cp $< $@
-	mkdir -p frysk/pkglibdir/test-sysroot/usr/src/debug
-	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) \
-	   frysk/pkglibdir/test-sysroot/usr/src/debug
-	mkdir -p frysk/pkglibdir/test-sysroot/usr/bin
-	mkdir -p frysk/pkglibdir/test-sysroot/usr/lib/debug/usr/bin
-	(cd frysk/pkglibdir/test-sysroot/usr/src/debug; \
-	 gcc -g funit-addresses.c -o ../../bin/funit-addresses; \
-	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/test-sysroot) -d /  ../../bin/funit-addresses; \
-	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses)
+all-local: frysk/pkglibdir/test-sysroot frysk/pkglibdir/arch32/test-sysroot
+frysk/pkglibdir/test-sysroot: $(frysk_pkglibdir_funit_quicksort_SOURCES)
+	mkdir -p $@/usr/src/debug
+	cp $(abspath $(srcdir)/$(frysk_pkglibdir_funit_quicksort_SOURCES)) \
+	   $@/usr/src/debug
+	cp $(abspath $(srcdir)/$(frysk_pkglibdir_funit_bubblesort_SOURCES)) \
+	   $@/usr/src/debug
+	mkdir -p $@/usr/bin
+	mkdir -p $@/usr/lib/debug/usr/bin
+	mkdir -p $@/usr/lib/debug/usr/lib
+	(cd $@/usr/src/debug; \
+	 $(COMPILE) funit-bubblesort.c -fpic -shared -o ../../lib/libbubble.so -g; \
+	 $(COMPILE) funit-quicksort.c -L ../../lib -lbubble  -g -o ../../bin/funit-quicksort -DNO_MAIN)
+	/usr/lib/rpm/debugedit -b $(abspath $@) -d / $@/usr/bin/funit-quicksort
+	/usr/lib/rpm/debugedit -b $(abspath $@) -d / $@/usr/lib/libbubble.so
+	eu-strip --remove-comment -f $@/usr/lib/debug/usr/bin/funit-quicksort.debug $@/usr/bin/funit-quicksort; \
+	eu-strip --remove-comment -f $@/usr/lib/debug/usr/lib/funit-bubblesort.debug $@/usr/lib/libbubble.so; 
 
 install-exec-local: install-sysroot-local
 uninstall-local: uninstall-sysroot-local
@@ -273,19 +277,22 @@ frysk/pkglibdir/arch32/funit-symbols-stripped: frysk/pkglibdir/arch32/funit-symb
 
 frysk_pkglibdir_arch32_funit_quicksort_LINK += $(srcdir)/frysk/pkglibdir/funit-bubblesort.c -DNO_MAIN
 
-pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-addresses-stripped
-frysk_pkglibdir_arch32_funit_addresses_stripped_SOURCES =
-frysk/pkglibdir/arch32/funit-addresses-stripped: frysk/pkglibdir/arch32/funit-addresses
-	cp $< $@
-	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/src/debug
-	cp $(abspath $(srcdir)/frysk/pkglibdir/funit-addresses.c) \
-	   frysk/pkglibdir/arch32/test-sysroot/usr/src/debug
-	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/bin
-	mkdir -p frysk/pkglibdir/arch32/test-sysroot/usr/lib/debug/usr/bin
-	(cd frysk/pkglibdir/arch32/test-sysroot/usr/src/debug; \
-	 gcc -g -m32 funit-addresses.c -o ../../bin/funit-addresses; \
-	 eu-strip --remove-comment -f ../../lib/debug/usr/bin/funit-addresses.debug ../../bin/funit-addresses; \
-	 /usr/lib/rpm/debugedit -b $(abspath frysk/pkglibdir/arch32/test-sysroot) -d / ../../lib/debug/usr/bin/funit-addresses.debug)
+frysk/pkglibdir/arch32/test-sysroot: $(frysk_pkglibdir_arch32_funit_quicksort_SOURCES)
+	mkdir -p $@/usr/src/debug
+	cp $(abspath $(srcdir)/$(frysk_pkglibdir_arch32_funit_quicksort_SOURCES)) \
+	   $@/usr/src/debug
+	cp $(abspath $(srcdir)/$(frysk_pkglibdir_arch32_funit_bubblesort_SOURCES)) \
+	   $@/usr/src/debug
+	mkdir -p $@/usr/bin
+	mkdir -p $@/usr/lib/debug/usr/bin
+	mkdir -p $@/usr/lib/debug/usr/lib
+	(cd $@/usr/src/debug; \
+	 $(ARCH32_COMPILE) funit-bubblesort.c -fpic -shared -o ../../lib/libbubble.so -g; \
+	 $(ARCH32_COMPILE) funit-quicksort.c -L ../../lib -lbubble  -g -o ../../bin/funit-quicksort -DNO_MAIN)
+	/usr/lib/rpm/debugedit -b $(abspath $@) -d / $@/usr/bin/funit-quicksort
+	/usr/lib/rpm/debugedit -b $(abspath $@) -d / $@/usr/lib/libbubble.so
+	eu-strip --remove-comment -f $@/usr/lib/debug/usr/bin/funit-quicksort.debug $@/usr/bin/funit-quicksort; \
+	eu-strip --remove-comment -f $@/usr/lib/debug/usr/lib/funit-bubblesort.debug $@/usr/lib/libbubble.so; 
 
 endif
 

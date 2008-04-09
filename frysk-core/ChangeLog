@@ -1,3 +1,10 @@
+2008-04-08  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (frysk/pkglibdir/funit-addresses-stripped): Remove.
+	(frysk/pkglibdir/test-sysroot): New.
+	(frysk/pkglibdir/arch32/funit-addresses-stripped): Remove.
+	(frysk/pkglibdir/arch32/test-sysroot): New.
+
 2008-03-16  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (TestTypeFactory.java): Rename from TestTypeEntry.java.
