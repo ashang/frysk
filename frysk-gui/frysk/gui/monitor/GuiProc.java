@@ -50,10 +50,7 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -66,7 +63,6 @@ public class GuiProc extends GuiCoreObjectWrapper{
 	public static final String PATH_NOT_FOUND = "*Could not retrieve path*";
 
 	private Proc proc;
-	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	private String executableName;
 	private String executablePath;
@@ -153,44 +149,42 @@ public class GuiProc extends GuiCoreObjectWrapper{
       }
     }
 	
-	/**
-	 * Returns wether this user owns this process
-	 * or not.
-     * Checks uid and gid.
-     * Checks if the given process is this frysk process if so
-     * returns false.
-     * Also checks that the user has acces to /pro/exe if not
-     * false is returned.
-     * Checks if this process is the init process, return false
-     * if so.
-	 * @return boolean; true of the user owns this
-	 * process, and can debug it false otherwise;
-	 */
-	public boolean isOwned(){
-	    boolean owned = false;
-	    if(this.getProc().getPid() == 1){
-		return false;
-	    }
-		try {
-			owned = (this.proc.getUID() == Manager.host.getSelf().getUID() ||
-					this.proc.getGID() == Manager.host.getSelf().getGID());
-                    
-            if (owned)
-              if (this.proc.getPid() == Manager.host.getSelf().getPid())
-                      owned = false;
-            
-            try{
-              proc.getExeFile().getSysRootedPath();
-            }catch(Exception e){
-              owned = false;
-              return owned;
-            }
-		} catch (Exception e) {
-			errorLog.log(Level.WARNING, "GuiProc.isOwned: Error checking host/proc ownership",e);
-		}
-		
-		return owned;
+    /**
+     * Returns wether this user owns this process or not.
+     * 
+     * - Checks uid and * gid.
+     * - Checks if the given process is this frysk process if so returns false.
+     * - Also checks that the user has acces to /pro/exe if not false is returned.
+     * - Checks if this process is the init process, return false if so.
+     * 
+     * @return boolean; true of the user owns this process, and can debug it
+     *         false otherwise;
+     */
+    public boolean isOwned() {
+	if (this.getProc().getPid() == 1) {
+	    return false;
 	}
+
+	if (this.proc.getPid() == Manager.host.getSelf().getPid()) {
+	    return false;
+	}
+
+	if (Manager.host.getSelf().getUID() == 0) {
+	    return true;
+	}
+
+	try {
+	    proc.getExeFile().getSysRootedPath();
+	} catch (Exception e) {
+	    return false;
+	}
+
+	if ((this.proc.getUID() == Manager.host.getSelf().getUID() || this.proc.getGID() == Manager.host.getSelf().getGID())) {
+	    return true;
+	}
+
+	return false;
+    }
 	
 	public String getFullExecutablePath(){
 	  this.setExecutablePath();
