@@ -39,7 +39,13 @@
 
 package frysk.scopes;
 
+import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.LocationExpression;
+import frysk.debuginfo.PieceLocation;
 import frysk.debuginfo.TypeFactory;
+import frysk.isa.ISA;
+import frysk.value.Type;
+import frysk.value.Value;
 import lib.dwfl.DwAt;
 import lib.dwfl.DwInl;
 import lib.dwfl.DwTag;
@@ -49,12 +55,16 @@ import lib.dwfl.DwarfDie;
  * In DWARF a subroutine is used to refer to an entity that can either be a
  * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
  */
-public class Subroutine extends Scope {
+public class Subroutine extends NamedScope {
 
     Composite struct;
+    Type type;
+    private LocationExpression locationExpression;
     
     public Subroutine(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
+	this.type = typeFactory.getType(die);
+	locationExpression = new LocationExpression(die);
     }
 
     /**
@@ -116,5 +126,19 @@ public class Subroutine extends Scope {
 	}
 
 	throw new RuntimeException("Unhandled case DwTag: " + dwTag + " inline attribute " + inlineAttribute);
+    }
+
+    public Type getType(ISA isa) {
+	return this.type;
+    }
+
+    public Value getValue(DebugInfoFrame frame) {
+	ISA isa = frame.getTask().getISA();
+	PieceLocation pieceLocation
+	    = new PieceLocation(locationExpression.decode(frame, this.getType(isa)
+							  .getSize()));
+	Value value = new Value(this.getType(isa), pieceLocation);
+	return value;
+
     }
 }

@@ -39,42 +39,28 @@
 
 package frysk.scopes;
 
-import java.io.File;
+import lib.dwfl.DwarfDie;
+import frysk.debuginfo.TypeFactory;
+import frysk.value.ObjectDeclaration;
 
 /**
- * The source-code line information.
+ * This class is a root for all scopes which can have a name
+ * and can there for be queried for.
+ * Eg:
+ * function
+ * class
+ * namespace
  */
-
-public class SourceLocation {
-
-    /**
-     * The LINE is unknown; this is used instead of "null" to denote
-     * missing line information.
-     */
-    public static final SourceLocation UNKNOWN = new SourceLocation(null, 0, 0);
-
-    private final File file;
-
-    private final int line;
-
-    private final int column;
-  
-    protected SourceLocation(File file, int line, int column) {
-	this.file = file;
-	this.line = line;
-	this.column = column;
-    }
-
-    public File getFile () {
-	return file;
-    }
+public abstract class NamedScope extends Scope implements ObjectDeclaration {
     
-    public int getLine () {
-	return line;
+    String name;
+    
+    public NamedScope(DwarfDie die, TypeFactory typeFactory) {
+	super(die, typeFactory);
+	this.name = die.getName();
     }
 
-    public int getColumn () {
-	return column;
+    public String getName(){
+	return this.name;
     }
-  
 }

@@ -40,7 +40,7 @@
 package frysk.scopes;
 
 import java.io.PrintWriter;
-import lib.dwfl.DwAttributeNotFoundException;
+
 import lib.dwfl.DwException;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
@@ -52,10 +52,10 @@ import frysk.debuginfo.VariableOptimizedOutException;
 import frysk.isa.ISA;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
+import frysk.value.Format;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.value.Format;
 
 /**
  * This class contains the static information corresponding to a
@@ -79,12 +79,7 @@ public class Variable implements ObjectDeclaration {
 	this.variableDie = variableDie;
 	this.name = variableDie.getName();
 	locationExpression = new LocationExpression(variableDie);
-	try{
-	    this.sourceLocation = new SourceLocation(variableDie.getDeclFile(),variableDie.getDeclLine(), variableDie.getDeclColumn());
-	}catch(DwAttributeNotFoundException e){
-	    this.sourceLocation = SourceLocation.UNKNOWN;
-	}
-	
+	sourceLocation = SourceLocationFactory.getSourceLocation(variableDie);
     }
     
     public DwarfDie getVariableDie() {

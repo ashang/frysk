@@ -64,11 +64,8 @@ public class Subprogram extends Subroutine
     FunctionType functionType;
     LinkedList parameters;
     
-    private String name;
-    
     public Subprogram(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
-	this.name = die.getName();
 
 	parameters = new LinkedList();
 	die = die.getChild();

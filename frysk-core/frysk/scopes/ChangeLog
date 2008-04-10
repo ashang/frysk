@@ -1,5 +1,14 @@
 2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* NamedScope.java: New class.
+	* Subroutine.java: implemented getType()
+	implemented getValue().
+	* Subprogram.java: Removed name initialization.
+	* Variable.java: Now uses SourceLocationFactory.
+	* SourceLocationFactory.java: New.
+
+2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	Changed ObjectDeclaration from abstract class to interface
 	* Variable.java: Updated.
 	

@@ -41,40 +41,40 @@ package frysk.scopes;
 
 import java.io.File;
 
-/**
- * The source-code line information.
- */
+import frysk.dwfl.DwflCache;
+import frysk.proc.Task;
+import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootCache;
+import lib.dwfl.DwAttributeNotFoundException;
+import lib.dwfl.DwarfDie;
+import lib.dwfl.Dwfl;
+import lib.dwfl.DwflLine;
 
-public class SourceLocation {
+public class SourceLocationFactory {
 
-    /**
-     * The LINE is unknown; this is used instead of "null" to denote
-     * missing line information.
-     */
-    public static final SourceLocation UNKNOWN = new SourceLocation(null, 0, 0);
-
-    private final File file;
-
-    private final int line;
-
-    private final int column;
-  
-    protected SourceLocation(File file, int line, int column) {
-	this.file = file;
-	this.line = line;
-	this.column = column;
-    }
-
-    public File getFile () {
-	return file;
+    public static SourceLocation getSourceLocation(DwarfDie variableDie){
+	SourceLocation sourceLocation;
+	try{
+	    sourceLocation = new SourceLocation(variableDie.getDeclFile(),variableDie.getDeclLine(), variableDie.getDeclColumn());
+	}catch(DwAttributeNotFoundException e){
+	    sourceLocation = SourceLocation.UNKNOWN;
+	}
+	return sourceLocation;
     }
     
-    public int getLine () {
-	return line;
+    public static SourceLocation getSourceLocation(Task task, long address){
+	Dwfl dwfl = DwflCache.getDwfl(task);
+	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(task));
+	DwflLine dwflLine = dwfl.getSourceLine(address);
+	if (dwflLine != null) {
+	    File f = sysRoot.getSourcePathViaSysRoot
+	    (new File(dwflLine.getCompilationDir()), 
+		    new File(dwflLine.getSourceFile())).getSysRootedFile();
+  		
+  		    
+  		return new SourceLocation(f, dwflLine.getLineNum(), dwflLine.getColumn());
+	    }
+        
+	return SourceLocation.UNKNOWN;
     }
-
-    public int getColumn () {
-	return column;
-    }
-  
 }

@@ -43,6 +43,7 @@ import frysk.isa.ISA;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 import frysk.scopes.SourceLocation;
+import frysk.scopes.SourceLocationFactory;
 import frysk.value.Access;
 import frysk.value.ArrayType;
 import frysk.value.CharType;
@@ -152,14 +153,8 @@ public class TypeFactory {
 
 	    }
 
-	    SourceLocation sourceLocation;
-	    try {
-		sourceLocation = new SourceLocation(member.getDeclFile(),
-			member.getDeclLine(), member.getDeclColumn());
-	    } catch (DwAttributeNotFoundException e) {
-		sourceLocation = SourceLocation.UNKNOWN;
-	    }
-
+	    SourceLocation sourceLocation = SourceLocationFactory.getSourceLocation(member);
+	    
 	    Access access = null;
 	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
 	    case DwAccess.PUBLIC_:
@@ -336,14 +331,8 @@ public class TypeFactory {
 		offset = 0; // union
 	    }
 
-	    SourceLocation lineColPair;
-	    try {
-		lineColPair = new SourceLocation(member.getDeclFile(), member
-			.getDeclLine(), member.getDeclColumn());
-	    } catch (DwAttributeNotFoundException e) {
-		lineColPair = SourceLocation.UNKNOWN;
-	    }
-
+	    SourceLocation lineColPair = SourceLocationFactory.getSourceLocation(member);
+	    
 	    Access access = null;
 	    switch (member.getAttrConstant(DwAt.ACCESSIBILITY)) {
 	    case DwAccess.PUBLIC_:

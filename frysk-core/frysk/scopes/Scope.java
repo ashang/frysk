@@ -81,11 +81,13 @@ public class Scope
     LinkedList collections;
     
     final TypeFactory typeFactory;
+    private final SourceLocation sourceLocation;
     
   public Scope(DwarfDie die, TypeFactory typeFactory){
       this.die = die;
       this.scopes = new LinkedList();
       this.typeFactory = typeFactory;
+      this.sourceLocation = SourceLocationFactory.getSourceLocation(die);
   }
   
   public Scope getOuter(){
@@ -126,6 +128,10 @@ public class Scope
       return variables;
   }
 
+  public SourceLocation getSourceLocation(){
+      return this.sourceLocation;
+  }
+  
   public LinkedList getEnums(){
       if(this.collections == null){
 	  this.collections = new LinkedList();

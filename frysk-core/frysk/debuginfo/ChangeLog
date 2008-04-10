@@ -1,3 +1,8 @@
+2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TypeFactory.java: Use SourceLocationFactory
+	* DebugInfoFrame.java: ditto.
+
 2008-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java: Renamed getVariable to 

@@ -39,25 +39,22 @@
 
 package frysk.debuginfo;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
-import lib.dwfl.DwflLine;
 import frysk.dwfl.DwflCache;
 import frysk.rt.LineXXX;
-import frysk.scopes.SourceLocation;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
+import frysk.scopes.SourceLocation;
+import frysk.scopes.SourceLocationFactory;
 import frysk.scopes.Subprogram;
 import frysk.scopes.Subroutine;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
-import frysk.sysroot.SysRoot;
-import frysk.sysroot.SysRootCache;
 
 public class DebugInfoFrame extends FrameDecorator {
 
@@ -169,24 +166,7 @@ public class DebugInfoFrame extends FrameDecorator {
      */
     public SourceLocation getLine() {
 	if (this.line == null) {
-	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-	    SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(this.getTask()));
-  	    // The innermost frame and frames which were
-  	    // interrupted during execution use their PC to get
-  	    // the line in source. All other frames have their PC
-  	    // set to the line after the inner frame call and must
-  	    // be decremented by one.
-  	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
-  	    if (dwflLine != null) {
-  		File f = sysRoot.getSourcePathViaSysRoot
-		  (new File(dwflLine.getCompilationDir()), 
-		   new File(dwflLine.getSourceFile())).getSysRootedFile();
-  		this.line = new SourceLocation(f, dwflLine.getLineNum(),
-				     dwflLine.getColumn());
-	    }
-	    // If the fetch failed, mark it as unknown.
-	    if (this.line == null)
-		this.line = SourceLocation.UNKNOWN;
+	    this.line = SourceLocationFactory.getSourceLocation(getTask(), getAdjustedAddress());
         }
 	return this.line;
     }
