@@ -64,8 +64,9 @@ public class ferror {
     private static Pattern writePattern;
     private static OptionGroup[] options() {
 	OptionGroup group = new OptionGroup("ferror options");
-	group.add(new Option('e', "--error",
-			     "error regex to catch in double quotes -e \"<error string>\"") {
+	group.add(new Option("error", 'e',
+			     "error regex to catch in double quotes",
+			     "<error string>") {
 		public void parsed(String argument) throws OptionException {
 		    writePattern = Pattern.compile(argument);
 		}  

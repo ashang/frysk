@@ -1,3 +1,7 @@
+2008-04-10  Mark Wielaard  <mwielaard@redhat.com>
+
+	* ferror.java (options): Use correct Options constructor.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.xml: Fix man page to reflect recent changes.
