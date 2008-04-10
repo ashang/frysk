@@ -58,6 +58,12 @@ extends TestLib
 
     private static final Log fine = Log.fine(TestTaskObserverWatchpoint.class);
 
+    // This test case test whether watchpoints are caught when stepping. This is an important yet subtle
+    // test. As a sigtrap is generated from ptrace each time "an event" happens, when one steps over a 
+    // watchpoint "hitting" instruction there will be two sigtraps. One for the single-step completing
+    // and one for the watchpoint being triggered. This test tests the notion that both events occurred,
+    // that one of the two states was not starved of its sigtrap, that the watchpoint is hit, and the
+    // process blocked.
     public void testSteppingInstructionAndWatchpoint()
     {
 	if (unresolvedOnPPC(5991)) 
@@ -116,7 +122,12 @@ extends TestLib
 
     }
 
-    
+    // This test case tests whether watchpoints are caught when a task is in a straight
+    // "running" condition. This really tests the basic and advertised functionality of watchpoints:
+    // to be caught by hardware, not software. In this  test:  set up the watchpoint, set up
+    // a terminated observer to guard the watchpoint was caught, and simply set the task to run.
+    // If the watchpoint observer is called, and the test is blocked then the test passes. If the
+    // process terminates and the watchpoint is not caught, then this signified an error condition.
     public void testRunningAndWatchpoint () {
 	if (unresolvedOnPPC(5991)) 
 	    return;
@@ -166,6 +177,125 @@ extends TestLib
 
     }
 
+    
+    // This test tests that a watchpoint is properly deleted: from the othe observer lists
+    // and the hardware. In this case, if the watchpoint is caught, then it fails. It should have
+    // been deleted. This test adds the watchpoint, then runs to main, then deletes the watchpoint.
+    // After that, the test then steps the thread until termination. If the Terminated observer is
+    // called, and the watchpoint did not "hit", then the test passes.
+    public void testAddthenDeleteWatchpoint()
+    {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	
+	// Create a blocked child.
+	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
+		Config.getPkgLibFile("funit-watchpoint"));
+	assertNotNull(ackProc);
+
+	// Get Proc/Task.
+	Proc proc = ackProc.getMainTask().getProc();
+	Task task = proc.getMainTask();
+
+	// Very early on, find Variable source for watch
+	long address = getGlobalSymbolAddress(task,"source");
+
+	// Very early on, add watch observer
+	FailingWatchObserver watch = new FailingWatchObserver();
+	task.requestAddWatchObserver(watch, address, 4, true);
+
+	
+	// Watch for any expected terminations of the child process.
+	OkToTerminateObserver to = new OkToTerminateObserver();
+	task.requestAddTerminatedObserver(to);
+
+	// Break at main
+	long mainAddress = getGlobalSymbolAddress(task, "main");
+	CodeObserver co = new CodeObserver();
+	task.requestAddCodeObserver(co, mainAddress);
+	ackProc.requestUnblock();
+	assertRunUntilStop("Run to main");
+
+	// Test the watch was added
+	assertTrue("added", watch.added);
+	
+	// Test the bp was added, and hit
+	assertTrue("added", co.added);
+	assertEquals("code bp hit", 1, co.hit);
+
+	// Now Delete the watch observer, it should never be hit.
+	task.requestDeleteWatchObserver(watch, address, 4, true);
+
+	// Add a stepping observer.
+	InstructionObserver instr = new InstructionObserver(task);
+	task.requestAddInstructionObserver(instr);
+	instr.setContinue(true);
+
+	// Remove the bp, and run.
+	task.requestUnblock(co);
+	assertRunUntilStop("Run and test watchpoint ");
+
+	// Task should have terminated now.
+	// Make sure the watchpoint was deleted
+	assertTrue("deleted watch", watch.deleted);
+
+	// Make sure the watchpoint never triggered.
+	assertEquals("hit code", 0, watch.hit);
+
+	// Make sure the task has terminated
+	assertEquals("task terminated", 1, to.hit);
+	
+    }
+
+    // This test case tests whether watchpoints are caught when a task is in a straight
+    // "running" condition. When caught, the observer sets the task to Action.CONTINUE.
+    // Test that the task does continue, the the hardware debug registers have been
+    // properly set to allow this to happen, and that the task does continue 
+    // until termination.
+    public void testWatchpointActionContinue () {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	
+	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
+		Config.getPkgLibFile("funit-watchpoint"));
+	assertNotNull(ackProc);
+
+	// Get Proc/Task.
+	Proc proc = ackProc.getMainTask().getProc();
+	Task task = proc.getMainTask();
+
+	// Watch for expected terminations of the child process.
+	OkToTerminateObserver to = new OkToTerminateObserver();
+	task.requestAddTerminatedObserver(to);
+
+	// Break at main
+	long mainAddress = getGlobalSymbolAddress(task, "main");
+	CodeObserver co = new CodeObserver();
+	task.requestAddCodeObserver(co, mainAddress);
+	ackProc.requestUnblock();
+	assertRunUntilStop("Run to main");
+
+	// Find Variable source for watch
+	long address = getGlobalSymbolAddress(task,"source");
+
+	// Add watch observer
+	WatchObserver watch = new WatchObserver(task, address, 4);
+
+	// Do not block on trigger
+	watch.setBlock(false);
+	task.requestAddWatchObserver(watch, address, 4, true);
+
+	// Unblock task from breakpoint
+	task.requestUnblock(co);
+	assertRunUntilStop("Run and test watchpoint ");
+
+	// Make sure it triggered.
+	assertTrue("added", watch.added);
+	assertEquals("hit code", 1, watch.hit);
+	assertEquals("Task terminated", 1, to.hit);
+    }
+
+    
     // Base class for this tests observers.
     // Keeps track of added, deleted and hit counts.
     static abstract class TestObserver implements TaskObserver
@@ -198,6 +328,7 @@ extends TestLib
 
 	public Action updateHit(Task task, long address) {
 	    fine.log("Hit breakpoint at ", address);
+	    hit++;
 	    Manager.eventLoop.requestStop();
 	    return Action.BLOCK;
 	}
@@ -214,6 +345,20 @@ extends TestLib
 		    + " value=" + value);
 	    return null; // not reached
 	}
+    }
+
+    // Simple observer to count termination of a thread when it 
+    // is ok to do so.
+    static class OkToTerminateObserver extends TestObserver
+    implements TaskObserver.Terminated
+    {
+	// Shouldn't be triggered ever.
+	public Action updateTerminated(Task task, Signal signal, int value) {
+	    hit++;
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
+	}
+	
     }
 
 
@@ -259,7 +404,7 @@ extends TestLib
 	}
     }
 
-    // And watchpoint observer to block our process
+    // Watchpoint observer to block our process
     // when it (should) trigger.
     static class WatchObserver
     extends TestObserver
@@ -268,7 +413,8 @@ extends TestLib
 	private final Task task;
 	private final long address;
 	private final long length;
-
+	private boolean block = true;
+	
 	public WatchObserver(Task task, long address, int length)
 	{
 	    this.task = task;
@@ -294,8 +440,37 @@ extends TestLib
 			+ this.length);
 
 	    hit++;
+	    if (this.block) {
+		Manager.eventLoop.requestStop();
+		return Action.BLOCK;
+	    }
+	    else
+		return Action.CONTINUE;
+	}
+	
+	public void setBlock(boolean block) {
+	    this.block = block;
+	}
+    }
+
+
+    // Add watchpoint observer to block our process
+    // when it (should) trigger. This is a test case
+    // observer that should never fire. Used to test if 
+    // a watchpoint is really deleted.
+    static class FailingWatchObserver
+    extends TestObserver
+    implements TaskObserver.Watch
+    {
+
+
+	public Action updateHit(Task task, long address, int length) {
+	    fine.log("Hit watchpoint, addess ", address);
+	    hit++;
 	    Manager.eventLoop.requestStop();
-	    return Action.BLOCK;
+	    fail(task + " hit watchpoint at 0x"+Long.toHexString(address)+
+		    " but should not as the watchpoint was deleted");
+	    return null; // not reached
 	}
     }
 

@@ -1,3 +1,11 @@
+2008-04-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestTaskObserverWatchpoint.java (testAddthenDeleteWatchpoint): New Test.
+	(testWatchpointActionContinue): Ditto..
+	(WatchObserver.setBlock): New. Set blocking strategy.
+	(FailingWatchObserver): New Class.
+	(OkToTerminateObserver): New Class.
+
 2008-04-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestTaskObserverWatchpoint.java: New.
