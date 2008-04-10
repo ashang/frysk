@@ -44,6 +44,8 @@ import java.util.Iterator;
 import java.util.Map;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.sysroot.SysRootFile;
+
 import java.util.List;
 
 /**
@@ -108,8 +110,13 @@ public class KillCommand extends ParameterizedCommand {
 	Iterator bar = saveProcs.keySet().iterator();
 	while (bar.hasNext()) {
 	    Integer procId = (Integer) bar.next();
-	    String cmdline = (String) saveProcs.get(procId);
+	    SysRootFile sysRootFile = (SysRootFile) saveProcs.get(procId);
+	    String cmdline = sysRootFile.getFile().getAbsolutePath();
+	    if (sysRootFile.getSysRoot().getAbsolutePath().compareTo("/") != 0) {
+		cmdline += " -sysroot " + sysRootFile.getSysRoot().getAbsolutePath();
+	    }
 	    cli.taskID = procId.intValue();
+	    System.out.println("XXX " + cmdline);
 	    cli.execCommand("load " + cmdline + "\n");
 	}
 	saveProcs.clear();
@@ -146,8 +153,7 @@ public class KillCommand extends ParameterizedCommand {
 			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
 			Message.TYPE_NORMAL);
 		// Save the procs we are killing so we can re-load them later
-		saveProcs.put(new Integer(taskData.getParentID()), proc
-			.getExeFile().getSysRootedPath());
+		saveProcs.put(new Integer(taskData.getParentID()), proc.getExeFile());
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();
@@ -192,8 +198,7 @@ public class KillCommand extends ParameterizedCommand {
 		Proc taskProc = taskData.getTask().getProc();
 		procId = taskProc.getPid();
 		if (taskProc == proc && tempId != procId) {
-		    saveProcs.put(new Integer(taskData.getParentID()), proc
-				.getExeFile().getSysRootedPath());
+		    saveProcs.put(new Integer(taskData.getParentID()), proc.getExeFile());
 		    cli.addMessage("Killing process " + proc.getPid()
 			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
 			Message.TYPE_NORMAL);

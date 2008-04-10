@@ -48,19 +48,19 @@ public class TestSysRoot extends TestLib {
     public void testGetPathViaDefaultRoot() {
 	String pkgLibDir = Config.getPkgLibFile(null).getPath();
 	SysRoot sysroot = new SysRoot(new File("/"));
-	SysRootFile testPath = sysroot.getPathViaSysRoot("funit-addresses", 
+	SysRootFile testPath = sysroot.getPathViaSysRoot("funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:" + pkgLibDir);
-	int testValue = testPath.getSysRootedFile().getPath().compareTo(pkgLibDir + "/funit-addresses");
+	int testValue = testPath.getSysRootedFile().getPath().compareTo(pkgLibDir + "/funit-quicksort");
 	assertEquals("getPathViaSysRoot default root relative via PATH", 0, testValue);
 	testPath = sysroot.getPathViaSysRoot(
-		"frysk/pkglibdir/funit-addresses", 
+		"frysk/pkglibdir/funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:" + pkgLibDir);
-	testValue = testPath.getSysRootedFile().getPath().compareTo("frysk/pkglibdir/funit-addresses");
+	testValue = testPath.getSysRootedFile().getPath().compareTo("frysk/pkglibdir/funit-quicksort");
 	assertEquals("getPathViaSysRoot default root relative", 0, testValue);
 	testPath = sysroot.getPathViaSysRoot(
-		pkgLibDir + "/funit-addresses", 
+		pkgLibDir + "/funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:" + pkgLibDir);
-	testValue = testPath.getSysRootedFile().getPath().compareTo(pkgLibDir + "/funit-addresses");
+	testValue = testPath.getSysRootedFile().getPath().compareTo(pkgLibDir + "/funit-quicksort");
 	assertEquals("getPathViaSysRoot default root absolute", 0, testValue);
     }
 
@@ -68,30 +68,30 @@ public class TestSysRoot extends TestLib {
 	String sysRootPath = Config.getPkgLibFile(".").getParent()
 		+ "/test-sysroot";
 	SysRoot sysRoot = new SysRoot(new File(sysRootPath));
-	SysRootFile testPath = sysRoot.getPathViaSysRoot("funit-addresses", 
+	SysRootFile testPath = sysRoot.getPathViaSysRoot("funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:/usr/bin");
-	int testValue = testPath.getSysRootedFile().compareTo(new File(sysRootPath + "/usr/bin/funit-addresses"));
+	int testValue = testPath.getSysRootedFile().compareTo(new File(sysRootPath + "/usr/bin/funit-quicksort"));
 	assertEquals("getPathViaSysroot relative via PATH", 0, testValue);
-	testPath = sysRoot.getPathViaSysRoot("frysk/pkglibdir/funit-addresses", 
+	testPath = sysRoot.getPathViaSysRoot("frysk/pkglibdir/funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:/usr/bin");
-	testValue = testPath.getSysRootedFile().compareTo(new File("frysk/pkglibdir/funit-addresses"));
+	testValue = testPath.getSysRootedFile().compareTo(new File("frysk/pkglibdir/funit-quicksort"));
 	assertEquals("getPathViaSysRoot relative", 0, testValue);
-	testPath = sysRoot.getPathViaSysRoot(sysRootPath + "/funit-addresses", 
+	testPath = sysRoot.getPathViaSysRoot(sysRootPath + "/funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:/usr/bin");
-	testValue = testPath.getSysRootedFile().compareTo(new File(sysRootPath + "/funit-addresses"));
+	testValue = testPath.getSysRootedFile().compareTo(new File(sysRootPath + "/funit-quicksort"));
 	assertEquals("getPathViaSysRoot absolute including SysRoot", 0, testValue);
-	testPath = sysRoot.getPathViaSysRoot("/usr/bin/funit-addresses", 
+	testPath = sysRoot.getPathViaSysRoot("/usr/bin/funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:/usr/bin");
-	testValue = testPath.getFile().compareTo(new File("/usr/bin/funit-addresses"));
+	testValue = testPath.getFile().compareTo(new File("/usr/bin/funit-quicksort"));
 	assertEquals("getPathViaSysRoot absolute", 0, testValue);
     }
 
     public void testGetSourcePathViaDefaultRoot() {
 	SysRoot sysRoot = new SysRoot(new File("/"));
 	File absoluteSourcePath = new File(
-		"/frysk/src/frysk-core/frysk/pkglibdir/funit-addresses.c");
+		"/frysk/src/frysk-core/frysk/pkglibdir/funit-quicksort.c");
 	File relativeSourcePath = new File(
-		"../../src/frysk-core/frysk/pkglibdir/funit-addresses.c");
+		"../../src/frysk-core/frysk/pkglibdir/funit-quicksort.c");
 	File compilationDir = new File("/frysk/bld/frysk-core");
 	SysRootFile testPath = sysRoot.getSourcePathViaSysRoot(compilationDir,
 		absoluteSourcePath);
@@ -110,9 +110,9 @@ public class TestSysRoot extends TestLib {
 		+ "/test-sysroot";
 	SysRoot sysRoot = new SysRoot(new File(sysRootPath));
 	File absoluteSourcePath = new File(
-		"/frysk/src/frysk-core/frysk/pkglibdir/funit-addresses.c");
+		"/frysk/src/frysk-core/frysk/pkglibdir/funit-quicksort.c");
 	File relativeSourcePath = new File(
-		"../../src/frysk-core/frysk/pkglibdir/funit-addresses.c");
+		"../../src/frysk-core/frysk/pkglibdir/funit-quicksort.c");
 	File compilationDir = new File("/frysk/bld/frysk-core");
 	File correctPath = new File(sysRootPath + absoluteSourcePath.getPath());
 	SysRootFile testPath = sysRoot.getSourcePathViaSysRoot(compilationDir,

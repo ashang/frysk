@@ -1,3 +1,7 @@
+2008-04-10  Stan Cox  <scox@redhat.com>
+
+	* TestLinuxExe.java (testSysRootedProc): Change to use funit-quicksort.
+
 2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* DeadTask.java (requestAddWatchObserver): Add

@@ -114,12 +114,12 @@ public class TestLinuxExe extends TestLib {
     }
     
     public void testSysRootedProc() {
-	SysRootCache.setSysroot("funit-addresses", Config.getPkgLibFile("test-sysroot").getAbsolutePath());
-	Proc proc = LinuxExeFactory.createProc(new String[] {"funit-addresses", ""});
+	SysRootCache.setSysroot("funit-quicksort", Config.getPkgLibFile("test-sysroot").getAbsolutePath());
+	Proc proc = LinuxExeFactory.createProc(new String[] {"funit-quicksort", ""});
 	int testValue = proc.getExeFile().getSysRootedPath().compareTo(Config.getPkgLibFile("test-sysroot").getAbsolutePath()
-		+ "/usr/bin/funit-addresses");
+		+ "/usr/bin/funit-quicksort");
 	assertEquals("exe", 0, testValue); 
-	testValue = proc.getExeFile().getFile().getAbsolutePath().compareTo("/usr/bin/funit-addresses");
+	testValue = proc.getExeFile().getFile().getAbsolutePath().compareTo("/usr/bin/funit-quicksort");
 	assertEquals("exeFile", 0, testValue);
     }
 }
