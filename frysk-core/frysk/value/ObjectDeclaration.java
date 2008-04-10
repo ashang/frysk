@@ -43,12 +43,13 @@ import frysk.debuginfo.DebugInfoFrame;
 import frysk.isa.ISA;
 import frysk.scopes.SourceLocation;
 
-public abstract class ObjectDeclaration {
+public interface ObjectDeclaration {
     
-    public abstract String getName();
-    public abstract Value getValue(DebugInfoFrame frame);
-    public abstract Type getType(ISA isa);
+    String getName();
+    Value getValue(DebugInfoFrame frame);
+    Type getType(ISA isa);
     
-    public abstract SourceLocation getSourceLocation();
+    //if source is not available return SourceLocation.UNKNOWN
+    SourceLocation getSourceLocation();
     
 }

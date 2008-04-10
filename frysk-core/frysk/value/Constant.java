@@ -43,6 +43,6 @@ package frysk.value;
  * Class representing constants
  *
  */
-public abstract class Constant extends ObjectDeclaration{
+public abstract class Constant implements ObjectDeclaration{
 
 }

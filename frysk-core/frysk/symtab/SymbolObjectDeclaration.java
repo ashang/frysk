@@ -58,7 +58,7 @@ import frysk.value.VoidType;
 /**
  * XXX: This will be folded into symtab.symbol
  */
-public class SymbolObjectDeclaration extends ObjectDeclaration {
+public class SymbolObjectDeclaration implements ObjectDeclaration {
 
     private String name;
     private long address;

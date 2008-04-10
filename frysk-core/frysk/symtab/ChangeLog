@@ -1,3 +1,8 @@
+2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed ObjectDeclaration from abstract class to interface
+	* SymbolObjectDeclaration.java: Updated.
+
 2008-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SymbolObjectDeclaration.java: New class.

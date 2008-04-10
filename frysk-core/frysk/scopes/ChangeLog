@@ -1,3 +1,8 @@
+2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Changed ObjectDeclaration from abstract class to interface
+	* Variable.java: Updated.
+	
 2008-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Renamed ObjectDeclarationSearchEngine.getVariable to 

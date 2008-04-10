@@ -63,7 +63,7 @@ import frysk.value.Format;
  * corresponding to this Variable
  */
 
-public class Variable extends ObjectDeclaration {
+public class Variable implements ObjectDeclaration {
     
     private static Log fine = LogFactory.fine(Variable.class);
     private static Log finest = LogFactory.finest(Variable.class);

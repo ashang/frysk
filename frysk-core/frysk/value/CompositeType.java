@@ -61,7 +61,7 @@ public abstract class CompositeType
     extends Type
 {
     
-    public static abstract class Member extends ObjectDeclaration {
+    public static abstract class Member implements ObjectDeclaration {
 	
 	private final SourceLocation sourceLocation;
 	final int index;
