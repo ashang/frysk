@@ -619,20 +619,17 @@ public class LinuxPtraceProc extends LiveProc {
     
 
     /**
-     * Class describing the action to take on the suspended Task
-     * before adding or deleting a Code observer.
+     * Watchpoint action class. Describes the action to 
+     * take on a blocked Task before adding or deleting 
+     * a Watchpoint observer.
      */
     final class WatchpointAction implements Runnable {
 	private final TaskObserver.Watch watch;
 
 	private final Task task;
-
 	private final long address;
-	
 	private final int length;
-	
 	private final boolean writeOnly;
-	
 	private final boolean addition;
 
 	WatchpointAction(TaskObserver.Watch watch, Task task, long address,
@@ -665,11 +662,13 @@ public class LinuxPtraceProc extends LiveProc {
 	}
     }
 
+    // List and manager for Watchpoints within a task.
+    private final WatchpointAddresses watchpoints;
     
     /**
      * (Internal) Tell the process to add the specified Watch
      * Observation, attaching to the process if necessary. Adds a
-     * TaskCodeObservation to the eventloop which instructs the task
+     * TaskWatchObservation to the eventloop which instructs the task
      * to install the watchpoint if necessary.
      */
     void requestAddWatchObserver(final Task task, TaskObservable observable,
@@ -687,14 +686,12 @@ public class LinuxPtraceProc extends LiveProc {
 	    public boolean needsSuspendedAction() {
 		return watchpoints.getWatchObservers(task, address, length, writeOnly) == null;
 	    }
-	    };
+	};
 	Manager.eventLoop.add(to);
-
-    
     }
 
     /**
-     * (Internal) Tell the process to delete the specified Code
+     * (Internal) Tell the process to delete the specified Watch
      * Observation, detaching from the process if necessary.
      */
     void requestDeleteWatchObserver(final Task task, TaskObservable observable,
@@ -707,17 +704,14 @@ public class LinuxPtraceProc extends LiveProc {
 	WatchpointAction wpa = new WatchpointAction(observer, task, address, length, writeOnly, false);
 	TaskObservation to;
 	to = new TaskObservation((LinuxPtraceTask)task, observable, observer, wpa, false) {
-		public void execute() {
-		    newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
-		}
-
-		public boolean needsSuspendedAction() {
-		    return watchpoints.getWatchObservers(task, address, length, writeOnly).size() == 1;
-		}
-	    };
-
+	    public void execute() {
+		newState = oldState().handleDeleteObservation(LinuxPtraceProc.this, this);
+	    }
+	    public boolean needsSuspendedAction() {
+		return watchpoints.getWatchObservers(task, address, length, writeOnly).size() == 1;
+	    }
+	};
 	Manager.eventLoop.add(to);
-
     }
 
     /**
@@ -836,7 +830,6 @@ public class LinuxPtraceProc extends LiveProc {
      * XXX: Should not be public.
      */
     public final BreakpointAddresses breakpoints;
-    public final WatchpointAddresses watchpoints;
     
     // List of available addresses for out of line stepping.
     // Used a lock in getOutOfLineAddress() and doneOutOfLine().

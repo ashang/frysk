@@ -542,16 +542,13 @@ public class LinuxPtraceTask extends LiveTask {
 
 
     /**
-     * Set of Code observers.
-     *
-     * FIXME: Should be private only LinuxPtraceTaskState grubs around
-     * with this variable.
-     */
-    final TaskObservable watchObservers = new TaskObservable(this);
+     * Set of Watch observers.
+     **/
+    private final TaskObservable watchObservers = new TaskObservable(this);
+
     /**
-     * Notify all Code observers of the breakpoint. Return the number
-     * of blocking observers or -1 if no Code observer were installed
-     * on this address.
+     * Notify all Watchpoint observers of the triggered watchpoint. 
+     * Return the number of blocking observers, or 0 if nothing blocks.
      */
     int notifyWatchpoint(long address, int length) {
 	for (Iterator i = watchObservers.iterator(); i.hasNext();) {
@@ -565,7 +562,7 @@ public class LinuxPtraceTask extends LiveTask {
 
     /**
      * Add a TaskObserver.Watch observer
-     * (hardware only)
+     * (hardware data breakpoint only)
      */
     public void requestAddWatchObserver(TaskObserver.Watch o, long address, int length, boolean writeOnly) {
 	fine.log(this,"requestAddWatchObserver");
@@ -573,7 +570,8 @@ public class LinuxPtraceTask extends LiveTask {
     }
 
     /**
-     * Delete TaskObserver.Code for the TaskObserver pool.
+     * Delete a TaskObserver.Watch observer
+     * (hardware data breakpoint only)
      */
     public void requestDeleteWatchObserver(TaskObserver.Watch o, long address, int length, boolean writeOnly) {
 	fine.log(this, "requestDeleteWatcheObserver");

@@ -1,3 +1,9 @@
+2008-04-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java: Clean up some indention and add/fix
+	comments.
+	* LinuxPtraceTask.java: Ditto.
+
 2008-04-09  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxPtraceTaskState.java (Running.handleExecedEvent): Mark
