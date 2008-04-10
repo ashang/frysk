@@ -116,7 +116,6 @@ public class KillCommand extends ParameterizedCommand {
 		cmdline += " -sysroot " + sysRootFile.getSysRoot().getAbsolutePath();
 	    }
 	    cli.taskID = procId.intValue();
-	    System.out.println("XXX " + cmdline);
 	    cli.execCommand("load " + cmdline + "\n");
 	}
 	saveProcs.clear();
