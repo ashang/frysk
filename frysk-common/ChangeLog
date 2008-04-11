@@ -1,5 +1,8 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (solib_PROGRAMS): Fix typo; Use GEN_DIRNAME not
+	GEN_MAKENAME.
+	
 	* Makefile.rules (SUBST_SED): Substitute GEN_DIRNAME.
 	* Makefile.gen.sh (solib_PROGRAMS): Add lib${GEN_MAKENAME}-jni.so.
 

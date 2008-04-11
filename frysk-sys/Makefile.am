@@ -70,3 +70,35 @@ GEN_GCJ_LDADD_LIST += -lstdc++ -laudit
 # Force a few dependencies
 lib/unwind/cni/Unwind%.cxx: lib/unwind/Unwind%.java lib/unwind/cni/UnwindH.hxx
 lib/unwind/Unwind%.java: lib/unwind/Unwind.java
+
+
+
+# Quick hack to get a test JNI program up-and-running.
+
+noinst_DATA += JniRunner.jar JniRunner
+CLEANFILES += JniRunner
+JniRunner:
+	rm -f $@.tmp
+	echo "#!/bin/sh"					>> $@.tmp
+	echo "LD_PRELOAD=/usr/lib/libstdc++.so.6 \\"		>> $@.tmp
+	echo "LD_LIBRARY_PATH=. \\"				>> $@.tmp
+	echo "CLASSPATH=$(CLASSPATH):frysk-sys.jar:JniRunner.jar \\" >> $@.tmp
+	echo "java JniRunner \"$$@\""				>> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
+CLEANFILES += JniRunner.class JniRunner.jar
+JniRunner.jar: JniRunner.java
+	rm -f $@.tmp
+	$(JAVAC) $(JAVACFLAGS) JniRunner.java
+	jar cf $@ JniRunner.class
+CLEANFILES += JniRunner.java
+JniRunner.java: common/TestRunner.java-in
+	rm -f $@.tmp
+	( $(SUBST_SED) < $< | sed -e 's/TestRunner/JniRunner/' -e '/^}/d' ; \
+	  echo "    static {" ; \
+	  echo "        System.loadLibrary(\"frysk-sys-jni\");" ; \
+	  echo "    }" ; \
+	  echo "}" ; \
+	) > $@.tmp
+	mv $@.tmp $@

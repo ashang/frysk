@@ -910,7 +910,7 @@ if automake_variable_defined lib${GEN_MAKENAME}_jni_a_SOURCES ; then
     cat <<EOF
 noinst_LIBRARIES += lib${GEN_DIRNAME}-jni.a
 lib${GEN_MAKENAME}_jni_so_SOURCES =
-solib_PROGRAMS += lib${GEN_MAKENAME}-jni.so
-lib${GEN_MAKENAME}-jni.so: lib${GEN_DIRNAME}-jni.a
+solib_PROGRAMS += lib${GEN_DIRNAME}-jni.so
+lib${GEN_DIRNAME}-jni.so: lib${GEN_DIRNAME}-jni.a
 EOF
 fi

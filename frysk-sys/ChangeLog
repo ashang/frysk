@@ -1,5 +1,8 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner.java, JniRunner.jar, JniRunner): New
+	targets.
+
 	* .gitignore: Ignore files.base.
 
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
