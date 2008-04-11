@@ -54,6 +54,7 @@
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/DwflModule.h"
 
+#include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
 
 // Suck in elf_from_remote_memory from elfutils

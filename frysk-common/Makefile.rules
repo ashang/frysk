@@ -364,21 +364,14 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 # Generate one or more .h files, one per named class, and using CNI,
 # from the corresponding .java file.  Anonymous classes are pruned.
 
-# Need to store the intermediate .class files in a separate directory
-# as otherwise GCJ will include a possibly out-dated .class file
-# instead of the latest .java file leading to screwed up dependencies.
+# This assumes that the directories .jar file has already been built.
 
 .java.h:
 	b=`basename $*` ; \
 	d=`dirname $*` ; \
-	tmpdir=$$b.tmp ; \
-	rm -rf $$tmpdir ; \
-	mkdir -p $$tmpdir ; \
-	$(JAVAC) $(JAVACFLAGS) -d $$tmpdir '$<' || exit 1 ; \
-	classes=`cd $$tmpdir; find $$d/$$b*.class \
-		    -name '*\$$[0-9]*' -prune \
-		    -o -name $$b.class -print \
-		    -o -name $$b'\$$*'.class -print \
+	classes=`$(JAR) tf $(GEN_DIRNAME).jar | grep \
+			-e $$d/$$b'\.class' \
+			-e $$d/$$b'$$[^0-9]*\.class' \
 		    | sed -e 's,.class$$,,'`; \
 	echo $$classes ; \
 	for class in $$classes ; do \
@@ -386,11 +379,10 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 		outputfile=`basename $$class`.h; \
 		echo "$$class => $$outputdir/$$outputfile"; \
 		rm -f $$outputdir/$$outputfile ; \
-		$(GCJH) -I $$tmpdir \
+		$(GCJH) -I $(GEN_DIRNAME).jar \
 			-o $$outputdir/$$outputfile \
 			$(GCJHFLAGS) $$class ; \
-	done ; \
-	rm -rf $$tmpdir
+	done
 
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so

@@ -1,5 +1,7 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Dwfl.cxx: Explicitly include "inua/eio/Buffer.h".
+
 	* jni/DwException.cxx: New.
 	* jni/Dwarf.cxx: New.
 	* jni/DwarfDie.cxx: New.

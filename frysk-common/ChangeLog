@@ -1,5 +1,7 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.java.h): Get the .class files from the .jar.
+
 	* Makefile.gen.sh (files.base): Handle .S when breaking down file
 	names.
 	
