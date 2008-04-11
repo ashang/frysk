@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ FILE_LIST="frysk \
     inua \
     lib"
 
-./common/Makefile.gen.sh --cni $FILE_LIST
+./common/Makefile.gen.sh --jni --cni $FILE_LIST
 
 # Generate everything (always run with --add-missing).
 

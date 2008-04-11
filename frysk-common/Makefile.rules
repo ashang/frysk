@@ -81,7 +81,7 @@ man_MANS =
 LDADD = 
 ANTLR_BUILT =
 SCRIPT_BUILT =
-JAVAH_BUILT =
+JAVAH_CNI_BUILT =
 
 check_SCRIPTS =
 check_PROGRAMS =
@@ -194,7 +194,7 @@ AM_CCASFLAGS = \
 .PHONY: built-sources
 built-sources: $(BUILT_SOURCES)
 $(ANTLR_BUILT): | $(SCRIPT_BUILT)
-$(JAVAH_BUILT): | $(SCRIPT_BUILT) $(ANTLR_BUILT)
+$(JAVAH_CNI_BUILT): | $(SCRIPT_BUILT) $(ANTLR_BUILT)
 
 
 # Rules for building a .java file from any of a .mkclass file, a

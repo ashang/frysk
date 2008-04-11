@@ -1,5 +1,10 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JAVAH_CNI_BUILT): Replace JAVAH_BUILT.
+	* Makefile.gen.sh (generate_cni_header): New.
+	(generate_jni_header): New.
+	(automake_variable): Replace set_variable.
+
 	* frysk.xml-in: Include version.
 
 2008-04-08  Andrew Cagney  <cagney@redhat.com>

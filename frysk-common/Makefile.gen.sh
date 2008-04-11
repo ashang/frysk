@@ -75,8 +75,8 @@ GEN_ARGS="$@"
 while test $# -gt 0
 do
   case "$1" in
-      --cni ) cni=true ; jni=false ;;
-      --jni ) jni=true ; cni=false ;;
+      --cni ) cni=true ;;
+      --jni ) jni=true ;;
       *.jar ) jars="${jars} $1" ;;
       *_JAR ) JARS="${JARS} $1" ;;
       * ) dirs="${dirs} $1" ;;
@@ -156,15 +156,23 @@ EOF
     echo "$@" 1>&2
 }
 
-# Called as:   set_variable foodir = '$(datadir)/foo'
-# set variable $1 to value $3, if this is the fist time called:
-set_variable ()
+# Called as: variable NAME = [VALUE] or variable NAME += VALUE sets or
+# appends variable $1 to value $3, if this is the fist time called.
+# The only GOT-YA is that all invocations of this function must occure
+# in the same process; which means ``a | while read ... '' can't be
+# used.
+
+automake_variable ()
 {
-    if eval test -z "\${${1}_set:-}"; then
-	eval ${1}_set=true
-	echo "$@"
+    local name=$1 ; shift
+    local op=$1 ; shift
+    if eval test -z "\${variable_${name}_set:-}" ; then
+	eval variable_${name}_set=true
+	echo "$name" = "$@"
+    elif test "x$op" = "x+=" ; then
+	echo "$name" += "$@"
     fi
-} 
+}
 
 check_MANS ()
 {
@@ -568,46 +576,76 @@ else
     : default
 fi
 
-# Grep the cni/*.cxx files forming a list of included files.  Assume
-# these are all generated from .class files found in the master .jar.
+# Grep the *.cxx and *.hxx files forming a list of included files.
+# Assume these are all generated from .class files found in the master
+# .jar.
 
-# This matches both:
-# #include "a/file/dot.h"
-# and
-# #define A_FILE "a/file/dot.h"
+generate_cni_header () {
+    local file=$1
+    local d=$2
+    local b=$3
+    local suffix=$4
+    local _file=`echo $file | tr '[/.]' '[__]'`
+    sed -n \
+	-e 's,#include "\(.*\)\.h".*,include - \1,p' \
+	-e 's,#include \([A-Z][A-Z0-9_]*\).*,minclude \1 -,p' \
+	-e 's,#define \([A-Z0-9_]*\) "\(.*\)\.h".*,define \1 \2,p' \
+	< $file > $$.tmp
+    while read action m h j; do
+	echo "# file=$file action=$action m=$m h=$h"
+	if test "$action" = "minclude" ; then
+            # Assume file defining macro depends on this file
+	    automake_variable $m = \$\($_file\)
+	elif test \
+	       -r ${h}.java \
+	    -o -r ${h}.shenum \
+	    -o -r ${h}.mkenum \
+	    -o -r ${h}.java-sh \
+	    -o -r ${h}.java-in \
+	    ; then
+	    echo "JAVAH_CNI_BUILT += ${h}.h"
+	    echo "CLEANFILES += ${h}.h"
+	    echo "CLEANFILES += ${h}\\\$\$*.h"
+	    j=`echo ${h} | tr '[_]' '[/]'`
+	    echo "${h}.h: $j.java | ${GEN_DIRNAME}.jar"
+	    case $action in
+		include)
+		    case "$suffix" in
+			cxx) echo "$d/$b.o: ${h}.h" ;;
+			hxx) # remember what this file includes
+			    automake_variable $_file += ${h}.h ;;
+		    esac
+		    ;;
+		define)
+		    echo "$d/$b.o: ${h}.h"
+		    # Assume file using this macro is a dependency.
+		    echo "$d/$b.o: \$($m)"
+		    ;;
+	    esac
+	fi
+    done < $$.tmp
+    rm -f $$.tmp
+}
 
-print_header "... *.{hxx,cxx}=.h"
-grep -e '/cni/' -e '/jni/' files.list \
-    | xargs -r grep -H \
-    	-e '#include ".*.h"' \
-        -e '#define [A-Z_]* ".*.h"' \
-    | sed \
-        -e 's/\.\(.\).*:#define [A-Z_]* "/ \1 /' \
-    	-e 's/\.\(.\).*:#include "/ \1 /' \
-    	-e 's/\.h".*$//' \
-    	-e 's/$.*//' \
-    | while read o c h
-do
-  if test \
-      -r ${h}.java -o \
-      -r ${h}.shenum -o \
-      -r ${h}.mkenum -o \
-      -r ${h}.java-sh -o \
-      -r ${h}.java-in \
-      ; then
-      case "$c" in
-	  # Do not know what includes the header; just build early
-	  h)
-	      echo "BUILT_SOURCES += ${h}.h"
-	      echo "JAVAH_BUILT += ${h}.h"
-	      ;;
-	  c) echo "${o}.o: ${h}.h" ;;
-	  esac
-      echo "CLEANFILES += ${h}.h"
-      echo "CLEANFILES += ${h}\\\$\$*.h"
-  fi
-done | sort -u
+# For any java file that contains "native" declarations, generate a
+# jni header.
 
+echo 'all-local: $(JAVAH_JNI_BUILT)'
+generate_jni_header ()
+{
+    local file=$1
+    local d=$2
+    local b=$3
+    local suffix=$4
+    if grep ' native ' $file > /dev/null ; then
+	local h=`echo $d/$b | tr '[/]' '[_]'`
+	local c=`echo $d/$b | tr '[/]' '[.]'`
+	automake_variable JAVAH_JNI_BUILT += ${h}.h
+	echo "CLEANFILES += ${h}.h"
+	echo "${h}.h: $file | ${GEN_DIRNAME}.jar"
+	echo '	$(GCJH) $(GCJHFLAGS) -jni -classpath=$(CLASSPATH):'${GEN_DIRNAME}.jar $c
+    fi
+}
 
 # Generate rules for all .xml-in files, assume that they are converted
 # to man pages.
@@ -753,10 +791,9 @@ sed -n -e '/dir\// {
 	    ;;
     esac
     if test -n "${d2}"; then
-	set_variable "${dir}dir" = "\$(${d1}dir)/${d2}"
+	automake_variable "${dir}dir" = "\$(${d1}dir)/${d2}"
     fi
-    set_variable "${dir}_DATA" =
-    echo "${dir}_DATA += $data"
+    automake_variable "${dir}_DATA" += $data
 done
 
 
@@ -779,3 +816,31 @@ EOF
 	printf "\tmv \$@.tmp \$@\n"
     done
 done
+
+
+# Iterate through all the files in file.list; applying all applicable
+# generation rules to each file type.  There are no smarts, each file
+# type gets all operations listed explicitly.
+
+# It is assumed that each file is of the form DIRNAME/BASENAME.SUFFIX,
+# pre-process each into: FILE DIRNAME BASENAME SUFFIX
+
+sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-z-]*\)\),\1 \2 \3 \4,' \
+    -e 's,-in$,,' \
+    -e 's,-sh$,,' \
+    < files.list \
+    > files.base
+while read file dir base suffix ; do
+
+    # echo file=$file dir=$dir base=$base suffix=$suffix 1>&2
+
+    case $file in
+	*/cni/*.cxx | */cni/*.cxx-in | */cni/*.cxx-sh | */cni/*.hxx)
+	    generate_cni_header $file $dir $base $suffix
+	    ;;
+	*.java | *.java-in | *.java-sh )
+	    generate_jni_header $file $dir $base $suffix
+	    ;;
+    esac
+
+done < files.base
