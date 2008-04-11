@@ -1,5 +1,7 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner.jar): Use $(JAR), not jar.
+	
 	* Makefile.am (JniRunner.jar): Force frysk-sys.jar into JAVAC's
 	classpath.
 
