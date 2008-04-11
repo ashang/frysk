@@ -1,3 +1,25 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/DwException.cxx: New.
+	* jni/Dwarf.cxx: New.
+	* jni/DwarfDie.cxx: New.
+	* jni/Dwfl.cxx: New.
+	* jni/DwflLine.cxx: New.
+	* jni/DwflModule.cxx: New.
+	* jni/Elf.cxx: New.
+	* jni/ElfArchiveSymbol.cxx: New.
+	* jni/ElfData.cxx: New.
+	* jni/ElfDynamic.cxx: New.
+	* jni/ElfNhdr.cxx: New.
+	* jni/ElfPrAuxv.cxx: New.
+	* jni/ElfPrFPRegSet.cxx: New.
+	* jni/ElfPrXFPRegSet.cxx: New.
+	* jni/ElfPrpsinfo.cxx: New.
+	* jni/ElfPrstatus.cxx: New.
+	* jni/ElfRel.cxx: New.
+	* jni/ElfSection.cxx: New.
+	* jni/ElfSymbol.cxx: New.
+
 2008-04-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/ElfPrstatus.cxx: Delete not needed

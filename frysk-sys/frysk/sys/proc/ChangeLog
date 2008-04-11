@@ -1,3 +1,13 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AuxvBuilder.cxx: New.
+	* jni/CmdLineBuilder.cxx: New.
+	* jni/Exe.cxx: New.
+	* jni/MapsBuilder.cxx: New.
+	* jni/ProcBuilder.cxx: New.
+	* jni/Stat.cxx: New.
+	* jni/Status.cxx: New.
+
 2008-03-18  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcBuilder.java: Use ProcessIdentifier.intValue() not

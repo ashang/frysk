@@ -1,3 +1,15 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Control.cxx: New.
+	* jni/Flow.cxx: New.
+	* jni/Flush.cxx: New.
+	* jni/Input.cxx: New.
+	* jni/Local.cxx: New.
+	* jni/Output.cxx: New.
+	* jni/Special.cxx: New.
+	* jni/Speed.cxx: New.
+	* jni/Termios.cxx: New.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestMode.java: Use frysk.rsl.

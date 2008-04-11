@@ -1,3 +1,7 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/MmapByteBuffer.cxx: New.
+
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
 
 	* eio/ByteBuffer.java: Remove java.util.logging.

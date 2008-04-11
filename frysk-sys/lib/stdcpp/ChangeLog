@@ -1,3 +1,7 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Demangler.cxx: New.
+
 2006-12-11  Nurdin Premji <npremji@redhat.com>
 
 	* Demangler.java: Added javadoc explaining what happens

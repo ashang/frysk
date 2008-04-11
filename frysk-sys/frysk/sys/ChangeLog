@@ -1,3 +1,23 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AuditLibs.cxx: New.
+	* jni/ChildFactory.cxx: New.
+	* jni/DaemonFactory.cxx: New.
+	* jni/Exec.cxx: New.
+	* jni/FileDescriptor.cxx: New.
+	* jni/Fork.cxx: New.
+	* jni/Itimer.cxx: New.
+	* jni/Pid.cxx: New.
+	* jni/Pipe.cxx: New.
+	* jni/Poll.cxx: New.
+	* jni/PseudoTerminal.cxx: New.
+	* jni/Signal.cxx: New.
+	* jni/SignalSet.cxx: New.
+	* jni/StatelessFile.cxx: New.
+	* jni/Tid.cxx: New.
+	* jni/Uname.cxx: New.
+	* jni/Wait.cxx: New.
+
 2008-04-07  Stan Cox  <scox@redhat.com>
 
 	* Fork.java (spawn): Add libs parameter.

@@ -1,3 +1,9 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/BuildCompiler.cxx: New.
+	* jni/Config.cxx: New.
+	* jni/jni/FryskVersion.cxx: New.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBuildCompiler.java: Fix comparisons.

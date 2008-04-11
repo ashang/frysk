@@ -1,3 +1,11 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/ElfImage.cxx: New.
+	* jni/UnwindPPC32.cxx: New.
+	* jni/UnwindPPC64.cxx: New.
+	* jni/UnwindX86.cxx: New.
+	* jni/UnwindX8664.cxx: New.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Cursor.java: Use LogFactory.

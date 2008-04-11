@@ -1,3 +1,10 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx: New.
+	* jni/Ptrace.cxx: New.
+	* jni/RegisterSet.cxx: New.
+	* jni/Utrace.cxx: New.
+
 2008-03-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPtrace.java: Update to match Fork.
