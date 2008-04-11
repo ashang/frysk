@@ -1,5 +1,10 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* eio/TestMmap.java: Delete.
+	* eio/MmapByteBuffer.java: Delete.
+	* eio/cni/MmapByteBuffer.cxx: Delete.
+	* eio/jni/MmapByteBuffer.cxx: Delete.
+
 	* jni/MmapByteBuffer.cxx: New.
 
 2008-02-11  Andrew Cagney  <cagney@redhat.com>
