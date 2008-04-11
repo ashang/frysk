@@ -1,3 +1,7 @@
+2008-04-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestFrame.java (testBogusAddressPrevFrame): Resolved.
+
 2008-04-07  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestSignalStepFrame.java: New tests.

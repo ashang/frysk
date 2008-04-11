@@ -42,7 +42,6 @@ package frysk.stack;
 import java.util.Iterator;
 import java.util.List;
 
-//import frysk.proc.Proc;
 import frysk.config.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -174,8 +173,6 @@ public class TestFrame extends TestLib {
     }
 
     public void testBogusAddressPrevFrame() throws ElfException {
-	if (unresolved(6029))
-	    return;
     	class CodeObserver1 implements TaskObserver.Code
 	{
 	    public boolean hit = false;

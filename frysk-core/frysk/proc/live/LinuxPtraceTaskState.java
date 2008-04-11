@@ -725,26 +725,6 @@ abstract class LinuxPtraceTaskState extends State {
 	    this.insyscall = insyscall;
 	}
 	
-	void setupSteppingBreakpoint(LinuxPtraceTask task, long address) {
-	    // Reset pc, this should maybe be moved into the Breakpoint,
-	    // but if the breakpoint gets removed before we step it, and
-	    // the architecture puts the pc just behind the breakpoint
-	    // address, then there is no good other place to get at the
-	    // original pc location.
-	    task.setPC(address);
-
-	    // All logic for determining how and where to step the
-	    // Breakpoint is determined by Proc and
-	    // Breakpoint.prepareStep() (called in sendContinue).
-	    Breakpoint bp = Breakpoint.create(address,((LinuxPtraceProc)task.getProc()));
-	
-	    // TODO: This should really move us to a new TaskState.
-	    // Currently we rely on the Task.steppingBreakpoint
-	    // being set and the Breakpoint/Instruction having all
-	    // the state necessary.
-	    task.steppingBreakpoint = bp;
-	}
-      
         /**
 	 * Tells the LinuxPtraceTask to continue, keeping in kind pending
 	 * breakpoints, with or without syscall tracing.
@@ -1006,7 +986,6 @@ abstract class LinuxPtraceTaskState extends State {
 	    int stepBlockers = task.notifyCodeBreakpoint(address);
 	    if (stepBlockers >= 0) {
 		// Prepare for stepping the breakpoint
-		setupSteppingBreakpoint(task, address);
 		blockers += stepBlockers;
 		isTrapHandled = true;
 	    } 
@@ -1146,14 +1125,6 @@ abstract class LinuxPtraceTaskState extends State {
 		long address = isa.getBreakpointAddress(task);
 		int breakpointBlockers = task.notifyCodeBreakpoint(address);
 		if (breakpointBlockers >= 0) {
-		    // Sanity check
-		    if (task.steppingBreakpoint != null)
-			throw new RuntimeException("Already breakpoint stepping: "
-						   + task.steppingBreakpoint);
-	      
-		    // Prepare for stepping the breakpoint
-		    setupSteppingBreakpoint(task, address);
-	      
 		    blockers += breakpointBlockers;
 		    isTrapHandled = true;
 		} else {

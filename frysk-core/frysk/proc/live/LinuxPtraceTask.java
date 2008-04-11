@@ -937,9 +937,33 @@ public class LinuxPtraceTask extends LiveTask {
      */
     int notifyCodeBreakpoint(long address) {
 	fine.log(this, "notifyCodeBreakpoint address", address);
-	Collection observers = ((LinuxPtraceProc)getProc()).breakpoints.getCodeObservers(address);
+	LinuxPtraceProc proc = (LinuxPtraceProc) getProc();
+	Collection observers = proc.breakpoints.getCodeObservers(address);
 	if (observers == null)
 	    return -1;
+
+	// Sanity check
+	if (steppingBreakpoint != null)
+	  throw new RuntimeException("Already breakpoint stepping: "
+				     + steppingBreakpoint);
+
+	// Reset pc, some architectures might leave the pc right after
+	// the breakpoint, but since we haven't actually executed the
+	// real instruction yet we want it to be at the actual address
+	// of the original instruction.
+	setPC(address);
+
+	// All logic for determining how and where to step the              
+	// Breakpoint is determined by Proc and                             
+	// Breakpoint.prepareStep() (called in sendContinue).               
+	Breakpoint bp = Breakpoint.create(address,proc);
+
+	// TODO: This should really move us to a new TaskState.             
+	// Currently we rely on the Task.steppingBreakpoint                 
+	// being set and the Breakpoint/Instruction having all              
+	// the state necessary.                                             
+	steppingBreakpoint = bp;
+
 	Iterator i = observers.iterator();
 	while (i.hasNext()) {
 	    TaskObserver.Code observer = (TaskObserver.Code) i.next();

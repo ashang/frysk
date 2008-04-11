@@ -1,3 +1,15 @@
+2008-04-11  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxPtraceTaskState.java (Running.setupSteppingBreakpoint):
+	Removed.
+	(Running.handleTrappedEvent): Don't call
+	setupSteppingBreakpoint().
+	(Stepping.handleTrappedEvent): Don't do stepping breakpoint sanity
+	check. Don't call setupSteppingBreakpoint().
+	* LinuxPtraceTask.java (notifyCodeBreakpoint): Add stepping
+	breakpoint sanity check. Set task pc when breakpoint found. Set
+	steppingBreakpoint.
+	
 2008-04-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceProc.java: Clean up some indention and add/fix
