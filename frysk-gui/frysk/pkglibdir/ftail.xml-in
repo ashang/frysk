@@ -4,7 +4,7 @@
 
  This file is part of the program FRYSK.
 
- Copyright 2006, Red Hat Inc.
+ Copyright 2006, 2008, Red Hat Inc.
 
  FRYSK is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by
@@ -44,20 +44,26 @@
 -->
 
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
- "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "ftail">
+ <!ENTITY volume "8">
+ ]
+>
 
-<!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
-
-<refentry id="ftail">
+<refentry>
 
   <refentryinfo>
-    <title>ftail</title>
-    <date>19 December 2006</date>
+    <title>Frysk</title>
+    <date>April 2008</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>ftail</refentrytitle>
-    <manvolnum>8</manvolnum>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
   </refmeta>
 
   <refnamediv>

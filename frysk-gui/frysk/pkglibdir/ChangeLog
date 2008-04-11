@@ -1,3 +1,7 @@
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
+	* ftail.xml-in: Include version.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.xml-in: Rename funit.xml.
