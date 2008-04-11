@@ -253,8 +253,9 @@ echo_arch32_PROGRAMS()
 		  ;;
 	    esac
 
-	    echo "if DO_ARCH32_TEST"
 cat <<EOF
+
+if DO_ARCH32_TEST
 ${name_}_SOURCES = ${file}
 # why am_?
 am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)
@@ -271,7 +272,6 @@ EOF
 		echo "${name_}_LDADD = -lpthread"
 	    fi
 	    echo "endif"
-	    echo
             ;;
         * )
             ;;
@@ -563,7 +563,7 @@ generate_compile ()
     local suffix=$4
     local sources=$5
     local name=${d}/${b}
-    local name_=`echo ${name} | tr '[/-]' '[__]'`
+    local name_=`echo ${name} | sed -e 'y,-/,__,'`
     if has_main ${file} ; then
 	echo "${name_}_SOURCES = ${name}.${suffix}"
 	case "${suffix}" in
@@ -574,8 +574,8 @@ generate_compile ()
 	if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
 	    echo "${name_}_LDADD = -lpthread"
 	fi
-        # Generate the rules for arch32 test
-	echo_arch32_PROGRAMS ${name} ${name}${s}
+        # Generate the rules for 32-bit compile
+	echo_arch32_PROGRAMS ${name} ${name}.${suffix}
     else
 	automake_variable ${sources} += ${file}
     fi
@@ -877,20 +877,29 @@ print_header "bulk processing"
 
 while read file dir base suffix ; do
 
-    # echo file=$file dir=$dir base=$base suffix=$suffix 1>&2
+    echo ""
+    echo "# file=$file"
+    echo "# dir=$dir"
+    echo "# base=$base"
+    echo "# suffix=$suffix"
+    echo ""
 
     case $file in
 	*/cni/*.cxx | */cni/*.cxx-in | */cni/*.cxx-sh | */cni/*.hxx)
 	    generate_cni_header $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
-	*.java | *.java-in | *.java-sh )
-	    generate_jni_header $file $dir $base $suffix
-	    ;;
 	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh)
 	    generate_jni_dependency $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix \
 		lib${GEN_MAKENAME}_jni_a_SOURCES
+	    ;;
+	*.java | *.java-in | *.java-sh )
+	    generate_jni_header $file $dir $base $suffix
+	    ;;
+	*.cxx | *.S | *.c )
+	    # Non-cni/jni source.
+	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
     esac
 

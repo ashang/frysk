@@ -1,5 +1,8 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Re-include non-cni/jni .cxx et.al.  lost by
+	below.
+	
 	* Makefile.gen.sh (automake_variable_defined): New.
 	(automake_variable): Use.
 	(has_generated_java_source): New.
