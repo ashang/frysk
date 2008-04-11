@@ -156,6 +156,15 @@ EOF
     echo "$@" 1>&2
 }
 
+# Does the automake variable exist (as in did this file define it).
+
+automake_variable_defined ()
+{
+    local name=$1
+    local variable=variable_${name}_set
+    eval test -n \"\${${variable}:-}\"
+}
+
 # Called as: variable NAME = [VALUE] or variable NAME += VALUE sets or
 # appends variable $1 to value $3, if this is the fist time called.
 # The only GOT-YA is that all invocations of this function must occure
@@ -166,11 +175,15 @@ automake_variable ()
 {
     local name=$1 ; shift
     local op=$1 ; shift
-    if eval test -z "\${variable_${name}_set:-}" ; then
-	eval variable_${name}_set=true
+    if automake_variable_defined $name ; then
+	# Append only; ignore duplicate assigns
+	if test "x$op" = "x+=" ; then
+	    echo "$name" += "$@"
+	fi
+    else
+	local variable=variable_${name}_set
+	eval $variable=\'$name $op "$*"\'
 	echo "$name" = "$@"
-    elif test "x$op" = "x+=" ; then
-	echo "$name" += "$@"
     fi
 }
 
@@ -291,6 +304,25 @@ echo_LDFLAGS ()
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
 }
 
+# Returns true if the path leads to a java source generator.
+
+has_generated_java_source ()
+{
+    test \
+	-r $1.shenum \
+	-o -r $1.mkenum \
+	-o -r $1.java-sh \
+	-o -r $1.java-in
+}
+
+# Return true if the path leads to either java source, or a java
+# source generator.
+
+has_java_source ()
+{
+    test -r $1.java || has_generated_java_source $1
+}
+	   
 has_java_main ()
 {
     grep ' main[ ]*[(]' $1 > /dev/null 2>&1
@@ -410,14 +442,14 @@ print_header "... the lib${GEN_DIRNAME}.a skeleton"
 
 sources=lib${GEN_MAKENAME}_a_SOURCES
 
-cat <<EOF
-
 # Most of the directory's sources will be built into a single archive
 # (.a).  Start with a skeleton for that archive and then accumulate
 # the relevant files.
+automake_variable ${sources} =
+
+cat <<EOF
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
-${sources} =
 if JAR_COMPILE
 ${sources} += ${GEN_DIRNAME}.jar
 endif
@@ -478,10 +510,7 @@ for suffix in .java .java-sh .mkenum .shenum .java-in ; do
 	# source tree - handled earlier.
 	case ${suffix} in
 	    .java)
-		test -r "${d}/${b}.java-sh" && continue
-		test -r "${d}/${b}.mkenum" && continue
-		test -r "${d}/${b}.shenum" && continue
-		test -r "${d}/${b}.java-in" && continue
+		has_generated_java_source ${d}/${b} && continue
 		test -r "common/${b}.java-in" && continue # too strong?
 		test "${b}" = JUnitTests && continue # hack
 		test -r "${d}/${b}.g" && continue
@@ -526,46 +555,46 @@ for suffix in .java-in .java-sh .mkenum .shenum ; do
     done
 done
 
-for suffix in .cxx .c .hxx .s .S .c-sh .c-in .cxx-sh .cxx-in; do
-    print_header "... ${suffix}"
-    grep -e "\\${suffix}\$" files.list | while read file ; do
-	d=`dirname ${file}`
-	b=`basename ${file} ${suffix}`
-	name=${d}/${b}
-	name_=`echo ${name} | sed -e 'y,/-,__,'`
-	s=`echo ${suffix} | sed -e 's/-sh$//' -e 's/-in$//'`
-	if has_main ${file} ; then
-	    echo "${name_}_SOURCES = ${name}${s}"
-	    case "${s}" in
-		.cxx ) echo "${name_}_LINK = \$(CXXLINK)" ;;
-	    esac
-	    echo_PROGRAMS ${name}
-	    check_MANS ${name}
-	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
-		echo "${name_}_LDADD = -lpthread"
-	    fi
-            # Generate the rules for arch32 test
-	    echo_arch32_PROGRAMS ${name} ${name}${s}
-	else
-	    echo "${sources} += ${file}"
-	fi
-        case "${suffix}" in
-	    *-in | *-sh)
-		echo "BUILT_SOURCES += ${name}${s}"
-		echo "SCRIPT_BUILT += ${name}${s}"
-		;;
-	esac
+generate_compile ()
+{
+    local file=$1
+    local d=$2
+    local b=$3
+    local suffix=$4
+    local sources=$5
+    local name=${d}/${b}
+    local name_=`echo ${name} | tr '[/-]' '[__]'`
+    if has_main ${file} ; then
+	echo "${name_}_SOURCES = ${name}.${suffix}"
 	case "${suffix}" in
-	    # Hardwire assembler dependency on include/frysk-asm.h;
-	    # automake doesn't generate this :-( FIXME: ARCH-32 case?
-	    .S|.s)
-		echo "${name}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
-		echo "if DO_ARCH32_TEST"
-		echo "${d}/arch32/${b}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
-		echo "endif"
+	    cxx ) echo "${name_}_LINK = \$(CXXLINK)" ;;
 	esac
-    done
-done
+	echo_PROGRAMS ${name}
+	check_MANS ${name}
+	if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
+	    echo "${name_}_LDADD = -lpthread"
+	fi
+        # Generate the rules for arch32 test
+	echo_arch32_PROGRAMS ${name} ${name}${s}
+    else
+	automake_variable ${sources} += ${file}
+    fi
+    case "${file}" in
+	*-in | *-sh)
+	    echo "BUILT_SOURCES += ${name}.${suffix}"
+	    echo "SCRIPT_BUILT += ${name}.${suffix}"
+	    ;;
+    esac
+    case "${file}" in
+	*.S | *.s)
+	    # Hardwire assembler dependency on include/frysk-asm.h;
+	    # automake doesn't generate this :-(
+	    echo "${name}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
+	    echo "if DO_ARCH32_TEST"
+	    echo "${d}/arch32/${b}.\$(OBJEXT): \$(top_srcdir)/../frysk-imports/include/frysk-asm.h"
+	    echo "endif"
+    esac
+}
 
 # What type of build?
 if $cni ; then
@@ -596,13 +625,7 @@ generate_cni_header () {
 	if test "$action" = "minclude" ; then
             # Assume file defining macro depends on this file
 	    automake_variable $m = \$\($_file\)
-	elif test \
-	       -r ${h}.java \
-	    -o -r ${h}.shenum \
-	    -o -r ${h}.mkenum \
-	    -o -r ${h}.java-sh \
-	    -o -r ${h}.java-in \
-	    ; then
+	elif has_java_source ${h} ; then
 	    echo "JAVAH_CNI_BUILT += ${h}.h"
 	    echo "CLEANFILES += ${h}.h"
 	    echo "CLEANFILES += ${h}\\\$\$*.h"
@@ -643,9 +666,28 @@ generate_jni_header ()
 	automake_variable JAVAH_JNI_BUILT += ${h}.h
 	echo "CLEANFILES += ${h}.h"
 	echo "${h}.h: $file | ${GEN_DIRNAME}.jar"
+	echo "	@echo \"$c => ${h}.h\""
 	echo '	$(GCJH) $(GCJHFLAGS) -jni -classpath=$(CLASSPATH):'${GEN_DIRNAME}.jar $c
     fi
 }
+
+# For JNI .cxx files, generate an explict depend on what should be the
+# corresponding JNI header.  What about .cxx files that are not jni?
+
+generate_jni_dependency()
+{
+    local file=$1
+    local d=$2 # contains /jni
+    local b=$3
+    local suffix=$4
+    local j=`dirname $d` # drop /jni
+    if has_java_source $j/$b ; then
+	# A corresponding .java source file.
+	local h=`echo $j/$b | tr '[/]' '[_]'`
+	echo "$d/$b.o: $h.h"
+    fi
+}
+
 
 # Generate rules for all .xml-in files, assume that they are converted
 # to man pages.
@@ -830,6 +872,9 @@ sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-z-]*\)\),\1 \2 \3 \4,' \
     -e 's,-sh$,,' \
     < files.list \
     > files.base
+
+print_header "bulk processing"
+
 while read file dir base suffix ; do
 
     # echo file=$file dir=$dir base=$base suffix=$suffix 1>&2
@@ -837,10 +882,21 @@ while read file dir base suffix ; do
     case $file in
 	*/cni/*.cxx | */cni/*.cxx-in | */cni/*.cxx-sh | */cni/*.hxx)
 	    generate_cni_header $file $dir $base $suffix
+	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
 	*.java | *.java-in | *.java-sh )
 	    generate_jni_header $file $dir $base $suffix
 	    ;;
+	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh)
+	    generate_jni_dependency $file $dir $base $suffix
+	    generate_compile $file $dir $base $suffix \
+		lib${GEN_MAKENAME}_jni_a_SOURCES
+	    ;;
     esac
 
 done < files.base
+
+
+if automake_variable_defined lib${GEN_MAKENAME}_jni_a_SOURCES ; then
+    echo "noinst_LIBRARIES += lib${GEN_DIRNAME}-jni.a"
+fi

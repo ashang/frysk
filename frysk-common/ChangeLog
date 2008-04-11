@@ -1,5 +1,12 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (automake_variable_defined): New.
+	(automake_variable): Use.
+	(has_generated_java_source): New.
+	(has_java_source): New; use has_generated_java_source.
+	(sources): Pass to automake_variable.
+	(generate_compile): New; replace .cxx pass.
+	
 	* Makefile.rules (JAVAH_CNI_BUILT): Replace JAVAH_BUILT.
 	* Makefile.gen.sh (generate_cni_header): New.
 	(generate_jni_header): New.
