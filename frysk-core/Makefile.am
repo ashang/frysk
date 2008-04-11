@@ -231,8 +231,13 @@ frysk_pkglibdir_funit_quicksort_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-b
 
 # Create sysroot for TestSysRoot.java
 
-all-local: frysk/pkglibdir/test-sysroot frysk/pkglibdir/arch32/test-sysroot
-frysk/pkglibdir/test-sysroot: $(frysk_pkglibdir_funit_quicksort_SOURCES)
+TEST_SYSROOT = frysk/pkglibdir/test-sysroot
+if DO_ARCH32_TEST
+TEST32_SYSROOT = frysk/pkglibdir/arch32/test-sysroot
+endif
+all-local: $(TEST_SYSROOT) $(TEST32_SYSROOT)
+
+$(TEST_SYSROOT): $(frysk_pkglibdir_funit_quicksort_SOURCES)
 	mkdir -p $@/usr/src/debug
 	cp $(abspath $(srcdir)/$(frysk_pkglibdir_funit_quicksort_SOURCES)) \
 	   $@/usr/src/debug
@@ -253,9 +258,9 @@ install-exec-local: install-sysroot-local
 uninstall-local: uninstall-sysroot-local
 .PHONY: install-sysroot-local uninstall-sysroot-local
 install-sysroot-local:
-	cp -r frysk/pkglibdir/test-sysroot $(DESTDIR)$(pkglibdir)
+	cp -r $(TEST_SYSROOT) $(DESTDIR)$(pkglibdir)
 if DO_ARCH32_TEST
-	cp -r frysk/pkglibdir/arch32/test-sysroot $(DESTDIR)$(pkglib32dir)
+	cp -r $(TEST32_SYSROOT) $(DESTDIR)$(pkglib32dir)
 endif
 # we don't want this installed, but noinst_SCRIPTS has no effect
 	rm -f $(libdir)/frysk/gen-type-funit-tests

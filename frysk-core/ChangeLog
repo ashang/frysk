@@ -1,5 +1,9 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (all-local) [DO_ARCH32_TEST]: Conditionally add
+	frysk/pkglibdir/arch32/test-sysroot to all-local's dependencies.
+	(TEST_SYSROOT, TEST32_SYSROOT): Define.
+	
 	* .gitignore: Ignore files.base.
 
 2008-04-08  Stan Cox  <scox@redhat.com>
