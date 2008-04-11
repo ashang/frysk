@@ -80,7 +80,7 @@ CLEANFILES += JniRunner
 JniRunner:
 	rm -f $@.tmp
 	echo "#!/bin/sh"					>> $@.tmp
-	echo "LD_PRELOAD=/usr/lib/libstdc++.so.6 \\"		>> $@.tmp
+	echo "LD_PRELOAD=$(libdir)/libstdc++.so.6 \\"		>> $@.tmp
 	echo "LD_LIBRARY_PATH=. \\"				>> $@.tmp
 	echo "CLASSPATH=$(CLASSPATH):frysk-sys.jar:JniRunner.jar \\" >> $@.tmp
 	echo "java JniRunner \"$$@\""				>> $@.tmp
