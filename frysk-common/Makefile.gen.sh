@@ -867,7 +867,7 @@ done
 # It is assumed that each file is of the form DIRNAME/BASENAME.SUFFIX,
 # pre-process each into: FILE DIRNAME BASENAME SUFFIX
 
-sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-z-]*\)\),\1 \2 \3 \4,' \
+sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-zA-Z-]*\)\),\1 \2 \3 \4,' \
     -e 's,-in$,,' \
     -e 's,-sh$,,' \
     < files.list \

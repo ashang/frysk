@@ -1,5 +1,8 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (files.base): Handle .S when breaking down file
+	names.
+	
 	* Makefile.gen.sh (solib_PROGRAMS): Fix typo; Use GEN_DIRNAME not
 	GEN_MAKENAME.
 	
