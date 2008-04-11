@@ -1,5 +1,9 @@
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
+	* .gitignore: Ignore files.base.
+
+2008-04-11  Andrew Cagney  <cagney@redhat.com>
+
 	* bootstrap.sh: Pass both --cni and --jni to Makefile.gen.sh.
 
 2007-12-11  Andrew Cagney  <cagney@redhat.com>

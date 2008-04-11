@@ -10,3 +10,4 @@ depcomp
 files.list
 install-sh
 missing
+files.base
