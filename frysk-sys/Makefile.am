@@ -90,8 +90,9 @@ JniRunner:
 CLEANFILES += JniRunner.class JniRunner.jar
 JniRunner.jar: JniRunner.java
 	rm -f $@.tmp
-	$(JAVAC) $(JAVACFLAGS) JniRunner.java
+	$(JAVAC) `echo $(JAVACFLAGS) | sed -e 's/-classpath /-classpath frysk-sys.jar:/'` JniRunner.java
 	jar cf $@ JniRunner.class
+	rm JniRunner.class
 CLEANFILES += JniRunner.java
 JniRunner.java: common/TestRunner.java-in
 	rm -f $@.tmp
