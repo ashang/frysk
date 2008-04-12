@@ -1,3 +1,8 @@
+2008-04-16  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TaskTracer.java (getReturnAddress): Fetch the return address
+	through outer frame address again.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* TaskTracer.java

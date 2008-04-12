@@ -56,6 +56,7 @@ import frysk.rt.PLTBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
 import frysk.rt.SymbolBreakpoint;
+import frysk.stack.StackFactory;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
 
@@ -234,8 +235,7 @@ class TaskTracer
 
 	private long getReturnAddress(Task task) {
 	    try {
-		//return StackFactory.createFrame(task).getOuter().getAddress();
-		return arch.getReturnAddress(task);
+		return StackFactory.createFrame(task).getOuter().getAddress();
 	    } catch (java.lang.NullPointerException npe) {
 		return 0;
 	    }
