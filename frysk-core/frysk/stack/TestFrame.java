@@ -211,4 +211,58 @@ public class TestFrame extends TestLib {
 	assertRunUntilStop("wait for hit");
 	assertTrue(code.hit);
     }
+
+    /**
+     * Explicit test for bug #6029. Make sure that when generating
+     * backtrace in the updateHit() method the address is correct.
+     */
+    public void testInnerFrameAddress() throws ElfException
+    {
+      String[] cmd =
+	{ Config.getPkgLibFile("funit-hello").getPath(), "world" };
+      DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
+      Task task = child.getMainTask();
+      Info info = new Info(task);
+      
+      long address = info.getFunctionEntryAddress("print");
+      CodeObserver code = new CodeObserver();
+      task.requestAddCodeObserver(code, address);
+      assertRunUntilStop("add breakpoint observer");
+      
+      child.requestRemoveBlock();
+      assertFalse(code.hit);
+      assertRunUntilStop("wait for hit");
+      assertTrue(code.hit);
+    }
+
+  static class CodeObserver implements TaskObserver.Code
+  {
+    public boolean hit = false;
+    
+    public Action updateHit (Task task, long hitAddress)
+    {
+      hit = true;
+      long frameAddress = StackFactory.createFrame(task).getAddress();
+      assertEquals("Hit and Frame address", hitAddress, frameAddress);
+
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+    
+    public void addFailed (Object observable, Throwable w)
+    {
+      // Whoa
+      w.printStackTrace();
+    }
+    
+    public void addedTo (Object observable)
+    {
+      Manager.eventLoop.requestStop();
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // We never delete
+    }
+  }
 }
