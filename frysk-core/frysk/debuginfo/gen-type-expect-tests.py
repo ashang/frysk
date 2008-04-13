@@ -135,7 +135,6 @@ public class %s extends TestLib {
 
     def start_test(self, executable, name):
         print("    public void test_%s () {" % (name))
-        print("      if (unresolved(6396)) return;");
         tokens = os.path.splitext(os.path.abspath(executable))
         print('	TypeTestbed typeTestbed = new TypeTestbed("%s", "test%s");' % (os.path.basename(tokens[0]), name))
 
