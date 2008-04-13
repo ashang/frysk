@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -897,7 +897,8 @@ while read file dir base suffix ; do
 	*.java | *.java-in | *.java-sh )
 	    generate_jni_header $file $dir $base $suffix
 	    ;;
-	*.cxx | *.S | *.c )
+	*.cxx | *.c | *.S | *.cxx-in | *.c-in | *.S-in \
+	    | *.cxx-sh | *.c-sh | *.S-sh )
 	    # Non-cni/jni source.
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;

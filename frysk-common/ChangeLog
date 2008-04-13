@@ -1,3 +1,7 @@
+2008-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Generate compile rules for .{c,S,cxx}-{in,sh}.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.h): Get the .class files from the .jar.
