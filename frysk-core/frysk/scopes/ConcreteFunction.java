@@ -58,13 +58,13 @@ import frysk.value.FunctionType;
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.
  */
-public class Subprogram extends Function
+public class ConcreteFunction extends Function
 {
   // Language language;
     FunctionType functionType;
     LinkedList parameters;
     
-    public Subprogram(DwarfDie die, TypeFactory typeFactory) {
+    public ConcreteFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
 
 	parameters = new LinkedList();

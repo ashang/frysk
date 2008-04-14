@@ -52,7 +52,7 @@ import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.scopes.LexicalBlock;
 import frysk.scopes.Scope;
-import frysk.scopes.Subprogram;
+import frysk.scopes.ConcreteFunction;
 import frysk.scopes.Function;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
@@ -120,7 +120,7 @@ public class TestFrameDebugInfo extends TestLib {
     Task task = (new DaemonBlockedAtSignal("funit-empty-functions" + ext)).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-    Subprogram subprogram = frame.getSubprogram();
+    ConcreteFunction subprogram = frame.getSubprogram();
     assertNotNull(subprogram);
   }
   
@@ -344,7 +344,7 @@ public class TestFrameDebugInfo extends TestLib {
       Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     
     DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-    Subprogram subprogram = null;
+    ConcreteFunction subprogram = null;
     
     while(frame.getOuterDebugInfoFrame() != null){
 	subprogram = frame.getSubprogram();
@@ -377,7 +377,7 @@ public class TestFrameDebugInfo extends TestLib {
   public void values(String ext) throws NameNotFoundException
   {
     Task task = (new DaemonBlockedAtSignal("funit-stacks-values" + ext)).getMainTask();
-    Subprogram subprogram;
+    ConcreteFunction subprogram;
     DebugInfoFrame frame;
     Variable variable;
     
@@ -454,7 +454,7 @@ public class TestFrameDebugInfo extends TestLib {
   {
       Task task = (new DaemonBlockedAtSignal("funit-stacks-linenum" + ext)).getMainTask();
       
-      Subprogram subprogram;
+      ConcreteFunction subprogram;
       DebugInfoFrame frame;
       Variable variable;
       
@@ -524,7 +524,7 @@ public class TestFrameDebugInfo extends TestLib {
 	      
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createVirtualStackTrace(task);
-	Subprogram subprogram = frame.getSubprogram();
+	ConcreteFunction subprogram = frame.getSubprogram();
 
 	LinkedList parameters = subprogram.getParameters();
 	assertEquals("Correct number of parameters", 1, parameters.size());

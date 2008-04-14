@@ -43,7 +43,7 @@ import java.io.PrintWriter;
 
 import frysk.proc.Task;
 import frysk.scopes.Scope;
-import frysk.scopes.Subprogram;
+import frysk.scopes.ConcreteFunction;
 import frysk.stack.StackFactory;
 
 /**
@@ -80,8 +80,8 @@ public class DebugInfoStackFactory {
 	    // For any inlined scopes, create virtual frames.
 	    for (Scope scope = debugFrame.getScopes();
 		 scope != null; scope = scope.getOuter()) {
-		if (scope instanceof Subprogram && ((Subprogram)scope).isInlined()) {
-		    Subprogram subprogram = (Subprogram) scope;
+		if (scope instanceof ConcreteFunction && ((ConcreteFunction)scope).isInlined()) {
+		    ConcreteFunction subprogram = (ConcreteFunction) scope;
 		    currentFrame = new VirtualDebugInfoFrame(currentFrame,
 							     debugFrame);
 		    currentFrame.setSubprogram(subprogram);

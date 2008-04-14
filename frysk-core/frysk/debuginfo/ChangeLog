@@ -1,8 +1,16 @@
 2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	Renamed Subprogram to CocreteFuction.
+	* DebugInfoStackFactory.java: Updated.
+	* DebugInfoFrame.java: Updated.
+	* TestFrameDebugInfo.java: Updated.
+
+2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	Renamed Subroutine to Function.
 	* DebugInfoFrame.java: Updated.
-	* TestDebugInfoStackTrace.java: Updated.
+	* TestFrameDebugInfo.java: Updated.
+	* DebugInfoStackFactory.java: Updated.
 
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 

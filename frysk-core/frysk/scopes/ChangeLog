@@ -1,3 +1,9 @@
+2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ConcreteFunction.java: Renamed Subprogram to CocreteFuction.
+	* TestScopes.java: Updated.
+	* ScopeFactory.java: Updated.
+
 2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* Function.java: renamed Subroutine to Function. 

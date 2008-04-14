@@ -55,7 +55,7 @@ public class TestScopes extends TestLib{
     public void testGetOriginalSubprogram(){
 	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class")).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	Subprogram subprogram = frame.getSubprogram();
+	ConcreteFunction subprogram = frame.getSubprogram();
 	
 	Composite struct = subprogram.getComposite();
 	
@@ -70,7 +70,7 @@ public class TestScopes extends TestLib{
     public void testGetOriginalStaticSubprogram(){
 	Task task = (new DaemonBlockedAtSignal("funit-cpp-scopes-class-static")).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	Subprogram subprogram = frame.getSubprogram();
+	ConcreteFunction subprogram = frame.getSubprogram();
 	
 	Composite struct = subprogram.getComposite();
 	
