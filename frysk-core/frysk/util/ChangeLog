@@ -2,6 +2,10 @@
 
 	* TestCommandlineParser.java: Use frysk.config.Prefix.
 
+2008-04-14  Petr Machata  <pmachata@redhat.com>
+
+	* Glob.java (matchBrack): Support ^ for complement.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* ArchFormatter.java: New file.  Code moved from
