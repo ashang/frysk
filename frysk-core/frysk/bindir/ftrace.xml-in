@@ -245,7 +245,7 @@
     following process takes place.  Initial working set is empty.
     Rules, if present, are then enumerated from left to right, and set
     is modified depending on the rules.  Rules are delimited by a
-    colon.  Syntax of each rule is following:</para>
+    comma.  Syntax of each rule is following:</para>
 
     <para>[-][#]<replaceable>pattern</replaceable></para>
 
@@ -263,15 +263,16 @@
 
     <para>All three components, <replaceable>symbol</replaceable>,
     <replaceable>soname</replaceable> and
-    <replaceable>version</replaceable>, are written using extended
-    regular expression syntax.  Any of the components can be omitted,
-    missing component is then wild card matching anything.  By
-    extension, empty pattern matches all symbols of all versions in
-    all libraries and in the executable itself.</para>
+    <replaceable>version</replaceable>, are written using glob
+    expression syntax.  Any of the components can be omitted, missing
+    component is then wild card matching anything.  By extension,
+    empty pattern matches all symbols of all versions in all libraries
+    and in the executable itself.</para>
 
     <para><replaceable>symbol</replaceable> component is matched
-    against name of symbol associated with PLT slot under
-    consideration.  Whole symbol name has to match.</para>
+    against the name of symbol under consideration (or symbol
+    associated with PLT slot in case of -plt option).  Whole symbol
+    name has to match.</para>
 
     <para><replaceable>soname</replaceable> component is matched
     against a soname of a library in which we wish to track the call.
@@ -379,7 +380,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(7)</para>
+    <para>frysk(7), glob(7)</para>
   </refsect1>
   
   <!-- refsect1>
