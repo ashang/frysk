@@ -262,10 +262,13 @@ am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)
 ${name_}_LINK = \$(ARCH32_${linker})
 ${dir}32_PROGRAMS += ${dir_name}/arch32/${base_name}
 MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)
-${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibdir/arch32/\$(am__dirstamp)
-	source='\$<' object='\$@' libtool=no \
-	DEPDIR=\$(DEPDIR) \$(CCDEPMODE) \$(depcomp) \
+# XXX: Re-compile whenever the base .o file chages; avoids getting
+# .deps working.
+${dir_name}/arch32/${base_name}.\$(OBJEXT): ${file}
 	\$(ARCH32_${compiler}) -c -o \$@ $<
+${dir_name}/arch32/${base_name}.\$(OBJEXT): \\
+${dir_name}/${base_name}.\$(OBJEXT) \\
+frysk/pkglibdir/arch32/\$(am__dirstamp)
 EOF
 
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then

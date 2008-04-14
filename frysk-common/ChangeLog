@@ -1,5 +1,8 @@
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (echo_arch32_PROGRAMS): Run the compiler
+	directly; to avoid .deps stuff.
+
 	* Makefile.rules (SUBST): For .c and .cxx, add a #line directive
 	pointing to the original file.
 	
