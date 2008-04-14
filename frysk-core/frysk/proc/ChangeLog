@@ -1,6 +1,7 @@
 2008-04-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestTaskObserverWatchpoint.java (testRunningAndReadOnlyWatchpoint): New.
+	(testWatchpointActionContinue): Change hit.code to 2,(test above adds another hit).
 
 2008-04-10  Phil Muldoon  <pmuldoon@redhat.com>
 
