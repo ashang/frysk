@@ -1,5 +1,7 @@
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getFryskTestDir()): Delete.
+	
 	* jni/Config.cxx (Java_frysk_config_Config_getWordSize): Delete.
 	(Java_frysk_config_Config_getTargetCpuXXX): Delete.
 	* cni/Config.cxx-in (Config::getWordSize): Delete.

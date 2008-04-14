@@ -41,8 +41,8 @@ package frysk.gui.test;
 
 import java.io.File;
 
-import frysk.config.Config;
 import frysk.junit.TestCase;
+import frysk.testbed.TearDownFile;
 
 public class GuiTestCase extends TestCase{
   public static File TEST_DIR;
@@ -50,11 +50,35 @@ public class GuiTestCase extends TestCase{
   public static File SESSIONS_TEST_DIR ;
   public static File TAGSETS_TEST_DIR;
   
+
+    /**
+     * FIXME: Should have a frysk.testbed.TearDownDirectory factory
+     * that handles all this.
+     */
+    private File getFryskTestDir() throws Exception {
+	File file = null;
+	file = TearDownFile.create();
+	
+	String path = file.getAbsolutePath();
+	file.delete();
+	file = new File(path);
+	
+	if(!file.mkdirs()){
+	    throw new Exception("Could not create test directory " + file.getAbsolutePath());
+	}
+	
+	// FIXME: deleteOnExit() isn't really reliable; especially
+	// when there's no guarentee that the directory contains no
+	// files; should be a TearDownDirectory object.
+	file.deleteOnExit();
+	return file;
+    }
+
   protected void setUp () throws Exception
   {
     super.setUp();
     
-    TEST_DIR =  Config.getFryskTestDir();
+    TEST_DIR = getFryskTestDir();
     OBSERVERS_TEST_DIR = new File(TEST_DIR.getPath() + "/Observers/");
     SESSIONS_TEST_DIR = new File(TEST_DIR.getPath() + "/Sessions/");
     TAGSETS_TEST_DIR = new File(TEST_DIR.getPath() + "/Tagsets/");

@@ -41,8 +41,6 @@ package frysk.config;
 
 import java.io.File;
 
-import frysk.testbed.TearDownFile;
-
 /**
  * All the run-time (install time) configuration information.
  */
@@ -216,22 +214,6 @@ public class Config
 	if(file.exists()){
 	    file.mkdir();
 	}
-	return file;
-    }
-    
-    public static File getFryskTestDir() throws Exception {
-	File file = null;
-	file = TearDownFile.create();
-      
-	String path = file.getAbsolutePath();
-	file.delete();
-	file = new File(path);
-      
-	if(!file.mkdirs()){
-	    throw new Exception("Could not create test directory " + file.getAbsolutePath());
-	}
-      
-	file.deleteOnExit();
 	return file;
     }
     
