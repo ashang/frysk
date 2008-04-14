@@ -67,18 +67,29 @@ public class TestScopeFactory
       Scope scope1 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
       Scope scope2 = ScopeFactory.theFactory.getScope(scopes[1], typeFactory);
       Scope scope3 = ScopeFactory.theFactory.getScope(scopes[2], typeFactory);
-      
+
       Scope scope4 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
       Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1], typeFactory);
       Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2], typeFactory);
+
+      // test scopes from outer frame
+      frame = frame.getOuter();
+      scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+
+      Scope scope7 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
+      Scope scope8 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
+
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-      assertTrue("InlinedSubroutine scope" , scope2 instanceof Subroutine && ((Subroutine)scope2).isInlined());
-      assertTrue("lexical block scope" , scope3 instanceof Scope);
+      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine && ((Subroutine)scope2).isInlined());
+      assertTrue("File scope" , scope3 instanceof Scope);
+      
+      assertTrue("Subprogram scope" , scope7 instanceof Subroutine && !((Subroutine)scope7).isInlined());
       
       assertTrue("same object" , scope1 == scope4);
       assertTrue("same object" , scope2 == scope5);
       assertTrue("same object" , scope3 == scope6);
+      assertTrue("same object" , scope7 == scope8);
       
     }    
 }

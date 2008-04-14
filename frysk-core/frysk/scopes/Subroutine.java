@@ -90,6 +90,12 @@ public class Subroutine extends NamedScope {
 	return struct;
     }
 
+    /**
+     * returns true if:
+     * - this is a concrete instance of an inlined function
+     * - this is an abstrace instance of an inlinable function
+     * - a regular funciton which has been inlined by the compiler
+     */
     public boolean isInlined(){
 	DwTag dwTag = getDie().getTag();
 	long inlineAttribute = getDie().getAttrConstant(DwAt.INLINE);

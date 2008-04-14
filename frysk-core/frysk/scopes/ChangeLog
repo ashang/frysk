@@ -1,3 +1,10 @@
+2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestScopeFactory.java: test InlinedSubroutine.
+	* ScopeFactory.java: Now handles InlinedSubroutine objects.
+	* Subroutine.java: Updated javadoc.
+	* InlinedSubroutine.java: New class.
+
 2008-04-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* NamedScope.java: New class.
