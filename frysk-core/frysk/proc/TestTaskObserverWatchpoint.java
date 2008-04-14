@@ -177,7 +177,62 @@ extends TestLib
 
     }
 
-    
+
+    // This test case tests whether 'read or write' watchpoints are caught when a task is in a straight
+    // "running" condition.  In this  test:  set up the 'read or write' watchpoint, set up
+    // a terminated observer to guard the watchpoint was caught, and simply set the task to run.
+    // If the watchpoint observer is called on address read, and the test is blocked then the 
+    // test passes. If the process terminates and the watchpoint is not caught, 
+    // then this signified an error condition.
+    public void testRunningAndReadOnlyWatchpoint () {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	
+	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
+		Config.getPkgLibFile("funit-watchpoint"));
+	assertNotNull(ackProc);
+
+	// Get Proc/Task.
+	Proc proc = ackProc.getMainTask().getProc();
+	Task task = proc.getMainTask();
+
+	// Watch for any unexpected terminations of the child process.
+	TerminatedObserver to = new TerminatedObserver();
+	task.requestAddTerminatedObserver(to);
+
+	// Break at main
+	long mainAddress = getGlobalSymbolAddress(task, "main");
+	CodeObserver co = new CodeObserver();
+	task.requestAddCodeObserver(co, mainAddress);
+	ackProc.requestUnblock();
+	assertRunUntilStop("Run to main");
+
+	// Find Variable source for watch
+	long address = getGlobalSymbolAddress(task,"read_only");
+
+	// Add watch observer. Set it to fire on read OR write.
+	WatchObserver watch = new WatchObserver(task, address, 4);
+	task.requestAddWatchObserver(watch, address, 4, false);
+
+	task.requestUnblock(co);
+	assertRunUntilStop("Run and test watchpoint ");
+
+	// Make sure it triggered.
+	assertTrue("added", watch.added);
+	assertEquals("hit code", 1, watch.hit);
+
+	// Delete both observers.
+	task.requestDeleteCodeObserver(co, mainAddress);
+	task.requestDeleteWatchObserver(watch, address, 4, true);
+	runPending();
+
+	// Verify they were removed.
+	assertTrue("deleted watch", watch.deleted);
+	assertTrue("deleted code", co.deleted);
+	assertEquals("hit code", 1, watch.hit);
+
+    }
+
     // This test tests that a watchpoint is properly deleted: from the othe observer lists
     // and the hardware. In this case, if the watchpoint is caught, then it fails. It should have
     // been deleted. This test adds the watchpoint, then runs to main, then deletes the watchpoint.

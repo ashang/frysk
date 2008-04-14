@@ -60,16 +60,16 @@ LOAD_IMMED_BYTE (REG3, 0x77)
 
 // Clear the decks ...
 NOP
-NOP
-NOP
-
 // Write 0x77 into the location of source (held by GPR1)
 STORE_WORD(REG3, REG1)
+NOP
 
-// Clear the decks ....
 NOP
+// Read read_only memory, and copy it to source
+LOAD_IMMED_WORD(REG3, read_only)
+STORE_WORD(REG3, REG1)
 NOP
-NOP
+
 
 // End. And exit
 MAIN_EPILOGUE(0)
@@ -80,4 +80,6 @@ FUNCTION_END(main,0)
 .globl source
 WORD(source, 0x99)
 
+.globl read_only
+WORD(read_only, 0x01)
 
