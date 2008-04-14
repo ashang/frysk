@@ -1,5 +1,8 @@
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (SUBST): For .c and .cxx, add a #line directive
+	pointing to the original file.
+	
 	* Makefile.rules (SUBST_SED): Substitute @host_cpu@.
 	* frysk-common.ac: Add AC_CANONICAL_HOST.
 
