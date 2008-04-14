@@ -58,7 +58,7 @@ import frysk.value.FunctionType;
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.
  */
-public class Subprogram extends Subroutine
+public class Subprogram extends Function
 {
   // Language language;
     FunctionType functionType;

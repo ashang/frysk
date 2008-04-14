@@ -53,7 +53,7 @@ import frysk.proc.Task;
 import frysk.scopes.LexicalBlock;
 import frysk.scopes.Scope;
 import frysk.scopes.Subprogram;
-import frysk.scopes.Subroutine;
+import frysk.scopes.Function;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
@@ -219,7 +219,7 @@ public class TestFrameDebugInfo extends TestLib {
     Scope scope3 = scope2.getOuter();
     
     assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-    assertTrue("InlinedSubroutine scope" , scope2 instanceof Subroutine && ((Subroutine)scope2).isInlined());
+    assertTrue("InlinedSubroutine scope" , scope2 instanceof Function && ((Function)scope2).isInlined());
     assertTrue("lexical block scope" , scope3 instanceof Scope);
     
   }

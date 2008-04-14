@@ -42,7 +42,7 @@ package frysk.scopes;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeFactory;
 
-public class InlinedSubroutine extends Subroutine{
+public class InlinedSubroutine extends Function{
 
     public InlinedSubroutine(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);

@@ -1,3 +1,9 @@
+2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	Renamed Subroutine to Function.
+	* DebugInfoFrame.java: Updated.
+	* TestDebugInfoStackTrace.java: Updated.
+
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LocationExpression.java: Use frysk.config.Host.

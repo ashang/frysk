@@ -55,13 +55,13 @@ import lib.dwfl.DwarfDie;
  * In DWARF a subroutine is used to refer to an entity that can either be a
  * concrete function (Subprogram) or an inlined function (InlinedSubprogram).
  */
-public class Subroutine extends NamedScope {
+public class Function extends NamedScope {
 
     Composite struct;
     Type type;
     private LocationExpression locationExpression;
     
-    public Subroutine(DwarfDie die, TypeFactory typeFactory) {
+    public Function(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
 	this.type = typeFactory.getType(die);
 	locationExpression = new LocationExpression(die);

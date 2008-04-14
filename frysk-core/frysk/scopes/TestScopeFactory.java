@@ -81,10 +81,10 @@ public class TestScopeFactory
 
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine && ((Subroutine)scope2).isInlined());
+      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine && ((Function)scope2).isInlined());
       assertTrue("File scope" , scope3 instanceof Scope);
       
-      assertTrue("Subprogram scope" , scope7 instanceof Subroutine && !((Subroutine)scope7).isInlined());
+      assertTrue("Subprogram scope" , scope7 instanceof Function && !((Function)scope7).isInlined());
       
       assertTrue("same object" , scope1 == scope4);
       assertTrue("same object" , scope2 == scope5);

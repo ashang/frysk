@@ -1,3 +1,10 @@
+2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* Function.java: renamed Subroutine to Function. 
+	* TestScopeFactory.java: Updated
+	* Subprogram.java: Updated.
+	* InlinedSubroutine.java: Updated.
+
 2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestScopeFactory.java: test InlinedSubroutine.

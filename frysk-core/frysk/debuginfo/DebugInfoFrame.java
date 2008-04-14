@@ -52,7 +52,7 @@ import frysk.scopes.ScopeFactory;
 import frysk.scopes.SourceLocation;
 import frysk.scopes.SourceLocationFactory;
 import frysk.scopes.Subprogram;
-import frysk.scopes.Subroutine;
+import frysk.scopes.Function;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
 
@@ -231,7 +231,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	if (scope != null) {
 	    writer.print(indentString + "{");
 	    scope.toPrint(this, writer, indentString);
-	    if(!(scope.getInner() instanceof Subroutine && ((Subroutine)scope.getInner()).isInlined())){
+	    if(!(scope.getInner() instanceof Function && ((Function)scope.getInner()).isInlined())){
 		printScope(writer, scope.getInner(), indentString+" ");
 	    }
 	    writer.println(indentString+"}");
