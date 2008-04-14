@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007, Red Hat Inc.
+# Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 # Copyright 2007 Oracle Corporation.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
@@ -37,6 +37,12 @@
 # modification, you must delete this exception statement from your
 # version and license this file solely under the GPL without
 # exception.
+
+# Determine the host information - needed when deciding how native
+# tests should be run.
+
+AC_CANONICAL_HOST
+
 
 AC_ARG_VAR([GCJFLAGS], [GCJ compiler flags])
 

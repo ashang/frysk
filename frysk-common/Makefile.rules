@@ -278,6 +278,7 @@ SUBST_SED = sed \
 		-e 's,[@]GEN_DIRNAME[@],$(GEN_DIRNAME),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
 		-e 's,[@]VERSION[@],$(VERSION),g' \
+		-e 's,[@]host_cpu[@],@host_cpu@,g' \
 		-e 's,[@]target_cpu[@],@target_cpu@,g'
 
 SUBST = \

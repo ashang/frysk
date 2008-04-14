@@ -117,7 +117,7 @@ public class TestConfig
     public void testInstallDirs ()
     {
 	Config.set (Config.createInstallConfig ());
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
 	    break;
@@ -136,7 +136,7 @@ public class TestConfig
     public void testBuildDirs ()
     {
 	Config.set (Config.createBuildConfig ("src-dir", "build-dir"));
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
 	    break;
@@ -150,7 +150,7 @@ public class TestConfig
 
     public void testBuild32() {
 	Config.set (Config.createBuildConfig32("src-dir", "build-dir"));
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
 	    break;
@@ -163,7 +163,7 @@ public class TestConfig
     }
     public void testInstall32() {
 	Config.set (Config.createInstallConfig32());
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
 	    break;
@@ -176,7 +176,7 @@ public class TestConfig
     }
     public void testBuild64() {
 	Config.set (Config.createBuildConfig64("src-dir", "build-dir"));
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    assertNull("config", Config.get());
 	    break;
@@ -189,7 +189,7 @@ public class TestConfig
     }
     public void testInstall64() {
 	Config.set (Config.createInstallConfig64());
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    assertNull("config", Config.get());
 	    break;

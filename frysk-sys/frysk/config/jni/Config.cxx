@@ -119,23 +119,3 @@ Java_frysk_config_Config_getAbsRootSrcDir (JNIEnv *env, jclass)
   }
   return 0;
 }
-
-JNIEXPORT jint
-Java_frysk_config_Config_getWordSize (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_Config_getWordSize not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jstring
-Java_frysk_config_Config_getTargetCpuXXX (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_Config_getTargetCpuXXX not implemented");
-  }
-  return 0;
-}

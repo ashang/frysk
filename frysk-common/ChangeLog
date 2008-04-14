@@ -1,3 +1,8 @@
+2008-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST_SED): Substitute @host_cpu@.
+	* frysk-common.ac: Add AC_CANONICAL_HOST.
+
 2008-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Generate compile rules for .{c,S,cxx}-{in,sh}.

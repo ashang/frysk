@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,64 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.expr;
+package frysk.config;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-import java.util.List;
-import frysk.config.Host;
-import frysk.value.ObjectDeclaration;
-import frysk.value.Type;
-import frysk.value.Value;
-import frysk.scopes.Variable;
+/**
+ * Host (or executable) configuration information.
+ */
 
-public class ScratchSymTab implements ExprSymTab {
+public class Host {
     /**
-     * Lookup S, assuming S is variable or constant.
+     * The word size of the host architecture (this is the
+     * architecture for which the frysk executable built).
      */
-    public Value getValue(String s) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Lookup S, assuming S is a variable.
-     */
-    public ObjectDeclaration getObjectInScope(String s) {
-	throw new RuntimeException("no variables");
-    }
-    /**
-     * The byte order to use when creating new values.
-     */
-    public ByteOrder order() {
-	throw new RuntimeException("no byte-order");
-    }
-    /**
-     * Return the task's memory buffer
-     */
-    public ByteBuffer taskMemory() {
-	throw new RuntimeException("no memory");
-    }
-    /**
-     * Return the variable's value.
-     */
-    public Value getValue(Variable v) {
-	throw new RuntimeException("no values");
-    }
-    /**
-     * Given a variable, return its type.
-     */
-    public Type getType(Variable variable) {
-	throw new RuntimeException("no types");
-    }
-    /**
-     * Return the wordsize.
-     */      
-    public int getWordSize() {
-        // Since no debugee word size available, return word size of 
-	// debugger. Required for some expression evaluation.
-	return Host.wordSize();
-    }
+    public static native int wordSize();
 
-    public void complete(String incomplete, List candidates) {
-	return;
-    }
+    /**
+     * Return the <tt>autoconf</tt> <tt>target_cpu</tt> specified when
+     * building frysk.
+     *
+     * XXX: This variable's value is not a reliable indicator of the
+     * system's architecture.  For instance, on an IA032 system, it
+     * could contain any of i386, i586, or i686.
+     *
+     * XXX: This code was folded in from frysk.*.Build.BUILD_ARCH when
+     * that file was deleted.  It is much more likely that code needs
+     * to know the arch family, and not some arbitrary string.
+     */
+    public static native String cpuXXX();
 }

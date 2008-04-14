@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 package frysk.junit;
 
 import frysk.config.Config;
+import frysk.config.Host;
 import frysk.sys.Uname;
 import java.math.BigInteger;
 
@@ -82,7 +83,7 @@ public class TestCase
      */
     protected static boolean missing32or64() {
 	String msg = "requires both 32-bit and 64-bit";
-	switch (Config.getWordSize()) {
+	switch (Host.wordSize()) {
 	case 32:
 	    return Runner.unsupported(msg, true);
 	case 64:
@@ -91,7 +92,7 @@ public class TestCase
 				     || Config.getPkgLib64File(null) == null);
 	default:
 	    throw new RuntimeException("unknown word-size: "
-				       + Config.getWordSize());
+				       + Host.wordSize());
 	}
     }
 
@@ -117,8 +118,7 @@ public class TestCase
      * UNRESOLVED when running on a PowerPC.
      */
     protected static boolean unresolvedOnPPC (int bug) {
-	return Runner.unresolved(bug, Config.getTargetCpuXXX ()
-				 .indexOf ("powerpc") != - 1);
+	return Runner.unresolved(bug, Host.cpuXXX().indexOf("powerpc") != - 1);
     }
 
     /**
@@ -127,7 +127,7 @@ public class TestCase
      * UNRESOLVED when running on a X8664.
      */
     protected static boolean unresolvedOnIA32 (int bug) {
-	String cpu = Config.getTargetCpuXXX ();
+	String cpu = Host.cpuXXX();
         return Runner.unresolved(bug, (cpu.indexOf ("i386") >= 0
 				       || cpu.indexOf ("i686") >= 0));
     }
@@ -138,8 +138,7 @@ public class TestCase
      * UNRESOLVED when running on a X8664.
      */
     protected static boolean unresolvedOnx8664 (int bug) {
-        return Runner.unresolved(bug, Config.getTargetCpuXXX ()
-                                 .indexOf ("x86_64") != - 1);
+        return Runner.unresolved(bug, Host.cpuXXX().indexOf("x86_64") != - 1);
     }
 
     /**

@@ -47,7 +47,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwOp;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.DwarfOp;
-import frysk.config.Config;
+import frysk.config.Host;
 import frysk.isa.registers.Register;
 import frysk.isa.registers.RegisterMap;
 import frysk.stack.Frame;
@@ -84,7 +84,7 @@ public class LocationExpression {
 	// MemoryPiece, RegisterPiece or UnavaiablePiece
 	ArrayList pieces = new ArrayList(); 
 	
-	long wordMask = (Config.getWordSize() == 32)?
+	long wordMask = (Host.wordSize() == 32)?
 			         0xffffffffL : 0xffffffffffffffffL;
 	
 	if (nops == 0)
@@ -236,7 +236,7 @@ public class LocationExpression {
 		// so we make that assumption when casting element 0 to MemoryPiece
 		stack.addFirst(new Long(operand1
 			+ ((MemoryPiece) frameBaseOps.decode(frame,
-				die.getFrameBase(pc), Config.getWordSize())
+				die.getFrameBase(pc), Host.wordSize())
 				.get(0)).getMemory()));
 		break;
 

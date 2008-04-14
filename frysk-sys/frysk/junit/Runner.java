@@ -41,6 +41,7 @@ package frysk.junit;
 
 import frysk.config.FryskVersion;
 import frysk.config.Config;
+import frysk.config.Host;
 import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
@@ -250,7 +251,7 @@ public class Runner extends TestRunner {
 		    if (arg0.equals("32"))
 			Config.set(config32);
 		    else if (arg0.equals("64")) {
-			if (Config.getWordSize() != 64)
+			if (Host.wordSize() != 64)
 			    throw new OptionException("-arch requires 64-bit");
 			Config.set(config64);
 		    } else if (arg0.equals("all"))

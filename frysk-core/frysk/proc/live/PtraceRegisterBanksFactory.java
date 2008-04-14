@@ -49,7 +49,7 @@ import frysk.sys.ptrace.AddressSpace;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.banks.X86BankRegisters;
 import frysk.isa.banks.PPCBankRegisters;
-import frysk.config.Config;
+import frysk.config.Host;
 
 /**
  * The target has registers scattered across one or more register
@@ -99,7 +99,7 @@ class PtraceRegisterBanksFactory {
 	    return new RegisterBanks(X86BankRegisters.X8664,
 				     x8664Banks(pid));
 	} else if (isa == ISA.IA32) {
-	    if (Config.getTargetCpuXXX().equals ("x86_64")) 
+	    if (Host.cpuXXX().equals ("x86_64")) 
 		return new RegisterBanks(X86BankRegisters.IA32_ON_X8664,
 					 x8664Banks(pid));
 	    else
@@ -109,7 +109,7 @@ class PtraceRegisterBanksFactory {
 	    return new RegisterBanks(PPCBankRegisters.PPC64BE,
 				     ppcBanksBE(pid));
 	} else if (isa == ISA.PPC32BE) {
-	    if (Config.getTargetCpuXXX().equals("powerpc64"))
+	    if (Host.cpuXXX().equals("powerpc64"))
 		return new RegisterBanks(PPCBankRegisters.PPC32BE_ON_PPC64BE,
 					 ppcBanksBE(pid));
 	    else

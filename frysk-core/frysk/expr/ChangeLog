@@ -1,3 +1,8 @@
+2008-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* ScratchSymTab.java: Use frysk.config.Host.
+	* TestbedSymTab.java: Ditto.
+
 2008-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Renamed ObjectDeclarationSearchEngine.getVariable to 

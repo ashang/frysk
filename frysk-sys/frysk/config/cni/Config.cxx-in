@@ -74,18 +74,6 @@ frysk::config::Config::getAbsRootSrcDir ()
   return JvNewStringUTF ("@abs_root_srcdir@");
 }
 
-jint
-frysk::config::Config::getWordSize ()
-{
-  return sizeof (long) * 8;
-}
-
-jstring
-frysk::config::Config::getTargetCpuXXX ()
-{
-  return JvNewStringUTF ("@target_cpu@");
-}
-
 frysk::config::Config*
 frysk::config::Config::createInstallConfig ()
 {

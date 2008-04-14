@@ -1,3 +1,7 @@
+2008-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDisassembler.java: Update; use frysk.config.Host.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Disassembler.cxx: New.

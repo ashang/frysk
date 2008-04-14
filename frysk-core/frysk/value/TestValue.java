@@ -40,7 +40,7 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import frysk.config.Config;
+import frysk.config.Host;
 import frysk.junit.TestCase;
 
 public class TestValue
@@ -58,7 +58,7 @@ public class TestValue
     private ArithmeticType floatType = new FloatingPointType("float", ByteOrder.LITTLE_ENDIAN, 4);
     private ArithmeticType doubleType = new FloatingPointType("double", ByteOrder.LITTLE_ENDIAN, 8);
     
-    private int wordSize = Config.getWordSize();
+    private int wordSize = Host.wordSize();
     
     public void testNumber ()
     {

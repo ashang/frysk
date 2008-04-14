@@ -1,3 +1,7 @@
+2008-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceRegisterBanksFactory.java: Use frysk.config.Host.
+
 2008-04-11  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxPtraceTaskState.java (Running.setupSteppingBreakpoint):

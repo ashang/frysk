@@ -39,7 +39,7 @@
 
 package lib.opcodes;
 
-import frysk.config.Config;
+import frysk.config.Host;
 import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
@@ -106,10 +106,10 @@ public class TestDisassembler
 	     7     // pop    %es
 	 });
     private Assembler getAssembler() {
-	if (Config.getTargetCpuXXX ().indexOf("powerpc") != - 1) {
+	if (Host.cpuXXX().indexOf("powerpc") != - 1) {
 	    // for powerpc
 	    return powerPc;
-	} else if (Config.getTargetCpuXXX ().indexOf("_64") != - 1) {
+	} else if (Host.cpuXXX().indexOf("_64") != - 1) {
 	    // for X86_64
 	    return x8664;
 	} else {

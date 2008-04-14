@@ -1,3 +1,8 @@
+2008-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Update; use frysk.config.Host.
+	* TestCase.java: Ditto.
+
 2008-03-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Results.java (addProblem()): When logging, print throwable stack.
