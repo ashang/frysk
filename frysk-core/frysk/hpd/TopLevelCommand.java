@@ -114,6 +114,7 @@ public class TopLevelCommand extends MultiLevelCommand {
         add(new StepFinishCommand(), "finish");
         add(new StepNextCommand(), "n|ext");
         add(new UnloadCommand(), "un|load");
+        add(new WatchCommand(), "watch");        
         add(new WhatCommand(), "what");
         add(new WhichsetsCommand(), "whichsets");
         add(new ViewsetCommand(), "viewset");
