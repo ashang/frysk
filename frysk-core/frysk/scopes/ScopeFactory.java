@@ -78,7 +78,7 @@ public class ScopeFactory {
 	
 	case DwTag.INLINED_SUBROUTINE_:
 	case DwTag.SUBPROGRAM_:
-	    ConcreteFunction subprogram = new ConcreteFunction(die, typeFactory);
+	    OutOfLineFunction subprogram = new OutOfLineFunction(die, typeFactory);
 	    if(subprogram.isInlined()){
 		return new InlinedSubroutine(die,typeFactory);
 	    }

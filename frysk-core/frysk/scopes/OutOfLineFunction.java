@@ -49,10 +49,10 @@ import frysk.debuginfo.TypeFactory;
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.
  */
-public class ConcreteFunction extends Function
+public class OutOfLineFunction extends Function
 {
 
-    public ConcreteFunction(DwarfDie die, TypeFactory typeFactory) {
+    public OutOfLineFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
     }
 
