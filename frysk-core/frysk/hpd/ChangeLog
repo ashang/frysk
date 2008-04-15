@@ -1,3 +1,9 @@
+2008-04-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java: New.
+	* TestWatchCommand.java: New.
+	* TopLevelCommand.java (TopLevelCommand): Add watch command.
+	
 2008-04-10  Stan Cox  <scox@redhat.com>
 
 	* KillCommand.java (interpret): Make load sysroot aware.

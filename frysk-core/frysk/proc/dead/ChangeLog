@@ -1,3 +1,7 @@
+2008-04-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* DeadTask.java (isInstructionObserverAdded): New.
+
 2008-04-10  Stan Cox  <scox@redhat.com>
 
 	* TestLinuxExe.java (testSysRootedProc): Change to use funit-quicksort.

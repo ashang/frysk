@@ -150,6 +150,10 @@ public class DummyTask extends Task {
 	throw new RuntimeException("oops!");
     }
 
+    public boolean isInstructionObserverAdded (TaskObserver.Instruction o) {
+	throw new RuntimeException("isInstructionObserverAddded");
+    }
+    
     public int getMod() {
 	return 1;
     }

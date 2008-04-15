@@ -1,5 +1,9 @@
-2008-04-15  Phil Muldoon  <pmuldoon@redhat.com>
+2008-04-15  Teresa Thomas  <tthomas@redhat.com>
 
+	* Task.java (isInstructionObserverAdded): New.
+	
+2008-04-15  Phil Muldoon  <pmuldoon@redhat.com>
+	
 	* TestTaskObserverWatchpoint.java (testWatchpointActionContinue): Reset
 	expected hit count to 1.
 

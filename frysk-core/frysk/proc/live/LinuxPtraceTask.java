@@ -1013,6 +1013,7 @@ public class LinuxPtraceTask extends LiveTask {
 	}
 	return blockers.size();
     }
+    
     /**
      * Request the addition of a Instruction observer that will be
      * notified as soon as the task executes an instruction.
@@ -1031,6 +1032,10 @@ public class LinuxPtraceTask extends LiveTask {
 	fine.log(this, "requestDeleteInstructionObserver");
 	((LinuxPtraceProc)getProc()).requestDeleteInstructionObserver(this, instructionObservers, o);
     }
+    public boolean isInstructionObserverAdded (TaskObserver.Instruction o) {
+	fine.log(this, "isInstructionObserverAdded");
+	return (instructionObservers.contains(o))? true: false;
+    }    
   
     /**
      * List containing the TaskObservations that are pending addition

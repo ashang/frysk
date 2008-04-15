@@ -1,3 +1,7 @@
+2008-04-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* DummyTask.java (isInstructionObserverAdded): New.
+
 2008-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* DummyTask.java (requestAddWatchObserver): Add writeOnly flag.

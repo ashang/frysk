@@ -286,7 +286,11 @@ public abstract class Task {
      * Delete TaskObserver.Instruction from the TaskObserver pool.
      */
     public abstract void requestDeleteInstructionObserver(TaskObserver.Instruction o);
-
+    /**
+     * Returns true if the observer has been added to task's
+     * instruction observer list.
+     */
+    public abstract boolean isInstructionObserverAdded (TaskObserver.Instruction o);
     /**
      * Return the address of the instruction that this task will
      * execute next.

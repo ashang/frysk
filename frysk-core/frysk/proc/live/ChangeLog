@@ -1,3 +1,7 @@
+2008-04-15  Teresa Thomas  <tthomas@redhat.com>
+
+	* LinuxPtraceTask.java (isInstructionObserverAdded): New.
+	
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceRegisterBanksFactory.java: Use frysk.config.Host.
