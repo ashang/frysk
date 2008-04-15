@@ -1,3 +1,7 @@
+2008-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JniRunner): Escape $@.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.in (JniRunner): Use $(libdir).

@@ -83,7 +83,7 @@ JniRunner:
 	echo "LD_PRELOAD=$(libdir)/libstdc++.so.6 \\"		>> $@.tmp
 	echo "LD_LIBRARY_PATH=. \\"				>> $@.tmp
 	echo "CLASSPATH=$(CLASSPATH):frysk-sys.jar:JniRunner.jar \\" >> $@.tmp
-	echo "java JniRunner \"$$@\""				>> $@.tmp
+	echo "java JniRunner \"\$$@\""				>> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
