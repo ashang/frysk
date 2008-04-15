@@ -1,3 +1,7 @@
+2008-04-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.gen.sh (has_java_main): Make regexp more strict.
+
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (echo_arch32_PROGRAMS): Run the compiler

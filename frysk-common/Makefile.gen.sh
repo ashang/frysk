@@ -328,7 +328,7 @@ has_java_source ()
 	   
 has_java_main ()
 {
-    grep ' main[ ]*[(]' $1 > /dev/null 2>&1
+    grep ' void main[ ]*[(][ ]*String' $1 > /dev/null 2>&1
 }
 
 has_main ()
