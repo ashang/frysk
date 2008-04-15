@@ -1,8 +1,8 @@
-// -*- Java -*-
+// -*- C++ -*-
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,20 +39,43 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui;
+#include <gcj/cni.h>
 
-import frysk.config.Prefix;
-import frysk.config.PrefixFactory;
+#include <java/lang/String.h>
+#include <java/io/File.h>
+#include "frysk/config/PrefixFactory.h"
 
-/**
- * Wrapper class for Gui.java. This is an entry point for the Frysk UI
- * that runs from the build-tree.
- */
-public class FryskGui {
-    public static void main (String[] args) {
-	final String ABS_SRCDIR = "@abs_srcdir@";
-	final String ABS_BUILDDIR = "@abs_builddir@";
-	Prefix.set(PrefixFactory.createBuildPrefix(ABS_SRCDIR, ABS_BUILDDIR));
-	Gui.gui(args);
-    }
+jstring
+frysk::config::PrefixFactory::gladeDir() {
+  return JvNewStringUTF("@gladedir@");
+}
+
+jstring
+frysk::config::PrefixFactory::helpDir() {
+  return JvNewStringUTF("@helpdir@");
+}
+
+jstring
+frysk::config::PrefixFactory::imagesDir() {
+  return JvNewStringUTF("@imagesdir@");
+}
+
+jstring
+frysk::config::PrefixFactory::binDir() {
+  return JvNewStringUTF("@bindir@");
+}
+
+jstring
+frysk::config::PrefixFactory::pkgDataDir() {
+  return JvNewStringUTF("@pkgdatadir@");
+}
+
+jstring
+frysk::config::PrefixFactory::pkgLibDir() {
+  return JvNewStringUTF("@pkglibdir@");
+}
+
+jstring
+frysk::config::PrefixFactory::pkgLib32Dir() {
+  return JvNewStringUTF("@pkglib32dir@");
 }

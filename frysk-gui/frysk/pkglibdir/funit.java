@@ -39,7 +39,8 @@
 
 package frysk.pkglibdir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
+import frysk.config.PrefixFactory;
 import frysk.junit.Runner;
 import java.util.LinkedList;
 
@@ -51,9 +52,9 @@ import java.util.LinkedList;
 public class funit
 {  
     public static void main (String[] args) {
-	Config configAll = Config.createInstallConfig();
-	Config config32 = Config.createInstallConfig32();
-	Config config64 = Config.createInstallConfig64();
+	Prefix configAll = PrefixFactory.createInstallPrefix();
+	Prefix config32 = PrefixFactory.createInstallPrefix32();
+	Prefix config64 = PrefixFactory.createInstallPrefix64();
 	Runner testRunner = new Runner("funit", args, configAll,
 				       config32, config64);
 

@@ -1,3 +1,7 @@
+2008-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.java: Use Prefix and PrefixFactory.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk.xml-in: Rename frysk.xml.

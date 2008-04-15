@@ -41,7 +41,8 @@
 
 import frysk.junit.Runner;
 import @GEN_PACKAGENAME@.JUnitTests;
-import frysk.config.Config;
+import frysk.config.Prefix;
+import frysk.config.PrefixFactory;
 
 /**
  * Run the JUnit tests from within the build tree.
@@ -54,9 +55,9 @@ public class TestRunner
 	String ABS_BUILDDIR = "@abs_builddir@";
 	String ABS_SRCDIR = "@abs_srcdir@";
 
-	Config configAll = Config.createBuildConfig(ABS_SRCDIR, ABS_BUILDDIR);
-	Config config32 = Config.createBuildConfig32(ABS_SRCDIR, ABS_BUILDDIR);
-	Config config64 = Config.createBuildConfig64(ABS_SRCDIR, ABS_BUILDDIR);
+	Prefix configAll = PrefixFactory.createBuildPrefix(ABS_SRCDIR, ABS_BUILDDIR);
+	Prefix config32 = PrefixFactory.createBuildPrefix32(ABS_SRCDIR, ABS_BUILDDIR);
+	Prefix config64 = PrefixFactory.createBuildPrefix64(ABS_SRCDIR, ABS_BUILDDIR);
 
 	Runner testRunner = new Runner("TestRunner", args,
 				       configAll, config32, config64);

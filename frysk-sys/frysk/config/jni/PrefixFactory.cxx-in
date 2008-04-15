@@ -1,8 +1,8 @@
-// -*- Java -*-
+// -*- C++ -*-
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,20 +39,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui;
+#include <frysk_config_PrefixFactory.h>
 
-import frysk.config.Prefix;
-import frysk.config.PrefixFactory;
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_gladeDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@gladedir@");
+}
 
-/**
- * Wrapper class for Gui.java. This is an entry point for the Frysk UI
- * that runs from the build-tree.
- */
-public class FryskGui {
-    public static void main (String[] args) {
-	final String ABS_SRCDIR = "@abs_srcdir@";
-	final String ABS_BUILDDIR = "@abs_builddir@";
-	Prefix.set(PrefixFactory.createBuildPrefix(ABS_SRCDIR, ABS_BUILDDIR));
-	Gui.gui(args);
-    }
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_helpDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@helpdir@");
+}
+
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_imagesDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@imagesdir@");
+}
+
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_binDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@bindir@");
+}
+
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_pkgDataDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@pkgdatadir@");
+}
+
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_pkgLibDir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@pkglibdir@");
+}
+
+JNIEXPORT jstring JNICALL
+Java_frysk_config_PrefixFactory_pkgLib32Dir(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@pkglib32dir@");
 }

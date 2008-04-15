@@ -45,65 +45,62 @@ import frysk.junit.TestCase;
  * All the run-time (install time) configuration information.
  */
 
-public class TestConfig
-    extends TestCase
-{
-    private Config old;
+public class TestPrefix extends TestCase {
+
+    private Prefix old;
     /**
-     * Save the current config so that this doesn't interfere with
-     * other tests.
+     * Save the current Prefix so that it can be later restored
+     * preventing this from interfering with other tests.
      */
-    public void setUp ()
-    {
-	old = Config.get ();
+    public void setUp() {
+	old = Prefix.get();
     }
     /**
-     * Restore the old config settings.
+     * Restore the old Prefix.
      */
-    public void tearDown ()
-    {
-	Config.set (old);
+    public void tearDown() {
+	Prefix.set(old);
     }
 
     private void validate(int pure) {
 	// The expected paths are valid.
-	assertNotNull("getGladeDir", Config.getGladeDir());
-	assertNotNull("getHelpDir", Config.getHelpDir());
-	assertNotNull("getImagesDir", Config.getImagesDir());
-	assertNotNull("getBinFile", Config.getBinFile(null));
-	assertNotNull("getPkgDataFile", Config.getPkgDataFile(null));
-	assertNotNull("getPkgLibFile", Config.getPkgLibFile(null));
+	assertNotNull("getGladeDir", Prefix.gladeDir());
+	assertNotNull("getHelpDir", Prefix.helpDir());
+	assertNotNull("getImagesDir", Prefix.imagesDir());
+	assertNotNull("getBinFile", Prefix.binFile(null));
+	assertNotNull("getPkgDataFile", Prefix.pkgDataFile(null));
+	assertNotNull("getPkgLibFile", Prefix.pkgLibFile(null));
 
 	switch (pure) {
 	case 32:
 	    // Testing a pure 32-bit environment; the corresponding
 	    // 64-bit lib must be NULL.
-	    assertSame("getPkgLib32File", Config.getPkgLibFile(null),
-		       Config.getPkgLib32File(null));
-	    assertNull("getPkgLib64File", Config.getPkgLib64File(null));
+	    assertSame("getPkgLib32File", Prefix.pkgLibFile(null),
+		       Prefix.pkgLib32File(null));
+	    assertNull("getPkgLib64File", Prefix.pkgLib64File(null));
 	    break;
 	case 64:
 	    // Testing a pure 64-bit environment; the corresponding
 	    // 32-bit lib must be NULL.
-	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
-	    assertSame("getPkgLib64File", Config.getPkgLibFile(null),
-		       Config.getPkgLib64File(null));
+	    assertNull("getPkgLib32File", Prefix.pkgLib32File(null));
+	    assertSame("getPkgLib64File", Prefix.pkgLibFile(null),
+		       Prefix.pkgLib64File(null));
 	    break;
 	case -32:
 	    // Testing a 32-on-64 environment.
-	    assertNull("getPkgLib32File", Config.getPkgLib32File(null));
-	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
+	    assertNull("getPkgLib32File", Prefix.pkgLib32File(null));
+	    assertNotNull("getPkgLib64File", Prefix.pkgLib64File(null));
 	    assertTrue("getPkgLibFile != getPkgLib64File",
-		       Config.getPkgLibFile(null)
-		       != Config.getPkgLib64File(null));
+		       Prefix.pkgLibFile(null)
+		       != Prefix.pkgLib64File(null));
 	    break;
 	case -64:
 	    // Testing a 64-on-64 environment
-	    assertNotNull("getPkgLib32File", Config.getPkgLib32File(null));
-	    assertNotNull("getPkgLib64File", Config.getPkgLib64File(null));
+	    assertNotNull("getPkgLib32File", Prefix.pkgLib32File(null));
+	    assertNotNull("getPkgLib64File", Prefix.pkgLib64File(null));
 	    assertSame("getPkgLibFile == getPkgLib64File",
-		       Config.getPkgLibFile(null),
-		       Config.getPkgLib64File(null));
+		       Prefix.pkgLibFile(null),
+		       Prefix.pkgLib64File(null));
 	    break;
 	default:
 	    fail("bad switch");
@@ -116,7 +113,7 @@ public class TestConfig
      */
     public void testInstallDirs ()
     {
-	Config.set (Config.createInstallConfig ());
+	Prefix.set(PrefixFactory.createInstallPrefix());
 	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
@@ -135,7 +132,7 @@ public class TestConfig
      */
     public void testBuildDirs ()
     {
-	Config.set (Config.createBuildConfig ("src-dir", "build-dir"));
+	Prefix.set(PrefixFactory.createBuildPrefix ("src-dir", "build-dir"));
 	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
@@ -149,7 +146,7 @@ public class TestConfig
     }
 
     public void testBuild32() {
-	Config.set (Config.createBuildConfig32("src-dir", "build-dir"));
+	Prefix.set(PrefixFactory.createBuildPrefix32("src-dir", "build-dir"));
 	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
@@ -162,7 +159,7 @@ public class TestConfig
 	}
     }
     public void testInstall32() {
-	Config.set (Config.createInstallConfig32());
+	Prefix.set(PrefixFactory.createInstallPrefix32());
 	switch (Host.wordSize()) {
 	case 32:
 	    validate(32);
@@ -175,10 +172,10 @@ public class TestConfig
 	}
     }
     public void testBuild64() {
-	Config.set (Config.createBuildConfig64("src-dir", "build-dir"));
+	Prefix.set(PrefixFactory.createBuildPrefix64("src-dir", "build-dir"));
 	switch (Host.wordSize()) {
 	case 32:
-	    assertNull("config", Config.get());
+	    assertNull("config", Prefix.get());
 	    break;
 	case 64: 
 	    validate(64);
@@ -188,10 +185,10 @@ public class TestConfig
 	}
     }
     public void testInstall64() {
-	Config.set (Config.createInstallConfig64());
+	Prefix.set(PrefixFactory.createInstallPrefix64());
 	switch (Host.wordSize()) {
 	case 32:
-	    assertNull("config", Config.get());
+	    assertNull("config", Prefix.get());
 	    break;
 	case 64: 
 	    validate(64);

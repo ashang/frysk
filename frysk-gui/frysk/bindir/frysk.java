@@ -39,18 +39,17 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
+import frysk.config.PrefixFactory;
 import frysk.gui.Gui;
 
 /**
  * Start the frysk GUI.
  */
 
-class frysk
-{
-  public static void main (String[] args)
-  {
-    Config.set (Config.createInstallConfig ());
-    Gui.gui(args);
-  }
+class frysk {
+    public static void main (String[] args) {
+	Prefix.set(PrefixFactory.createInstallPrefix ());
+	Gui.gui(args);
+    }
 }

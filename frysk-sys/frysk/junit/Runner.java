@@ -40,7 +40,7 @@
 package frysk.junit;
 
 import frysk.config.FryskVersion;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.config.Host;
 import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
@@ -249,13 +249,13 @@ public class Runner extends TestRunner {
 				"<arch>") {
 		public void parsed (String arg0) throws OptionException {
 		    if (arg0.equals("32"))
-			Config.set(config32);
+			Prefix.set(config32);
 		    else if (arg0.equals("64")) {
 			if (Host.wordSize() != 64)
 			    throw new OptionException("-arch requires 64-bit");
-			Config.set(config64);
+			Prefix.set(config64);
 		    } else if (arg0.equals("all"))
-			Config.set(configAll);
+			Prefix.set(configAll);
 		    else
 			throw new OptionException( "Invalid arch value: "
 						   + arg0);
@@ -349,16 +349,16 @@ public class Runner extends TestRunner {
     /**
      * Possible configurations.
      */
-    private final Config configAll;
-    private final Config config32;
-    private final Config config64;
+    private final Prefix configAll;
+    private final Prefix config32;
+    private final Prefix config64;
 
     /**
      * Return the TestRunner's true basename - it could be "funit" or
      * it could be "TestRunner".
      *
      * XXX: Hack, shouldn't be using static storage for this.  Should
-     * this go in frysk.Config?
+     * this go in frysk.Prefix?
      */
     public static String getProgramBasename ()
     {
@@ -370,11 +370,11 @@ public class Runner extends TestRunner {
      * and the supplied testClasses.
      */
     public Runner(String programBasename, String[] args,
-		  Config configAll, Config config32, Config config64) {
+		  Prefix configAll, Prefix config32, Prefix config64) {
 	// Override the print methods.
-	super (new Results (System.out));
+	super(new Results(System.out));
 	
-	Config.set(configAll); // default
+	Prefix.set(configAll); // default
 	this.configAll = configAll;
 	this.config32 = config32;
 	this.config64 = config64;

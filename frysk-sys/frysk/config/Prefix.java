@@ -42,54 +42,96 @@ package frysk.config;
 import java.io.File;
 
 /**
- * All the run-time (install time) configuration information.
+ * Standard directory prefixes, as specified by autoconf.
+ *
+ * To complicate things, this can be set to specify either the in-tree
+ * build-time prefix, or the install-tree prefix.
  */
 
-public class Config {
+public class Prefix {
+
+    /**
+     * The currently selected Prefix.
+     */
+    static private Prefix current;
+
+    /**
+     * Select the specified configuration.
+     */
+    public static final void set(Prefix config) {
+	current = config;
+    }
+
+    /**
+     * Return the current config.
+     */
+    static final Prefix get() {
+	return current;
+    }
+
+    /**
+     * Return either the file or directory.
+     */
+    private static File getFile(File dir, String file) {
+	if (dir == null)
+	    // Directory isn't valid, no files allowed.
+	    return null;
+	if (file == null)
+	    return dir;
+	return new File(dir, file);
+    }
+
     /**
      * Directory containing the .glade files describing frysk's UI
      * windows.
      *
-     * XXX: This is a String so that it works better with Java-GNOME.
+     * XXX: This is a String, and not a File, so that it works better
+     * with Java-GNOME 2.x.
      */
-    public static final String getGladeDir () {
-	return Prefix.gladeDir();
+    public static final String gladeDir () {
+	return current.gladeDir;
     }
+    private final String gladeDir;
 
     /**
      * Directory containing the frysk help files.
      */
-    public static final File getHelpDir () {
-	return Prefix.helpDir();
+    public static final File helpDir() {
+	return current.helpDir;
     }
+    private final File helpDir;
 
     /**
      * Root directory of frysk's images (or icons).
      *
-     * XXX: This is a String so that it works better with Java-GNOME.
+     * XXX: This is a String, and not a File, so that it works better
+     * with Java-GNOME 2.x.
      */
-    public static final String getImagesDir () {
-	return Prefix.imagesDir();
+    public static final String imagesDir() {
+	return current.imagesDir;
     }
-
-    /**
-     * A file in frysk's shared, and 32-bit and 64-bit independant,
-     * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
-     */
-    public static final File getPkgDataFile (String file) {
-	return Prefix.pkgDataFile(file);
-    }
+    private final String imagesDir;
 
     /**
      * A file in Frysk's user-visible executable directory.  Typically
      * <tt>/usr/bin/FILE</tt>.
      *
-     * Used by install-tree testing when needing to run a user-visible
-     * executable.
+     * Used by install-tree testing when needing to invoke a
+     * user-visible executable.
      */
-    public static final File getBinFile(String file) {
-	return Prefix.binFile(file);
+    public static final File binFile(String file) {
+	return getFile(current.binDir, file);
     }
+    private final File binDir;
+
+    /**
+     * A file in frysk's shared, 32-bit and 64-bit independant, data
+     * directory.  Typically <tt>/usr/share/frysk/FILE</tt>
+     */
+    public static final File pkgDataFile (String file) {
+	return getFile(current.pkgDataDir, file);
+    }
+    private final File pkgDataDir;
 
     /**
      * A file in Frysk's library directory.  Typically either
@@ -98,9 +140,10 @@ public class Config {
      * Used by tests when they need to run an executable of the same
      * bit-size as frysk.
      */
-    public static final File getPkgLibFile (String file) {
-	return Prefix.pkgLibFile(file);
+    public static final File pkgLibFile (String file) {
+	return getFile(current.pkgLibDir, file);
     }
+    private final File pkgLibDir;
 
     /**
      * A file in frysk's 32-bit library directory.  Typically
@@ -110,9 +153,10 @@ public class Config {
      * Solely for use by 32-bit on 64-bit tests when a 32-bit
      * executable is required.
      */
-    public static final File getPkgLib32File(String file) {
-	return Prefix.pkgLib32File(file);
+    public static final File pkgLib32File(String file) {
+	return getFile(current.pkgLib32Dir, file);
     }
+    private final File pkgLib32Dir;
 
     /**
      * A file in frysk's 64-bit library directory.  Typically
@@ -122,45 +166,27 @@ public class Config {
      * Solely for use by 32-bit on 64-bit tests when a 64-bit
      * executable is required.
      */
-    public static final File getPkgLib64File(String file) {
-	return Prefix.pkgLib64File(file);
+    public static final File pkgLib64File(String file) {
+	return getFile(current.pkgLib64Dir, file);
     }
+    private final File pkgLib64Dir;
 
-    public static File getFryskDir(){
-	File file = new File(getHomeDir()+"/"+".frysk/");
-	if(file.exists()){
-	    file.mkdir();
-	}
-	return file;
-    }
-    
-    public static File getHomeDir() {
-	//XXX: Should not use user.home property.
-	return new File(System.getProperty("user.home"));
-    }
-    
-    /**
-     * The relative source root directory against which the build was
-     * created; this is an install time option since, with debug-info
-     * installed, the source files found under the root srcdir are
-     * available.
-     *
-     * Note that this is the root directory, and excludes any suffix
-     * such as frysk-imports et.al.
-     */
-    public static final native String getRootSrcDir ();
-
-    public static final String getPkgLibSrcDir (){
-	return getRootSrcDir() + "frysk-core/frysk/pkglibdir/";
-    }
 
     /**
-     * The absolute source root directory against which the build was
-     * created; this is an install time option since, with debug-info
-     * installed, these source files exist.
+     * Construct a Prefix.
      *
-     * Note that this is the root directory, and excludes any suffix
-     * such as frysk-imports et.al.
+     * Package-private
      */
-    public static final native String getAbsRootSrcDir ();
+    Prefix(String gladeDir, File helpDir, String imagesDir,
+	   File binDir, File pkgDataDir, File pkgLibDir,
+	   File pkgLib32Dir, File pkgLib64Dir) {
+	this.gladeDir = gladeDir;
+	this.helpDir = helpDir;
+	this.imagesDir = imagesDir;
+	this.binDir = binDir;
+	this.pkgDataDir = pkgDataDir;
+	this.pkgLibDir = pkgLibDir;
+	this.pkgLib32Dir = pkgLib32Dir;
+	this.pkgLib64Dir = pkgLib64Dir;
+    }
 }

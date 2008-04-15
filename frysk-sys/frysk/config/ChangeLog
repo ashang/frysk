@@ -1,3 +1,14 @@
+2008-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/PrefixFactory.cxx-in: New.
+	* jni/PrefixFactory.cxx-in: New.
+	* Config.java: Use Prefix.java.
+	* cni/Config.cxx-in: Update.
+	* TestConfig.java: Rename this ...
+	* TestPrefix.java: ... to this.
+	* PrefixFactory.java: Extract from Config.java.
+	* Prefix.java: Extract from Config.java.
+
 2008-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.java (getFryskTestDir()): Delete.

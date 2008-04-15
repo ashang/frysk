@@ -1,3 +1,7 @@
+2008-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.java-in: Use PrefixFactory.
+
 2008-04-15  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.gen.sh (has_java_main): Make regexp more strict.
