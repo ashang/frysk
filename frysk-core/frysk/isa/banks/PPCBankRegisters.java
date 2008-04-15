@@ -58,6 +58,8 @@ public class PPCBankRegisters {
 	= new BankArrayRegisterMap()
 	.add(0, LinuxPPCRegisterBanks.GREGS64)
 	.add(1, LinuxPPCRegisterBanks.FPREGS64)
+	// AltiVec registers go to a separate note section called NT_PPC_VMX
+	.add(2, LinuxPPCRegisterBanks.VRREGS64)
 	;
 
     public static final BankArrayRegisterMap PPC32BE_ON_PPC64BE

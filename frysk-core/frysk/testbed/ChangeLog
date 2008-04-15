@@ -1,3 +1,7 @@
+2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* RegsCase.java (PPC64): Add values for AltiVec registers.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* CoredumpAction.java: Extend ProcBlockObserver.

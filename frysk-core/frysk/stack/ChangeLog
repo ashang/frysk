@@ -1,3 +1,7 @@
+2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* LibunwindRegisterMapFactory.java (PPC64): Add AltiVec registers.
+
 2008-04-12  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestFrame.java (testInnerFrameAddress): New test for bug #6029.

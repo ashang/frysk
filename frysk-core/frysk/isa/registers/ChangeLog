@@ -1,3 +1,10 @@
+2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* PPC64Registers.java (VR0 to VR31): New.
+	(VECTOR): New.
+	(allRegs): Reorder, and add VECTOR.
+	(PPC64Registers): Reorder register groups, add VECTOR and remove ALL.
+
 2008-03-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* X8664Registers.java: Add debug register group.

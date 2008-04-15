@@ -1,3 +1,9 @@
+2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* LinuxPPCRegisterBanks.java (VRREGS): Rename to ...
+	(VRREGS64): ... this, and add vr0 to vr31 registers.
+	* PPCBankRegisters.java (PPC64BE): Add VRREGS64.
+
 2008-04-09  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* PPCBankRegisters.java (PPC64BE): Fix bank indexes for GREGS64

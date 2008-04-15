@@ -79,7 +79,7 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(116, 4, PPC32Registers.GPR29))
 	.add(new BankRegister(120, 4, PPC32Registers.GPR30))
 	.add(new BankRegister(124, 4, PPC32Registers.GPR31))
-	.add(new BankRegister(128, 4, PPC32Registers.NIP)) //Fixme: PC I belive
+	.add(new BankRegister(128, 4, PPC32Registers.NIP)) //FIXME: PC I believe
 	.add(new BankRegister(132, 4, PPC32Registers.MSR))
 	.add(new BankRegister(136, 4, PPC32Registers.ORIGR3))
 	.add(new BankRegister(140, 4, PPC32Registers.CTR))
@@ -181,7 +181,7 @@ public class LinuxPPCRegisterBanks {
 
     public static final BankRegisterMap FPREGS64
 	= new BankRegisterMap()
-	.add(new BankRegister(384, 8, PPC64Registers.FPR0)) //PT_FPR0 48 
+	.add(new BankRegister(384, 8, PPC64Registers.FPR0)) //PT_FPR0 48
 	.add(new BankRegister(392, 8, PPC64Registers.FPR1))
 	.add(new BankRegister(400, 8, PPC64Registers.FPR2))
 	.add(new BankRegister(408, 8, PPC64Registers.FPR3))
@@ -216,16 +216,48 @@ public class LinuxPPCRegisterBanks {
 	.add(new BankRegister(640, 4, PPC64Registers.FPSCR))
 	;
 
-    public static final BankRegisterMap VRREGS
+    /*
+     * AltiVec Registers go in a separate notes section in core files, so I guess
+     * it makes sense to put them in a separate bank here.
+     */
+    public static final BankRegisterMap VRREGS64
 	= new BankRegisterMap()
-	// Fixme: need to implement altivec registers
-	// Vector Registers are 128 bit wide - in both PPC32 and PPC64
-	//.add(new BankRegister(0, 656, 16, PPC64Registers.VR0)) PT_VR0 82
-	//...
-	//.add(new BankRegister(0, 1152, 16, PPC64Registers.V31)) PT_VR0 + 31*2), index 148
-	//Need to put a 8 bytes pad here, because VSCR is 8 byte wide only 
-	.add(new BankRegister(1176, 8, PPC64Registers.VSCR)) // PT_VSCR (PT_VR0 + 32*2 + 1), index 147
-	.add(new BankRegister(1184, 8, PPC64Registers.VRSAVE)) // PT_VRSAVE (PT_VR0 + 33*2), index 148
+	// Each Vector reg occupies 2 slots in 64-bit.
+	.add(new BankRegister(82*8, 16, PPC64Registers.VR0)) //PT_VR0 82
+	.add(new BankRegister(84*8, 16, PPC64Registers.VR1))
+	.add(new BankRegister(86*8, 16, PPC64Registers.VR2))
+	.add(new BankRegister(88*8, 16, PPC64Registers.VR3))
+	.add(new BankRegister(90*8, 16, PPC64Registers.VR4))
+	.add(new BankRegister(92*8, 16, PPC64Registers.VR5))
+	.add(new BankRegister(94*8, 16, PPC64Registers.VR6))
+	.add(new BankRegister(96*8, 16, PPC64Registers.VR7))
+	.add(new BankRegister(98*8, 16, PPC64Registers.VR8))
+	.add(new BankRegister(100*8, 16, PPC64Registers.VR9))
+	.add(new BankRegister(102*8, 16, PPC64Registers.VR10))
+	.add(new BankRegister(104*8, 16, PPC64Registers.VR11))
+	.add(new BankRegister(106*8, 16, PPC64Registers.VR12))
+	.add(new BankRegister(108*8, 16, PPC64Registers.VR13))
+	.add(new BankRegister(110*8, 16, PPC64Registers.VR14))
+	.add(new BankRegister(112*8, 16, PPC64Registers.VR15))
+	.add(new BankRegister(114*8, 16, PPC64Registers.VR16))
+	.add(new BankRegister(116*8, 16, PPC64Registers.VR17))
+	.add(new BankRegister(118*8, 16, PPC64Registers.VR18))
+	.add(new BankRegister(120*8, 16, PPC64Registers.VR19))
+	.add(new BankRegister(122*8, 16, PPC64Registers.VR20))
+	.add(new BankRegister(124*8, 16, PPC64Registers.VR21))
+	.add(new BankRegister(126*8, 16, PPC64Registers.VR22))
+	.add(new BankRegister(128*8, 16, PPC64Registers.VR23))
+	.add(new BankRegister(130*8, 16, PPC64Registers.VR24))
+	.add(new BankRegister(132*8, 16, PPC64Registers.VR25))
+	.add(new BankRegister(134*8, 16, PPC64Registers.VR26))
+	.add(new BankRegister(136*8, 16, PPC64Registers.VR27))
+	.add(new BankRegister(138*8, 16, PPC64Registers.VR28))
+	.add(new BankRegister(140*8, 16, PPC64Registers.VR29))
+	.add(new BankRegister(142*8, 16, PPC64Registers.VR30))
+	.add(new BankRegister(144*8, 16, PPC64Registers.VR31))
+	//Need to put a 8 bytes pad here, because VSCR is 8 byte wide only
+	.add(new BankRegister(147*8, 8, PPC64Registers.VSCR)) // PT_VSCR (PT_VR0 + 32*2 + 1), index 147
+	.add(new BankRegister(148*8, 8, PPC64Registers.VRSAVE)) // PT_VRSAVE (PT_VR0 + 33*2), index 148
 	;
 
 }

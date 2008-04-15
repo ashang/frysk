@@ -248,8 +248,88 @@ public class PPC64Registers extends Registers {
     public static final Register FPSCR
         = new Register("fpscr", StandardTypes.INT32B_T);
 
+    /*
+     * Altivec (vector) registers.
+     *
+     * FIXME: The type of a vector register should be a union of the
+     * possible types that can be stored there, like in GDB:
+     *
+     * (gdb) ptype $vr0
+     * type = union __gdb_builtin_type_vec128 {
+     *     int128_t uint128;
+     *     float v4_float[4];
+     *     int32_t v4_int32[4];
+     *     int16_t v8_int16[8];
+     *     int8_t v16_int8[16];
+     * }
+     */
+    public static final Register VR0
+	= new Register("vr0", StandardTypes.UINT128B_T);
+    public static final Register VR1
+	= new Register("vr1", StandardTypes.UINT128B_T);
+    public static final Register VR2
+	= new Register("vr2", StandardTypes.UINT128B_T);
+    public static final Register VR3
+	= new Register("vr3", StandardTypes.UINT128B_T);
+    public static final Register VR4
+	= new Register("vr4", StandardTypes.UINT128B_T);
+    public static final Register VR5
+	= new Register("vr5", StandardTypes.UINT128B_T);
+    public static final Register VR6
+	= new Register("vr6", StandardTypes.UINT128B_T);
+    public static final Register VR7
+	= new Register("vr7", StandardTypes.UINT128B_T);
+    public static final Register VR8
+	= new Register("vr8", StandardTypes.UINT128B_T);
+    public static final Register VR9
+	= new Register("vr9", StandardTypes.UINT128B_T);
+    public static final Register VR10
+	= new Register("vr10", StandardTypes.UINT128B_T);
+    public static final Register VR11
+	= new Register("vr11", StandardTypes.UINT128B_T);
+    public static final Register VR12
+	= new Register("vr12", StandardTypes.UINT128B_T);
+    public static final Register VR13
+	= new Register("vr13", StandardTypes.UINT128B_T);
+    public static final Register VR14
+	= new Register("vr14", StandardTypes.UINT128B_T);
+    public static final Register VR15
+	= new Register("vr15", StandardTypes.UINT128B_T);
+    public static final Register VR16
+	= new Register("vr16", StandardTypes.UINT128B_T);
+    public static final Register VR17
+	= new Register("vr17", StandardTypes.UINT128B_T);
+    public static final Register VR18
+	= new Register("vr18", StandardTypes.UINT128B_T);
+    public static final Register VR19
+	= new Register("vr19", StandardTypes.UINT128B_T);
+    public static final Register VR20
+	= new Register("vr20", StandardTypes.UINT128B_T);
+    public static final Register VR21
+	= new Register("vr21", StandardTypes.UINT128B_T);
+    public static final Register VR22
+	= new Register("vr22", StandardTypes.UINT128B_T);
+    public static final Register VR23
+	= new Register("vr23", StandardTypes.UINT128B_T);
+    public static final Register VR24
+	= new Register("vr24", StandardTypes.UINT128B_T);
+    public static final Register VR25
+	= new Register("vr25", StandardTypes.UINT128B_T);
+    public static final Register VR26
+	= new Register("vr26", StandardTypes.UINT128B_T);
+    public static final Register VR27
+	= new Register("vr27", StandardTypes.UINT128B_T);
+    public static final Register VR28
+	= new Register("vr28", StandardTypes.UINT128B_T);
+    public static final Register VR29
+	= new Register("vr29", StandardTypes.UINT128B_T);
+    public static final Register VR30
+	= new Register("vr30", StandardTypes.UINT128B_T);
+    public static final Register VR31
+	= new Register("vr31", StandardTypes.UINT128B_T);
+
     /* 
-     * Alti-vec special registers 
+     * Altivec special registers 
      */
     public static final Register VSCR
 	= new Register("vscr", StandardTypes.INT64B_T);
@@ -291,6 +371,14 @@ public class PPC64Registers extends Registers {
                           FPR20, FPR21, FPR22, FPR23, FPR24, FPR25, FPR26, FPR27, FPR28, FPR29,
                           FPR30, FPR31 });
 
+    public static final RegisterGroup VECTOR
+        = new RegisterGroup("vector",
+                  new Register[] {
+                          VR0 , VR1 , VR2 , VR3 , VR4 , VR5 , VR6 , VR7 , VR8 , VR9 ,
+                          VR10, VR11, VR12, VR13, VR14, VR15, VR16, VR17, VR18, VR19,
+                          VR20, VR21, VR22, VR23, VR24, VR25, VR26, VR27, VR28, VR29,
+                          VR30, VR31 });
+
     /*
      * Creating the special ALL group
      */
@@ -298,20 +386,25 @@ public class PPC64Registers extends Registers {
     static {
         Register[] allRegs = new Register[
                 GENERAL.getRegisters().length +
-                SPECIAL.getRegisters().length +
-                FLOATING_POINTER.getRegisters().length];
+                FLOATING_POINTER.getRegisters().length +
+                VECTOR.getRegisters().length +
+                SPECIAL.getRegisters().length];
 
         System.arraycopy(GENERAL.getRegisters(), 0,
                          allRegs, 0,
                          GENERAL.getRegisters().length);
 
-        System.arraycopy(SPECIAL.getRegisters(), 0,
-                         allRegs, GENERAL.getRegisters().length,
-                         SPECIAL.getRegisters().length);
-
         System.arraycopy(FLOATING_POINTER.getRegisters(), 0,
-                         allRegs, GENERAL.getRegisters().length + SPECIAL.getRegisters().length,
+                         allRegs, GENERAL.getRegisters().length,
                          FLOATING_POINTER.getRegisters().length);
+
+        System.arraycopy(VECTOR.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length + FLOATING_POINTER.getRegisters().length,
+                         VECTOR.getRegisters().length);
+
+        System.arraycopy(SPECIAL.getRegisters(), 0,
+                         allRegs, GENERAL.getRegisters().length + FLOATING_POINTER.getRegisters().length +
+			 VECTOR.getRegisters().length, SPECIAL.getRegisters().length);
 
         ALL = new RegisterGroup("all", allRegs);
     }
@@ -336,6 +429,6 @@ public class PPC64Registers extends Registers {
      * Default Constructor
      */
     PPC64Registers() {
-	super(new RegisterGroup[] { GENERAL, SPECIAL, FLOATING_POINTER, ALL });
+	super(new RegisterGroup[] { GENERAL, FLOATING_POINTER, VECTOR, SPECIAL });
     }
 }
