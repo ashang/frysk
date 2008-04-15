@@ -47,18 +47,17 @@ import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.rt.LineXXX;
+import frysk.scopes.Function;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
 import frysk.scopes.SourceLocation;
 import frysk.scopes.SourceLocationFactory;
-import frysk.scopes.ConcreteFunction;
-import frysk.scopes.Function;
 import frysk.stack.Frame;
 import frysk.stack.FrameDecorator;
 
 public class DebugInfoFrame extends FrameDecorator {
 
-    private ConcreteFunction subprogram;
+    private Function subprogram;
     private Scope scope;
 
     private LinkedList inlinedSubprograms;
@@ -70,7 +69,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	this.typeFactory = new TypeFactory(getTask().getISA());
     }
 
-    public final ConcreteFunction getSubprogram ()
+    public final Function getSubprogram ()
     {
       if (subprogram == null) {
 	  this.getScopes();
@@ -101,8 +100,8 @@ public class DebugInfoFrame extends FrameDecorator {
 		scope = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
 		Scope tempScope = scope;
 		
-		if (tempScope instanceof ConcreteFunction && !(((ConcreteFunction)tempScope).isInlined()) && subprogram == null) {
-		    subprogram = (ConcreteFunction) tempScope;
+		if (tempScope instanceof Function && !(((Function)tempScope).isInlined()) && subprogram == null) {
+		    subprogram = (Function) tempScope;
 		}
 		    
 		Scope outer = null;
@@ -111,8 +110,8 @@ public class DebugInfoFrame extends FrameDecorator {
 		    tempScope.setOuter(outer);
 		    tempScope = outer;
 		    
-		    if (tempScope instanceof ConcreteFunction && !(((ConcreteFunction)tempScope).isInlined()) && subprogram == null) {
-			subprogram = (ConcreteFunction) tempScope;
+		    if (tempScope instanceof Function && !(((Function)tempScope).isInlined()) && subprogram == null) {
+			subprogram = (Function) tempScope;
 		    }
 		}
 	    }
@@ -147,7 +146,7 @@ public class DebugInfoFrame extends FrameDecorator {
             
             for (int i = 0; i < scopes.length; i++) {
         	Scope scope = ScopeFactory.theFactory.getScope(scopes[i], typeFactory);
-        	if(scope instanceof ConcreteFunction && ((ConcreteFunction)scope).isInlined()){
+        	if(scope instanceof Function && ((Function)scope).isInlined()){
         	    inlinedSubprograms.add(scope);
         	}
             }
@@ -188,7 +187,7 @@ public class DebugInfoFrame extends FrameDecorator {
     
     public void toPrint(PrintWriter writer, boolean printParameters,
 		 boolean fullpath){
-        ConcreteFunction subprogram = this.getSubprogram();
+        Function subprogram = this.getSubprogram();
 
         if (subprogram != null) {
 	    writer.print("0x");
@@ -238,7 +237,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	}
     }
 
-    public final void setSubprogram (ConcreteFunction subprogram)
+    public final void setSubprogram (Function subprogram)
       {
         this.subprogram = subprogram;
       }

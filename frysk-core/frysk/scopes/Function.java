@@ -39,11 +39,17 @@
 
 package frysk.scopes;
 
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.LocationExpression;
 import frysk.debuginfo.PieceLocation;
 import frysk.debuginfo.TypeFactory;
 import frysk.isa.ISA;
+import frysk.value.FunctionType;
+import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
 import lib.dwfl.DwAt;
@@ -60,11 +66,78 @@ public class Function extends NamedScope {
     Composite struct;
     Type type;
     private LocationExpression locationExpression;
+
+    FunctionType functionType;
+    LinkedList parameters;
     
     public Function(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
 	this.type = typeFactory.getType(die);
 	locationExpression = new LocationExpression(die);
+	
+	parameters = new LinkedList();
+	die = die.getChild();
+	while (die != null) {
+	    
+	    boolean artificial = die.hasAttribute(DwAt.ARTIFICIAL)
+		    && die.getAttrConstant(DwAt.ARTIFICIAL) != 1;
+
+	    if (die.getTag().equals(DwTag.FORMAL_PARAMETER) && !artificial) {
+		Variable variable = new Variable(die);
+		parameters.add(variable);
+	    }
+	    
+	    die = die.getSibling();
+	}
+
+    }
+
+    public LinkedList getParameters ()
+    {
+      return parameters;
+    }
+
+    public void setFunctionType (FunctionType functionType)
+    {
+      this.functionType = functionType;
+    }
+    
+    public void printScopes(PrintWriter writer, DebugInfoFrame frame){
+	super.toPrint(frame, writer, " ");
+    }
+
+    public FunctionType getFunctionType ()
+    {
+      return functionType;
+    }
+
+    public String toString()
+    {
+      return super.toString() + " " + this.getName();
+    }
+
+    public ObjectDeclaration getDeclaredObjectByName(String name) {
+	ObjectDeclaration objectDeclaration = null;
+
+	Iterator iterator = this.parameters.iterator();
+	while (iterator.hasNext()) {
+	    ObjectDeclaration tempObjectDeclaration = (Variable) iterator.next();
+	    if (tempObjectDeclaration.getName().equals(name)) {
+		objectDeclaration = tempObjectDeclaration;
+		continue;
+	    }
+	}
+	
+	Composite composite = this.getComposite();
+	if(composite != null){
+	    objectDeclaration = composite.getDeclaredObjectByName(name);
+	}
+	
+	if(objectDeclaration == null){
+	    objectDeclaration =  super.getDeclaredObjectByName(name);
+	}
+	
+	return objectDeclaration;
     }
 
     /**
@@ -147,4 +220,20 @@ public class Function extends NamedScope {
 	return value;
 
     }
+    
+    public void printParameters (PrintWriter writer, DebugInfoFrame frame)
+    {
+      
+      Iterator iterator = this.parameters.iterator();
+      while(iterator.hasNext()) {
+        Variable parameter = (Variable) iterator.next();
+	parameter.toPrint(writer, frame);
+	writer.flush();
+        if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
+            writer.print(",");
+        }
+      }
+      
+    }
+    
 }

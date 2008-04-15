@@ -43,110 +43,17 @@
 
 package frysk.scopes;
 
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import lib.dwfl.DwAt;
-import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
-import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.TypeFactory;
-import frysk.value.ObjectDeclaration;
-import frysk.value.FunctionType;
 
 /**
  * A Subprogram refers to a concrete (not inlined) instance of a function.
  */
 public class ConcreteFunction extends Function
 {
-  // Language language;
-    FunctionType functionType;
-    LinkedList parameters;
-    
+
     public ConcreteFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
-
-	parameters = new LinkedList();
-	die = die.getChild();
-	while (die != null) {
-	    
-	    boolean artificial = die.hasAttribute(DwAt.ARTIFICIAL)
-		    && die.getAttrConstant(DwAt.ARTIFICIAL) != 1;
-
-	    if (die.getTag().equals(DwTag.FORMAL_PARAMETER) && !artificial) {
-		Variable variable = new Variable(die);
-		parameters.add(variable);
-	    }
-	    
-	    die = die.getSibling();
-	}
-    }
-
-    public String getName(){
-      return this.name;
-    }
-    
-    public LinkedList getParameters ()
-    {
-      return parameters;
-    }
-
-    public String toString()
-    {
-      return super.toString() + " " + this.getName();
-    }
-
-    public FunctionType getFunctionType ()
-    {
-      return functionType;
-    }
-
-    public void setFunctionType (FunctionType functionType)
-    {
-      this.functionType = functionType;
-    }
-    
-    public void printParameters (PrintWriter writer, DebugInfoFrame frame)
-    {
-      
-      Iterator iterator = this.parameters.iterator();
-      while(iterator.hasNext()) {
-        Variable parameter = (Variable) iterator.next();
-	parameter.toPrint(writer, frame);
-	writer.flush();
-        if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
-            writer.print(",");
-        }
-      }
-      
-    }
-    public void printScopes(PrintWriter writer, DebugInfoFrame frame){
-	super.toPrint(frame, writer, " ");
-    }
-    
-    public ObjectDeclaration getDeclaredObjectByName(String name) {
-	ObjectDeclaration objectDeclaration = null;
-
-	Iterator iterator = this.parameters.iterator();
-	while (iterator.hasNext()) {
-	    ObjectDeclaration tempObjectDeclaration = (Variable) iterator.next();
-	    if (tempObjectDeclaration.getName().equals(name)) {
-		objectDeclaration = tempObjectDeclaration;
-		continue;
-	    }
-	}
-	
-	Composite composite = this.getComposite();
-	if(composite != null){
-	    objectDeclaration = composite.getDeclaredObjectByName(name);
-	}
-	
-	if(objectDeclaration == null){
-	    objectDeclaration =  super.getDeclaredObjectByName(name);
-	}
-	
-	return objectDeclaration;
     }
 
 }

@@ -1,3 +1,10 @@
+2008-04-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java: Replaced use of ConcreteFunction with
+	Function.
+	* DebugInfoStackFactory.java: Updated.
+	* DebugInfoFrame.java: Updated.
+
 2008-04-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Renamed Subprogram to CocreteFuction.
