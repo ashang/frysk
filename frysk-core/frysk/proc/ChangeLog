@@ -1,3 +1,8 @@
+2008-04-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestTaskObserverWatchpoint.java (testWatchpointActionContinue): Reset
+	expected hit count to 1.
+
 2008-04-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestTaskObserverWatchpoint.java (testRunningAndReadOnlyWatchpoint): New.

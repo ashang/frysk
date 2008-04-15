@@ -346,7 +346,7 @@ extends TestLib
 
 	// Make sure it triggered.
 	assertTrue("added", watch.added);
-	assertEquals("hit code", 2, watch.hit);
+	assertEquals("hit code", 1, watch.hit);
 	assertEquals("Task terminated", 1, to.hit);
     }
 

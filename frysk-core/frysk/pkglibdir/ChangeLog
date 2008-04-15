@@ -1,3 +1,8 @@
+2008-04-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* funit-watchpoint.S: Don't add read_only to
+	source.
+
 2008-04-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* funit-watchpoint.S: Add new read_only WORD

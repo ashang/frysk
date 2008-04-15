@@ -64,10 +64,9 @@ NOP
 STORE_WORD(REG3, REG1)
 NOP
 
-NOP
-// Read read_only memory, and copy it to source
+// Read read_only memory.
 LOAD_IMMED_WORD(REG3, read_only)
-STORE_WORD(REG3, REG1)
+LOAD_WORD(REG3, REG3)
 NOP
 
 
