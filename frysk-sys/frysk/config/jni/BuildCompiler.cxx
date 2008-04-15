@@ -41,41 +41,37 @@
 
 
 JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getVersion (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_BuildCompiler_getVersion not implemented");
-  }
-  return 0;
+Java_frysk_config_BuildCompiler_getVersion(JNIEnv *env, jclass) {
+#ifdef __GNUC__
+  return (jint) __GNUC__;
+#else
+  return -1;
+#endif
 }
 
 JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getMinorVersion (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_BuildCompiler_getMinorVersion not implemented");
-  }
-  return 0;
+Java_frysk_config_BuildCompiler_getMinorVersion(JNIEnv *env, jclass) {
+#ifdef __GNUC_MINOR__
+  return (jint) __GNUC_MINOR__;
+#else
+  return -1;
+#endif
 }
 
 JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getPatchLevel (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_BuildCompiler_getPatchLevel not implemented");
-  }
-  return 0;
+Java_frysk_config_BuildCompiler_getPatchLevel(JNIEnv *env, jclass) {
+#ifdef __GNUC_PATCHLEVEL__
+  return (jint) __GNUC_PATCHLEVEL__;
+#else
+  return -1;
+#endif
 }
 
 JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getRHRelease (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_BuildCompiler_getRHRelease not implemented");
-  }
-  return 0;
+Java_frysk_config_BuildCompiler_getRHRelease(JNIEnv *env, jclass) {
+#ifdef __GNUC_RH_RELEASE__
+  return (jint) __GNUC_RH_RELEASE__;
+#else
+  return -1;
+#endif
 }
