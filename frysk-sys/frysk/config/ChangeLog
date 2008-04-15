@@ -1,5 +1,8 @@
 2008-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/FryskVersion.cxx-in: Replace ...
+	* jni/FryskVersion.cxx: ... this.
+
 	* cni/PrefixFactory.cxx-in: New.
 	* jni/PrefixFactory.cxx-in: New.
 	* Config.java: Use Prefix.java.

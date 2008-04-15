@@ -39,13 +39,7 @@
 
 #include "frysk_config_FryskVersion.h"
 
-
 JNIEXPORT jstring
-Java_frysk_config_FryskVersion_version (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_config_FryskVersion_version not implemented");
-  }
-  return 0;
+Java_frysk_config_FryskVersion_version(JNIEnv *env, jclass) {
+  return env->NewStringUTF("@VERSION@");
 }
