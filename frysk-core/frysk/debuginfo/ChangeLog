@@ -1,5 +1,8 @@
-2008-04-15  Sami Wagiaalla  <swagiaal@redhat.com>
+2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+	* DwarfRegisterMapFactory.java (PPC64BE): New.
+	(isaToMap): Add PPC64BE.
 
+2008-04-15  Sami Wagiaalla  <swagiaal@redhat.com>
 	* TestFrameDebugInfo.java: Replaced use of ConcreteFunction with
 	Function.
 	* DebugInfoStackFactory.java: Updated.
