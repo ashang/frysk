@@ -977,8 +977,34 @@ public class SteppingEngine {
     public void setTaskRunning(Task task) {
 	TaskStepEngine tse = null;
 	tse = (TaskStepEngine) this.taskStateMap.get(task);
-	    tse.setState(new RunningState(task));
+	tse.setState(new RunningState(task));
     }
+    
+    /**
+     * Set the current state of the task as stopped.  
+     */    
+    public void setTaskStopped(Task task) {
+
+	TaskStepEngine tse = null;
+	tse = (TaskStepEngine) this.taskStateMap.get(task);	
+	if (!tse.isStopped()) {
+	    tse.setState(new StoppedState(task));	
+	    // Remove the task from the running tasks list      
+	    this.runningTasks.remove(task);
+	}
+    }
+    
+    /**
+     * Requests the addition of the stepping observer to task if 
+     * not inserted already.
+     */
+    public void requestAddSteppingObserver(Task task) {
+
+	if (!(task.isInstructionObserverAdded(this.steppingObserver))) {
+	    task.requestAddInstructionObserver(this.steppingObserver);
+	}
+    }
+    
     /**
      * Adds the given Observer to this.steppingObserver's Observer list.
      * 
