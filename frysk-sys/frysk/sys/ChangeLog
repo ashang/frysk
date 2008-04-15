@@ -1,3 +1,10 @@
+2008-04-14  Stan Cox  <scox@redhat.com>
+
+	* Environ.java: New file.
+	* cni/Environ.cxx: New file.
+	* Fork.java (spawn): Use Environ.
+	* cni/Fork.cxx (spawn): Use Environ.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AuditLibs.cxx: New.

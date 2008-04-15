@@ -54,9 +54,9 @@ public final class Fork {
 						  String in, String out,
 						  String err,
 						  String[] args, 
-						  String libs, int trace);
+						  long environ, int trace);
     private static ProcessIdentifier spawn(String[] args, int trace) {
-	return spawn(new File(args[0]), null, null, null, args, "", trace);
+	return spawn(new File(args[0]), null, null, null, args, 0, trace);
     }
 
     /**
@@ -67,7 +67,7 @@ public final class Fork {
     public static ProcessIdentifier exec(File exe,
 					 String in, String out,
 					 String err, String[] args) {
-	return spawn(exe, in, out, err, args, "", NO_TRACE);
+	return spawn(exe, in, out, err, args, 0, NO_TRACE);
     }
     /**
      * Create a child process running EXE with arguments ARGS[0..].
@@ -76,7 +76,7 @@ public final class Fork {
      */
     public static ProcessIdentifier exec(String in, String out,
 					 String err, String[] args) {
-	return spawn(new File(args[0]), in, out, err, args, "", NO_TRACE);
+	return spawn(new File(args[0]), in, out, err, args, 0, NO_TRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments
@@ -93,9 +93,12 @@ public final class Fork {
      * Also wire up IN, OUT, and ERR.
      */
     public static ProcessIdentifier ptrace(File exe,
-					   String in, String out,
+					   String in, String out, 
 					   String err, String[] args, String libs) {
-	return spawn(exe, in, out, err, args, libs, PTRACE);
+	Environ environ = new Environ();
+	environ.setEnv("LD_LIBRARY_PATH", libs);
+	long env = environ.putEnviron();
+	return spawn(exe, in, out, err, args, env, PTRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments
@@ -114,7 +117,7 @@ public final class Fork {
     public static ProcessIdentifier utrace(File exe,
 					   String in, String out,
 					   String err, String[] args) {
-	return spawn(exe, in, out, err, args, "", UTRACE);
+	return spawn(exe, in, out, err, args, 0, UTRACE);
     }
     /**
      * Create a child process running ARGS[0] with arguments
