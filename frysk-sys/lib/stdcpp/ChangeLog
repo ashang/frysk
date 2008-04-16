@@ -1,3 +1,7 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Demangler.cxx (Java_lib_stdcpp_Demangler_demangle): Implement.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Demangler.cxx: New.

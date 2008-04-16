@@ -37,15 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
+#include <cxxabi.h>
+#include <stdio.h>
+#include <alloca.h>
+
 #include "lib_stdcpp_Demangler.h"
 
+using namespace abi;
 
 JNIEXPORT jstring
-Java_lib_stdcpp_Demangler_demangle (JNIEnv *env, jclass, jstring)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_stdcpp_Demangler_demangle not implemented");
-  }
-  return 0;
+Java_lib_stdcpp_Demangler_demangle(JNIEnv *env, jclass klass,
+				   jstring mangledString) {
+  if (mangledString == NULL)
+    return NULL;
+  
+  int status = -1;
+
+  const char* mangledName = env->GetStringUTFChars(mangledString, NULL);
+  if (mangledName == NULL)
+    return NULL; // exception pending
+  const char *demangledName = __cxa_demangle(mangledName, 0, 0, &status);
+  env->ReleaseStringUTFChars(mangledString, mangledName);
+  
+  if (status == 0)
+    return env->NewStringUTF(demangledName);
+  else
+    return mangledString;
 }
