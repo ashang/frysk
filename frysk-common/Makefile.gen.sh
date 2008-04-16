@@ -667,10 +667,18 @@ generate_jni_header ()
 	local h=`echo $d/$b | tr '[/]' '[_]'`
 	local c=`echo $d/$b | tr '[/]' '[.]'`
 	automake_variable JAVAH_JNI_BUILT += ${h}.h
-	echo "CLEANFILES += ${h}.h"
-	echo "${h}.h: $file | ${GEN_DIRNAME}.jar"
-	echo "	@echo \"$c => ${h}.h\""
-	echo '	$(GCJH) $(GCJHFLAGS) -jni -classpath=$(CLASSPATH):'${GEN_DIRNAME}.jar $c
+	cat <<EOF
+CLEANFILES += ${h}.h
+${h}.h: $file | ${GEN_DIRNAME}.jar
+	@echo \"$c => ${h}.h\"
+	rm -f \$@.tmp
+	\$(GCJH) \$(GCJHFLAGS) \\
+		-jni \\
+		-classpath=\$(CLASSPATH):${GEN_DIRNAME}.jar \\
+		-o \$@.tmp \\
+		$c
+	mv \$@.tmp \$@
+EOF
     fi
 }
 
