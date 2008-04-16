@@ -37,76 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdarg.h>
+#include <jni.h>
 #include <stdlib.h>
 
-#include <jni.h>
-
 #include "frysk/jni/print.hxx"
-#include "frysk/jni/members.hxx"
-#include "frysk/rsl/jni/Log.hxx"
 
-static bool
-logging(JNIEnv* env, jobject logger) {
-  static jmethodID loggingID = NULL;
-  if (!getMethodID(&loggingID, env, logger, "logging", "()B"))
-    return false;
-  jboolean result = env->CallBooleanMethod(logger, loggingID);
-  if (env->ExceptionCheck())
-    return false;
-  return result;
-}
+/**
+ * Do printf style printing to a java String.
+ */
 
-static void
-log(JNIEnv* env, jobject logger, jstring msg) {
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log", "(Ljava/lang/String;)V"))
-    return;
-  env->CallVoidMethod(logger, logID, msg);
-}
-
-void
-logf(JNIEnv *env, jobject logger, const char* format, ...) {
-  if (!logging(env, logger))
-    return;
+jstring
+ajprintf(JNIEnv* env, const char *fmt, ...) {
   va_list ap;
-  va_start(ap, format);
-  jstring message = vajprintf(env, format, ap);
-  if (message != NULL)
-    log(env, logger, message);
-  va_end(ap);
+  va_start (ap, fmt);
+  jstring jmessage = vajprintf(env, fmt, ap);
+  va_end (ap);
+  return jmessage;  
 }
 
-void
-logf(JNIEnv *env, jobject logger, jobject object, const char* format, ...) {
-  if (!logging(env, logger))
-    return;
-  va_list ap;
-  va_start(ap, format);
-  jstring message = vajprintf(env, format, ap);
-  if (message != NULL)
-    log(env, logger, message);
-  va_end(ap);
-}
-
-void
-log(JNIEnv *env, jobject logger, const char* p1, jobject p2) {
-  if (!logging(env, logger))
-    return;
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log",
-		   "(Ljava/lang/String;Ljava/lang/Object;)V"))
-    return;
-  env->CallVoidMethod(logger, logID, env->NewStringUTF(p1), p2);
-}
-
-void
-log(JNIEnv *env, jobject logger, jobject self, const char* p1, jobject p2) {
-  if (!logging(env, logger))
-    return;
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log",
-		   "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V"))
-    return;
-  env->CallVoidMethod(logger, logID, self, env->NewStringUTF(p1), p2);
+/**
+ * Do vprintf style printing to a java String.
+ */
+jstring
+vajprintf(JNIEnv* env, const char *fmt, va_list ap) {
+  char* message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    return NULL;
+  }
+  jstring jmessage = env->NewStringUTF(message);  
+  ::free(message);  
+  if (jmessage == NULL) {
+    return NULL;
+  }
+  return jmessage;
 }
