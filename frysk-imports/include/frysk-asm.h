@@ -185,7 +185,7 @@
 #elif defined __x86_64__
 #  define ILLEGAL_INSTRUCTION .word 0xffff
 #elif defined __powerpc__
-#  define ILLEGAL_INSTRUCTION .4byte 0xffffffff
+#  define ILLEGAL_INSTRUCTION .4byte 0
 #else
 #  warning "No no-operation instruction defined"
 #endif
@@ -205,14 +205,18 @@
 
 #if defined __x86__
 #  define LOAD_WORD(DEST_REG,BASE_REG) mov (BASE_REG), DEST_REG
+#elif defined __powerpc64__
+#  define LOAD_WORD(DEST_REG,BASE_REG) ld DEST_REG, 0(BASE_REG)
 #elif defined __powerpc__
-#  define LOAD_WORD(DEST_REG,BASE_REG) ldw DEST_REG, 0(BASE_REG)
+#  define LOAD_WORD(DEST_REG,BASE_REG) lwz DEST_REG, 0(BASE_REG)
 #else
 #  warning "No load instruction defined"
 #endif
 
 #if defined __x86__
 #  define STORE_WORD(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#elif defined __powerpc64__
+#  define STORE_WORD(SOURCE_REG,BASE_REG) std SOURCE_REG, 0(BASE_REG)
 #elif defined __powerpc__
 #  define STORE_WORD(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
 #else
@@ -225,7 +229,7 @@
 #if defined __x86__
 #  define LOAD_BYTE(DEST_REG,BASE_REG) movb (BASE_REG), DEST_REG
 #elif defined __powerpc__
-#  define LOAD_BYTE(DEST_REG,BASE_REG) ldb DEST_REG, 0(BASE_REG)
+#  define LOAD_BYTE(DEST_REG,BASE_REG) lbz DEST_REG, 0(BASE_REG)
 #else
 #  warning "No load instruction defined"
 #endif
@@ -356,6 +360,8 @@
 #  define COMPARE(LHS_REG,RHS_REG) cmpl LHS_REG, RHS_REG
 #elif defined __x86_64__
 #  define COMPARE(LHS_REG,RHS_REG) cmpq LHS_REG, RHS_REG
+#elif defined __powerpc64__
+#  define COMPARE(LHS_REG,RHS_REG) cmpd cr7, LHS_REG, RHS_REG
 #elif defined __powerpc__
 #  define COMPARE(LHS_REG,RHS_REG) cmpw cr7, LHS_REG, RHS_REG
 #else
@@ -396,10 +402,10 @@
 #if defined __x86__
 #  define JUMP_REG(REG) jmp *REG
 #elif defined __powerpc__
-// PowerPC do not have a instructio for jumping for a REG,
-// so the solution is to use a special reg (here counter reg)
-// copy the value to him, and them jump. The problem is that you
-// will lose the old value of CTR reg.
+// PowerPC does not have an instruction for jumping to the address
+// in a REG, so the solution is to use a special reg (here counter
+// reg) copy the value to it, and them jump. The problem is that
+// you will lose the old value of CTR reg.
 #  define JUMP_REG(REG) mtctr REG; bctrl
 #else
 #  warning "No indirect or register jump instruction defined"
@@ -407,7 +413,7 @@
 
 
 
-// Host ABI calling convetion instructions.
+// Host ABI calling convention instructions.
 
 // This collection of compound instructions let assembler code work
 // with the host's ABI's "traditional" function calling convention.
