@@ -1,3 +1,7 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Config.cxx: Delete.
+
 2008-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/BuildCompiler.cxx: Implement.
