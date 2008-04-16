@@ -55,9 +55,3 @@ frysk::config::Config::getRootSrcDir ()
 {
   return JvNewStringUTF ("@root_srcdir@");
 }
-
-jstring
-frysk::config::Config::getAbsRootSrcDir ()
-{
-  return JvNewStringUTF ("@abs_root_srcdir@");
-}

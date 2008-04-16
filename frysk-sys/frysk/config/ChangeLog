@@ -1,5 +1,8 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getAbsRootSrcDir()): Delete.
+	* cni/Config.cxx-in: Update.
+
 	* jni/Config.cxx: Delete.
 
 2008-04-15  Andrew Cagney  <cagney@redhat.com>

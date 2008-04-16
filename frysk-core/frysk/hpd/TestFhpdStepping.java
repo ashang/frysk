@@ -55,7 +55,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = new HpdTestbed();
 	
-	String source = Config.getAbsRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	String source = Config.getPkgLibSrcDir() + "funit-stepping-asm.S";
 	this.scanner = new TestfileTokenScanner(new File(source));
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	

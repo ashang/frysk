@@ -72,11 +72,11 @@ public class TestFstack extends TestLib {
 	return new TearDownExpect(argv);
     }
 
-    private String getCanonicalAbsRootSrcDir () {
+    private String getCanonicalRootSrcDir () {
 	try {
-	    return new File(Config.getAbsRootSrcDir()).getCanonicalPath();
+	    return new File(Config.getRootSrcDir()).getCanonicalPath();
 	} catch (IOException e) {
-	    return Config.getAbsRootSrcDir();
+	    return Config.getRootSrcDir();
 	}
     }
     
@@ -98,7 +98,7 @@ public class TestFstack extends TestLib {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
 		"-rich", "-print", "full-path"
 	    });
-        e.expect (getCanonicalAbsRootSrcDir()
+        e.expect (getCanonicalRootSrcDir()
 		  + ".*"
 		  + "funit-stack-outlined"
 		  + ".c#");

@@ -1,3 +1,8 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFstack.java (getCanonicalRootSrcDir()): Replace
+	getCanonicalAbsRootSrcDir.
+
 2008-04-10  Mark Wielaard  <mwielaard@redhat.com>
 
 	* ferror.java (options): Use correct Options constructor.
