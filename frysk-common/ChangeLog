@@ -1,5 +1,8 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (generate_jni_header): Write output to a tmp
+	file first.
+
 	* Makefile.rules (SUBST): Match -in input file name, not output
 	file name when selecting action.
 
