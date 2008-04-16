@@ -1,3 +1,8 @@
+2008-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Log.cxx: New.
+	* jni/Log.hxx: New.
+
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Move printing code to ...
