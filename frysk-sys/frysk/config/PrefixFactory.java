@@ -57,6 +57,7 @@ public class PrefixFactory {
     private static native String pkgDataDir();
     private static native String pkgLibDir();
     private static native String pkgLib32Dir();
+    private static native String sourceDir();
 
     /**
      * Create an install Prefix; need to specify the location of the
@@ -65,7 +66,8 @@ public class PrefixFactory {
     private static Prefix installPrefix(File lib, File lib32, File lib64) {
 	return new Prefix(gladeDir(), new File(helpDir()), imagesDir(),
 			  new File(binDir()), new File(pkgDataDir()),
-			  lib, lib32, lib64);
+			  lib, lib32, lib64,
+			  new File(sourceDir()));
     }
 
     /**
@@ -118,7 +120,8 @@ public class PrefixFactory {
 			  absSrcDir.concat("/frysk/gui/imagesdir"),
 			  new File(absBuildDir, "/frysk/bindir/"),
 			  new File(absBuildDir, "/frysk/pkgdatadir/"),
-			  lib, lib32, lib64);
+			  lib, lib32, lib64,
+			  new File(absSrcDir).getParentFile());
     }
 
     /**

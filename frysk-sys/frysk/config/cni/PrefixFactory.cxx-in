@@ -79,3 +79,9 @@ jstring
 frysk::config::PrefixFactory::pkgLib32Dir() {
   return JvNewStringUTF("@pkglib32dir@");
 }
+
+jstring
+frysk::config::PrefixFactory::sourceDir() {
+  // An educated guess.
+  return JvNewStringUTF("/usr/src/debug/frysk-@VERSION@");
+}

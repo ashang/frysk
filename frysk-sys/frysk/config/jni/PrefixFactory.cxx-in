@@ -75,3 +75,9 @@ JNIEXPORT jstring JNICALL
 Java_frysk_config_PrefixFactory_pkgLib32Dir(JNIEnv *env, jclass) {
   return env->NewStringUTF("@pkglib32dir@");
 }
+
+jstring
+Java_frysk_config_PrefixFactory_sourceDir(JNIEnv *env, jclass) {
+  // An educated guess.
+  return env->NewStringUTF("@prefix@/src/debug/frysk-@VERSION@");
+}

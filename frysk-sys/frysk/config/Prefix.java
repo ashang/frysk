@@ -171,6 +171,16 @@ public class Prefix {
     }
     private final File pkgLib64Dir;
 
+    /**
+     * A file within frysk's source tree.
+     *
+     * This is used by testing when constructing and comparing paths
+     * to source files.
+     */
+    public static final File sourceFile(String file) {
+        return getFile(current.sourceDir, file);
+    }
+    private final File sourceDir;
 
     /**
      * Construct a Prefix.
@@ -179,7 +189,8 @@ public class Prefix {
      */
     Prefix(String gladeDir, File helpDir, String imagesDir,
 	   File binDir, File pkgDataDir, File pkgLibDir,
-	   File pkgLib32Dir, File pkgLib64Dir) {
+	   File pkgLib32Dir, File pkgLib64Dir,
+	   File sourceDir) {
 	this.gladeDir = gladeDir;
 	this.helpDir = helpDir;
 	this.imagesDir = imagesDir;
@@ -188,5 +199,6 @@ public class Prefix {
 	this.pkgLibDir = pkgLibDir;
 	this.pkgLib32Dir = pkgLib32Dir;
 	this.pkgLib64Dir = pkgLib64Dir;
+	this.sourceDir = sourceDir;
     }
 }

@@ -39,6 +39,7 @@
 
 package frysk.config;
 
+import java.io.File;
 import frysk.junit.TestCase;
 
 /**
@@ -196,6 +197,11 @@ public class TestPrefix extends TestCase {
 	default:
 	    fail("unknown word size");
 	}
+    }
+
+    public void testSourceFile() {
+	File me = Prefix.sourceFile("frysk-sys/frysk/config/TestPrefix.java");
+	assertTrue("this source file exists", me.exists());
     }
 
 }
