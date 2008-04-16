@@ -1,11 +1,11 @@
 2008-04-16  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* frysk-asm.h (ILLEGAL_INSTRUCTION): Use 0 as illegal insn.
-	* (LOAD_WORD): Add version for PowerPC64.  Use correct insn
+	(LOAD_WORD): Add version for PowerPC64.  Use correct insn
 	for PowerPC32.
-	* (STORE_WORD): Add version for PowerPC64.
-	* (LOAD_BYTE): Use correct insn.
-	* (COMPARE): Add version for PowerPC64.
+	(STORE_WORD): Add version for PowerPC64.
+	(LOAD_BYTE): Use correct insn.
+	(COMPARE): Add version for PowerPC64.
 
 2008-04-04  Andrew Cagney  <cagney@redhat.com>
 
