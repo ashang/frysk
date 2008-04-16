@@ -48,16 +48,14 @@ import frysk.config.PrefixFactory;
  * Run the JUnit tests from within the build tree.
  */
 
-public class TestRunner
-{
-    public static void main (String[] args)
-    {
+public class TestRunner {
+    public static void main (String[] args) {
 	String ABS_BUILDDIR = "@abs_builddir@";
-	String ABS_SRCDIR = "@abs_srcdir@";
+	String ROOT_SRCDIR = "@root_srcdir@";
 
-	Prefix configAll = PrefixFactory.createBuildPrefix(ABS_SRCDIR, ABS_BUILDDIR);
-	Prefix config32 = PrefixFactory.createBuildPrefix32(ABS_SRCDIR, ABS_BUILDDIR);
-	Prefix config64 = PrefixFactory.createBuildPrefix64(ABS_SRCDIR, ABS_BUILDDIR);
+	Prefix configAll = PrefixFactory.createBuildPrefix(ROOT_SRCDIR, ABS_BUILDDIR);
+	Prefix config32 = PrefixFactory.createBuildPrefix32(ROOT_SRCDIR, ABS_BUILDDIR);
+	Prefix config64 = PrefixFactory.createBuildPrefix64(ROOT_SRCDIR, ABS_BUILDDIR);
 
 	Runner testRunner = new Runner("TestRunner", args,
 				       configAll, config32, config64);

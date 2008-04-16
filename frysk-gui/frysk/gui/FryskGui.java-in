@@ -50,9 +50,9 @@ import frysk.config.PrefixFactory;
  */
 public class FryskGui {
     public static void main (String[] args) {
-	final String ABS_SRCDIR = "@abs_srcdir@";
+	final String ROOT_SRCDIR = "@root_srcdir@";
 	final String ABS_BUILDDIR = "@abs_builddir@";
-	Prefix.set(PrefixFactory.createBuildPrefix(ABS_SRCDIR, ABS_BUILDDIR));
+	Prefix.set(PrefixFactory.createBuildPrefix(ROOT_SRCDIR, ABS_BUILDDIR));
 	Gui.gui(args);
     }
 }

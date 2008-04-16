@@ -1,5 +1,7 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* PrefixFactory.java: Replace absSrcDir, with rootSrcDir.
+	
 	* jni/PrefixFactory.cxx-in (Java_frysk_config_PrefixFactory_sourceDir): New.
 	* cni/PrefixFactory.cxx-in (PrefixFactory::sourceDir): New.
 	* TestPrefix.java (testSourceFile()): New.

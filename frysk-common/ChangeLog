@@ -1,5 +1,8 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.java-in: Change @abs_srcdir@ to @root_srcdir@; needed
+	by source code tests.
+
 	* Makefile.gen.sh (generate_jni_header): Write output to a tmp
 	file first.
 

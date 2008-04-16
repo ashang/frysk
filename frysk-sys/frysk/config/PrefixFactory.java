@@ -113,27 +113,30 @@ public class PrefixFactory {
     /**
      * Create a build-tree prefix.
      */
-    private static Prefix buildPrefix(String absSrcDir, String absBuildDir,
+    private static Prefix buildPrefix(String rootSrcDir, String absBuildDir,
 				      File lib, File lib32, File lib64) {
-	return new Prefix(absSrcDir.concat("/frysk/gui/gladedir/"),
-			  new File(absSrcDir, "/frysk/gui/helpdir"),
-			  absSrcDir.concat("/frysk/gui/imagesdir"),
+	File rootSrc = new File(rootSrcDir);
+	String absSrcDir = rootSrc.getAbsolutePath();
+	// XXX: Glade needs the "/" at the end.
+	return new Prefix(absSrcDir.concat("/frysk-gui/frysk/gui/gladedir/"),
+			  new File(absSrcDir, "/frysk-gui/frysk/gui/helpdir"),
+			  absSrcDir.concat("/frysk-gui/frysk/gui/imagesdir"),
 			  new File(absBuildDir, "/frysk/bindir/"),
 			  new File(absBuildDir, "/frysk/pkgdatadir/"),
 			  lib, lib32, lib64,
-			  new File(absSrcDir).getParentFile());
+			  rootSrc);
     }
 
     /**
      * Create the "native" build-tree configuration; all possible
      * paths, including 32-on-64 when applicable, are enabled.
      */
-    public static Prefix createBuildPrefix(String absSrcDir,
+    public static Prefix createBuildPrefix(String rootSrcDir,
 					   String absBuildDir) {
 	File libDir = new File(absBuildDir, "/frysk/pkglibdir/");
 	File lib32Dir = new File(absBuildDir, "/frysk/pkglibdir/arch32/");
 	File lib64Dir = null; // 64-on-32 not supported.
-	return buildPrefix(absSrcDir, absBuildDir, libDir,
+	return buildPrefix(rootSrcDir, absBuildDir, libDir,
 			   Host.wordSize() == 32 ? libDir : lib32Dir,
 			   Host.wordSize() == 32 ? lib64Dir : libDir);
     }
@@ -142,11 +145,11 @@ public class PrefixFactory {
      * Create a 32-bit specific build-tree configuration; return NULL
      * if this is not supported by this build.
      */
-    public static Prefix createBuildPrefix32(String absSrcDir,
+    public static Prefix createBuildPrefix32(String rootSrcDir,
 					     String absBuildDir) {
 	File libDir = new File(absBuildDir, "/frysk/pkglibdir/");
 	File lib32Dir = new File(absBuildDir, "/frysk/pkglibdir/arch32/");
-	return buildPrefix(absSrcDir, absBuildDir,
+	return buildPrefix(rootSrcDir, absBuildDir,
 			   // Test against 32-bit libraries.
 			   Host.wordSize() == 32 ? libDir : lib32Dir,
 			   // Disable 32-on-64 testing.
@@ -158,13 +161,13 @@ public class PrefixFactory {
      * Create a 64-bit specific build-tree configuration; return NULL
      * if this is not supported by this build.
      */
-    public static Prefix createBuildPrefix64(String absSrcDir,
+    public static Prefix createBuildPrefix64(String rootSrcDir,
 					     String absBuildDir) {
 	if (Host.wordSize() == 32)
 	    // 64-on-32 not supported.
 	    return null;
 	File libDir = new File(absBuildDir, "/frysk/pkglibdir/");
 	// Disable 32-on-64 testing.
-	return buildPrefix(absSrcDir, absBuildDir, libDir, null, libDir);
+	return buildPrefix(rootSrcDir, absBuildDir, libDir, null, libDir);
     }
 }
