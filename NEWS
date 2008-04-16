@@ -9,6 +9,17 @@ and C++.  It is aimed at providing developers and system
 administrators with the ability to examine and analyze multi-host,
 multi-process, and multi-threaded systems while they are running.
 
+--
+
+Post-Release 0.2 Updates:
+
+-> 2004-04-16 - New command in FHPD: watch
+
+   Use to set watchpoints on expressions or variables. This stops
+   program execution when memory location associated with the
+   expression is written to or read from.
+
+--
 
 Release 0.2, 2008-04-02:
 
@@ -16,17 +27,17 @@ This initial release of frysk includes:
 
 -> command line utilities:
 
-   fauxv - print the auxiliary vector (new)
-   fcatch - catch and print the stack of a crashing process
-   fcore - extract a core file from a running process (faster, more correct)
+   fauxv      - print the auxiliary vector (new)
+   fcatch     - catch and print the stack of a crashing process
+   fcore      - extract a core file from a running process (faster, more correct)
    fdebuginfo - list debug-info requirements of a process (new)
-   fdebugrpm - install debug-info requirements of a process (new)
-   ferror - catch and back-trace error calls (new)
-   fexe - print the executable path
-   fmaps - print the address map (new)
-   fstack - print each thread's stack (supports in-line back-traces)
-   fstep - single-step a process
-   ftrace - trace a processes system and (new) library calls
+   fdebugrpm  - install debug-info requirements of a process (new)
+   ferror     - catch and back-trace error calls (new)
+   fexe       - print the executable path
+   fmaps      - print the address map (new)
+   fstack     - print each thread's stack (supports in-line back-traces)
+   fstep      - single-step a process
+   ftrace     - trace a processes system and (new) library calls
 
    Known limitations: large resident set size; large executable size.
 

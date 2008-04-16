@@ -1,3 +1,7 @@
+2008-04-16  Teresa Thomas  <tthomas@redhat.com>
+
+	* NEWS: Update - add watch command.
+
 2008-04-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (javadoc): Use frysk-common/javadocs.sh.
