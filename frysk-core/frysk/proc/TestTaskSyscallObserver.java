@@ -312,28 +312,6 @@ public class TestTaskSyscallObserver extends TestLib {
 
   };
 
-  public void testCreateAttachedAddSyscallObserver ()
-  {
-    if (unresolved(2915))
-      return;
-
-    int count = 5;
-
-    Manager.host.requestCreateAttachedProc(new String[]
-	{
-	    getExecPath ("funit-syscallloop"),
-	    Integer.toString(count)
-	}, attachedObserver);
-
-    // assertRunUntilStop("run until program exits");
-    assertRunUntilStop("run until program exits");
-
-    assertTrue("enough syscall enter events", syscallObserver1.enter >= count);
-    assertTrue("enough syscall enter exit", syscallObserver1.exit >= count);
-    assertTrue("inSyscall (last call doesn't exit)", syscallObserver1.inSyscall);
-    assertTrue("Caught exec syscall", syscallObserver1.caughtExec);
-  }
-
   /**
    * Test system calls. XXX: How is this different to testSyscallLoop (other
    * than the program run). XXX: Also why is the last syscall expected to exit

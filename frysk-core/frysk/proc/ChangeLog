@@ -1,5 +1,10 @@
 2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
 
+	* TestTaskSyscallObserver (testCreateAttachedAddSyscallObserver):
+	Removed bogus (unresolved) test for (duplicate) bug #2915.
+
+2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestBreakpoints.java (testSteppingtestHitAndRun): No longer
 	unresolved because of bug #4847, but make unresolvedOnIA32
 	because of bug #6044.
