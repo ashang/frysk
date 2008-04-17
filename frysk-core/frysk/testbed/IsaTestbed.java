@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.isa.ISA;
 import frysk.isa.ElfMap;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Return the ISA being used by the testbed.
@@ -53,20 +53,20 @@ public class IsaTestbed {
      * Return the default isa being used for testing.
      */
     public static ISA getISA() {
-	return ElfMap.getISA(Config.getPkgLibFile("funit-slave"));
+	return ElfMap.getISA(Prefix.pkgLibFile("funit-slave"));
     }
     
     /**
      * Return the 32-bit isa being used for 32-on-64 testing.
      */
     public static ISA getISA32() {
-	return ElfMap.getISA(Config.getPkgLib32File("funit-slave"));
+	return ElfMap.getISA(Prefix.pkgLib32File("funit-slave"));
     }
 
     /**
      * Return the 64-bit isa being used for 32-on-64 testing.
      */
     public static ISA getISA64() {
-	return ElfMap.getISA(Config.getPkgLib64File("funit-slave"));
+	return ElfMap.getISA(Prefix.pkgLib64File("funit-slave"));
     }
 }

@@ -41,12 +41,12 @@ package frysk.bindir;
 
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import java.io.File;
 
 public class TestFexe extends TestLib {
     public void testExeOfPid() {
-	File fexe = Config.getBinFile("fexe");
+	File fexe = Prefix.binFile("fexe");
 	// XXX: Some versions of bash (e.g., bash-3.2-20.fc8.x86_64)
 	// will exec, instead of fork, a program if it is the only
 	// command.  This leads to $$ pointing at the fexe process.
@@ -61,7 +61,7 @@ public class TestFexe extends TestLib {
 
     public void testExeOfExe() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fexe").getPath(),
+		Prefix.binFile("fexe").getPath(),
 		"-exe", "/bin/ls",
 		"--",
 		"arg0", "arg1"
@@ -72,7 +72,7 @@ public class TestFexe extends TestLib {
     public void testExePath() {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		"/bin/bash", "-c",
-		"PATH=/bin " + Config.getBinFile("fexe").getPath() + " ls"
+		"PATH=/bin " + Prefix.binFile("fexe").getPath() + " ls"
 	    });
 	e.expect("/bin/ls" + "\r\n");
     }

@@ -1,3 +1,9 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.java (getPkgLib64File(String)): Delete.
+	(getPkgLib32File(String)): Delete.
+	(getImagesDir()): Delete.
+	
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxx-in: Delete.

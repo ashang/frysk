@@ -41,17 +41,17 @@ package frysk.bindir;
 
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class TestFcore extends TestLib {
     public void testNoArguments() {
-	TearDownExpect e = new TearDownExpect(Config.getBinFile("fcore"));
+	TearDownExpect e = new TearDownExpect(Prefix.binFile("fcore"));
 	e.expect("ERROR: No argument provided.");    
     }
 
     public void testBadArguments () {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
+		Prefix.binFile("fcore").getAbsolutePath (),
 		"this is a bad argument"
 	    });
 	e.expect("Error: ");
@@ -59,7 +59,7 @@ public class TestFcore extends TestLib {
 
     public void testBadDebugParameter () {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
+		Prefix.binFile("fcore").getAbsolutePath (),
 		"-debug", "frysk=SILLY",
 		"1"
 	    });
@@ -68,7 +68,7 @@ public class TestFcore extends TestLib {
 
     public void testGoodDebugParameter () {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
+		Prefix.binFile("fcore").getAbsolutePath (),
 		"-debug", "frysk=FINE",
 		"no-such-file"
 	    });
@@ -77,7 +77,7 @@ public class TestFcore extends TestLib {
 
     public void testInvalidArgument () {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcore").getAbsolutePath (),
+		Prefix.binFile("fcore").getAbsolutePath (),
 		"-z",
 		"1"
 	    });

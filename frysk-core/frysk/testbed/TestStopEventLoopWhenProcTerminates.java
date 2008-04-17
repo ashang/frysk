@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import frysk.rsl.Log;
 import frysk.isa.signals.StandardSignal;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Test an observer that stops the eventloop when the process with the
@@ -52,7 +52,7 @@ public class TestStopEventLoopWhenProcTerminates extends TestLib {
     private static final Log fine
 	= Log.fine(TestStopEventLoopWhenProcTerminates.class);
     private final String hello
-	= Config.getPkgLibFile("funit-hello").getAbsolutePath();
+	= Prefix.pkgLibFile("funit-hello").getAbsolutePath();
 
     public void testExit() {
 	DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry(new String[] {

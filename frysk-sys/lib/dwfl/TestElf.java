@@ -39,7 +39,7 @@
 
 package lib.dwfl;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
@@ -53,7 +53,7 @@ public class TestElf
 {
 
     public void testCore_x8664() {
-	Elf testElf = new Elf (Config.getPkgDataFile("test-core-x8664"),
+	Elf testElf = new Elf (Prefix.pkgDataFile("test-core-x8664"),
 			       ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
@@ -139,7 +139,7 @@ public class TestElf
   }
 
   public void testCore_x86() {
-      Elf testElf = new Elf(Config.getPkgDataFile ("test-core-x86"),
+      Elf testElf = new Elf(Prefix.pkgDataFile ("test-core-x86"),
 			    ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
@@ -220,7 +220,7 @@ public class TestElf
      * it to ElfPrpsinfo to find the relative pstatus data, and parse.
      */
     public void testElfCorePrpsNotes_x8664() {
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x8664"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -250,7 +250,7 @@ public class TestElf
    *
    */
     public void testElfCorePrpsNotes_x86() {
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x86"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -279,7 +279,7 @@ public class TestElf
      * it to ElfPrstatus to find the relative pstatus data, and parse.
      */
     public void testElfCorePrstatusNotes_x86() {
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x86"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -388,7 +388,7 @@ public class TestElf
      */
     public void testElfCorePrstatusNotes_x8664() {
 	ByteOrder order = ByteOrder.LITTLE_ENDIAN;
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x8664"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -527,7 +527,7 @@ public class TestElf
      * it to ElfPrAuxv to find the relative pstatus data, and parse.
      */
     public void testElfCorePrAuxvNotes_x8664() {
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x8664"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x8664"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -590,7 +590,7 @@ public class TestElf
      * it to ElfPrAuxv to find the relative pstatus data, and parse.
      */
     public void testElfCorePrAuxvNotes_x86() {
-	Elf testElf = new Elf (Config.getPkgDataFile ("test-core-x86"),
+	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x86"),
 			       ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -713,7 +713,7 @@ public class TestElf
 			 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 
 			 00, 00, 00, 00, 00, 00} ;
 
-    Elf testElf = new Elf(Config.getPkgDataFile ("test-core-x86"),
+    Elf testElf = new Elf(Prefix.pkgDataFile ("test-core-x86"),
 			  ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);
@@ -734,7 +734,7 @@ public class TestElf
   }
 
     public void testObjectFile() {
-	Elf testElf = new Elf(Config.getPkgDataFile ("helloworld.o"),
+	Elf testElf = new Elf(Prefix.pkgDataFile ("helloworld.o"),
 			      ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
@@ -811,7 +811,7 @@ public class TestElf
   }
 
     public void testObjectFileTables() {
-	Elf testElf = new Elf(Config.getPkgDataFile ("helloworld.o"),
+	Elf testElf = new Elf(Prefix.pkgDataFile ("helloworld.o"),
 			      ElfCommand.ELF_C_READ);
 
     ElfEHeader header = testElf.getEHeader();
@@ -857,7 +857,7 @@ public class TestElf
   }
 
     public void testLibraryVersions() {
-	final Elf elfFile = new Elf(Config.getPkgDataFile("libtest.so"),
+	final Elf elfFile = new Elf(Prefix.pkgDataFile("libtest.so"),
 				    ElfCommand.ELF_C_READ);
     final ElfEHeader eh = elfFile.getEHeader();
 

@@ -47,7 +47,7 @@ import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.dwfl.DwflCache;
 import frysk.junit.TestCase;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.sys.Pid;
 import frysk.sys.SignalSet;
 import frysk.proc.FindProc;
@@ -66,7 +66,7 @@ public class TestLib extends TestCase {
      * Return a String specifying the absolute path of the executable.
      */
     protected static String getExecPath(String program) {
-	return Config.getPkgLibFile(program).getAbsolutePath();
+	return Prefix.pkgLibFile(program).getAbsolutePath();
     }
 
     /**

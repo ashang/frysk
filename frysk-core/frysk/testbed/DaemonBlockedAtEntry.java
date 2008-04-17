@@ -39,7 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
@@ -110,7 +110,7 @@ public class DaemonBlockedAtEntry extends Offspring {
     }
 
     public DaemonBlockedAtEntry(String program) {
-	this(Config.getPkgLibFile(program));
+	this(Prefix.pkgLibFile(program));
     }
 
     /**

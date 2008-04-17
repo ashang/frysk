@@ -40,7 +40,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import java.io.File;
 import frysk.expunit.Regex;
 import frysk.proc.Task;
@@ -62,7 +62,7 @@ public class TestFstep extends TestLib {
 	ElfEHeader h = e.getEHeader();
 	final String entryAddress = "0x" + Long.toHexString(h.entry);
 
-	String command = Config.getBinFile("fstep").getAbsolutePath();
+	String command = Prefix.binFile("fstep").getAbsolutePath();
 	String argument = "/bin/true";
 	TearDownExpect expect = new TearDownExpect(new String[] {
 		command, argument
@@ -84,7 +84,7 @@ public class TestFstep extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	
-	String command = Config.getBinFile("fstep").getAbsolutePath();
+	String command = Prefix.binFile("fstep").getAbsolutePath();
 	String argument = "" + task.getProc().getPid();
 	TearDownExpect expect = new TearDownExpect(new String[] {
 		command, argument

@@ -42,7 +42,7 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import frysk.testbed.Tee;
 import frysk.rsl.Log;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Test creation of a process wired up to a pipe.
@@ -128,7 +128,7 @@ public class TestPipePair extends TestCase {
     }
 
     private String[] funitProcMask = new String[] {
-	Config.getPkgLibFile("funit-procmask").getPath(),
+	Prefix.pkgLibFile("funit-procmask").getPath(),
 	"-n",
 	Integer.toString(Signal.HUP.hashCode())
     };

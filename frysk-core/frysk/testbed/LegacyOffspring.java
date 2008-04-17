@@ -51,7 +51,7 @@ import frysk.sys.Errno;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import java.io.File;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * XXX: Create a process running the funit-legacy program.  Some tests
@@ -273,6 +273,6 @@ public class LegacyOffspring
      * Return the program executable that will be run.
      */
     static public File getExecutable() {
-	return Config.getPkgLibFile("funit-legacy");
+	return Prefix.pkgLibFile("funit-legacy");
     }
 }

@@ -44,7 +44,7 @@ import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class CorefileFactory extends TestLib {
     
@@ -81,7 +81,7 @@ public class CorefileFactory extends TestLib {
      * representing that core file.
      */
     public static File constructCoreAtSignal(String program) {
-	return constructCoreAtSignal(Config.getPkgLibFile(program));
+	return constructCoreAtSignal(Prefix.pkgLibFile(program));
     }
 
 }

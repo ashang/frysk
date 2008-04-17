@@ -39,7 +39,7 @@
 
 package frysk.sys;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.junit.TestCase;
 import frysk.rsl.Log;
 import frysk.testbed.TearDownProcess;
@@ -74,7 +74,7 @@ public class TestFork extends TestCase {
 		   new SignalSet().getProcMask().contains(Signal.HUP));
 	fine.log("Creating funit-procmask to check the mask");
 	ProcessIdentifier pid
-	    = Fork.exec(Config.getPkgLibFile("funit-procmask"),
+	    = Fork.exec(Prefix.pkgLibFile("funit-procmask"),
 			null, "/dev/null", null,
 			new String[] {
 			    "funit-procmask",

@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import java.io.File;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.CorefileFactory;
@@ -53,11 +53,11 @@ public class TestFmaps extends TestLib {
      * the first 50 characters of the executable.
      */
     private TearDownExpect fmaps(String program, String[] args) {
-	File coreExe = Config.getPkgLibFile(program);
+	File coreExe = Prefix.pkgLibFile(program);
 	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
 	String[] argv = new String[args.length + 3];
 	int argc = 0;
-	argv[argc++] = Config.getBinFile("fmaps").getAbsolutePath();
+	argv[argc++] = Prefix.binFile("fmaps").getAbsolutePath();
 	argv[argc++] = coreFile.getAbsolutePath();
 	argv[argc++] = coreExe.getAbsolutePath();
 	for (int i = 0; i < args.length; i++) {

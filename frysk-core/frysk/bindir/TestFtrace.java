@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 import frysk.proc.Task;
@@ -51,7 +51,7 @@ public class TestFtrace extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ftrace").getAbsolutePath(),
+		Prefix.binFile("ftrace").getAbsolutePath(),
 		""+task.getProc().getPid()
 	    });
 	e.expect(""+task.getProc().getPid()+"."+ task.getTid() + " attached");
@@ -61,7 +61,7 @@ public class TestFtrace extends TestLib {
 	if (unresolvedOffUtrace(5055))
 	    return;
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ftrace").getAbsolutePath(),
+		Prefix.binFile("ftrace").getAbsolutePath(),
 		"-sys=",
 		"/bin/ls"
 	    });
@@ -74,7 +74,7 @@ public class TestFtrace extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ftrace").getAbsolutePath(),
+		Prefix.binFile("ftrace").getAbsolutePath(),
 		"-sys=",
 		""+task.getProc().getPid()
 	    });
@@ -89,7 +89,7 @@ public class TestFtrace extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
         TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ftrace").getAbsolutePath(),
+		Prefix.binFile("ftrace").getAbsolutePath(),
 		"-sys=",
 		"-follow",
 		""+task.getProc().getPid()
@@ -102,7 +102,7 @@ public class TestFtrace extends TestLib {
 
     public void testFtraceHandlesProcessNotFound() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ftrace").getAbsolutePath(),
+		Prefix.binFile("ftrace").getAbsolutePath(),
 		"-sys=",
 		"0"
 	    });

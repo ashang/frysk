@@ -39,7 +39,7 @@
 
 package frysk.junit;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.config.Host;
 import frysk.sys.Uname;
 import java.math.BigInteger;
@@ -88,8 +88,8 @@ public class TestCase
 	    return Runner.unsupported(msg, true);
 	case 64:
 	    return Runner.unresolved(msg,
-				     Config.getPkgLib32File(null) == null
-				     || Config.getPkgLib64File(null) == null);
+				     Prefix.pkgLib32File(null) == null
+				     || Prefix.pkgLib64File(null) == null);
 	default:
 	    throw new RuntimeException("unknown word-size: "
 				       + Host.wordSize());
@@ -150,9 +150,9 @@ public class TestCase
     protected static boolean unresolvedOn32On64(int bug) {
 	// 32-on-64 sets lib32 to NULL.
 	return Runner.unresolved(bug,
-				 Config.getPkgLib32File(null) == null
-				 && (Config.getPkgLibFile(null)
-				     != Config.getPkgLib64File(null)));
+				 Prefix.pkgLib32File(null) == null
+				 && (Prefix.pkgLibFile(null)
+				     != Prefix.pkgLib64File(null)));
     }
 
     /**

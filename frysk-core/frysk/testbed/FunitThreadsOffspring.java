@@ -43,7 +43,7 @@ import frysk.sys.Pid;
 import frysk.junit.TestCase;
 import java.util.List;
 import java.util.LinkedList;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Create a program that contains a large number of threads.
@@ -79,7 +79,7 @@ public class FunitThreadsOffspring
 						 Type type) {
 	List command = new LinkedList();
 	
-	command.add (Config.getPkgLibFile("funit-threads").getPath());
+	command.add (Prefix.pkgLibFile("funit-threads").getPath());
 	if (type == Type.BLOCK)
 	    command.add("--block");
 	else if (type == Type.LOOP)

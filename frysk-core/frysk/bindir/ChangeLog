@@ -1,3 +1,15 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFauxv.java: Use frysk.config.Prefix.
+	* TestFtrace.java: Ditto.
+	* TestFstep.java: Ditto.
+	* TestFmaps.java: Ditto.
+	* TestFhpd.java: Ditto.
+	* TestFexe.java: Ditto.
+	* TestFerror.java: Ditto.
+	* TestFdebuginfo.java: Ditto.
+	* TestFcore.java: Ditto.
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFstack.java: Use frysk.config.Prefix.

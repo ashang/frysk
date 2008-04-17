@@ -39,7 +39,7 @@
 
 package frysk.testbed;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.sys.Pid;
 import frysk.junit.TestCase;
 import java.util.LinkedList;
@@ -142,22 +142,22 @@ public class ExecCommand {
 	abstract File getFile();
 	public static final Executable BIT32 = new Executable() {
 		File getFile() {
-		    return Config.getPkgLib32File("funit-exec");
+		    return Prefix.pkgLib32File("funit-exec");
 		}
 	    };
 	public static final Executable BIT64 = new Executable() {
 		File getFile() {
-		    return Config.getPkgLib64File("funit-exec");
+		    return Prefix.pkgLib64File("funit-exec");
 		}
 	    };
 	public static final Executable DEFAULT = new Executable() {
 		File getFile() {
-		    return Config.getPkgLibFile("funit-exec");
+		    return Prefix.pkgLibFile("funit-exec");
 		}
 	    };
 	public static final Executable ALIAS = new Executable() {
 		File getFile() {
-		    return Config.getPkgLibFile("funit-exec-alias");
+		    return Prefix.pkgLibFile("funit-exec-alias");
 		}
 	    };
     }

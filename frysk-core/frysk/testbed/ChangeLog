@@ -1,3 +1,16 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* FunitThreadsOffspring.java: Use frysk.config.Prefix.
+	* SlaveOffspring.java: Ditto.
+	* TestLib.java: Ditto.
+	* CorefileFactory.java: Ditto.
+	* IsaTestbed.java: Ditto.
+	* TestStopEventLoopWhenProcTerminates.java: Ditto.
+	* ExecCommand.java: Ditto.
+	* LegacyOffspring.java: Ditto.
+	* DaemonBlockedAtEntry.java: Ditto.
+	* TestCorefileFactory.java: Ditto.
+
 2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* RegsCase.java (PPC64): Add values for AltiVec registers.

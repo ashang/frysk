@@ -64,15 +64,6 @@ public class Config {
     }
 
     /**
-     * Root directory of frysk's images (or icons).
-     *
-     * XXX: This is a String so that it works better with Java-GNOME.
-     */
-    public static final String getImagesDir () {
-	return Prefix.imagesDir();
-    }
-
-    /**
      * A file in frysk's shared, and 32-bit and 64-bit independant,
      * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
      */
@@ -100,30 +91,6 @@ public class Config {
      */
     public static final File getPkgLibFile (String file) {
 	return Prefix.pkgLibFile(file);
-    }
-
-    /**
-     * A file in frysk's 32-bit library directory.  Typically
-     * <tt>/usr/lib/frysk/FILE</tt>.  Returns NULL when the Config
-     * does not include a 32-bit specific directory.
-     *
-     * Solely for use by 32-bit on 64-bit tests when a 32-bit
-     * executable is required.
-     */
-    public static final File getPkgLib32File(String file) {
-	return Prefix.pkgLib32File(file);
-    }
-
-    /**
-     * A file in frysk's 64-bit library directory.  Typically
-     * <tt>/usr/lib64/frysk/FILE</tt>.  Returns NULL when the Config
-     * does not include a 64-bit specific directory.
-     *
-     * Solely for use by 32-bit on 64-bit tests when a 64-bit
-     * executable is required.
-     */
-    public static final File getPkgLib64File(String file) {
-	return Prefix.pkgLib64File(file);
     }
 
     public static File getFryskDir(){

@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownExpect;
 
@@ -54,9 +54,9 @@ public class TestFhpd extends TestLib {
     private final String prompt = "\\(fhpd\\) ";
 
     public void testHpdPid () {
-	TearDownExpect child = new TearDownExpect(Config.getPkgLibFile("hpd-c"));
+	TearDownExpect child = new TearDownExpect(Prefix.pkgLibFile("hpd-c"));
 	TearDownExpect e = new TearDownExpect(new String[] { 
-		Config.getBinFile("fhpd").getPath(), 
+		Prefix.binFile("fhpd").getPath(), 
 		child.getPid().toString() 
 	    });
 	e.expect("Attached to process.*\n" + prompt);
@@ -64,16 +64,16 @@ public class TestFhpd extends TestLib {
   
     public void testHpdCommand () {
 	TearDownExpect e = new TearDownExpect(new String[] { 
-		Config.getBinFile("fhpd").getPath(), 
-		Config.getPkgLibFile("hpd-c").getPath() 
+		Prefix.binFile("fhpd").getPath(), 
+		Prefix.pkgLibFile("hpd-c").getPath() 
 	    });
 	e.expect("Loaded executable file.*" + prompt);
     }
   
     public void testHpdCore ()  {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fhpd").getPath(),
-		Config.getPkgDataFile("test-core-x86").getPath(),
+		Prefix.binFile("fhpd").getPath(),
+		Prefix.pkgDataFile("test-core-x86").getPath(),
 		"-noexe"
 	    });
 	e.expect("Attached to core file.*");

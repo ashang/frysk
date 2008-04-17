@@ -49,7 +49,7 @@ import lib.dwfl.ElfSymbolBinding;
 import lib.dwfl.ElfSymbolType;
 import lib.dwfl.ElfSymbolVisibility;
 import lib.dwfl.SymbolBuilder;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -260,7 +260,7 @@ public class TestWatchpoint extends TestLib {
     
     private Proc giveMeABlockedProc () {
       DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-	      Config.getPkgLibFile("funit-watchpoint"));
+	      Prefix.pkgLibFile("funit-watchpoint"));
       assertNotNull(ackProc);
       return ackProc.getMainTask().getProc();
     }

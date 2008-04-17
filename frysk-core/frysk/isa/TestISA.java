@@ -40,7 +40,7 @@
 package frysk.isa;
 
 import frysk.junit.TestCase;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Searchable, hashable key sufficient for identifying the supported
@@ -65,12 +65,12 @@ public class TestISA extends TestCase {
     }
     public void testElfGet() {
 	assertSame("IA32 core", ISA.IA32,
-		   ElfMap.getISA(Config.getPkgDataFile("test-core-x86")));
+		   ElfMap.getISA(Prefix.pkgDataFile("test-core-x86")));
 	assertSame("X8664 core", ISA.X8664,
-		   ElfMap.getISA(Config.getPkgDataFile("test-core-x8664")));
+		   ElfMap.getISA(Prefix.pkgDataFile("test-core-x8664")));
 
 	assertSame("IA32 exe", ISA.IA32,
-		   ElfMap.getISA(Config.getPkgDataFile("test-exe-x86")));
+		   ElfMap.getISA(Prefix.pkgDataFile("test-exe-x86")));
     }
     public void testMappedIsa() {
 	ISAMap map = new ISAMap("good")

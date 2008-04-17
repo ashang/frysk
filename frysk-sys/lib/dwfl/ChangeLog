@@ -1,3 +1,7 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestElf.java: Use frysk.config.Prefix.
+
 2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* DwarfRegistersPPC64.mkenum: New.

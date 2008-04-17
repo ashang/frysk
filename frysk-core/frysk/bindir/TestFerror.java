@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 import frysk.proc.Task;
@@ -49,11 +49,11 @@ public class TestFerror extends TestLib {
 
     public void testFerrorTracesExecutables () {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ferror").getAbsolutePath(),
+		Prefix.binFile("ferror").getAbsolutePath(),
 		"-e",
 		"fork",
 		"--",
-		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
+		Prefix.pkgLibFile("funit-3forks").getAbsolutePath()});
 	e.expect("Tracing");
 	e.expect("main");
     }
@@ -62,7 +62,7 @@ public class TestFerror extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ferror").getAbsolutePath(),
+		Prefix.binFile("ferror").getAbsolutePath(),
 		"-e",
 		"clone",
 		"--",
@@ -74,22 +74,22 @@ public class TestFerror extends TestLib {
 
     public void testFerrorFollowsForks() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ferror").getAbsolutePath(),
+		Prefix.binFile("ferror").getAbsolutePath(),
 		"-e",
 		"fork3",
 		"--",
-		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
+		Prefix.pkgLibFile("funit-3forks").getAbsolutePath()});
 	e.expect("Tracing");
 	e.expect("main");
     }
     
     public void testFerrorUnderstandsRegex() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("ferror").getAbsolutePath(),
+		Prefix.binFile("ferror").getAbsolutePath(),
 		"-e",
 		"fork*",
 		"--",
-		Config.getPkgLibFile("funit-3forks").getAbsolutePath()});
+		Prefix.pkgLibFile("funit-3forks").getAbsolutePath()});
 	e.expect("Tracing");
 	e.expect("main");
 	e.expect("main");

@@ -39,7 +39,7 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 import frysk.proc.Task;
@@ -56,7 +56,7 @@ public class TestFdebuginfo extends TestLib {
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fdebuginfo").getAbsolutePath(),
+		Prefix.binFile("fdebuginfo").getAbsolutePath(),
 		""+task.getProc().getPid() 
 	});
 	// Look for the path of executable
@@ -65,14 +65,14 @@ public class TestFdebuginfo extends TestLib {
 
     public void testNoArguments() {
 	TearDownExpect e = new TearDownExpect(new String[] { 
-		Config.getBinFile("fdebuginfo").getAbsolutePath ()
+		Prefix.binFile("fdebuginfo").getAbsolutePath ()
 	});
 	e.expect("ERROR: No argument provided.");      
     }    
 
     public void testBadArguments() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fdebuginfo").getAbsolutePath (),
+		Prefix.binFile("fdebuginfo").getAbsolutePath (),
 		"this is a bad argument"
 	});
 	e.expect("Error: ");
@@ -80,7 +80,7 @@ public class TestFdebuginfo extends TestLib {
 
     public void testInvalidArgument() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fdebuginfo").getAbsolutePath (),
+		Prefix.binFile("fdebuginfo").getAbsolutePath (),
 		"-z",
 		"1"
 	});

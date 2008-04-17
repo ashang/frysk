@@ -51,7 +51,7 @@ import frysk.sys.Errno;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import java.io.File;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Create a process running the funit slave (a.k.a., funit-child).
@@ -280,6 +280,6 @@ public class SlaveOffspring
      * Return the program executable that will be run.
      */
     static public File getExecutable() {
-	return Config.getPkgLibFile("funit-slave");
+	return Prefix.pkgLibFile("funit-slave");
     }
 }

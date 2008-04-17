@@ -41,7 +41,7 @@ package frysk.testbed;
 
 import java.io.File;
 import frysk.isa.ISA;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Test IsaTestbed.
@@ -70,18 +70,18 @@ public class TestIsa extends TestLib {
     }
     public void testIsaMatchesBlockedProcess() {
 	checkIsaMatchesBlockedProcess(IsaTestbed.getISA(),
-				      Config.getPkgLibFile("funit-slave"));
+				      Prefix.pkgLibFile("funit-slave"));
     }
     public void testIsa32MatchesBlockedProcess() {
 	if (missing32or64())
 	    return;
 	checkIsaMatchesBlockedProcess(IsaTestbed.getISA32(),
-				      Config.getPkgLib32File("funit-slave"));
+				      Prefix.pkgLib32File("funit-slave"));
     }
     public void testIsa64MatchesBlockedProcess() {
 	if (missing32or64())
 	    return;
 	checkIsaMatchesBlockedProcess(IsaTestbed.getISA64(),
-				      Config.getPkgLib64File("funit-slave"));
+				      Prefix.pkgLib64File("funit-slave"));
     }
 }
