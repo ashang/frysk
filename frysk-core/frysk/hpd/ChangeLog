@@ -1,5 +1,9 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFhpdStepping.java: Use frysk.config.Prefix.
+
+	* TestHpdTestHarness.java: Use frysk.config.Prefix.
+
 	* TestFhpdStepping.java: Use Config.getPkgLibSrcDir().
 
 2008-04-15  Teresa Thomas  <tthomas@redhat.com>

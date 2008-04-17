@@ -39,16 +39,14 @@
 
 package frysk.scopes;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
@@ -76,7 +74,7 @@ public class TestDie
 	assertNotNull("Variable found", variable);
 	
 	
-	TestfileTokenScanner scanner = new TestfileTokenScanner(new File(Config.getPkgLibSrcDir() + fileName + ".cxx"));
+	TestfileTokenScanner scanner = new TestfileTokenScanner(Prefix.sourceFile("frysk-core/frysk/pkglibdir/" + fileName + ".cxx"));
 	int expectedLine = scanner.findTokenLine("first");
 
 	assertEquals("Correct line number was found", expectedLine, variable.getLineNumber());

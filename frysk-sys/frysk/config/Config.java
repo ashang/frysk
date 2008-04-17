@@ -138,19 +138,4 @@ public class Config {
 	//XXX: Should not use user.home property.
 	return new File(System.getProperty("user.home"));
     }
-    
-    /**
-     * The relative source root directory against which the build was
-     * created; this is an install time option since, with debug-info
-     * installed, the source files found under the root srcdir are
-     * available.
-     *
-     * Note that this is the root directory, and excludes any suffix
-     * such as frysk-imports et.al.
-     */
-    public static final native String getRootSrcDir ();
-
-    public static final String getPkgLibSrcDir (){
-	return getRootSrcDir() + "frysk-core/frysk/pkglibdir/";
-    }
 }

@@ -42,7 +42,7 @@ package frysk.bindir;
 import java.io.File;
 import java.io.IOException;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.CorefileFactory;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
@@ -59,11 +59,11 @@ public class TestFstack extends TestLib {
      * the first 50 characters of the executable.
      */
     private TearDownExpect fstack(String program, String[] args) {
-	File coreExe = Config.getPkgLibFile(program);
+	File coreExe = Prefix.pkgLibFile(program);
 	File coreFile = CorefileFactory.constructCoreAtSignal(coreExe);
 	String[] argv = new String[args.length + 3];
 	int argc = 0;
-	argv[argc++] = Config.getBinFile("fstack").getAbsolutePath();
+	argv[argc++] = Prefix.binFile("fstack").getAbsolutePath();
 	argv[argc++] = coreFile.getAbsolutePath();
 	argv[argc++] = coreExe.getAbsolutePath();
 	for (int i = 0; i < args.length; i++) {
@@ -72,11 +72,11 @@ public class TestFstack extends TestLib {
 	return new TearDownExpect(argv);
     }
 
-    private String getCanonicalRootSrcDir () {
+    private String getCanonicalRootSrcDir() {
 	try {
-	    return new File(Config.getRootSrcDir()).getCanonicalPath();
+	    return Prefix.sourceFile(null).getCanonicalPath();
 	} catch (IOException e) {
-	    return Config.getRootSrcDir();
+	    return Prefix.sourceFile(null).getAbsolutePath();
 	}
     }
     

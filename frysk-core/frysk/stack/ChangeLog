@@ -1,3 +1,8 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLibFunctionStepFrame.java: Use frysk.config.Prefix.
+	* TestSignalStepFrame.java: Ditto.
+
 2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* LibunwindRegisterMapFactory.java (PPC64): Add AltiVec registers.

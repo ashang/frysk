@@ -1,5 +1,9 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Config.cxx-in: Delete.
+	* Config.java (getRootSrcDir()): Delete.
+	(getPkgLibSrcDir()): Delete.
+
 	* PrefixFactory.java: Replace absSrcDir, with rootSrcDir.
 	
 	* jni/PrefixFactory.cxx-in (Java_frysk_config_PrefixFactory_sourceDir): New.

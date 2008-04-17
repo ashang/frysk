@@ -40,15 +40,15 @@
 
 package frysk.bindir;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 
 public class TestFcatch extends TestLib {
     public void testBackTrace() {
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcatch").getAbsolutePath(),
-		Config.getPkgLibFile("funit-stackframe").getAbsolutePath()
+		Prefix.binFile("fcatch").getAbsolutePath(),
+		Prefix.pkgLibFile("funit-stackframe").getAbsolutePath()
 	    });
 	// just look for main.
 	e.expect("in main");
@@ -57,8 +57,8 @@ public class TestFcatch extends TestLib {
     public void testFcatchFollowsForks() {
 
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcatch").getAbsolutePath(),
-		Config.getPkgLibFile("funit-3forks").getAbsolutePath()
+		Prefix.binFile("fcatch").getAbsolutePath(),
+		Prefix.pkgLibFile("funit-3forks").getAbsolutePath()
 	    });
 	// just look for main.
 	e.expect("in main");
@@ -67,9 +67,9 @@ public class TestFcatch extends TestLib {
     public void testFcatchFollowsPATH() {
 
 	TearDownExpect e = new TearDownExpect(new String[] {
-		Config.getBinFile("fcatch").getAbsolutePath(),
+		Prefix.binFile("fcatch").getAbsolutePath(),
 		"ls",
-		Config.getPkgLibSrcDir()
+		Prefix.pkgLibFile(null).getAbsolutePath()
 	    });
 	// just look for main.
 	e.expect("funit-3forks");

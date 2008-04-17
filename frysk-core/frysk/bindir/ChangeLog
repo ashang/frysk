@@ -1,5 +1,8 @@
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFstack.java: Use frysk.config.Prefix.
+	* TestFcatch.java: Ditto.
+	
 	* TestFstack.java (getCanonicalRootSrcDir()): Replace
 	getCanonicalAbsRootSrcDir.
 

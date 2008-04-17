@@ -41,11 +41,8 @@ package frysk.stack;
 
 import java.io.*;
 import java.util.*;
-
-import frysk.config.*;
-
+import frysk.config.Prefix;
 import frysk.testbed.*;
-
 import frysk.proc.*;
 import frysk.rt.*;
 import frysk.symtab.*;
@@ -67,15 +64,13 @@ public class TestSignalStepFrame
 {
   // Starts the funit-loop-signal test and return the Task at the point
   // that the signal arrived.
-  private Task setupLoopSignalTest()
-  {
-    String source = Config.getRootSrcDir()
-      + "frysk-core/frysk/pkglibdir/funit-loop-signal.c";
+    private Task setupLoopSignalTest() {
+      File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-loop-signal.c");
 
-    TestfileTokenScanner scanner = new TestfileTokenScanner(new File(source));
+    TestfileTokenScanner scanner = new TestfileTokenScanner(source);
     int foo_entry = scanner.findTokenLine("_foo_entry_");
 
-    File exe = Config.getPkgLibFile("funit-loop-signal");
+    File exe = Prefix.pkgLibFile("funit-loop-signal");
     DaemonBlockedAtEntry dbae = new DaemonBlockedAtEntry(exe);
     
     Task task = dbae.getMainTask();
@@ -111,9 +106,8 @@ public class TestSignalStepFrame
     Task task = setupLoopSignalTest();
 
     // Get the start address of the signal handler.
-    String source = Config.getRootSrcDir()
-      + "frysk-core/frysk/pkglibdir/funit-loop-signal.c";
-    TestfileTokenScanner scanner = new TestfileTokenScanner(new File(source));
+    File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-loop-signal.c");
+    TestfileTokenScanner scanner = new TestfileTokenScanner(source);
     int sig_entry = scanner.findTokenLine("_signal_handler_");
     LineBreakpoint signalBreak = new LineBreakpoint(-1, source, sig_entry, 0);
     List signalAddresses = signalBreak.getBreakpointRawAddresses(task);

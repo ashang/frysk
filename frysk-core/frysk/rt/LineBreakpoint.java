@@ -44,9 +44,8 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import frysk.rsl.Log;
-
+import java.io.File;
 import lib.dwfl.DwflLine;
-
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 
@@ -57,6 +56,11 @@ public class LineBreakpoint extends SourceBreakpoint {
   private int lineNumber;
   private int column;
     
+    public LineBreakpoint(int id, File fileName,
+			  int lineNumber, int column) {
+	this(id, fileName.getPath(), lineNumber, column);
+    }
+
   public LineBreakpoint(int id, String fileName, int lineNumber, int column) 
   {
     super(id);

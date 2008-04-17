@@ -51,7 +51,7 @@ import frysk.sys.ProcessIdentifierFactory;
 import frysk.scopes.SourceLocation;
 import frysk.sys.Signal;
 import frysk.testbed.Offspring;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.event.Event;
@@ -92,10 +92,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
@@ -104,8 +103,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -136,10 +135,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
@@ -148,8 +146,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_instructionStep_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -182,10 +180,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
@@ -194,8 +191,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -226,10 +223,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
@@ -238,8 +234,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -307,10 +303,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
@@ -319,8 +314,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -387,10 +382,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
@@ -399,8 +393,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -467,10 +461,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepOutStart_");
@@ -479,8 +472,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -547,10 +540,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepAdvanceStart_");
@@ -559,8 +551,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -606,10 +598,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-threads-looper.c";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-threads-looper.c");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_childThreadStart1_");
@@ -620,8 +611,8 @@ public class TestSteppingEngine extends TestLib {
 	int endLine = this.scanner.findTokenLine("_childThreadEnd_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-threads-looper"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-threads-looper"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -653,10 +644,9 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepOutStart_");
@@ -664,8 +654,8 @@ public class TestSteppingEngine extends TestLib {
 	/* The line number the test should end up at */
 	int endLine = 0;
 
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix
+		.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -751,17 +741,15 @@ public class TestSteppingEngine extends TestLib {
 
 	/** Variable setup */
 
-	String source = Config.getRootSrcDir()
-		+ "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 
-	this.scanner = new TestfileTokenScanner(new File(source));
+	this.scanner = new TestfileTokenScanner(source);
 
 	/* The line number where the test begins */
 	int startLine = this.scanner.findTokenLine("_stepAdvanceStart_");
 
 	/* The test process */
-	dbae = new DaemonBlockedAtEntry(Config
-		.getPkgLibFile("funit-stepping-asm"));
+	dbae = new DaemonBlockedAtEntry(Prefix.pkgLibFile("funit-stepping-asm"));
 
 	Task theTask = dbae.getMainTask();
 
@@ -795,7 +783,7 @@ public class TestSteppingEngine extends TestLib {
 
     boolean genericUpdate = false;
 
-    public Task initTask(Offspring process, String source, int startLine,
+    public Task initTask(Offspring process, File source, int startLine,
 	    int endLine) {
 	Task myTask = process.findTaskUsingRefresh(true);
 	initTaskWithTask(myTask, source, startLine, endLine, 0);
@@ -804,7 +792,7 @@ public class TestSteppingEngine extends TestLib {
 
     DaemonBlockedAtEntry dbae = null;
 
-    public void initTaskWithTask(Task myTask, String source, int startLine,
+    public void initTaskWithTask(Task myTask, File source, int startLine,
 	    int endLine, int startLine2) {
 
 	this.lineMap = new HashMap();
@@ -845,8 +833,7 @@ public class TestSteppingEngine extends TestLib {
 	assertRunUntilStop("Continuing to initial breakpoint");
     }
 
-    public void runTest(String source, int line, Task task) {
-
+    public void runTest(File source, int line, Task task) {
 	BreakpointManager bManager = this.se.getBreakpointManager();
 	LineBreakpoint lbp2 = bManager.addLineBreakpoint(source, line, 0);
 	bManager.enableBreakpoint(lbp2, task);

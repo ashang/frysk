@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.TreeMap;
-
+import java.io.File;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcTasksAction;
@@ -150,6 +150,19 @@ public class BreakpointManager extends Observable {
 			       fileName, lineNumber, column);
 	addBreakpoint(sourceBreakpoint);
 	return sourceBreakpoint;
+    }
+
+    /**
+     * Create a line breakpoint that is not associated with any
+     * process.
+     * @param fileName the file
+     * @param lineNumber line in the file
+     * @param column column number in the file
+     * @return LineBreakpoint object
+     */
+    public LineBreakpoint addLineBreakpoint(File fileName,
+					    int line, int column) {
+	return addLineBreakpoint(fileName.getPath(), line, column);
     }
 
     /**

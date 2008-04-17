@@ -41,11 +41,8 @@ package frysk.stack;
 
 import java.io.*;
 import java.util.*;
-
-import frysk.config.*;
-
+import frysk.config.Prefix;
 import frysk.testbed.*;
-
 import frysk.proc.*;
 import frysk.symtab.*;
 import frysk.rt.*;
@@ -68,22 +65,21 @@ public class TestLibFunctionStepFrame
     if (unresolvedOnPPC(5259))
       return;
 
-    String source = Config.getRootSrcDir()
-      + "frysk-core/frysk/pkglibdir/funit-libfunccall.c";
+    File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-libfunccall.c");
 
-    TestfileTokenScanner scanner = new TestfileTokenScanner(new File(source));
+    TestfileTokenScanner scanner = new TestfileTokenScanner(source);
     int firstLine = scanner.findTokenLine("_libfunccall_");
     int secondLine = scanner.findTokenLine("_libfunccall2_");
     int lastLine = scanner.findTokenLine("_last_line_");
 
-    File exe = Config.getPkgLibFile("funit-libfunccall");
+    File exe = Prefix.pkgLibFile("funit-libfunccall");
     DaemonBlockedAtEntry dbae = new DaemonBlockedAtEntry(exe);
     
     Task task = dbae.getMainTask();
 
-    LineBreakpoint bp1 = new  LineBreakpoint(-1, source, firstLine, 0);
-    LineBreakpoint bp2 = new  LineBreakpoint(-1, source, secondLine, 0);
-    LineBreakpoint bpLast = new  LineBreakpoint(-1, source, lastLine, 0);
+    LineBreakpoint bp1 = new LineBreakpoint(-1, source, firstLine, 0);
+    LineBreakpoint bp2 = new LineBreakpoint(-1, source, secondLine, 0);
+    LineBreakpoint bpLast = new LineBreakpoint(-1, source, lastLine, 0);
 
     List addresses = bp1.getBreakpointRawAddresses(task);
     List addresses2 = bp2.getBreakpointRawAddresses(task);

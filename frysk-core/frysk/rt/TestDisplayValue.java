@@ -43,7 +43,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -89,8 +89,8 @@ public class TestDisplayValue
      *    x = 1; <-- First breakpoint
      */
     LineBreakpoint brk1 = 
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 49, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    49, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
@@ -123,8 +123,8 @@ public class TestDisplayValue
      *    y = 2; <-- Second breakpoint
      */
     LineBreakpoint brk2 =
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  51, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    51, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -163,8 +163,8 @@ public class TestDisplayValue
      *    bar(x);
      */
     LineBreakpoint brk1 = 
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  51, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    51, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
@@ -193,8 +193,8 @@ public class TestDisplayValue
      *    bar(x);
      */
     LineBreakpoint brk2 =
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  53, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    53, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -225,8 +225,8 @@ public class TestDisplayValue
      * Add the first breakpoint:
      */
     LineBreakpoint brk1 = 
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 63, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    63, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
@@ -250,8 +250,8 @@ public class TestDisplayValue
      * Add the second breakpoint:
      */
     LineBreakpoint brk2 =
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  49, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    49, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -293,8 +293,8 @@ public class TestDisplayValue
      * Add the first breakpoint:
      */
     LineBreakpoint brk1 = 
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 48, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    48, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
@@ -318,8 +318,8 @@ public class TestDisplayValue
      * Add the second breakpoint:
      */
     LineBreakpoint brk2 =
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  63, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    63, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -348,8 +348,8 @@ public class TestDisplayValue
      * Add the first breakpoint:
      */
     LineBreakpoint brk1 = 
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 52, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    52, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
@@ -373,8 +373,8 @@ public class TestDisplayValue
      * Add the second breakpoint:
      */
     LineBreakpoint brk2 =
-      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  63, 0);
+	bpManager.addLineBreakpoint(Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-varchange.c"),
+				    63, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -393,7 +393,7 @@ public class TestDisplayValue
   private BreakpointManager createDaemon()
   {
       //  Start the daemon process
-      process = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-rt-varchange"));
+      process = new DaemonBlockedAtEntry(Prefix.pkgLibFile("funit-rt-varchange"));
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

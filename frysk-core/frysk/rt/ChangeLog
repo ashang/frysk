@@ -1,3 +1,10 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* LineBreakpoint.java (LineBreakpoint(int,File,int,int)): New.
+	* TestDisplayValue.java: Use frysk.config.Prefix.
+	* TestUpdatingDisplayValue.java: Ditto.
+	* BreakpointManager.java (addLineBreakpoint(File,int,int)): New.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* PLTBreakpoint.java: New class.

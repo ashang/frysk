@@ -41,7 +41,7 @@ package frysk.hpd;
 
 import java.io.File;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TestfileTokenScanner;
 
 public class TestFhpdStepping extends TestLib {
@@ -55,8 +55,8 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = new HpdTestbed();
 	
-	String source = Config.getPkgLibSrcDir() + "funit-stepping-asm.S";
-	this.scanner = new TestfileTokenScanner(new File(source));
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
+	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	
 	e = HpdTestbed.run("funit-stepping-asm");
@@ -84,8 +84,8 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
-	this.scanner = new TestfileTokenScanner(new File(source));
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
+	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 	
@@ -113,8 +113,8 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
-	this.scanner = new TestfileTokenScanner(new File(source));
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
+	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
@@ -142,8 +142,8 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
-	this.scanner = new TestfileTokenScanner(new File(source));
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
+	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
@@ -171,8 +171,8 @@ public class TestFhpdStepping extends TestLib {
 	if (unresolved(4914))
 	    return;
 	
-	String source = Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-stepping-asm.S";
-	this.scanner = new TestfileTokenScanner(new File(source));
+	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
+	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOutStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	

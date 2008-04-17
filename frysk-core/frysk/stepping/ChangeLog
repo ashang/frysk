@@ -1,3 +1,8 @@
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStepping.java: Use frysk.config.Prefix.
+	* TestSteppingEngine.java: Ditto.
+
 2008-04-15  Teresa Thomas  <tthomas@redhat.com>
 
 	* SteppingEngine.java (requestAddSteppingObserver): New.
