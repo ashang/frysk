@@ -1,3 +1,8 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/exceptions.cxx: New.
+	* jni/exceptions.hxx: New.
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/util.cxx: New.
