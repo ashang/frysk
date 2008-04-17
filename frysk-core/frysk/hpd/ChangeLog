@@ -1,5 +1,10 @@
-2008-04-17  Andrew Cagney  <cagney@redhat.com>
+2008-04-17  Teresa Thomas  <tthomas@redhat.com>
 
+	* WatchCommand.java (WatchpointObserver.updateHit): 
+	  Use SteppingEngine.blockedByActionPoint
+	  
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+	  
 	* TestBreakpoints.java: Use frysk.config.Prefix.
 	* TestWatchCommand.java: Ditto.
 	* TestSysRoot.java: Ditto.

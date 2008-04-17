@@ -134,11 +134,9 @@ class WatchCommand extends ParameterizedCommand {
 	    cli.outWriter.println(); 
 	    // Remember the previous value
 	    oldValue = newValue.toPrint();
-	  	    
-	    cli.getSteppingEngine().requestAddSteppingObserver(task);
-	    // Add the watch observer to the task's blockers list
-	    cli.getSteppingEngine().addBlocker(task, this);
-	    cli.getSteppingEngine().setTaskStopped(task);
+
+	    cli.getSteppingEngine().blockedByActionPoint(task, this);
+	    task.requestUnblock(this);
 	    return Action.BLOCK;
 	}
 

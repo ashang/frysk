@@ -1,5 +1,9 @@
-2008-04-16  Andrew Cagney  <cagney@redhat.com>
+2008-04-17  Teresa Thomas  <tthomas@redhat.com>
 
+	* SteppingEngine.java (blockedByActionPoint): New.
+
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+	
 	* TestStepping.java: Use frysk.config.Prefix.
 	* TestSteppingEngine.java: Ditto.
 

@@ -981,27 +981,28 @@ public class SteppingEngine {
     }
     
     /**
-     * Set the current state of the task as stopped.  
+     * Sets the stepping engine on being hit by an action point.  
+     * 
+     * to - Observer that causes task to block.
      */    
-    public void setTaskStopped(Task task) {
+    public void blockedByActionPoint(Task task, TaskObserver to) {
 
+	 // Requests the addition of the stepping observer to task if 
+	 // not inserted already.
+	if (!(task.isInstructionObserverAdded(this.steppingObserver))) {
+	    task.requestAddInstructionObserver(this.steppingObserver);
+	}
+	
+	// Add the observer to the task's blockers list
+	addBlocker(task, to);
+		
 	TaskStepEngine tse = null;
 	tse = (TaskStepEngine) this.taskStateMap.get(task);	
 	if (!tse.isStopped()) {
+	    // Set the state of task as stopped
 	    tse.setState(new StoppedState(task));	
 	    // Remove the task from the running tasks list      
 	    this.runningTasks.remove(task);
-	}
-    }
-    
-    /**
-     * Requests the addition of the stepping observer to task if 
-     * not inserted already.
-     */
-    public void requestAddSteppingObserver(Task task) {
-
-	if (!(task.isInstructionObserverAdded(this.steppingObserver))) {
-	    task.requestAddInstructionObserver(this.steppingObserver);
 	}
     }
     
