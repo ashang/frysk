@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class TestCompletionFactory extends TestLib {
 
@@ -54,7 +54,7 @@ public class TestCompletionFactory extends TestLib {
      * also be .o files, but ignore that.
      */
     private void checkFunitStackCompletion() {
-	e.send(Config.getPkgLibFile("funit-stack-").getAbsolutePath());
+	e.send(Prefix.pkgLibFile("funit-stack-").getAbsolutePath());
 	e.send("\t");
 	e.expect("funit-stack-inlined\\r\\n");
 	e.expect("funit-stack-outlined\\r\\n");

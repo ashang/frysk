@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.dwfl.ObjectFile;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -91,7 +91,7 @@ public class TestMappingGuard
 	    }
 	}
 
-	String[] cmd = {Config.getPkgLibFile("funit-empty").getPath()};
+	String[] cmd = {Prefix.pkgLibFile("funit-empty").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
 	

@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * This class tests the "go" command and makes sure it does not blow up
@@ -49,7 +49,7 @@ import frysk.config.Config;
 public class TestGoCommand extends TestLib {
     public void testGoCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
 	//e.sendCommandExpectPrompt("run ",
 	//	"Attached to process ([0-9]+).*Running process ([0-9]+).*");
@@ -66,7 +66,7 @@ public class TestGoCommand extends TestLib {
      */
     public void testGoCommandError() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
 	e.sendCommandExpectPrompt("go", "Error: Cannot use.*");
 	e.send("quit\n");
@@ -82,7 +82,7 @@ public class TestGoCommand extends TestLib {
      */
  /*   public void testGoCommandErrorTwo() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
 	e.sendCommandExpectPrompt("run", "Attached to process.*Running process.*");
 	e.sendCommandExpectPrompt("go", "Error: Cannot use.*");

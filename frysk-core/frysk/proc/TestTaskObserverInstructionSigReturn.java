@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.isa.signals.Signal;
 import frysk.testbed.TestLib;
 
@@ -70,7 +70,7 @@ public class TestTaskObserverInstructionSigReturn
     exit = -1;
 
     // Start and attach.
-    String command = Config.getPkgLibFile("funit-alarm").getPath();
+    String command = Prefix.pkgLibFile("funit-alarm").getPath();
     Manager.host.requestCreateAttachedProc(new String[] {command}, this);
     assertRunUntilStop("Creating process");
 

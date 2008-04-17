@@ -47,26 +47,19 @@ import java.io.File;
 
 public class Config {
     /**
-     * A file in Frysk's library directory.  Typically either
-     * <tt>/usr/lib/frysk/FILE</tt> or <tt>/usr/lib64/frysk/FILE</tt>.
-     *
-     * Used by tests when they need to run an executable of the same
-     * bit-size as frysk.
+     * XXX: During testing a different value should be used for each
+     * unit test.  While that value may be based on Prefix.buildFile,
+     * that doesn't mean that this method belongs in Prefix - for the
+     * installed case it is independent of the configuration paths.
      */
-    public static final File getPkgLibFile (String file) {
-	return Prefix.pkgLibFile(file);
-    }
-
     public static File getFryskDir(){
-	File file = new File(getHomeDir()+"/"+".frysk/");
-	if(file.exists()){
+	//XXX: Should not use user.home property.
+	File home = new File(System.getProperty("user.home"));
+	File file = new File(home, ".frysk/");
+	// XXX: Er?
+	if (file.exists()){
 	    file.mkdir();
 	}
 	return file;
-    }
-    
-    public static File getHomeDir() {
-	//XXX: Should not use user.home property.
-	return new File(System.getProperty("user.home"));
     }
 }

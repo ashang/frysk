@@ -1,5 +1,19 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestBreakpoints.java: Use frysk.config.Prefix.
+	* TestWatchCommand.java: Ditto.
+	* TestSysRoot.java: Ditto.
+	* TestStartCommand.java: Ditto.
+	* TestRunCommand.java: Ditto.
+	* TestRegs.java: Ditto.
+	* TestListCommand.java: Ditto.
+	* TestKillCommand.java: Ditto.
+	* TestHpdTestHarness.java: Ditto.
+	* TestGoCommand.java: Ditto.
+	* TestGenerateCoreCommand.java: Ditto.
+	* TestCompletionFactory.java: Ditto.
+	* TestEvalCommands.java: Ditto.
+
 	* HpdTestbed.java: Use frysk.config.Prefix.
 	* TestPeekCommand.java: Ditto.
 	* TestCoreCommand.java: Ditto.

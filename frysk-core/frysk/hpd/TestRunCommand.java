@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * This class tests the "run" command.
@@ -52,7 +52,7 @@ import frysk.config.Config;
 public class TestRunCommand extends TestLib {
     public void testRunCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("run ",
 		"Attached to process ([0-9]+).*Running process ([0-9]+).*");
@@ -72,12 +72,12 @@ public class TestRunCommand extends TestLib {
 	if (unresolved(5615))
 	    return;
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath() + "\n");
+	e.send("load " + Prefix.pkgLibFile("funit-threads-looper").getPath() + "\n");
 	e.expect("\\[0\\.0\\] Loaded executable file.*" + prompt);
 	e.send("run\n");
 	e.expect("Attached to process ([0-9]+).*");
 	e.expect("Running process ([0-9]+).*" + prompt);
-	//e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	//e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	//"Loaded executable file.*");
 	//e.sendCommandExpectPrompt("run ",
 	//	"Attached to process ([0-9]+).*Running process ([0-9]+).*");
@@ -99,7 +99,7 @@ public class TestRunCommand extends TestLib {
     public void testRunCommandParameter() {
 	e = new HpdTestbed();
 	String[] param = { "-testing", "parameter2", "-g"};
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
 	String parameters = "";
 	for (int i = 0; i < param.length; i++) {
@@ -150,9 +150,9 @@ public class TestRunCommand extends TestLib {
 	if (unresolved(5984))
 	    return;
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 	"\\[1\\.0\\]\t\t0*\\t0.*");
@@ -176,9 +176,9 @@ public class TestRunCommand extends TestLib {
     
     public void testRunFocus() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus [1.0]", "Creating new HPD notation set.*");
 	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*" +
@@ -196,11 +196,11 @@ public class TestRunCommand extends TestLib {
     
     public void testRunHpdParam() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[2\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("[1.0] run", "Attached to process ([0-9]+).*" + "Creating new.*" +
 		"running.*" + "Running process ([0-9]+).*");

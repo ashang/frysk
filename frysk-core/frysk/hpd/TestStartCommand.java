@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
 * This class tests the "start" command.
@@ -52,7 +52,7 @@ import frysk.config.Config;
 public class TestStartCommand extends TestLib {
     public void testStartCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("focus", "\\[0\\.0\\].*");
@@ -70,7 +70,7 @@ public class TestStartCommand extends TestLib {
     public void testStartCommandParameter() {
 	e = new HpdTestbed();
 	String[] param = { "teststart", "parameter2start", "-g"};
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-parameters").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
 	String parameters = "";
 	for (int i = 0; i < param.length; i++) {
@@ -119,9 +119,9 @@ public class TestStartCommand extends TestLib {
     
     public void testStartFocus() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus [1.0]", "Creating new HPD notation set.*");
 	e.sendCommandExpectPrompt("start", "Attached to process ([0-9]+).*" +
@@ -139,11 +139,11 @@ public class TestStartCommand extends TestLib {
     
     public void testRunHpdParam() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[2\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("[1.0] start", "Attached to process ([0-9]+).*" + "Creating new.*" +
 		"starting.*");

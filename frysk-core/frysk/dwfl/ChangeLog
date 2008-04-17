@@ -1,3 +1,7 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestElfSectionCache.java: Use frysk.config.Prefix.
+
 2008-04-03  Petr Machata  <pmachata@redhat.com>
 
 	* ObjectFile.java: Moved from frysk.ftrace

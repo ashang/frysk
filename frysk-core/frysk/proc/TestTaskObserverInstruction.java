@@ -44,7 +44,7 @@ import frysk.testbed.Offspring;
 import frysk.testbed.SlaveOffspring;
 
 import frysk.testbed.DaemonBlockedAtEntry;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class TestTaskObserverInstruction extends TestLib
 {
@@ -148,7 +148,7 @@ public class TestTaskObserverInstruction extends TestLib
   public void testFirstInstructionAtEntry()
   {
     DaemonBlockedAtEntry daemon;
-    daemon = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-child"));
+    daemon = new DaemonBlockedAtEntry(Prefix.pkgLibFile("funit-child"));
     Task task = daemon.getMainTask();
 
     InstructionObserver instr = new InstructionObserver();

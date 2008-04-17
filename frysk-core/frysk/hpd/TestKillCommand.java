@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.SlaveOffspring;
 
 /**
@@ -59,7 +59,7 @@ public class TestKillCommand extends TestLib {
 	} 
 	 */
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"Loaded executable file.*");
 
 	e.sendCommandExpectPrompt("run", "Attached to process.*");
@@ -119,7 +119,7 @@ public class TestKillCommand extends TestLib {
 	if (unresolved(5615))
 	    return;
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"Loaded executable file.*");
 
 	e.sendCommandExpectPrompt("run", "Attached to process.*");
@@ -145,7 +145,7 @@ public class TestKillCommand extends TestLib {
      */
     public void testLoadKill() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("run", "Attached to process.*");
 	e.sendCommandExpectPrompt("kill", "Killing process.*");
@@ -222,9 +222,9 @@ java.lang.NullPointerException
      */
     public void testKillHpd() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"Loaded executable file.*");
 	e.sendCommandExpectPrompt("run", "Attached to process.*");
 	try { Thread.sleep(500); } catch (Exception e) { }

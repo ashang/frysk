@@ -42,7 +42,7 @@ package frysk.proc;
 import frysk.testbed.SlaveOffspring;
 import frysk.testbed.TestLib;
 import frysk.testbed.TaskObserverBase;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.sys.Signal;
 
@@ -201,7 +201,7 @@ public class StressAttachDetachSignaledTask
     private void stressSignalStorm(Action action) {
 	    DaemonBlockedAtEntry daemon
 		= new DaemonBlockedAtEntry(new String[] {
-			Config.getPkgLibFile("funit-hups").getAbsolutePath(),
+			Prefix.pkgLibFile("funit-hups").getAbsolutePath(),
 			"-t",
 			"" + getTimeoutSeconds()
 		    });

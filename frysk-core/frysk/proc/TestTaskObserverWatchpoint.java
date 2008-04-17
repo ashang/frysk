@@ -45,7 +45,7 @@ import lib.dwfl.ElfSymbolBinding;
 import lib.dwfl.ElfSymbolType;
 import lib.dwfl.ElfSymbolVisibility;
 import lib.dwfl.SymbolBuilder;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.dwfl.DwflCache;
 import frysk.isa.signals.Signal;
 import frysk.rsl.Log;
@@ -71,7 +71,7 @@ extends TestLib
 	
 	// Create a blocked child.
 	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
+		Prefix.pkgLibFile("funit-watchpoint"));
 	assertNotNull(ackProc);
 
 	// Get Proc/Task.
@@ -133,7 +133,7 @@ extends TestLib
 	    return;
 	
 	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
+		Prefix.pkgLibFile("funit-watchpoint"));
 	assertNotNull(ackProc);
 
 	// Get Proc/Task.
@@ -189,7 +189,7 @@ extends TestLib
 	    return;
 	
 	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
+		Prefix.pkgLibFile("funit-watchpoint"));
 	assertNotNull(ackProc);
 
 	// Get Proc/Task.
@@ -245,7 +245,7 @@ extends TestLib
 	
 	// Create a blocked child.
 	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
+		Prefix.pkgLibFile("funit-watchpoint"));
 	assertNotNull(ackProc);
 
 	// Get Proc/Task.
@@ -312,7 +312,7 @@ extends TestLib
 	    return;
 	
 	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
-		Config.getPkgLibFile("funit-watchpoint"));
+		Prefix.pkgLibFile("funit-watchpoint"));
 	assertNotNull(ackProc);
 
 	// Get Proc/Task.

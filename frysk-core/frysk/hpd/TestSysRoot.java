@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import java.io.File;
 
 /**
@@ -53,8 +53,8 @@ public class TestSysRoot extends TestLib {
     }
 
     public void testHaveSysRoot() {
-	File testSysRootDir = Config.getPkgLibFile("test-sysroot");
-	File testPath = Config.getPkgLibFile("funit-quicksort");
+	File testSysRootDir = Prefix.pkgLibFile("test-sysroot");
+	File testPath = Prefix.pkgLibFile("funit-quicksort");
 	e.sendCommandExpectPrompt("load "  
 		+ testPath.getName()
 		+ " -sysroot " + testSysRootDir.getAbsolutePath(), 

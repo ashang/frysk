@@ -42,7 +42,7 @@ package frysk.util;
 import java.io.File;
 import frysk.testbed.TestLib;
 import frysk.testbed.CorefileFactory;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.Proc;
 import frysk.rsl.Log;
 
@@ -53,7 +53,7 @@ public class TestCommandlineParser extends TestLib {
     private File core;
     public void setUp() {
 	super.setUp();
-	exe = Config.getPkgLibFile("funit-hello");
+	exe = Prefix.pkgLibFile("funit-hello");
 	core = CorefileFactory.constructCoreAtSignal(exe);
     }
     public void tearDown() {

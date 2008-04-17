@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.expunit.EndOfFileException;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
@@ -57,7 +57,7 @@ public class TestGenerateCoreCommand extends TestLib {
     
     public void testGenerateCoreCommand() {
 	HpdTestbed h = new HpdTestbed();
-	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	h.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 		"Loaded executable file.*");
 	h.sendCommandExpectPrompt("start", "Attached to process.*");
 	h.send("dump\n");
@@ -83,7 +83,7 @@ public class TestGenerateCoreCommand extends TestLib {
 
     public void testGenerateCoreAllMapsCommand() {
 	HpdTestbed h = new HpdTestbed();
-	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	h.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"Loaded executable file.*");
 	h.sendCommandExpectPrompt("start", "Attached to process.*");
 	h.send("dump -a\n");
@@ -109,7 +109,7 @@ public class TestGenerateCoreCommand extends TestLib {
 
     public void testGenerateRenamedCoreCommand() {
 	HpdTestbed h = new HpdTestbed();
-	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	h.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 	"Loaded executable file.*");
 	h.sendCommandExpectPrompt("start 1", "Attached to process.*");
 	h.send("dump -o testname\n");
@@ -135,7 +135,7 @@ public class TestGenerateCoreCommand extends TestLib {
 
     public void testGenerateRenamedAllMapsCoreCommand() {
 	HpdTestbed h = new HpdTestbed();
-	h.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+	h.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-fib-clone").getPath(),
 	"Loaded executable file.*");
 	h.sendCommandExpectPrompt("start 1", "Attached to process.*");
 	h.send("dump -a -o testname\n");

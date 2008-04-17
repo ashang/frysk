@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class TestBreakpoints
     extends TestLib
@@ -60,7 +60,7 @@ public class TestBreakpoints
     
     public void testHpdBreakpointRunProcess() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("hpd-c").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("hpd-c").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	// Break
@@ -121,7 +121,7 @@ public class TestBreakpoints
 	if (unresolved(5351))
 	    return;
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-fib-clone").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start 3", "Attached to process.*");
 	// Break
@@ -150,7 +150,7 @@ public class TestBreakpoints
 	    return;
 	}
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-fib-clone").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-fib-clone").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start 3", "Attached to process.*");
 	// Break
@@ -190,7 +190,7 @@ public class TestBreakpoints
 
   public void testBreakOnStructMemberName() {
       e = new HpdTestbed();
-      e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-structmember").getPath(),
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-structmember").getPath(),
 		"Loaded executable file.*");
       e.sendCommandExpectPrompt("start", "Attached to process.*");
       e.send("break testfn\n");

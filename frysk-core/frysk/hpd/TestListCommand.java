@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Test the functionality of the alias and unalias commands.
@@ -53,7 +53,7 @@ public class TestListCommand extends TestLib {
 
     public void testListPC() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break #funit-quicksort.c#98", "breakpoint.*");
@@ -83,7 +83,7 @@ public class TestListCommand extends TestLib {
 
     public void testListFunction() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
@@ -130,7 +130,7 @@ public class TestListCommand extends TestLib {
 
     public void testListReverse() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");
@@ -169,7 +169,7 @@ public class TestListCommand extends TestLib {
 
     public void testListFrames() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break #funit-bubblesort.c#49", "breakpoint.*");
@@ -238,7 +238,7 @@ public class TestListCommand extends TestLib {
 
     public void testListErrors() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-quicksort").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-quicksort").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	e.sendCommandExpectPrompt("break main", "breakpoint.*");

@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.isa.ISA;
 import java.io.File;
 import frysk.isa.ElfMap;
@@ -48,7 +48,7 @@ public class TestRegs extends TestLib {
 
     public void testRegsCommand() {
 	e = HpdTestbed.attachXXX("hpd-c");
-	File exe = Config.getPkgLibFile("hpd-c");
+	File exe = Prefix.pkgLibFile("hpd-c");
 	ISA isa = ElfMap.getISA(exe);
 
 	String[] commandSet = {"regs\n", "info general-regs\n"};

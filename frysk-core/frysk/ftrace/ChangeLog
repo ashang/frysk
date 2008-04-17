@@ -1,3 +1,7 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestMappingGuard.java: Use frysk.config.Prefix.
+
 2008-04-16  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TaskTracer.java (getReturnAddress): Fetch the return address

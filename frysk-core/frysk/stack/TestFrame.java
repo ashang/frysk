@@ -42,7 +42,7 @@ package frysk.stack;
 import java.util.Iterator;
 import java.util.List;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -195,7 +195,7 @@ public class TestFrame extends TestLib {
 	    }
 	}
 
-	String[] cmd = {Config.getPkgLibFile("funit-empty-functions-nodebug").getPath()};
+	String[] cmd = {Prefix.pkgLibFile("funit-empty-functions-nodebug").getPath()};
 	DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
 	Task task = child.getMainTask();
 	Info info = new Info(task);
@@ -219,7 +219,7 @@ public class TestFrame extends TestLib {
     public void testInnerFrameAddress() throws ElfException
     {
       String[] cmd =
-	{ Config.getPkgLibFile("funit-hello").getPath(), "world" };
+	{ Prefix.pkgLibFile("funit-hello").getPath(), "world" };
       DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(cmd);
       Task task = child.getMainTask();
       Info info = new Info(task);

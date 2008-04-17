@@ -40,7 +40,7 @@
 package frysk.dwfl;
 
 import lib.dwfl.ElfSectionHeader;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.TestLib;
@@ -49,7 +49,7 @@ public class TestElfSectionCache extends TestLib {
     
     public void testGetSectionHeader() {
 	
-	DaemonBlockedAtEntry dbae = new DaemonBlockedAtEntry(Config.getPkgLibFile("funit-libcall"));
+	DaemonBlockedAtEntry dbae = new DaemonBlockedAtEntry(Prefix.pkgLibFile("funit-libcall"));
 	Task task = dbae.getMainTask();
 	
 	long addr = task.getPC();

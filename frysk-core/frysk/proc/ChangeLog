@@ -1,3 +1,14 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* StressAttachDetachSignaledTask.java: Use frysk.config.Prefix.
+	* TestTaskSyscallObserver.java: Ditto.
+	* TestTaskObserverWatchpoint.java: Ditto.
+	* TestTaskObserverInstructionSigReturn.java: Ditto.
+	* TestTaskObserverInstruction.java: Ditto.
+	* TestSyscallSignal.java: Ditto.
+	* TestSyscallRunning.java: Ditto.
+	* TestBreakpoints.java: Ditto.
+
 2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestTaskSyscallObserver (testCreateAttachedAddSyscallObserver):

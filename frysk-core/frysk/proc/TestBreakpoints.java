@@ -47,7 +47,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.sys.DaemonPipePair;
 
 public class TestBreakpoints
@@ -87,7 +87,7 @@ public class TestBreakpoints
     // Create a process that we will communicate with through stdin/out.
     DaemonPipePair process
 	= new DaemonPipePair(new String[] {
-				 Config.getPkgLibFile("funit-breakpoints").getPath()
+				 Prefix.pkgLibFile("funit-breakpoints").getPath()
 			     });
     TearDownProcess.add(process.pid);
     in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));

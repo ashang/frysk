@@ -51,7 +51,7 @@ import frysk.isa.syscalls.Syscall;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
 import frysk.testbed.TearDownProcess;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 
@@ -84,7 +84,7 @@ public class TestSyscallSignal
 	// Create a process that we will communicate with through stdin/out.
 	DaemonPipePair process
 	    = new DaemonPipePair(new String[] {
-		    Config.getPkgLibFile("funit-syscall-signal")
+		    Prefix.pkgLibFile("funit-syscall-signal")
 		    .getPath()
 		});
 	pid = process.pid;

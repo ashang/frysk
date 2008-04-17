@@ -1,3 +1,7 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSysRoot.java: Use frysk.config.Prefix.
+
 2008-04-10  Stan Cox  <scox@redhat.com>
 
 	* TestSysRoot.java: Change to use funit-quicksort.

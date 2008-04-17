@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 public class TestHpdTestHarness extends TestLib {
     public void testKillHpdTestHarness() {
@@ -49,7 +49,7 @@ public class TestHpdTestHarness extends TestLib {
 	e = new HpdTestbed();
 	//e.send("load " + Config.getPkgLibFile("funit-threads-looper").getPath()
 	//	+ "\n");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"Loaded executable file.*");
 	//e.expect("Loaded executable file.*");
 	e.send("run\n");

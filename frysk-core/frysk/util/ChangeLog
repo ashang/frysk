@@ -1,3 +1,7 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCommandlineParser.java: Use frysk.config.Prefix.
+
 2008-04-06  Petr Machata  <pmachata@redhat.com>
 
 	* ArchFormatter.java: New file.  Code moved from

@@ -1,5 +1,8 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getPkgLibFile(String)): Delete.
+	(getHomeDir()): Delete.
+	
 	* Config.java (getBinFile(String)): Delete.
 	(getPkgDataFile(String)): Delete.
 	

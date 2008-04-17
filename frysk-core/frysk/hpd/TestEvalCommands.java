@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.FryskAsm;
 import frysk.isa.ISA;
 import frysk.isa.registers.Register;
@@ -98,7 +98,7 @@ public class TestEvalCommands extends TestLib {
     public void testRegister() {
 	// FIXME: Should use funit-regs.
 	e = HpdTestbed.attachXXX("hpd-c");
-	File exe = Config.getPkgLibFile("hpd-c");
+	File exe = Prefix.pkgLibFile("hpd-c");
 	ISA isa = ElfMap.getISA(exe);
 	Register r = FryskAsm.createFryskAsm(isa).REG0;
 	e.sendCommandExpectPrompt("print $" + r.getName() + " -format d",

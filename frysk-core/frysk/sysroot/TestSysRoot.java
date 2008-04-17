@@ -41,12 +41,12 @@ package frysk.sysroot;
 
 import java.io.File;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.TestLib;
 
 public class TestSysRoot extends TestLib {
     public void testGetPathViaDefaultRoot() {
-	String pkgLibDir = Config.getPkgLibFile(null).getPath();
+	String pkgLibDir = Prefix.pkgLibFile(null).getPath();
 	SysRoot sysroot = new SysRoot(new File("/"));
 	SysRootFile testPath = sysroot.getPathViaSysRoot("funit-quicksort", 
 		"/alpha/dir:/beta/dir:/gamma/dir:" + pkgLibDir);
@@ -65,7 +65,7 @@ public class TestSysRoot extends TestLib {
     }
 
     public void testGetPathViaSysRoot() {
-	String sysRootPath = Config.getPkgLibFile(".").getParent()
+	String sysRootPath = Prefix.pkgLibFile(".").getParent()
 		+ "/test-sysroot";
 	SysRoot sysRoot = new SysRoot(new File(sysRootPath));
 	SysRootFile testPath = sysRoot.getPathViaSysRoot("funit-quicksort", 
@@ -106,7 +106,7 @@ public class TestSysRoot extends TestLib {
     }
 
     public void testGetSourcePathViaSysRoot() {
-	String sysRootPath = Config.getPkgLibFile(".").getParent()
+	String sysRootPath = Prefix.pkgLibFile(".").getParent()
 		+ "/test-sysroot";
 	SysRoot sysRoot = new SysRoot(new File(sysRootPath));
 	File absoluteSourcePath = new File(

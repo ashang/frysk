@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
 * This class tests the "watch" command.
@@ -49,7 +49,7 @@ public class TestWatchCommand extends TestLib {
   public void testWatchPointSetAndHit()
   {
       e = new HpdTestbed();
-      e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-watchpoint").getPath(),
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-watchpoint").getPath(),
                                 "Loaded executable file.*");
       e.sendCommandExpectPrompt("start", "Attached to process.*");
       
