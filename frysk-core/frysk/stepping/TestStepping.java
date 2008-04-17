@@ -391,9 +391,6 @@ public class TestStepping extends TestLib {
 	if (unresolvedOnPPC(3277))
 	    return;
 
-	if (unresolved(4237))
-	    return;
-
 	/** Variable setup */
 
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-rt-sigraise.c");

@@ -65,8 +65,7 @@ void
 
 void
 handler (int sig)
-{
-  if (sig == SIGUSR1)								// _lineStepSigHandlerEntry_
+{ if (sig == SIGUSR1) // _lineStepSigHandlerEntry_
     {
       --j;
       ++j;

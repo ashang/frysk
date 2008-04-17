@@ -1,3 +1,8 @@
+2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
+
+	* funit-rt-sigraise.c (handler): Make sure entry marker is really on
+	first source line.
+
 2008-04-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* funit-watchpoint.S: Don't add read_only to

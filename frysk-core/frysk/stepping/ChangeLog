@@ -1,3 +1,7 @@
+2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestStepping.java (testStepSigRaise): Don't mark unresolved #4237.
+
 2008-04-17  Teresa Thomas  <tthomas@redhat.com>
 
 	* SteppingEngine.java (blockedByActionPoint): New.
