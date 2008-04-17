@@ -1,5 +1,8 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (getBinFile(String)): Delete.
+	(getPkgDataFile(String)): Delete.
+	
 	* Prefix.java (gladeFile(String)): Replace gladeDir().
 	* TestPrefix.java: Update.
 	* PrefixFactory.java: Update

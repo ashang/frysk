@@ -39,7 +39,7 @@
 
 package frysk.proc.dead;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import inua.eio.ByteBuffer;
 import java.util.HashSet;
 import frysk.proc.FindProc;
@@ -54,7 +54,7 @@ import frysk.testbed.TestLib;
 public class TestLinuxExe extends TestLib {
     public void testLinuxTaskMemory() {
 	Proc proc
-	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
+	    = LinuxExeFactory.createProc(Prefix.pkgDataFile("test-exe-x86"),
 					 new String[0]);
 	assertNotNull("Proc exists in exefile", proc);
 	assertNotNull("Executable file Host is Null?",proc.getHost());
@@ -77,7 +77,7 @@ public class TestLinuxExe extends TestLib {
 
     public void testRequestRefresh() {
 	final Proc proc
-	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
+	    = LinuxExeFactory.createProc(Prefix.pkgDataFile("test-exe-x86"),
 					 new String[0]);
 	proc.getHost().requestRefresh(new HashSet(), new HostRefreshBuilder() {
 		public void construct(Collection added, Collection removed) {
@@ -91,7 +91,7 @@ public class TestLinuxExe extends TestLib {
 
     public void testRequestProc() {
 	final Proc proc
-	    = LinuxExeFactory.createProc(Config.getPkgDataFile("test-exe-x86"),
+	    = LinuxExeFactory.createProc(Prefix.pkgDataFile("test-exe-x86"),
 					 new String[0]);
 	proc.getHost().requestProc(proc.getPid(), new FindProc() {
 		public void procFound(Proc found) {
@@ -107,16 +107,16 @@ public class TestLinuxExe extends TestLib {
 
     public void testScript() {
 	Proc proc = LinuxExeFactory.createProc(new String[] {
-		Config.getBinFile("fdebugrpm").getPath(),
+		Prefix.binFile("fdebugrpm").getPath(),
 		"arg"
 	    });
 	assertEquals("exe", "/bin/bash", proc.getExeFile().getSysRootedPath());
     }
     
     public void testSysRootedProc() {
-	SysRootCache.setSysroot("funit-quicksort", Config.getPkgLibFile("test-sysroot").getAbsolutePath());
+	SysRootCache.setSysroot("funit-quicksort", Prefix.pkgLibFile("test-sysroot").getAbsolutePath());
 	Proc proc = LinuxExeFactory.createProc(new String[] {"funit-quicksort", ""});
-	int testValue = proc.getExeFile().getSysRootedPath().compareTo(Config.getPkgLibFile("test-sysroot").getAbsolutePath()
+	int testValue = proc.getExeFile().getSysRootedPath().compareTo(Prefix.pkgLibFile("test-sysroot").getAbsolutePath()
 		+ "/usr/bin/funit-quicksort");
 	assertEquals("exe", 0, testValue); 
 	testValue = proc.getExeFile().getFile().getAbsolutePath().compareTo("/usr/bin/funit-quicksort");

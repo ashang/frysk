@@ -1,3 +1,10 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* HpdTestbed.java: Use frysk.config.Prefix.
+	* TestPeekCommand.java: Ditto.
+	* TestCoreCommand.java: Ditto.
+	* TestLoadCommand.java: Ditto.
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFhpdStepping.java: Use frysk.config.Prefix.

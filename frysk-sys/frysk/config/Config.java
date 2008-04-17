@@ -47,25 +47,6 @@ import java.io.File;
 
 public class Config {
     /**
-     * A file in frysk's shared, and 32-bit and 64-bit independant,
-     * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
-     */
-    public static final File getPkgDataFile (String file) {
-	return Prefix.pkgDataFile(file);
-    }
-
-    /**
-     * A file in Frysk's user-visible executable directory.  Typically
-     * <tt>/usr/bin/FILE</tt>.
-     *
-     * Used by install-tree testing when needing to run a user-visible
-     * executable.
-     */
-    public static final File getBinFile(String file) {
-	return Prefix.binFile(file);
-    }
-
-    /**
      * A file in Frysk's library directory.  Typically either
      * <tt>/usr/lib/frysk/FILE</tt> or <tt>/usr/lib64/frysk/FILE</tt>.
      *

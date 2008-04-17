@@ -1,3 +1,10 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCorefileByteBuffer.java: Use frysk.config.Prefix.
+	* TestLinuxExe.java: Ditto.
+	* TestInterpreter.java: Ditto.
+	* TestLinuxCore.java: Ditto.
+
 2008-04-15  Teresa Thomas  <tthomas@redhat.com>
 
 	* DeadTask.java (isInstructionObserverAdded): New.

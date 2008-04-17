@@ -40,7 +40,7 @@
 package frysk.hpd;
 
 import frysk.junit.TestCase;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.testbed.CorefileFactory;
 import frysk.expunit.Match;
 import frysk.expunit.Regex;
@@ -71,7 +71,7 @@ public class HpdTestbed extends TearDownExpect {
      */
     public HpdTestbed() {
 	this(new String[] {
-		Config.getBinFile("fhpd").getPath()
+		Prefix.binFile("fhpd").getPath()
 	     });
 	expectPrompt();
     }
@@ -82,7 +82,7 @@ public class HpdTestbed extends TearDownExpect {
      */
     public HpdTestbed(String param, String startup) {
 	this(new String[] {
-		  Config.getBinFile("fhpd").getPath (),
+		  Prefix.binFile("fhpd").getPath (),
 		  param
 	      });
 	expectPrompt(startup);
@@ -155,7 +155,7 @@ public class HpdTestbed extends TearDownExpect {
      */
     static HpdTestbed attachXXX(String program) {
 	TearDownExpect child
-	    = new TearDownExpect(Config.getPkgLibFile(program));
+	    = new TearDownExpect(Prefix.pkgLibFile(program));
 	ProcessIdentifier pid = child.getPid();
 	return new HpdTestbed(pid.toString(),
 			      "Attached to process "
@@ -168,7 +168,7 @@ public class HpdTestbed extends TearDownExpect {
      */
     static HpdTestbed run(String program, String args) {
 	HpdTestbed h = new HpdTestbed();
-	File exe = Config.getPkgLibFile(program);
+	File exe = Prefix.pkgLibFile(program);
 	h.send("run ");
 	h.send(exe.getAbsolutePath());
 	if (args != null) {
@@ -211,7 +211,7 @@ public class HpdTestbed extends TearDownExpect {
      */
     static HpdTestbed load(String program, String args) {
 	HpdTestbed h = new HpdTestbed();
-	File exe = Config.getPkgLibFile(program);
+	File exe = Prefix.pkgLibFile(program);
 	String command;
 	if (args == null)
 	    command = "load " + exe;
@@ -234,11 +234,11 @@ public class HpdTestbed extends TearDownExpect {
      * run the program to the terminating event.
      */
     static HpdTestbed hpdTerminatingProgram(String program) {
-	File exeFile = Config.getPkgLibFile(program);
+	File exeFile = Prefix.pkgLibFile(program);
 	File coreFile = CorefileFactory.constructCoreAtSignal(exeFile);
 	HpdTestbed hpd
 	    = new HpdTestbed(new String[] {
-				 Config.getBinFile("fhpd").getPath (),
+				 Prefix.binFile("fhpd").getPath (),
 				 coreFile.toString(),
 				 exeFile.toString()
 			     });

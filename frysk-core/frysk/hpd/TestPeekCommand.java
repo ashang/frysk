@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * This class tests the "peek" command.
@@ -48,7 +48,7 @@ import frysk.config.Config;
 public class TestPeekCommand extends TestLib {
     public void testPeekCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgDataFile("test-exe-x86").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("peek 0x08048000L", 
 		"The value at 08048000 = 127.*");
@@ -57,7 +57,7 @@ public class TestPeekCommand extends TestLib {
 
     public void testPeekCommandError() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgDataFile("test-exe-x86").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("peek 08048000", 
 		"Cannot find memory in exe file.*");
@@ -66,9 +66,9 @@ public class TestPeekCommand extends TestLib {
     
     public void testTwoLoadedPeekCommand() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgDataFile("test-exe-x86").getPath(),
 		"Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgDataFile("test-exe-x86").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("peek 0x08048000L", "\\[0\\.0\\].*" +
 		"The value at 08048000 = 127.*\\[1\\.0\\].*" +
@@ -78,7 +78,7 @@ public class TestPeekCommand extends TestLib {
     
     public void testPeekCommandNoParameter() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgDataFile("test-exe-x86").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgDataFile("test-exe-x86").getPath(),
 		"Loaded executable file.*");
 	e.sendCommandExpectPrompt("peek", "Error: Not enough parameters.*" + 
 		"Please specify an addess to peek at.*");

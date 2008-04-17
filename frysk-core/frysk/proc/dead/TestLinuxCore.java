@@ -49,7 +49,7 @@ import lib.dwfl.Dwfl;
 import java.util.Iterator;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.debuginfo.PrintStackOptions;
 import frysk.dwfl.DwflCache;
 import frysk.event.Event;
@@ -73,7 +73,7 @@ import frysk.util.StacktraceAction;
 
 public class TestLinuxCore extends TestLib {
     private Proc coreProc
-	= LinuxCoreFactory.createProc(Config.getPkgDataFile("test-core-x86"));
+	= LinuxCoreFactory.createProc(Prefix.pkgDataFile("test-core-x86"));
 
 
     public void testRelativePath() {
@@ -203,7 +203,7 @@ public class TestLinuxCore extends TestLib {
    
 
     // Create a blocked process, blocked at a signal
-    File exeFile = Config.getPkgLibFile("funit-stacks");
+    File exeFile = Prefix.pkgLibFile("funit-stacks");
     Proc testProc = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
     File coreFile = CorefileFactory.constructCore(testProc);
 

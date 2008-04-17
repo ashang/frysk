@@ -39,7 +39,7 @@
 
 package frysk.hpd;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * This class tests the "load" command basics of both loading a correct
@@ -49,7 +49,7 @@ import frysk.config.Config;
 public class TestLoadCommand extends TestLib {
     public void testLoadCommand() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
+	e.send("load " + Prefix.pkgDataFile("test-exe-x86").getPath()
 		+ "\n");
 	e.expect("\\[0\\.0\\] Loaded executable file.*");
 	e.send("quit\n");
@@ -59,17 +59,17 @@ public class TestLoadCommand extends TestLib {
 
     public void testLoadCommandError() {
 	e = new HpdTestbed();
-	e.send("load " + Config.getPkgDataFile("test-exe-x86").getPath()
+	e.send("load " + Prefix.pkgDataFile("test-exe-x86").getPath()
 		+ "foo\n");
 	e.expect("Error: open: No such file or directory.*");
     }
     
     public void testLoadStart() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 		"\\[0\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 		"\\[1\\.0] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*"+
 		"\\[1\\.0\\]\t\t0*\\t0.*");
@@ -82,9 +82,9 @@ public class TestLoadCommand extends TestLib {
     
     public void testLoadRunRun() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("start", "Attached to process.*Attached to process.*");
 	e.send("quit\n");
@@ -102,9 +102,9 @@ public class TestLoadCommand extends TestLib {
     
     public void testLoadDisplay() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-threads-looper").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 		"\\[0\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("load " + Config.getPkgLibFile("funit-hello").getPath(),
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
 		"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load", "Loaded procs.*\\[0\\.0\\].*\\[1\\.0\\].*");
 	e.send("quit\n");
