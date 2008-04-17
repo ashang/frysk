@@ -1,0 +1,135 @@
+#!/bin/sh -e
+cat <<EOF
+// This file is part of the program FRYSK.
+//
+// Copyright 2008, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
+
+#include <errno.h>
+#include <linux/unistd.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <string.h>
+
+#include "frysk_sys_Signal.h"
+
+#include "frysk/jni/exceptions.hxx"
+
+JNIEXPORT void
+Java_frysk_sys_Signal_kill__IILjava_lang_String_2(JNIEnv *env,
+                                                  jclass klass,
+                                                  jint pid,
+					          jint sig,
+						  jstring name) {
+  errno = 0;
+  if (::kill(pid, sig) < 0) {
+    const char *sname = env->GetStringUTFChars(name, NULL);
+    if (sname == NULL)
+      return; // exception pending
+    errnoException(env, errno, "kill", "process %d, signal %s (%d)",
+    		   pid, sname, sig);
+    env->ReleaseStringUTFChars(name, sname);
+  }
+}
+
+JNIEXPORT void
+Java_frysk_sys_Signal_tkill(JNIEnv *env, jclass klass, jint tid, jint sig,
+                            jstring name) {
+  errno = 0;
+  if (::syscall(__NR_tkill, tid, sig) < 0) {
+    const char *sname = env->GetStringUTFChars(name, NULL);
+    if (sname == NULL)
+      return; // exception pending
+    errnoException(env, errno, "tkill", "task %d, signal %s (%d)",
+    		   tid, sname, sig);
+    env->ReleaseStringUTFChars(name, sname);
+  }
+}
+
+JNIEXPORT void
+Java_frysk_sys_Signal_drain(JNIEnv *env, jclass, jint sig) {
+  struct sigaction oldAction = { };
+  struct sigaction newAction = { };
+  newAction.sa_handler = SIG_IGN;
+  if (::sigaction(sig, &newAction, &oldAction) < 0) {
+    errnoException(env, errno, "sigaction", "signal %d - %s",
+                   sig, strsignal(sig));
+    return;
+  }
+  if (::sigaction(sig, &oldAction, NULL) < 0) {
+    errnoException(env, errno, "sigaction", "signal %d - %s",
+                   sig, strsignal(sig));
+    return;
+  }
+}
+
+JNIEXPORT jint
+Java_frysk_sys_Signal_nsig(JNIEnv *env, jclass) {
+  return NSIG;
+}
+
+JNIEXPORT jint
+Java_frysk_sys_Signal_rtMin(JNIEnv *env, jclass) {
+  return SIGRTMIN;
+}
+
+JNIEXPORT jint
+Java_frysk_sys_Signal_rtMax(JNIEnv *env, jclass) {
+  return SIGRTMAX;
+}
+EOF
+
+for sig in \
+  hup int_1 quit ill abrt fpe kill__ segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
+  bus poll prof sys trap urg vtalrm xcpu xfsz \
+  iot emt stkflt io cld pwr info lost winch unused
+do
+    SIG=SIG`echo "${sig}" | tr '[a-z]' '[A-Z]' | sed 's/_.*$//'`
+    cat <<EOF
+
+jint
+Java_frysk_sys_Signal_${sig}(JNIEnv *, jclass) {
+#ifdef ${SIG}
+    return ${SIG};
+#else
+    return -1;
+#endif
+}
+EOF
+done

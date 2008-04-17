@@ -1,5 +1,8 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Signal.cxx-sh: Replace ...
+	* jni/Signal.cxx: ... this.
+
 	* TestFork.java: Use frysk.config.Prefix.
 	* TestPipePair.java: Ditto.
 
