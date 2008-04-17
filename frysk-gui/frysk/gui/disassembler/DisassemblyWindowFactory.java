@@ -92,14 +92,12 @@ public class DisassemblyWindowFactory
       }
 
     LibGlade glade;
-    try
-      {
-	glade = new LibGlade(Prefix.gladeDir() + DIS_GLADE, null);
-      }
-    catch (Exception e)
-      {
+    try {
+	glade = new LibGlade(Prefix.gladeFile(DIS_GLADE).getAbsolutePath(),
+			     null);
+    } catch (Exception e) {
 	throw new RuntimeException(e);
-      }
+    }
 
     dw = new DisassemblyWindow(glade);
     steppingEngine.addObserver(dw.getLockObserver());

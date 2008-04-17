@@ -41,14 +41,11 @@ package frysk.gui;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import frysk.junit.TestCase;
-
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
-
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.gui.common.IconManager;
 import frysk.gui.monitor.WindowManager;
 
@@ -87,17 +84,11 @@ public class TestGlade
     public void testGladeLoading ()
 	throws FileNotFoundException, GladeXMLException, IOException
     {
-	// The location of the glade file may need to be modified
-	// here, depending on where the program is being run from. If
-	// the directory that the src directory is in is used as the
-	// root, this should work without modification
-	String GLADE_PREFIX = Config.getGladeDir ();
-
-	LibGlade glade = new LibGlade (GLADE_PREFIX + GLADE_FILE, this);
-	LibGlade create_session_glade = new LibGlade(GLADE_PREFIX + CREATE_SESSION_GLADE, this);
-	LibGlade register_window = new LibGlade(GLADE_PREFIX + REGISTER_WINDOW, null);
-	LibGlade memory_window = new LibGlade(GLADE_PREFIX + MEMORY_WINDOW, null);
-	LibGlade session_glade = new LibGlade(GLADE_PREFIX + SESSION_MANAGER_GLADE, this);
+	LibGlade glade = new LibGlade (Prefix.gladeFile(GLADE_FILE).getAbsolutePath(), this);
+	LibGlade create_session_glade = new LibGlade(Prefix.gladeFile(CREATE_SESSION_GLADE).getAbsolutePath(), this);
+	LibGlade register_window = new LibGlade(Prefix.gladeFile(REGISTER_WINDOW).getAbsolutePath(), null);
+	LibGlade memory_window = new LibGlade(Prefix.gladeFile(MEMORY_WINDOW).getAbsolutePath(), null);
+	LibGlade session_glade = new LibGlade(Prefix.gladeFile(SESSION_MANAGER_GLADE).getAbsolutePath(), this);
 
 	// Checking that the LibGlade's variables are not empty. If they are
 	// then bad things happened during load.

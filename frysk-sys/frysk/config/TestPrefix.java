@@ -65,7 +65,7 @@ public class TestPrefix extends TestCase {
 
     private void validate(int pure) {
 	// The expected paths are valid.
-	assertNotNull("getGladeDir", Prefix.gladeDir());
+	assertNotNull("getGladeDir", Prefix.gladeFile(null));
 	assertNotNull("getHelpDir", Prefix.helpFile(null));
 	assertNotNull("getImagesDir", Prefix.imagesDir());
 	assertNotNull("getBinFile", Prefix.binFile(null));

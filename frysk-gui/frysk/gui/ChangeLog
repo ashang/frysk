@@ -1,5 +1,13 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* disassembler/DisassemblyWindowFactory.java: Use
+	frysk.config.Prefix.gladeFile(String)
+	* test/TestWindowFactorization.java: Ditto.
+	* register/RegisterWindowFactory.java: Ditto.
+	* Gui.java: Ditto.
+	* memory/MemoryWindowFactory.java: Ditto.
+	* TestGlade.java: Ditto.
+
 	* FryskHelpManager.java: Use frysk.config.Prefix.
 
 	* disassembler/DisassemblyWindowFactory.java: Use

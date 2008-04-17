@@ -41,15 +41,13 @@
 package frysk.gui.register;
 
 import java.util.HashMap;
-
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
-import frysk.config.Config;
+import frysk.config.Prefix;
 
 /**
  * Factory for creating RegisterWindows - allows multiple RegisterWindows to be
@@ -92,14 +90,11 @@ public class RegisterWindowFactory
       }
 
     LibGlade glade;
-    try
-      {
-	glade = new LibGlade(Config.getGladeDir() + REG_GLADE, null);
-      }
-    catch (Exception e)
-      {
+    try {
+	glade = new LibGlade(Prefix.gladeFile(REG_GLADE).getAbsolutePath(), null);
+    } catch (Exception e) {
 	throw new RuntimeException(e);
-      }
+    }
 
     rw = new RegisterWindow(glade);
     steppingEngine.addObserver(rw.getLockObserver());

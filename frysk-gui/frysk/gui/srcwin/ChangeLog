@@ -1,3 +1,9 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindowFactory.java: Use frysk.config.Prefix's
+	.gladeFile(String).
+	* SourceWindow.java: Ditto.
+
 2008-03-17  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java: Update; using TaskAttachedObserverXXX.

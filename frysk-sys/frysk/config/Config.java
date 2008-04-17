@@ -47,16 +47,6 @@ import java.io.File;
 
 public class Config {
     /**
-     * Directory containing the .glade files describing frysk's UI
-     * windows.
-     *
-     * XXX: This is a String so that it works better with Java-GNOME.
-     */
-    public static final String getGladeDir () {
-	return Prefix.gladeDir();
-    }
-
-    /**
      * A file in frysk's shared, and 32-bit and 64-bit independant,
      * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
      */

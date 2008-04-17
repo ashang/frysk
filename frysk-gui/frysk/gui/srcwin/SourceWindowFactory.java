@@ -51,7 +51,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import frysk.proc.dead.LinuxCoreFactory;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
@@ -79,92 +79,63 @@ public class SourceWindowFactory
   
 //  private static TaskAttachedObserverXXX attachedObserver = null;
 
-  /**
-   * Creates a new source window using the given task. The SourceWindows
-   * correspond to tasks in a 1-1 relationship, so if you try to launch a
-   * SourceWindow for a Task and an existing window has already been created,
-   * that one will be brought to the forefront rather than creating a new
-   * window.
-   * 
-   * @param proc The Proc to open a SourceWindow for.
-   */
-  public static void createSourceWindow (Proc proc)
-  {
-
-    LibGlade glade;
-    try 
-    {
-      glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
-    }
-    catch (Exception e) 
-    {
-      throw new RuntimeException (e);
-    }
-    
-    srcWin = new SourceWindow(glade, Config.getGladeDir (), proc);
-
-    srcWin.addListener(new SourceWinListener());
+    /**
+     * Creates a new source window using the given task. The
+     * SourceWindows correspond to tasks in a 1-1 relationship, so if
+     * you try to launch a SourceWindow for a Task and an existing
+     * window has already been created, that one will be brought to
+     * the forefront rather than creating a new window.
+     * 
+     * @param proc The Proc to open a SourceWindow for.
+     */
+    public static void createSourceWindow(Proc proc) {
+	LibGlade glade;
+	try {
+	    glade = new LibGlade(Prefix.gladeFile(SourceWindow.GLADE_FILE).getAbsolutePath(), null);
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
+	srcWin = new SourceWindow(glade, proc);
+	srcWin.addListener(new SourceWinListener());
 //    runState = srcWin.getRunState();
-    
-    srcWin.grabFocus();
-  }
-  
-  public static void createSourceWindow (Proc[] procs)
-  {
-
-    LibGlade glade;
-    try 
-    {
-      glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
+	srcWin.grabFocus();
     }
-    catch (Exception e) 
-    {
-      throw new RuntimeException (e);
+  
+    public static void createSourceWindow(Proc[] procs) {
+	LibGlade glade;
+	try {
+	    glade = new LibGlade(Prefix.gladeFile(SourceWindow.GLADE_FILE).getAbsolutePath(), null);
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
+	srcWin = new SourceWindow(glade, procs);
+	srcWin.addListener(new SourceWinListener());
+	srcWin.grabFocus();
     }
-    
-    srcWin = new SourceWindow(glade, Config.getGladeDir (), procs);
-    srcWin.addListener(new SourceWinListener());
-    
-    srcWin.grabFocus();
-  }
   
-  public static void createSourceWindow (DebugInfoFrame frame)
-  {
-    LibGlade glade;
-    try
-      {
-        glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
-                             null);
-      }
-    catch (Exception e)
-      {
-        throw new RuntimeException(e);
-      }
-    
-    SourceWindow srcWin = new SourceWindow(glade, Config.getGladeDir(), frame);
-    srcWin.addListener(new SourceWinListener());
-    
-    srcWin.grabFocus();
-  }
+    public static void createSourceWindow(DebugInfoFrame frame) {
+	LibGlade glade;
+	try {
+	    glade = new LibGlade(Prefix.gladeFile(SourceWindow.GLADE_FILE).getAbsolutePath(), null);
+	} catch (Exception e) {
+	    throw new RuntimeException(e);
+	}
+	SourceWindow srcWin = new SourceWindow(glade, frame);
+	srcWin.addListener(new SourceWinListener());
+	srcWin.grabFocus();
+    }
   
-  public static void createSourceWindow (DebugInfoFrame[] frames)
-  {
-    LibGlade glade;
-    try
-      {
-        glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
-                             null);
-      }
-    catch (Exception e)
-      {
-        throw new RuntimeException(e);
-      }
-    
-    srcWin = new SourceWindow(glade, Config.getGladeDir(), frames);
-    srcWin.addListener(new SourceWinListener());
-    
-    srcWin.grabFocus();
-  }
+    public static void createSourceWindow(DebugInfoFrame[] frames) {
+	LibGlade glade;
+	try {
+	    glade = new LibGlade(Prefix.gladeFile(SourceWindow.GLADE_FILE).getAbsolutePath(), null);
+	} catch(Exception e) {
+	    throw new RuntimeException(e);
+	}
+	srcWin = new SourceWindow(glade, frames);
+	srcWin.addListener(new SourceWinListener());
+	srcWin.grabFocus();
+    }
   
     public static void attachToCore(File coreFile) {
 	Proc proc = LinuxCoreFactory.createProc(coreFile);
@@ -180,7 +151,7 @@ public class SourceWindowFactory
     createSourceWindow(framez);
   }
   
-  public static AttachedObserver startNewProc (String file, String env_variables, String options,
+  public static AttachedObserver startNewProc(String file, String env_variables, String options,
                                                String stdin, String stdout, String stderr)
   {
     File file_path = new File(file);
@@ -218,14 +189,14 @@ public class SourceWindowFactory
    * 
    * @param dom The DOMFrysk to output.
    */
-  public static void printDOM (DOMFrysk dom)
+  public static void printDOM(DOMFrysk dom)
   {
     try
       {
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         outputter.output(dom.getDOMFrysk(), System.out);
       }
-    catch (IOException e)
+    catch(IOException e)
       {
         e.printStackTrace();
       }
@@ -241,11 +212,11 @@ public class SourceWindowFactory
       implements LifeCycleListener
   {
 
-    public void lifeCycleEvent (LifeCycleEvent arg0)
+    public void lifeCycleEvent(LifeCycleEvent arg0)
     {
     }
 
-    public boolean lifeCycleQuery (LifeCycleEvent arg0)
+    public boolean lifeCycleQuery(LifeCycleEvent arg0)
     {
       /*
        * If the window is closing we want to remove it and it's task from the
@@ -271,56 +242,40 @@ public class SourceWindowFactory
     }
   }
   
- protected static class AttachedObserver implements TaskAttachedObserverXXX
-  {
-    public void addedTo (Object o)
-    {
-      //System.err.println(this + " added to " + (Task) o);
-    }
-    
-    public Action updateAttached (Task task)
-    {
-      //System.err.println("updateAttached " + task);
-      Proc proc = task.getProc();
-
-      if (srcWin != null)
-	{
-	  srcWin.getSteppingEngine().addProc(proc);
-	  return Action.BLOCK;
+    protected static class AttachedObserver implements TaskAttachedObserverXXX {
+	public void addedTo(Object o) {
+	    //System.err.println(this + " added to " + (Task) o);
 	}
-
-      LibGlade glade;
-      try
-	{
-	  glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
-			       null);
-	}
-      catch (Exception e)
-	{
-	  throw new RuntimeException(e);
-	}
-
-      srcWin = new SourceWindow(glade, Config.getGladeDir(), proc, this);
-      srcWin.addListener(new SourceWinListener());
-      srcWin.grabFocus();
-
-      return Action.BLOCK;
-    }
     
-    public void addFailed  (Object observable, Throwable w)
-    {
-      
-    }
+	public Action updateAttached(Task task) {
+	    //System.err.println("updateAttached " + task);
+	    Proc proc = task.getProc();
+	    if (srcWin != null) {
+		srcWin.getSteppingEngine().addProc(proc);
+		return Action.BLOCK;
+	    }
+	    LibGlade glade;
+	    try {
+		glade = new LibGlade(Prefix.gladeFile(SourceWindow.GLADE_FILE).getAbsolutePath(), null);
+	    } catch (Exception e) {
+		throw new RuntimeException(e);
+	    }
+	    srcWin = new SourceWindow(glade, proc, this);
+	    srcWin.addListener(new SourceWinListener());
+	    srcWin.grabFocus();
+	    return Action.BLOCK;
+	}
     
-    public void deletedFrom (Object o)
-    {
-      
+	public void addFailed(Object observable, Throwable w) {
+	}
+    
+	public void deletedFrom(Object o) {      
+	}
     }
-  }
 
 //  starting-process stuff
   
- public static void removeAttachedObserver (Task task, AttachedObserver attachedObserver)
+ public static void removeAttachedObserver(Task task, AttachedObserver attachedObserver)
  {
      task.requestDeleteAttachedObserver(attachedObserver);
  }

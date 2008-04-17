@@ -69,6 +69,7 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.EventLogger;
 import frysk.event.SignalEvent;
 import frysk.gui.common.IconManager;
@@ -419,19 +420,13 @@ public class Gui implements LifeCycleListener, Saveable {
     Gui()
 	throws GladeXMLException, FileNotFoundException, IOException
     {
-	glade = new LibGlade(Config.getGladeDir () + GLADE_FILE, this);
-	create_session_glade = new LibGlade(Config.getGladeDir ()
-					    + CREATE_SESSION_GLADE, this);
-	register_window = new LibGlade(Config.getGladeDir ()
-				       + "registerwindow.glade", null);
-	memory_window = new LibGlade(Config.getGladeDir ()
-				     + "memorywindow.glade", null);
-	disassembler_window = new LibGlade(Config.getGladeDir ()
-					   + "disassemblywindow.glade", null);
-	session_glade = new LibGlade(Config.getGladeDir ()
-				     + SESSION_MANAGER_GLADE, this);
-	process_picker_glade = new LibGlade(Config.getGladeDir ()
-					    + "/processpicker.glade", null);
+	glade = new LibGlade(Prefix.gladeFile(GLADE_FILE).getAbsolutePath(), this);
+	create_session_glade = new LibGlade(Prefix.gladeFile(CREATE_SESSION_GLADE).getAbsolutePath(), this);
+	register_window = new LibGlade(Prefix.gladeFile("registerwindow.glade").getAbsolutePath(), null);
+	memory_window = new LibGlade(Prefix.gladeFile("memorywindow.glade").getAbsolutePath(), null);
+	disassembler_window = new LibGlade(Prefix.gladeFile("disassemblywindow.glade").getAbsolutePath(), null);
+	session_glade = new LibGlade(Prefix.gladeFile(SESSION_MANAGER_GLADE).getAbsolutePath(), this);
+	process_picker_glade = new LibGlade(Prefix.gladeFile("processpicker.glade").getAbsolutePath(), null);
 	WindowManager.theManager.initLegacyProcpopWindows(glade);
 	WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 	WindowManager.theManager.initSessionManagerWindow(session_glade);

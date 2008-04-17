@@ -64,8 +64,11 @@ public class PrefixFactory {
      * libraries.
      */
     private static Prefix installPrefix(File lib, File lib32, File lib64) {
-	return new Prefix(gladeDir(), new File(helpDir()), imagesDir(),
-			  new File(binDir()), new File(pkgDataDir()),
+	return new Prefix(new File(gladeDir()),
+			  new File(helpDir()),
+			  imagesDir(),
+			  new File(binDir()),
+			  new File(pkgDataDir()),
 			  lib, lib32, lib64,
 			  new File(sourceDir()));
     }
@@ -118,7 +121,7 @@ public class PrefixFactory {
 	File rootSrc = new File(rootSrcDir);
 	String absSrcDir = rootSrc.getAbsolutePath();
 	// XXX: Glade needs the "/" at the end.
-	return new Prefix(absSrcDir.concat("/frysk-gui/frysk/gui/gladedir/"),
+	return new Prefix(new File(rootSrc, "frysk-gui/frysk/gui/gladedir"),
 			  new File(absSrcDir, "/frysk-gui/frysk/gui/helpdir"),
 			  absSrcDir.concat("/frysk-gui/frysk/gui/imagesdir"),
 			  new File(absBuildDir, "/frysk/bindir/"),

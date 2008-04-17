@@ -88,10 +88,10 @@ public class Prefix {
      * XXX: This is a String, and not a File, so that it works better
      * with Java-GNOME 2.x.
      */
-    public static final String gladeDir () {
-	return current.gladeDir;
+    public static final File gladeFile(String file) {
+	return getFile(current.gladeDir, file);
     }
-    private final String gladeDir;
+    private final File gladeDir;
 
     /**
      * Directory containing the frysk help files.
@@ -187,7 +187,7 @@ public class Prefix {
      *
      * Package-private
      */
-    Prefix(String gladeDir, File helpDir, String imagesDir,
+    Prefix(File gladeDir, File helpDir, String imagesDir,
 	   File binDir, File pkgDataDir, File pkgLibDir,
 	   File pkgLib32Dir, File pkgLib64Dir,
 	   File sourceDir) {

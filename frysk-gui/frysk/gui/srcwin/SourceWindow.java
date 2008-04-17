@@ -108,7 +108,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.dom.DOMFactory;
@@ -154,8 +154,6 @@ public class SourceWindow extends Window {
     /*
          * GLADE CONSTANTS
          */
-
-    private String gladePath;
 
     private LibGlade glade;
 
@@ -336,25 +334,23 @@ public class SourceWindow extends Window {
          */
 
     /**
-         * Creates a new source window with the given properties. This
-         * constructor should not be called explicitly, SourceWindow objects
-         * should be created through the {@link SourceWindowFactory} class.
-         * 
-         * @param glade
-         *                The LibGlade object that contains the window for this
-         *                instance
-         * @param gladePath
-         *                The path that the .glade file for the LibGlade was on
-         * @param proc
-         *                The Proc to have this SourceWindow observe
-         */
-    public SourceWindow(LibGlade glade, String gladePath, Proc proc) {
+     * Creates a new source window with the given properties. This
+     * constructor should not be called explicitly, SourceWindow
+     * objects should be created through the {@link
+     * SourceWindowFactory} class.
+     * 
+     * @param glade
+     *                The LibGlade object that contains the window for this
+     *                instance
+     * @param proc
+     *                The Proc to have this SourceWindow observe
+     */
+    public SourceWindow(LibGlade glade, Proc proc) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
-	this.gladePath = gladePath;
 	this.swProc = new Proc[this.numProcs];
 	this.swProc[this.current] = proc;
 	this.frames = new DebugInfoFrame[1][];
@@ -373,19 +369,16 @@ public class SourceWindow extends Window {
          * @param glade
          *                The LibGlade object that contains the window for this
          *                instance
-         * @param gladePath
-         *                The path that the .glade file for the LibGlade was on
          * @param procs
          *                The array of Procs to have this new SourceWindow
          *                observes
          */
-    public SourceWindow(LibGlade glade, String gladePath, Proc[] procs) {
+    public SourceWindow(LibGlade glade, Proc[] procs) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
-	this.gladePath = gladePath;
 	this.numProcs = procs.length;
 	this.swProc = procs;
 	this.frames = new DebugInfoFrame[this.numProcs][];
@@ -405,19 +398,16 @@ public class SourceWindow extends Window {
          * @param glade
          *                The LibGlade object that contains the window for this
          *                instance
-         * @param gladePath
-         *                The path that the .glade file for the LibGlade was on
          * @param trace
          *                The stack frame that represents the current state of
          *                execution
          */
-    public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame trace) {
+    public SourceWindow(LibGlade glade, DebugInfoFrame trace) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
-	this.gladePath = gladePath;
 	this.swProc = new Proc[1];
 	this.swProc[this.current] = trace.getTask().getProc();
 	this.steppingEngine = new SteppingEngine();
@@ -450,19 +440,16 @@ public class SourceWindow extends Window {
          * @param glade
          *                The LibGlade object that contains the window for this
          *                instance
-         * @param gladePath
-         *                The path that the .glade file for the LibGlade was on
          * @param traces
          *                The stack frames that represents the current state of
          *                execution
          */
-    public SourceWindow(LibGlade glade, String gladePath, DebugInfoFrame[] traces) {
+    public SourceWindow(LibGlade glade, DebugInfoFrame[] traces) {
 	super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 	
 	this.setIcon(IconManager.windowIcon);
 
 	this.glade = glade;
-	this.gladePath = gladePath;
 	this.swProc = new Proc[1];
 	this.swProc[this.current] = traces[0].getTask().getProc();
 	this.steppingEngine = new SteppingEngine();
@@ -497,18 +484,15 @@ public class SourceWindow extends Window {
          * @param glade
          *                The LibGlade object that contains the window for this
          *                instance
-         * @param gladePath
-         *                The path that the .glade file for the LibGlade was on
          * @param proc
          *                The Proc to have this SourceWindow observe
          * @param ao
          *                The AttachedObserver currently blocking the given Proc
          */
-    public SourceWindow(LibGlade glade, String gladePath, Proc proc,
-	    SourceWindowFactory.AttachedObserver ao) {
+    public SourceWindow(LibGlade glade, Proc proc, SourceWindowFactory.AttachedObserver ao) {
 	
 	
-	this(glade, gladePath, proc);
+	this(glade, proc);
 	this.attachedObserver = ao;
 
 	this.addListener(new LifeCycleListener() {
@@ -1324,8 +1308,7 @@ public class SourceWindow extends Window {
 	this.open_executable.addListener(new ActionListener() {
 	    public void actionEvent(ActionEvent action) {
 		try {
-		    glade_fc = new LibGlade(Config.getGladeDir()
-			    + FILECHOOSER_GLADE, null);
+		    glade_fc = new LibGlade(Prefix.gladeFile(FILECHOOSER_GLADE).getAbsolutePath(), null);
 		    fc = (FileChooserDialog) glade_fc
 			    .getWidget("frysk_filechooserdialog");
 		    fc.addListener(new LifeCycleListener() {
@@ -1408,8 +1391,7 @@ public class SourceWindow extends Window {
 	this.open_executable.addListener(new ActionListener() {
 	    public void actionEvent(ActionEvent action) {
 		try {
-		    glade_fc = new LibGlade(Config.getGladeDir()
-			    + FILECHOOSER_GLADE, null);
+		    glade_fc = new LibGlade(Prefix.gladeFile(FILECHOOSER_GLADE).getAbsolutePath(), null);
 		    fc = (FileChooserDialog) glade_fc
 			    .getWidget("frysk_filechooserdialog");
 		    fc.addListener(new LifeCycleListener() {
@@ -1990,8 +1972,7 @@ public class SourceWindow extends Window {
     private void launchPreferencesWindow() {
 	PreferenceWindow prefWin = null;
 	try {
-	    prefWin = new PreferenceWindow(new LibGlade(this.gladePath
-		    + "/frysk_source_prefs.glade", prefWin));
+	    prefWin = new PreferenceWindow(new LibGlade(Prefix.gladeFile("frysk_source_prefs.glade").getAbsolutePath(), prefWin));
 	} catch (GladeXMLException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();

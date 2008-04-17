@@ -1,5 +1,10 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Prefix.java (gladeFile(String)): Replace gladeDir().
+	* TestPrefix.java: Update.
+	* PrefixFactory.java: Update
+	* Config.java (getGladeDir()): Delete.
+
 	* Prefix.java (helpFile(String)): Rename helpDir.
 	* TestPrefix.java: Update.
 

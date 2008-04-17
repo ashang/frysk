@@ -41,12 +41,10 @@
 package frysk.gui.memory;
 
 import java.util.HashMap;
-
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.stepping.SteppingEngine;
@@ -91,14 +89,11 @@ public class MemoryWindowFactory
       }
 
     LibGlade glade;
-    try
-      {
-	glade = new LibGlade(Config.getGladeDir() + MEM_GLADE, null);
-      }
-    catch (Exception e)
-      {
+    try {
+	glade = new LibGlade(Prefix.gladeFile(MEM_GLADE).getAbsolutePath(), null);
+    } catch (Exception e) {
 	throw new RuntimeException(e);
-      }
+    }
 
     mw = new MemoryWindow(glade);
     steppingEngine.addObserver(mw.getLockObserver());

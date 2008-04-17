@@ -42,7 +42,7 @@ package frysk.gui.test;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.gui.common.IconManager;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
@@ -120,8 +120,8 @@ public class TestWindowFactorization
 	     java.io.FileNotFoundException,
 	     java.io.IOException
   {
-      gladem = new LibGlade (Config.getGladeDir () + "memorywindow.glade", null);
-      glader = new LibGlade (Config.getGladeDir () + "registerwindow.glade", null);
+      gladem = new LibGlade(Prefix.gladeFile("memorywindow.glade").getAbsolutePath(), null);
+      glader = new LibGlade(Prefix.gladeFile("registerwindow.glade").getAbsolutePath(), null);
       MemoryWindow mw = new MemoryWindow(gladem);
       mw.getClass();
       RegisterWindow rw = new RegisterWindow(glader);
