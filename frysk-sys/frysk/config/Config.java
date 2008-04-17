@@ -57,13 +57,6 @@ public class Config {
     }
 
     /**
-     * Directory containing the frysk help files.
-     */
-    public static final File getHelpDir () {
-	return Prefix.helpDir();
-    }
-
-    /**
      * A file in frysk's shared, and 32-bit and 64-bit independant,
      * data directory.  Typically <tt>/usr/share/frysk/FILE</tt>
      */

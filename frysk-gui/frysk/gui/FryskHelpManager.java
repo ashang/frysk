@@ -39,29 +39,23 @@
 
 package frysk.gui;
 
-import frysk.config.Config;
+import frysk.config.Prefix;
 import frysk.sys.Fork;
 
-public class FryskHelpManager
-{
+public class FryskHelpManager {
 
-  private static final String HELP_PROGRAM = "/usr/bin/gnome-help";
+    private static final String HELP_PROGRAM = "/usr/bin/gnome-help";
   
-  private static final String HELP_DOC = "frysk_doc.xml";
+    private static final String HELP_DOC = "frysk_doc.xml";
   
-  public static String helpPath;
-
-  /**
-   * activateHelp activates the Gnome help system pointing it at Frysk's
-   * installed help.
-   */
-  public static void activateHelp ()
-  {
-    
-      Fork.daemon(new String[]
-	  {
-	      HELP_PROGRAM,
-	      Config.getHelpDir () + HELP_DOC
-	  });
-  }
+    /**
+     * activateHelp activates the Gnome help system pointing it at
+     * Frysk's installed help.
+     */
+    public static void activateHelp() {
+	Fork.daemon(new String[] {
+		HELP_PROGRAM,
+		Prefix.helpFile(HELP_DOC).getAbsolutePath()
+	    });
+    }
 }

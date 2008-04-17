@@ -1,5 +1,10 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Prefix.java (helpFile(String)): Rename helpDir.
+	* TestPrefix.java: Update.
+
+	* Config.java (getHelpDir()): Delete.
+	
 	* Config.java (getPkgLib64File(String)): Delete.
 	(getPkgLib32File(String)): Delete.
 	(getImagesDir()): Delete.

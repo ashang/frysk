@@ -96,8 +96,8 @@ public class Prefix {
     /**
      * Directory containing the frysk help files.
      */
-    public static final File helpDir() {
-	return current.helpDir;
+    public static final File helpFile(String file) {
+	return getFile(current.helpDir, file);
     }
     private final File helpDir;
 
