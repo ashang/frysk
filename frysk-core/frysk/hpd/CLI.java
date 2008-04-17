@@ -157,8 +157,7 @@ public class CLI {
         while (true) {
             try {
                 attachedLatch.await();
-                outWriter.print("Attached to process ");
-                outWriter.println(attached);
+                addMessage("Attached to process " + attached, Message.TYPE_NORMAL);
                 synchronized (this) {
                     attached = -1;
                     attachedLatch = null;

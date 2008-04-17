@@ -1,3 +1,11 @@
+2008-04-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Add args to multiple runs for start/run
+	command(bz #5500, 5501).
+	* TestStartCommand.java: Tests for above.
+	* TestRunCommand.java: Ditto.
+	* CLI.java: Fix so output goes to correct queue.
+
 2008-04-17  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (WatchpointObserver.updateHit): 

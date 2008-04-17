@@ -181,8 +181,8 @@ public class TestRunCommand extends TestLib {
 	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("focus [1.0]", "Creating new HPD notation set.*");
-	e.sendCommandExpectPrompt("run", "Attached to process ([0-9]+).*" +
-		"running.*" + "Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("run", "running.*" + "Attached to process ([0-9]+).*" +
+		"Running process ([0-9]+).*");
 	e.sendCommandExpectPrompt("load", "\\[0\\.0\\].*funit-hello.*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
@@ -202,13 +202,62 @@ public class TestRunCommand extends TestLib {
 	"\\[1\\.0\\] Loaded executable file.*");
 	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
 	"\\[2\\.0\\] Loaded executable file.*");
-	e.sendCommandExpectPrompt("[1.0] run", "Attached to process ([0-9]+).*" + "Creating new.*" +
-		"running.*" + "Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("[1.0] run", "Creating new.*" + "running.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	try { Thread.sleep(1000); } catch (Exception e) {}
 	//e.sendCommandExpectPrompt("load", "\\[0\\.0\\].*funit-hello.*\\[2\\.0\\].*funit-threads.*");
 	e.sendCommandExpectPrompt("focus", "Target set.*\\[0\\.0\\]\t\t0\t0.*" +
 		"\\[1\\.0\\]\t\t([0-9]+).*\\t([0-9]+).*\\[1\\.1\\]\t\t([0-9]+)\t([0-9]+).*" + 
 		"\\[2\\.0\\]\t\t0\t0.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    /**
+     * This test case tests passing of different parameters
+     * 
+     */
+    public void testDiffParams() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
+	"\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("run -arg1 -arg2", "running.*-arg1 -arg2.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg3", "running.*-arg3.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg4 -arg5", "running.*-arg4 -arg5.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    /**
+     * This test case tests passing of "--" to abort passing of any args
+     * 
+     */
+    public void testNoParms() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath(),
+	"\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("run -arg1 -arg2", "running.*-arg1 -arg2.*" + 
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	//e.sendCommandExpectPrompt("run --", "running.*threads-looper \\r\\n" +
+	//	"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("run --\n");
+	e.expect("Killing process.*");
+	e.expect("\\[0\\.0\\] Loaded executable file.*");
+	e.expect("running.*threads-looper\\r\\n");
+	e.expect("Attached to process ([0-9]+).*");
+	try { Thread.sleep(1000); } catch (Exception e) {}
+	//e.expect("Running process ([0-9]+).*");
+	//try { Thread.sleep(500); } catch (Exception e) {}
+	//e.sendCommandExpectPrompt("run -arg4 -arg5", "running.*-arg4 -arg5.*" +
+	//	"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
 	e.close();

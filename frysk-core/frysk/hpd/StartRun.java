@@ -59,7 +59,11 @@ import java.util.List;
  */
 abstract class StartRun extends ParameterizedCommand {
     
-    final ArrayList procList = new ArrayList();
+    final ArrayList procTaskDataList = new ArrayList();
+    
+    final ArrayList procProcCommand = new ArrayList();
+    
+    final ArrayList procProcArgs = new ArrayList();
     
     PTSet userSet;
     
@@ -134,12 +138,19 @@ abstract class StartRun extends ParameterizedCommand {
 	if (killProcs(cli)) {
 	// See if there are any tasks in the current target set
 	    TaskData taskData = null;
-	    Iterator foo = procList.iterator();
+	    int counter = 0;
+	    Iterator foo = procTaskDataList.iterator();
 	    while (foo.hasNext()) {
 		taskData = (TaskData) foo.next();
-		Task task = taskData.getTask();
-		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+		String command = (String) procProcCommand.get(counter);
+		String[] argList = (String[]) procProcArgs.get(counter);
+		run(cli, cmd, command, argList, runToBreak, 
+			taskData.getParentID());
+		counter++;
 	    }
+	    procTaskDataList.clear();
+	    procProcArgs.clear();
+	    procProcCommand.clear();
 	    return;
 	}
 	// Take care of loaded procs
@@ -153,7 +164,8 @@ abstract class StartRun extends ParameterizedCommand {
 	    Task task = taskData.getTask();
 	    if (!cli.loadedProcs.isEmpty() && 
 		    cli.loadedProcs.containsKey(task.getProc())) {
-		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+		run(cli, cmd, task.getProc().getExeFile().getSysRootedPath(),
+			task.getProc().getCmdLine(), runToBreak, taskData.getParentID());
 		synchronized (cli) {
 		    cli.loadedProcs.remove(task.getProc());
 		}
@@ -161,7 +173,8 @@ abstract class StartRun extends ParameterizedCommand {
 	// Take care of core procs
 	    else if (!cli.coreProcs.isEmpty() &&
 		    cli.coreProcs.containsKey(task.getProc())) {
-		run(cli, cmd, task.getProc(), runToBreak, taskData.getParentID());
+		run(cli, cmd, task.getProc().getExeFile().getSysRootedPath(), 
+			task.getProc().getCmdLine(), runToBreak, taskData.getParentID());
 		synchronized (cli) {
 		    cli.coreProcs.remove(new Integer(taskData.getParentID()));
 		}
@@ -191,12 +204,14 @@ abstract class StartRun extends ParameterizedCommand {
 	    Task task = taskData.getTask();
 	    if (task.getProc().getPid() != oldPid && 
 		    task.getProc().getPid() > 0) {
-		procList.add(taskData);
+		procTaskDataList.add(taskData);
+		procProcCommand.add(task.getProc().getExeFile().getSysRootedPath());
+		procProcArgs.add(task.getProc().getCmdLine());
 		cli.execCommand("kill " + task.getProc().getPid() + "\n");
 		oldPid = task.getProc().getPid();
 	    }
 	}
-	if (procList.isEmpty())
+	if (procTaskDataList.isEmpty())
 	    return false;
 	
 	return true;
@@ -207,13 +222,14 @@ abstract class StartRun extends ParameterizedCommand {
      * 
      * @param cli is the commandline object
      * @param cmd is the command object with all the parameters
-     * @param template is the proc to run
+     * @param command is a string containing the command to run
+     * @param argList is a String array with the args from the commandline
      * @param runToBreak true if the process is to run to the first break point
      * 		or until it blows up("run" command), false if it should stop
      * 		at the first executable statement("start" command)
      * @param taskid the internal target set id that should be used for this process
      */
-    private void run(CLI cli, Input cmd, Proc template, boolean runToBreak,
+    private void run(CLI cli, Input cmd, String command, String[] argList, boolean runToBreak,
 	    int taskid) {
 	Runner runner = new Runner(cli);
 	String startrun = "";
@@ -224,20 +240,34 @@ abstract class StartRun extends ParameterizedCommand {
 	
 	switch (cmd.size()) {
 	
+	// No parameters were passed on the commandline, except maybe "--"
 	case 0:
-	    cli.addMessage(startrun + " with this command: " + 
-			   asString(template.getCmdLine()),
-			   Message.TYPE_NORMAL);
-	    Manager.host.requestCreateAttachedProc(template, runner);
+	    /** There is an exception to the rule of cmd.size() being 0 and that
+	     * is when a "--" was entered, CLI removes that but the full command line
+	     * string in the Input object has it.  So, if cmd.size() reports 0
+	     * parameters, check to see if actually a "--" was entered. If it was
+	     * the user wants no args passed to the process this run.
+	     */
+	    int index = cmd.getFullCommand().indexOf("--");
+	    if (index != -1) {
+		cli.addMessage(startrun + " with this commmand: " + 
+			command, Message.TYPE_NORMAL);
+		Manager.host.requestCreateAttachedProc(createArgList(null, argList), runner);
+	    }
+	    else {
+		String[] temp = new String[1];
+		temp [0] = argList[0];
+		cli.addMessage(startrun + " with this commmand: " + 
+			   asString("", temp, cmd), Message.TYPE_NORMAL);
+		Manager.host.requestCreateAttachedProc(createArgList(null, temp), runner);
+	    }
 	    break;
 	    
 	default:
-	    String[] args = new String[cmd.size() + 1];
-	    args[0] = template.getCmdLine()[0];
-	    for (int i = 1; i < args.length; i++)
-		args[i] = cmd.parameter(i - 1);
+	    String[] args = createArgList(command, cmd.stringArrayValue()); 
 	    cli.addMessage(startrun + " with this command: " + 
-			   asString(args), Message.TYPE_NORMAL);
+			   asString(command, args, cmd), Message.TYPE_NORMAL);
+	    
 	    Manager.host.requestCreateAttachedProc(args, runner);
 	}
 	while (true) {
@@ -261,18 +291,52 @@ abstract class StartRun extends ParameterizedCommand {
     }
     
     /**
+     * createArgList takes a path to the executable and an argument list
+     * and creates a String[] to pass to the create proc method.
+     * @param command is a String with the path to the executable
+     * @param argList is a String[] with an argument list
+     * @return a String[] to pass to Manager.host.createAttachedProc
+     */
+    private String[] createArgList(String command, String[] argList) {
+	// If command is null, the command is at the begging of argList
+	// so we need to do nothing
+	if (command == null) 
+	    return argList;
+	String[] args = new String[argList.length + 1];
+	    args[0] = command;
+	    if (args.length > 1) {
+		for (int i = 0; i < argList.length; i++) {
+		    if (i == argList.length - 1 && argList.equals("--"))
+			args[i + 1] = "";
+		    else
+			args[i + 1] = argList[i];
+		}
+	    }
+	    return args;
+    }
+    /**
      * asString takes an array of arguments and converts it to a single
      *    string of args as would be appropriate for a commandline
-     * @param args is an array of arguments to pass to the process to be run
+     * @param command is the String representing the full command path for
+     * 		this process
+     * @param argList is a String array of arguments to pass to the process to be run
+     * @param cmd is the current Input command object
      * @return a String of args that are to be passed to the process
      *          on the commandline
      */
 
-    private String asString(String[] args) {
-	if (args == null || args.length <= 0)
-	    return "";
-	StringBuffer b = new StringBuffer(args[0]);
-	for (int i = 1; i < args.length; i++) {
+    private String asString(String command, String[] argList, Input cmd) {
+	String[] args = cmd.stringArrayValue();
+	// If there were no args on the commandline, see if there were any
+	// on a previous run and if there were, use those
+	if (args == null || args.length <= 0 || args == null)
+	    args = argList;
+	StringBuffer b = new StringBuffer(command);
+	// No args entered, return just the command
+	if (args == null)
+	    return b.toString();
+	// args were entered, append to the command
+	for (int i = 0; i < args.length; i++) {
 	    b.append(" ");
 	    b.append(args[i]);
 	}
