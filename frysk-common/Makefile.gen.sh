@@ -670,7 +670,7 @@ generate_jni_header ()
 	cat <<EOF
 CLEANFILES += ${h}.h
 ${h}.h: $file | ${GEN_DIRNAME}.jar
-	@echo \"$c => ${h}.h\"
+	@echo "$c => ${h}.h"
 	rm -f \$@.tmp
 	\$(GCJH) \$(GCJHFLAGS) \\
 		-jni \\

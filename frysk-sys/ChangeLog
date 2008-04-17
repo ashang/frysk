@@ -1,3 +1,9 @@
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JniRunner): Require frysk-sys.jar and
+	frysk-sys-jni.so; hack LD_LIBRARY_PATH to hopefully find
+	libsdtc++.
+
 2008-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (JniRunner): Escape $@.

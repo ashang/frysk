@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2007, Red Hat Inc.
+# Copyright 2005, 2007, 2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -77,13 +77,15 @@ lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 
 noinst_DATA += JniRunner.jar JniRunner
 CLEANFILES += JniRunner
-JniRunner:
+JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	rm -f $@.tmp
 	echo "#!/bin/sh"					>> $@.tmp
-	echo "LD_PRELOAD=$(libdir)/libstdc++.so.6 \\"		>> $@.tmp
-	echo "LD_LIBRARY_PATH=. \\"				>> $@.tmp
-	echo "CLASSPATH=$(CLASSPATH):frysk-sys.jar:JniRunner.jar \\" >> $@.tmp
-	echo "java JniRunner \"\$$@\""				>> $@.tmp
+	echo "export LD_PRELOAD=libstdc++.so.6"			>> $@.tmp
+	echo "# hack to hopefully find the right libstdc++.so"	>> $@.tmp
+	echo "export LD_LIBRARY_PATH=.:/usr/lib64:/usr/lib"	>> $@.tmp
+	echo "export CLASSPATH=\\"				>> $@.tmp
+	echo "$(CLASSPATH):frysk-sys.jar:JniRunner.jar"		>> $@.tmp
+	echo "$(JAVA) JniRunner \"\$$@\""			>> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
