@@ -693,9 +693,12 @@ generate_jni_dependency()
     local suffix=$4
     local j=`dirname $d` # drop /jni
     if has_java_source $j/$b ; then
-	# A corresponding .java source file.
+	# The corresponding jni header file.
 	local h=`echo $j/$b | tr '[/]' '[_]'`
-	echo "$d/$b.o: $h.h"
+	# check it is included.
+	if grep "$h.h" $file > /dev/null 2>&1 ; then
+	    echo "$d/$b.o: $h.h"
+	fi
     fi
 }
 

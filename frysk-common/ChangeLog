@@ -1,5 +1,8 @@
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (generate_jni_dependency): Only generate
+	dependency when file included.
+	
 	* Makefile.gen.sh (generate_jni_header): Remove stray "s.
 
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
