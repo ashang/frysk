@@ -97,63 +97,67 @@ public class Runner extends TestRunner {
       
 	if (otherArgs.size() > 0) {
 	    // Construct the testsuite from the list of names.
-	    Iterator iter = otherArgs.listIterator(0);
-	    while (iter.hasNext()) {
-		String arg = (String) iter.next();
+	    for (Iterator argIter = otherArgs.listIterator(0);
+		 argIter.hasNext(); ) {
+		String arg = (String)argIter.next();
 		if (arg.charAt(0) == '-') {
 		    this.repeatValue = - Integer.parseInt(arg);
 		} else {
 		    int lidot = arg.lastIndexOf('.');
 		    String testName = null;
-		    String testCaseName = null;
+		    String testClass = null;
 		    if (arg.substring(lidot + 1).startsWith("test")) {
-			testCaseName = arg.substring(0, lidot);
+			testClass = arg.substring(0, lidot);
 			testName = arg.substring(lidot + 1);
 		    } else if (arg.matches("test.*\\(.*\\)")) {
 			String[] testTuple = arg.split("[\\(\\)]");
 			testName = testTuple[0];
-			testCaseName = testTuple[1];
+			testClass = testTuple[1];
 		    } else {
-			testCaseName = arg;
+			testClass = arg;
 		    }
 		    
-		    try {
+		    for (Iterator classIter = testClasses.iterator();
+			 classIter.hasNext (); ) {
+			Class testKlass = (Class)classIter.next ();
 			if (testName == null) {
-			    testSuite.addTest(getTest(testCaseName));
+			    // class only
+			    if (testKlass.getName().startsWith(testClass)) {
+				testSuite.addTest(new TestSuite(testKlass));
+			    }
 			} else {
-			    Class klass = loadSuiteClass(testCaseName);
-			    TestCase test = (TestCase) klass.newInstance();
-			    
-			    //Check if the method exists.
-			    klass.getMethod(testName, null);
-			    
-			    test.setName(testName);
-			    testSuite.addTest(test);
+			    // class.name or name(class)
+			    if (testKlass.getName().equals(testClass)) {
+				try {
+				    // Probe the class to see if the
+				    // method exists.
+				    testKlass.getMethod(testName, null);
+				    TestCase test = (TestCase)testKlass.newInstance();
+				    test.setName(testName);
+				    testSuite.addTest(test);
+				} catch (NoSuchMethodException e) {
+				    System.out.println("Couldn't find test method: " + testClass + "." + testName);
+				} catch (InstantiationException e) {
+				    System.out.println("Couldn't instantiate class with name: "
+						       + testClass);
+				} catch (IllegalAccessException e) {
+				    System.out.println("Couldn't access class with name: "
+						       + testClass);
+				}
+			    }
 			}
-		    } catch (NoSuchMethodException e) {
-			System.out.println("Couldn't find method with name: "
-					   + testName);
-		    } catch (ClassNotFoundException e) {
-			System.out.println("Couldn't find class with name: "
-					   + testCaseName);
-		    } catch (InstantiationException e) {
-			System.out.println("Couldn't instantiate class with name: "
-					   + testCaseName);
-		    } catch (IllegalAccessException e) {
-			System.out.println("Couldn't access class with name: "
-					   + testCaseName);
 		    }
 		}
 	    }
 	} else {
 	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
-		Class testClass = (Class) i.next ();
+		Class testKlass = (Class) i.next ();
 		// Only include tests that gets by both filters.
-		if (testClass.getName ().matches (testFilter)) {
+		if (testKlass.getName ().matches (testFilter)) {
 		    boolean addit = true;
 		    for (int j = 0; j < excludeTests.size(); j++) {
 			try {
-			    if (testClass.getName ()
+			    if (testKlass.getName ()
 				.matches ((String)excludeTests.get (j))) {
 				addit = false;
 				break;
@@ -165,7 +169,7 @@ public class Runner extends TestRunner {
 		    if (!addit) {
 			for (int j = 0; j < includeTests.size(); j++) {
 			    try {
-				if (testClass.getName ()
+				if (testKlass.getName ()
 				    .matches ((String)includeTests.get (j))) {
 				    addit = true;
 				    break;
@@ -176,9 +180,9 @@ public class Runner extends TestRunner {
 			}
 		    }
 		    if (addit) {
-			testSuite.addTest (new TestSuite (testClass));
+			testSuite.addTest (new TestSuite (testKlass));
 		    } else {
-			System.out.println ("Omitting " + testClass.getName());
+			System.out.println ("Omitting " + testKlass.getName());
 		    }
 		}
 	    }
