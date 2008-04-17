@@ -46,7 +46,7 @@ import frysk.expr.Expression;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.value.Value;
+import frysk.value.Format;
 
 class WatchCommand extends ParameterizedCommand {
 
@@ -99,13 +99,16 @@ class WatchCommand extends ParameterizedCommand {
 	    // XXX: will fail for non-contiguos memory and registers 
 	    // XXX: Add error handling
 	    long address = expr.getLocation().getAddress();
-	    
+
 	    // XXX: getValue may modify inferior.
-	    String oldValue = expr.getValue().toPrint();
-	    
+	    String oldValueStr = expr.getValue().toPrint
+	                        (Format.NATURAL, task.getMemory());
+
 	    // Add a watch point observer to task.
-	    WatchpointObserver wpo = new WatchpointObserver(expr, cli, expressionStr, oldValue);
-	    task.requestAddWatchObserver(wpo, address, expr.getType().getSize(), writeOnly);
+	    WatchpointObserver wpo = new WatchpointObserver
+	                             (expr, cli, expressionStr, oldValueStr);
+	    task.requestAddWatchObserver
+	         (wpo, address, expr.getType().getSize(), writeOnly);		
 	}       
     }
     
@@ -115,25 +118,26 @@ class WatchCommand extends ParameterizedCommand {
         Expression expr;
 	CLI cli;
 	String exprStr;
-	String oldValue;
+	String oldValueStr;
 
-	WatchpointObserver(Expression expr, CLI cli, String exprStr, String oldValue) {
+	WatchpointObserver(Expression expr, CLI cli, String exprStr, String oldValueStr) {
 	    this.expr = expr;
 	    this.cli = cli;
 	    this.exprStr = exprStr;
-	    this.oldValue = oldValue;
+	    this.oldValueStr = oldValueStr;
 
 	}
 	public Action updateHit(Task task, long address, int length) {
 	    
-	    Value newValue = expr.getValue();
+	    String newValueStr = expr.getValue().toPrint
+	                         (Format.NATURAL, task.getMemory());
 	    cli.outWriter.println("Watchpoint hit: " + exprStr); 
 	    cli.outWriter.println(); 
-	    cli.outWriter.println("   Value before hit = " + oldValue);
-	    cli.outWriter.println("   Value after  hit = " + newValue.toPrint());
+	    cli.outWriter.println("   Value before hit = " + oldValueStr);
+	    cli.outWriter.println("   Value after  hit = " + newValueStr);
 	    cli.outWriter.println(); 
 	    // Remember the previous value
-	    oldValue = newValue.toPrint();
+	    oldValueStr = newValueStr;
 
 	    cli.getSteppingEngine().blockedByActionPoint(task, this);
 	    task.requestUnblock(this);

@@ -8,6 +8,15 @@
 
 2008-04-17  Teresa Thomas  <tthomas@redhat.com>
 
+	* WatchCommand.java (interpret): Pass task memory to toPrint().
+
+2008-04-17  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java (interpret): Add memory error
+	handling.
+
+2008-04-17  Teresa Thomas  <tthomas@redhat.com>
+
 	* WatchCommand.java (WatchpointObserver.updateHit): 
 	  Use SteppingEngine.blockedByActionPoint
 	  
