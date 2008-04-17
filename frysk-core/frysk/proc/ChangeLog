@@ -1,3 +1,11 @@
+2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestBreakpoints.java (testSteppingtestHitAndRun): No longer
+	unresolved because of bug #4847, but make unresolvedOnIA32
+	because of bug #6044.
+	(testSteppingtestInsertRemove): Likewise.
+	(testSteppingAddLots): Likewise.
+
 2008-04-15  Teresa Thomas  <tthomas@redhat.com>
 
 	* Task.java (isInstructionObserverAdded): New.
