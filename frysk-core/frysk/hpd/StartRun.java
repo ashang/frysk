@@ -132,7 +132,6 @@ abstract class StartRun extends ParameterizedCommand {
     
     public void interpretCmd(CLI cli, Input cmd, Object options,
 			     boolean runToBreak) {
-	
 	userSet = cli.getCommandPTSet(cmd);
 	// See if there are any tasks to be killed
 	if (killProcs(cli)) {
@@ -256,9 +255,12 @@ abstract class StartRun extends ParameterizedCommand {
 	    }
 	    else {
 		String[] temp = new String[1];
-		temp [0] = argList[0];
+		if (command != "" || command != null) 
+		    temp[0] = command;
+		else
+		    temp [0] = argList[0];
 		cli.addMessage(startrun + " with this commmand: " + 
-			   asString("", temp, cmd), Message.TYPE_NORMAL);
+			   asString(command, temp, cmd), Message.TYPE_NORMAL);
 		Manager.host.requestCreateAttachedProc(createArgList(null, temp), runner);
 	    }
 	    break;

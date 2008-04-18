@@ -1,3 +1,8 @@
+2008-04-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Fix bug in TestSysRoot introduced by
+	yesterday's changes.
+
 2008-04-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Add args to multiple runs for start/run
