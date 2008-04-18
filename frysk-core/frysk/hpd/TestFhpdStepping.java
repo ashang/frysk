@@ -50,28 +50,23 @@ public class TestFhpdStepping extends TestLib {
     
     public void testInstructionStep () {
 	
-	if (unresolved(4914))
-	    return;
-	
 	e = new HpdTestbed();
 	
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	
-	e = HpdTestbed.run("funit-stepping-asm");
-	
-	// Remove this - #4919 and #4914.
-	try { Thread.sleep(2000); } catch (Exception e) {}
+	e = HpdTestbed.load("funit-stepping-asm");
+        e.send("start\n");
+        e.expect("starting with this commmand.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
 	
-	System.err.println("send go");
 	e.send("go\n");
 	e.expect("go.*\n" + prompt + "Breakpoint.*#*");
 
-	e.send("stepi\n");
+	e.send("step --instruction\n");
 	e.expect("Task stopped at line " + startLine + ".*\n" + prompt);
 
 	e.send("quit\n");
@@ -81,18 +76,14 @@ public class TestFhpdStepping extends TestLib {
     
     public void testLineStep () {
 	
-	if (unresolved(4914))
-	    return;
-	
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_instructionStep_");
 	int endLine = this.scanner.findTokenLine("_lineStepEnd_");
 	
-	e = HpdTestbed.run("funit-stepping-asm");
-	
-	// Remove this - #4919 and #4914.
-	try { Thread.sleep(2000); } catch (Exception e) {}
+	e = HpdTestbed.load("funit-stepping-asm");
+        e.send("start\n");
+        e.expect("starting with this commmand.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -110,18 +101,14 @@ public class TestFhpdStepping extends TestLib {
     
     public void testNextStep () {
 	
-	if (unresolved(4914))
-	    return;
-	
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e = HpdTestbed.run("funit-stepping-asm");
-	
-	// Remove this - #4919 and #4914.
-	try { Thread.sleep(2000); } catch (Exception e) {}
+	e = HpdTestbed.load("funit-stepping-asm");
+        e.send("start\n");
+        e.expect("starting with this commmand.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -139,18 +126,14 @@ public class TestFhpdStepping extends TestLib {
     
     public void testNextiStep () {
 	
-	if (unresolved(4914))
-	    return;
-	
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOverStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e = HpdTestbed.run("funit-stepping-asm");
-	
-	// Remove this - #4919 and #4914.
-	try { Thread.sleep(2000); } catch (Exception e) {}
+	e = HpdTestbed.load("funit-stepping-asm");
+        e.send("start\n");
+        e.expect("starting with this commmand.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -158,7 +141,7 @@ public class TestFhpdStepping extends TestLib {
 	e.send("go\n");
 	e.expect("go.*\n" + prompt + "Breakpoint.*#*");
 	
-	e.send("nexti\n");
+	e.send("next --instruction\n");
 	e.expect("Task stopped at line " + endLine + ".*\n" + prompt);
 	
 	e.send("quit\n");
@@ -168,18 +151,14 @@ public class TestFhpdStepping extends TestLib {
     
     public void testFinishStep () {
 	
-	if (unresolved(4914))
-	    return;
-	
 	File source = Prefix.sourceFile("frysk-core/frysk/pkglibdir/funit-stepping-asm.S");
 	this.scanner = new TestfileTokenScanner(source);
 	int startLine = this.scanner.findTokenLine("_stepOutStart_");
 	int endLine = this.scanner.findTokenLine("_stepOverEnd_");
 	
-	e = HpdTestbed.run("funit-stepping-asm");
-	
-	// Remove this - #4919 and #4914.
-	try { Thread.sleep(2000); } catch (Exception e) {}
+	e = HpdTestbed.load("funit-stepping-asm");
+        e.send("start\n");
+        e.expect("starting with this commmand.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);

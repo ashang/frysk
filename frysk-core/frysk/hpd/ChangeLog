@@ -1,5 +1,10 @@
 2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
 
+	* TestFhpdStepping.java: Don't mark unresolved. Adjust to new
+	test environment and removal of stepi and nexti commands.
+
+2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestDisplayCommand.java: Don't mark unresolved. Adjust to new
 	actionpoints -> actions command syntax.
 
