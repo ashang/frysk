@@ -88,8 +88,6 @@ public class TestDebugInfoStackTrace
     // Backtraces only work on x86 and x86_64 for now.
     if (unresolvedOnPPC(3277))
 	return;
-    if (unresolved(4468))
-      return;
     
     test = 1;
 

@@ -1,3 +1,7 @@
+2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestDebugInfoStackTrace.java (testBacktrace): Resolved bug #4468.
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java: Use frysk.config.Prefix.
