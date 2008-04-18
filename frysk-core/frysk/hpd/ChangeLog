@@ -1,3 +1,7 @@
+2008-04-18  Stan Cox  <scox@redhat.com>
+
+	* CoreCommand.java (interpret): Use exePath instead of exeFile.
+
 2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestFhpdStepping.java: Don't mark unresolved. Adjust to new

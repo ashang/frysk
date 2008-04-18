@@ -83,7 +83,7 @@ public class CoreCommand extends ParameterizedCommand {
     void interpret(CLI cli, Input cmd, Object optionsObject) {
 	Options options = (Options)optionsObject;
 	File coreFile;
-	File exeFile;
+	String exePath;
 
 	switch (cmd.size()) {
 	case 0:
@@ -92,11 +92,11 @@ public class CoreCommand extends ParameterizedCommand {
 	case 1:
 	    // <core>
 	    coreFile = new File(cmd.parameter(0));
-	    exeFile = null;
+	    exePath = null;
 	    break;
 	case 2:
 	    coreFile = new File(cmd.parameter(0));
-	    exeFile = new File(cmd.parameter(1));
+	    exePath = cmd.parameter(1);
 	    break;
 	default:
 	    throw new InvalidCommandException
@@ -106,14 +106,13 @@ public class CoreCommand extends ParameterizedCommand {
 	// Make paths canonical (keeps elfutils working).
 	try {
 	    coreFile = coreFile.getCanonicalFile();
-	    if (exeFile != null)
-		exeFile = exeFile.getCanonicalFile();
 	} catch (IOException e) {
 	    throw new RuntimeException(e);
 	}
 
 	// Build Core. Move any exceptions up to cli and print to user.
-	Proc coreProc = LinuxCoreFactory.createProc(coreFile, exeFile,
+	Proc coreProc = LinuxCoreFactory.createProc(coreFile, exePath, 
+						    options.sysroot,
 						    options.loadMetaData);
 
 	load(coreProc, cli, options.sysroot);

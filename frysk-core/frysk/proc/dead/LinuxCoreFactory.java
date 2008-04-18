@@ -41,6 +41,8 @@ package frysk.proc.dead;
 
 import java.io.File;
 
+import frysk.sysroot.SysRoot;
+
 /**
  * Data needed to construct a core file; shared between the core Host,
  * Proc And task.
@@ -54,12 +56,22 @@ public class LinuxCoreFactory {
      *
      * All File paths <b>must</b> be canonical.
      */
-    public static DeadProc createProc(File coreFile, File exeFile,
+    public static DeadProc createProc(File coreFile, File exeFile, String sysroot,
 				      boolean extendedMetaData) {
-	LinuxCoreInfo core = new LinuxCoreInfo(coreFile, exeFile,
+	LinuxCoreInfo core = new LinuxCoreInfo(coreFile, exeFile, sysroot,
 					       extendedMetaData);
 	LinuxCoreHost host = new LinuxCoreHost(core);
 	return host.getProc();
+    }
+    public static DeadProc createProc(File coreFile, String exePath, String sysroot,
+	    			      boolean extendedMetaData) {
+	SysRoot sysRoot = new SysRoot(sysroot);
+	File exe;
+	if (exePath != null)
+	    exe = sysRoot.getPathViaSysRoot(exePath).getFile();
+	else
+	    exe = null;
+	return createProc(coreFile, exe, sysroot, extendedMetaData);
     }
     /**
      * Construct a core file without extended meta data.
@@ -67,7 +79,7 @@ public class LinuxCoreFactory {
      * All File paths <b>must</b> be canonical.
      */
     public static DeadProc createProc(File coreFile) {
-	return createProc(coreFile, null, false);
+	return createProc(coreFile, (File)null, "/", false);
     }
     /**
      * Construct a core file, possibly with extended meta data.
@@ -75,7 +87,7 @@ public class LinuxCoreFactory {
      * All File paths <b>must</b> be canonical.
      */
     public static DeadProc createProc(File coreFile, boolean extendedMetaData) {
-	return createProc(coreFile, null, extendedMetaData);
+	return createProc(coreFile, (File)null, "/", extendedMetaData);
     }
     /**
      * Construct a core file with extended meta data taken from the
@@ -84,6 +96,6 @@ public class LinuxCoreFactory {
      * All File paths <b>must</b> be canonical.
      */
     public static DeadProc createProc(File coreFile, File exeFile) {
-	return createProc(coreFile, exeFile, true);
+	return createProc(coreFile, exeFile, "/", true);
     }
 }

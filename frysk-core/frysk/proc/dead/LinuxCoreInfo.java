@@ -57,6 +57,7 @@ import lib.dwfl.ElfPrpsinfo;
 import frysk.rsl.Log;
 import frysk.proc.Auxv;
 import frysk.sys.proc.AuxvBuilder;
+import frysk.sysroot.SysRoot;
 import frysk.proc.MemoryMap;
 import frysk.solib.LinkMapFactory;
 import frysk.solib.LinkMap;
@@ -90,7 +91,7 @@ class LinuxCoreInfo {
      * Unpack the core file extracting everything needed to create a
      * host, proc, and tasks.
      */
-    LinuxCoreInfo(File coreParam, File exeParam, boolean extendedMetaData) {
+    LinuxCoreInfo(File coreParam, File exeParam, String sysroot, boolean extendedMetaData) {
 	Elf coreElf = null;
 	Elf exeElf = null;
 	try {
@@ -118,7 +119,7 @@ class LinuxCoreInfo {
 
 	    // Define the real exe file (dependant on parameters might
 	    // have to extract this from the process information).
-	    this.exeFile = getExeFile(exeParam, args, prpsInfo);
+	    this.exeFile = getExeFile(exeParam, args, sysroot, prpsInfo);
 	    if (extendedMetaData)
 		exeElf = new Elf(this.exeFile, ElfCommand.ELF_C_READ);
 
@@ -181,19 +182,22 @@ class LinuxCoreInfo {
     /**
      *
      */
-    private static File getExeFile(File exeParam, String[] args,
+    private static File getExeFile(File exeParam, String[] args, String sysroot,
 				   ElfPrpsinfo prpsInfo) {
+	String exePath;
 	if (exeParam == null) {
 	    // Only place to find full path + exe is in the args
 	    // list. Remove ./ if present.
 	    if (args.length > 0) {
 		if (args[0].startsWith("./"))
-		    exeParam = new File(args[0].substring(2));
+		    exePath = args[0].substring(2);
 		else
-		    exeParam = new File(args[0]);
+		    exePath = args[0];
 	    } else {
-		exeParam = new File(prpsInfo.getPrFname());
+		exePath = prpsInfo.getPrFname();
 	    }
+	    SysRoot sysRoot = new SysRoot(sysroot);
+	    exeParam= sysRoot.getPathViaSysRoot(exePath).getFile();
 	    fine.log("exe from core", exeParam);
 	} else {
 	    fine.log("exe for core", exeParam);
