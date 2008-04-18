@@ -2,6 +2,8 @@
 
 	* StartRun.java: Fix bug in TestSysRoot introduced by
 	yesterday's changes.
+	
+	* StartRun.java: Fix bug in output message.
 
 2008-04-17  Rick Moseley  <rmoseley@redhat.com>
 

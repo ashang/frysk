@@ -260,8 +260,8 @@ abstract class StartRun extends ParameterizedCommand {
 		else
 		    temp [0] = argList[0];
 		cli.addMessage(startrun + " with this commmand: " + 
-			   asString(command, temp, cmd), Message.TYPE_NORMAL);
-		Manager.host.requestCreateAttachedProc(createArgList(null, temp), runner);
+			   asString("", temp, cmd), Message.TYPE_NORMAL);
+		Manager.host.requestCreateAttachedProc(createArgList(command, temp), runner);
 	    }
 	    break;
 	    
