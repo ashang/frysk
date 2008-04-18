@@ -43,38 +43,33 @@ public class TestDisplayCommand
     extends TestLib
 {
     public void testHpdDisplayCommands() {
-	if (unresolved(4941))
-	    return;
-	e = HpdTestbed.run("funit-rt-varchange");
+	e = HpdTestbed.load("funit-rt-varchange");
+	e.send("start\n");
+	e.expect("starting with this commmand.*" + prompt);
+
 	// Break
-	
-	// FIXME: 4941
-	try { Thread.sleep(2000); } catch(Exception e) {}
 	
         e.send("break #funit-rt-varchange.c#53\n");
         e.expect("breakpoint.*" + prompt);
         e.send("go\n");
 	e.expect("go.*" + prompt + ".*Breakpoint.*#funit-rt-varchange.c#53.*");
 	
-	// FIXME: 4941
-	try { Thread.sleep(2000); } catch(Exception e) {}
-	
 	e.send("display x\n");
 	e.expect("display.*1:.*x = .*" + prompt);
 	e.send("display y*2\n");
 	e.expect("display.*2:.*y*2 = .*" + prompt);
-	e.send("actionpoints -display\n");
-	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"y.*\".*\n1.*y.*\"x\".*"
+	e.send("actions -display\n");
+	e.expect("actions.*DISPLAYS.*2.*y.*\"y.*\".*\n1.*y.*\"x\".*"
 		+ prompt);
 	e.send("disable 1\n");
 	e.expect("disable.*display 1 disabled.*" + prompt);
-	e.send("actionpoints -display\n");
-	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"y.*\".*\n1.*n.*\"x\".*"
+	e.send("actions -display\n");
+	e.expect("actions.*DISPLAYS.*2.*y.*\"y.*\".*\n1.*n.*\"x\".*"
 		+ prompt);
 	e.send("disable -display\n");
 	e.expect("disable.*display 2 disabled.*" + prompt);
-	e.send("actionpoints -display\n");
-	e.expect("actionpoints.*DISPLAYS.*2.*n.*\"y.*\".*\n1.*n.*\"x\".*"
+	e.send("actions -display\n");
+	e.expect("actions.*DISPLAYS.*2.*n.*\"y.*\".*\n1.*n.*\"x\".*"
 		+ prompt);
 	e.send("enable 2\n");
 	e.expect("enable.*display 2 enabled.*" + prompt);
@@ -82,12 +77,12 @@ public class TestDisplayCommand
 	e.expect("enable.*display 1 enabled.*" + prompt);
 	e.send("delete 1\n");
 	e.expect("delete.*display 1 deleted.*" + prompt);
-	e.send("actionpoints -display\n");
-	e.expect("actionpoints.*DISPLAYS.*2.*y.*\"y.*\".*" + prompt);
+	e.send("actions -display\n");
+	e.expect("actions.*DISPLAYS.*2.*y.*\"y.*\".*" + prompt);
 	e.send("delete -display\n");
 	e.expect("delete.*display 2 deleted.*" + prompt);
-	e.send("actionpoints -display\n");
-	e.expect("actionpoints.*" + prompt);
+	e.send("actions -display\n");
+	e.expect("actions.*" + prompt);
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();

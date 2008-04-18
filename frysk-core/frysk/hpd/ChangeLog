@@ -1,3 +1,8 @@
+2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestDisplayCommand.java: Don't mark unresolved. Adjust to new
+	actionpoints -> actions command syntax.
+
 2008-04-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Fix bug in TestSysRoot introduced by
