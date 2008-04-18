@@ -354,9 +354,9 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 		files-java.list \
 	| sed -e "s|$(srcdir)/||" -e "s|^./||" \
 	| grep -v \
-		-e 'TestLib' \
-		-e 'TestCase' \
-		-e 'TestBed' \
+		-e '\/TestLib\.java$$' \
+		-e '\/TestCase\.java$$' \
+		-e '\/TestBed\.java$$' \
 	| sed \
 		-e 's,/,.,g' \
 		-e 's,.java$$,.class,' \

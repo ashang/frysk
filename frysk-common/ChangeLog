@@ -1,3 +1,9 @@
+2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java):
+	Only exclude classes that are exactly named TestLib, TestCase or
+	TestBed.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (generate_jni_dependency): Only generate
