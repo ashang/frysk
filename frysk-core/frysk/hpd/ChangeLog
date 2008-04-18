@@ -1,5 +1,10 @@
 2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
 
+	* TestEvalCommands.java (testPrintLocationFails): Enable test
+	and adjust expected output.
+
+2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestBreakpoints.java (testHpdBreakpoint): Resolve by using
 	explicit load and start command.
 

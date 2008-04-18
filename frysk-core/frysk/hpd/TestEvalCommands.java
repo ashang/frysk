@@ -113,12 +113,10 @@ public class TestEvalCommands extends TestLib {
     }
     
     public void testPrintLocationFails() {
-	if (unresolved(5345))
-	    return;
 	e = HpdTestbed.attachXXX("hpd-c");
 	e.sendCommandExpectPrompt
 	    ("print bogus -location\n", 
-	     "\r\nError: Symbol \"bogus\" is not found in the current context..*");
+	     "\r\nError: Object bogus was not found.*");
     }
 
     public void testPrintType() {
