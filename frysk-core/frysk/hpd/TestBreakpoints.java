@@ -45,9 +45,10 @@ public class TestBreakpoints
     extends TestLib
 {
     public void testHpdBreakpoint() {
-	if (unresolved(5165))
-	    return;
-	e = HpdTestbed.attachXXX("hpd-c");
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("hpd-c").getPath(),
+		"Loaded executable file.*");
+	e.sendCommandExpectPrompt("start", "Attached to process.*");
 	// Break
 	e.send("break #hpd-c.c#196\n");	// This has to break on: while (int_21)
 	e.expect("breakpoint.*" + prompt);
