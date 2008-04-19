@@ -43,6 +43,7 @@ import java.io.File;
 import java.util.Collection;
 import frysk.rsl.Log;
 import frysk.sysroot.SysRoot;
+import frysk.sysroot.SysRootCache;
 import frysk.sysroot.SysRootFile;
 
 /**
@@ -102,8 +103,10 @@ public abstract class Host implements Comparable {
 					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
+	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
 	requestCreateAttachedProc(new File(args[0]), stdin, stdout, stderr,
-				  args, "", attachedObserver);
+				  args, sysRoot.getLibPathViaSysRoot(),
+				  attachedObserver);
     }
     /**
      * Request that a new attached and running process(with stdin,
@@ -113,8 +116,10 @@ public abstract class Host implements Comparable {
 					  TaskAttachedObserverXXX attachedObserver) {
 	fine.log(this, "requestCreateAttachedProc", args, "observer",
 		 attachedObserver);
+	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
 	requestCreateAttachedProc(new File(args[0]), null, null, null,
-				  args, "", attachedObserver);
+				  args, sysRoot.getLibPathViaSysRoot(),
+				  attachedObserver);
     }
     /**
      * Request that a new attached and running process based on

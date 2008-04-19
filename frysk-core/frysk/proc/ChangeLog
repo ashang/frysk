@@ -1,3 +1,8 @@
+2008-04-18  Stan Cox  <scox@redhat.com>
+
+	* Host.java (requestCreateAttachedProc): If unable to use getExeFile
+	to get SysRoot then use SysRootCache.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* StressAttachDetachSignaledTask.java: Use frysk.config.Prefix.
