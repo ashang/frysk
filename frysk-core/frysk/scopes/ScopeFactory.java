@@ -63,26 +63,28 @@ public class ScopeFactory {
 	// the die that is constant.
 	// Or DwarfDieFactory should prevent creation of
 	// redundant Die objects
- 	Scope scope = (Scope) scopes.get(die);
-	
+
+	Object key = die;
+	Scope scope = (Scope) scopes.get(key);
 	if (scope == null) {
 	    scope = createScope(die, typeFactory);
-	    this.scopes.put(die, scope);
+	    this.scopes.put(key, scope);
 	}
 	return scope;
     }
 
     private Scope createScope(DwarfDie die, TypeFactory typeFactory) {
-
+	
 	switch (die.getTag().hashCode()) {
 	
 	case DwTag.INLINED_SUBROUTINE_:
+	    return new ConcreteInlinedFunction(die, typeFactory);
 	case DwTag.SUBPROGRAM_:
-	    OutOfLineFunction subprogram = new OutOfLineFunction(die, typeFactory);
-	    if(subprogram.isInlined()){
+	    Function function = new Function(die, typeFactory);
+	    if(function.isInlined()){
 		return new InlinedSubroutine(die,typeFactory);
 	    }
-	    return subprogram;
+	    return new OutOfLineFunction(die,typeFactory);
 	case DwTag.LEXICAL_BLOCK_:
 	    return new LexicalBlock(die, typeFactory);
 	case DwTag.COMPILE_UNIT_:

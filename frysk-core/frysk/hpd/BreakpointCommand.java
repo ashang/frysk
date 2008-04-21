@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
@@ -57,6 +56,7 @@ import frysk.rt.FunctionBreakpoint;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
+import frysk.value.ObjectDeclaration;
 
 class BreakpointCommand extends ParameterizedCommand {
 
@@ -145,7 +145,7 @@ class BreakpointCommand extends ParameterizedCommand {
 		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 		
 		if (declarationSearchEngine != null) {
-		    DwarfDie die;
+		    ObjectDeclaration die;
 		    try {
 			die = declarationSearchEngine.getSymbolDie(breakpt);
 		    } catch (RuntimeException e) {

@@ -1,3 +1,12 @@
+2008-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ConcreteInlinedFunction.java: New class.
+	* TestScopeFactory.java: Test handling of concrete inlined
+	instances.
+	* ScopeFactory.java: Handle concrete inlined instances.
+	* OutOfLineFunction.java: implemented BreakPointLocation interface.
+	* InlinedSubroutine.java: implemented getInlinedInstances().
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDie.java: Use frysk.config.Prefix.

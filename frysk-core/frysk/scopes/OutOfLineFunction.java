@@ -45,15 +45,24 @@ package frysk.scopes;
 
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeFactory;
+import frysk.value.BreakPointLocation;
 
 /**
- * A Subprogram refers to a concrete (not inlined) instance of a function.
+ * This refers to a concrete (not inlined) instance of a function.
  */
-public class OutOfLineFunction extends Function
+public class OutOfLineFunction extends Function implements BreakPointLocation
 {
 
+    DwarfDie die;
+    
     public OutOfLineFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
+	this.die = die;
+    }
+
+    public long getBreakPointAddress() {
+//	return die.getEntryPc();
+	return ((Long)die.getEntryBreakpoints().get(0)).longValue();
     }
 
 }

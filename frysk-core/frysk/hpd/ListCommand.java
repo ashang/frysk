@@ -40,23 +40,22 @@
 package frysk.hpd;
 
 import java.io.File;
-import java.util.List;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-
-import frysk.scopes.SourceLocation;
-
 import java.util.Iterator;
-import lib.dwfl.DwarfDie;
-import lib.dwfl.DwTag; 
+import java.util.List;
+
 import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.debuginfo.ObjectDeclarationNotFoundException;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.dwfl.DwflCache;
+import frysk.proc.Task;
+import frysk.scopes.Function;
+import frysk.scopes.SourceLocation;
 import frysk.sysroot.SysRoot;
 import frysk.sysroot.SysRootCache;
-import frysk.proc.Task;
 
 /**
  * Implement the "list" source command.
@@ -208,33 +207,39 @@ class ListCommand extends ParameterizedCommand {
 
 	if ((cmdParm).compareTo("$EXEC") == 0)
 	    return frame.getLine().getLine();
-	else {
-	    DwarfDie funcDie = null;
-	    
-	    ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
-		
-	    if (declarationSearchEngine != null) {
-		funcDie = declarationSearchEngine
-		.getSymbolDie(cmdParm);
+
+	Function function = null;
+
+	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+
+	try {
+	    function = (Function) declarationSearchEngine.getSymbolDie(cmdParm);
+	} catch (ObjectDeclarationNotFoundException e) {
+	    function  = null;
+	}catch (ClassCastException e) {
+	    function  = null;
+	}
+	
+	if (function != null ) {
+	    DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
+		    .getSourceLine(frame.getAdjustedAddress());
+	    if (dwflLine != null) {
+		SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(frame
+			.getTask()));
+		file = sysRoot.getSourcePathViaSysRoot(
+			new File(dwflLine.getCompilationDir()),
+			function.getSourceLocation().getFile())
+			.getSysRootedFile();
+	    } else {
+		file = function.getSourceLocation().getFile();
 	    }
-	    if (funcDie.getTag().hashCode() == DwTag.SUBPROGRAM_) {
-		DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
-		.getSourceLine(frame.getAdjustedAddress());
-		if (dwflLine != null) {
-		    SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(frame.getTask()));
-		    file = sysRoot.getSourcePathViaSysRoot
-		    (new File(dwflLine.getCompilationDir()),
-			    funcDie.getDeclFile()).getSysRootedFile();
-		}
-		else
-		    file = funcDie.getDeclFile();
-		return (int)funcDie.getDeclLine();
-	    }
-	    else {
-		cli.addMessage("function " + cmdParm + " not found.",
-			Message.TYPE_ERROR);
-		return line;
-	    }
+	    return (int) function.getSourceLocation().getLine();
+
+	} else {
+	    cli.addMessage("function " + cmdParm + " not found.",
+		    Message.TYPE_ERROR);
+	    return line;
+
 	}
     }
 }

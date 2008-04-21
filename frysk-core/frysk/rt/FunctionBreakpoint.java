@@ -42,13 +42,18 @@ package frysk.rt;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
+import frysk.scopes.ConcreteInlinedFunction;
+import frysk.scopes.Function;
+import frysk.scopes.OutOfLineFunction;
 import frysk.symtab.SymbolFactory;
+import frysk.value.ObjectDeclaration;
 
 public class FunctionBreakpoint
   extends SourceBreakpoint {
@@ -56,6 +61,7 @@ public class FunctionBreakpoint
     protected final DwarfDie die;
 
     private boolean containsInlineInstances = false;
+    private Function function;
 
     /**
      * Set a breakpoint based on a DwarfDie or just a name.
@@ -66,7 +72,37 @@ public class FunctionBreakpoint
         this.die = die;
     }
 
+    public FunctionBreakpoint(int id, String name, ObjectDeclaration function) {
+        super(id);
+        this.name = name;
+        this.function = (Function) function;
+        this.die = null;
+    }
+
     public LinkedList getBreakpointRawAddresses(Task task) {
+	
+	if (function != null) {
+	    if (function instanceof OutOfLineFunction) {
+		long address = ((OutOfLineFunction) function).getBreakPointAddress();
+		LinkedList addrs = new LinkedList();
+		addrs.add(new Long(address));
+		return addrs;
+	    }
+	    
+	    if (function instanceof frysk.scopes.InlinedSubroutine) {
+		LinkedList inlinedInstances = ((frysk.scopes.InlinedSubroutine)function).getInlinedInstances();
+		Iterator iterator = inlinedInstances.iterator();
+		LinkedList addrs = new LinkedList();
+		while (iterator.hasNext()) {
+		    ConcreteInlinedFunction concreteInlinedFunction = (ConcreteInlinedFunction) iterator.next();
+		    addrs.add(new Long(concreteInlinedFunction.getBreakPointAddress()));
+		}
+		return addrs;
+	    }
+	    
+	    
+	}
+	
 	if (die != null) {
 	    ArrayList entryAddrs = die.getEntryBreakpoints();
 	    ArrayList inlineDies = null;

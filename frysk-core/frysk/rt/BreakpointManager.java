@@ -58,8 +58,7 @@ import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
 import frysk.symtab.SymbolFactory;
 import frysk.util.CountDownLatch;
-
-import lib.dwfl.DwarfDie;
+import frysk.value.ObjectDeclaration;
 
 /**
  * Class for managing user breakpoints. In particular it defers
@@ -197,7 +196,7 @@ public class BreakpointManager extends Observable {
      * performed.
      * @return FunctionBreakpoint object
      */
-    public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die) {
+    public FunctionBreakpoint addFunctionBreakpoint(String name, ObjectDeclaration die) {
 	FunctionBreakpoint sourceBreakpoint =
 	    new FunctionBreakpoint(CountManager.getNextId(), name, die);
 	addBreakpoint(sourceBreakpoint);

@@ -457,6 +457,13 @@ abstract public class DwarfDie {
 	return null;
     }
 
+    /**
+     * @return entry pc or low pc if this die
+     */
+    public long getEntryPc(){
+	return get_entrypc();
+    }
+    
     abstract public void accept(DieVisitor visitor);
 
     public native ArrayList getEntryBreakpoints();

@@ -1,3 +1,8 @@
+2008-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FunctionBreakpoint.java: Now uses ObjectDeclaration.
+	* BreakpointManager.java: Ditto.
+
 2008-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* LineBreakpoint.java (LineBreakpoint(int,File,int,int)): New.

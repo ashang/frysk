@@ -39,28 +39,19 @@
 
 package frysk.scopes;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeFactory;
+import frysk.value.BreakPointLocation;
 
-public class InlinedSubroutine extends Function{
+public class ConcreteInlinedFunction extends InlinedSubroutine implements BreakPointLocation{
 
-    public InlinedSubroutine(DwarfDie die, TypeFactory typeFactory) {
+    public ConcreteInlinedFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
     }
 
-    public LinkedList getInlinedInstances(){
-	LinkedList inlinedInstances = new LinkedList();
-	
-	ArrayList arrayList = getDie().getInlinedInstances();
-	Iterator iterator = arrayList.iterator();
-	while (iterator.hasNext()) {
-	    DwarfDie die = (DwarfDie) iterator.next();
-	    inlinedInstances.add(ScopeFactory.theFactory.getScope(die, typeFactory));
-	}
-	return inlinedInstances;
+    public long getBreakPointAddress() {
+	return getDie().getLowPC();
     }
+
+    
 }

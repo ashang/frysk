@@ -63,6 +63,8 @@ import frysk.isa.registers.Registers;
 import frysk.isa.registers.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
+import frysk.scopes.ScopeFactory;
+import frysk.scopes.Variable;
 import frysk.symtab.SymbolObjectDeclaration;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Value;
@@ -93,15 +95,31 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * - return ObjectDeclaration
      * ...   
      */
-    public DwarfDie getSymbolDie(String input) {
+    public ObjectDeclaration getSymbolDie(String name) {
+	
+	ObjectDeclaration result;
+	
 	Elf elf = new Elf(new File(task.getProc().getExeFile().getSysRootedPath()), ElfCommand.ELF_C_READ);
 	Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
 	
-	DwarfDie result = DwarfDie.getDecl(dwarf, input);
-	if (result == null)
-	    throw new RuntimeException("symbol " + input + " not found.");
-	else
-	    return result;
+	DwarfDie resultDie = DwarfDie.getDecl(dwarf, name);
+	TypeFactory typeFactory = new TypeFactory(task.getISA());
+	
+	if (resultDie == null)
+	    throw new RuntimeException("symbol " + name + " not found.");
+	
+	
+	try {
+	    result =  (ObjectDeclaration) ScopeFactory.theFactory.getScope(resultDie, typeFactory);
+	} catch (IllegalArgumentException e) {
+	    try {
+		result = new Variable(resultDie);
+	    } catch (Exception e2) { 
+		throw new ObjectDeclarationNotFoundException(name);
+	    }
+	}
+	
+	return (ObjectDeclaration)result;
     }
  
     /**

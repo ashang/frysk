@@ -170,28 +170,26 @@ public class Function extends NamedScope {
      * - a regular funciton which has been inlined by the compiler
      */
     public boolean isInlined(){
-	DwTag dwTag = getDie().getTag();
-	long inlineAttribute = getDie().getAttrConstant(DwAt.INLINE);
 	
-	// Declared inlined and inlined by compiler
-	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_INLINED_){
+	DwTag dwTag = getDie().getTag();
+	
+	// Concrete inlined instance
+	if(dwTag.equals(DwTag.INLINED_SUBROUTINE)){
 	    return true;
 	}
 	
-	// Declared inlined and inlined by compiler... but has INLINED attribute instead
-	// of DECLARED_INLINED_
-	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.INLINED_){
+	long inlineAttribute = getDie().getAttrConstant(DwAt.INLINE);
+	
+	// Declared inlined and inlined by compiler
+	// but has DW_TAG_SUBPROGRAM
+	// this is an abstract instance of an inlineable function  
+	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.DECLARED_INLINED_){
 	    return true;
 	}
 	
 	// Declared regular and inlined by compiler
 	if(dwTag.equals(DwTag.SUBPROGRAM) && inlineAttribute == DwInl.INLINED_){
 	    return true;
-	}
-	
-	// Declared inlined and not inlined by compiler
-	if(dwTag.equals(DwTag.INLINED_SUBROUTINE) && inlineAttribute == DwInl.DECLARED_NOT_INLINED_){
-	    return false;
 	}
 	
 	// Declared regular and not inlined by compiler

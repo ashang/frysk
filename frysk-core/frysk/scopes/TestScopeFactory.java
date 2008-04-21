@@ -72,24 +72,30 @@ public class TestScopeFactory
       Scope scope5 = ScopeFactory.theFactory.getScope(scopes[1], typeFactory);
       Scope scope6 = ScopeFactory.theFactory.getScope(scopes[2], typeFactory);
 
+      // abstract inlined function
+      Scope scope9 = ScopeFactory.theFactory.getScope(scopes[1].getOriginalDie(), typeFactory);
+//      Scope scope10 =  ScopeFactory.theFactory.getScope(scopes[1].getOriginalDie(), typeFactory);
+
       // test scopes from outer frame
       frame = frame.getOuter();
       scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
 
       Scope scope7 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
       Scope scope8 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
-
+      
+      
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
-      assertTrue("InlinedSubroutine scope" , scope2 instanceof InlinedSubroutine && ((Function)scope2).isInlined());
-      assertTrue("File scope" , scope3 instanceof Scope);
-      
+      assertTrue("ConcreteInlinedFunction scope" , scope2 instanceof ConcreteInlinedFunction);
+      assertTrue("Abstract Inlinable funciton" , scope9 instanceof InlinedSubroutine);
       assertTrue("Subprogram scope" , scope7 instanceof Function && !((Function)scope7).isInlined());
+      assertTrue("File scope" , scope3 instanceof Scope);
       
       assertTrue("same object" , scope1 == scope4);
       assertTrue("same object" , scope2 == scope5);
       assertTrue("same object" , scope3 == scope6);
       assertTrue("same object" , scope7 == scope8);
+//      assertTrue("same object" , scope9 == scope10);
       
     }    
 }
