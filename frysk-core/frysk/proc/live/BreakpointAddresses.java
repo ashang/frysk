@@ -42,6 +42,7 @@ package frysk.proc.live;
 
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -62,8 +63,45 @@ import java.util.ArrayList;
  * This datastructure isn't multithread safe, it should only be called
  * from the eventloop in response to requests pending for the Proc.
  */
-public class BreakpointAddresses
+class BreakpointAddresses
 {
+
+  /**
+   * Small package private class holding Task and TaskObserver.Code
+   * interested in a particular breakpoint. Used by
+   * <code>addBreakpoint()</code>, <code>removeBreakpoint</code> and
+   * <code>getBreakpoints()</code>.
+   */
+  final static class CodeObserver
+  {
+    final Task task;
+    final TaskObserver.Code observer;
+
+    CodeObserver(Task task, TaskObserver.Code observer)
+    {
+      if (task == null || observer == null)
+	throw new NullPointerException();
+
+      this.task = task;
+      this.observer = observer;
+    }
+
+    public boolean equals(Object o)
+    {
+      if (! (o instanceof CodeObserver))
+	return false;
+
+      CodeObserver other = (CodeObserver) o;
+      return (this.task.equals(other.task)
+	      && this.observer.equals(other.observer));
+    }
+
+    public int hashCode()
+    {
+      return task.hashCode() ^ observer.hashCode();
+    }
+  }
+
   /**
    * Proc used to set breakpoints and which sents us notifications
    * when breakpoints are hit.
@@ -85,7 +123,7 @@ public class BreakpointAddresses
   /**
    * Package private constructor used by the Proc when created.
    */
-  public BreakpointAddresses(Proc proc)
+  BreakpointAddresses(Proc proc)
   {
     this.proc = proc;
     map = new HashMap();
@@ -99,7 +137,7 @@ public class BreakpointAddresses
    * added to the list of objects to notify when the breakpoint is
    * hit (and the method returns false).
    */
-  public boolean addBreakpoint(TaskObserver.Code observer, long address)
+  boolean addBreakpoint(CodeObserver observer, long address)
   {
     Breakpoint breakpoint = Breakpoint.create(address, proc);
 
@@ -129,7 +167,7 @@ public class BreakpointAddresses
    *
    * @throws IllegalArgumentException if the observer was never added.
    */
-  public boolean removeBreakpoint(TaskObserver.Code observer, long address)
+  boolean removeBreakpoint(CodeObserver observer, long address)
   {
     Breakpoint breakpoint = Breakpoint.create(address, proc);
     ArrayList list = (ArrayList) map.get(breakpoint);
@@ -149,10 +187,11 @@ public class BreakpointAddresses
 
     /**
      * Called by the Proc when it has trapped a breakpoint.  Returns a
-     * Collection of TaskObserver.Code observers interested in the given
+     * Collection of CodeObservers interested in the given
      * address or null when no Code observer was installed on this address.
+     * Package private (as is CodeObserver).
      */
-    public Collection getCodeObservers(long address) {
+    Collection getCodeObservers(long address) {
 	ArrayList observers;
 	Breakpoint breakpoint = Breakpoint.create(address, proc);
 	ArrayList list = (ArrayList) map.get(breakpoint);
@@ -165,7 +204,7 @@ public class BreakpointAddresses
 	return observers;
     }
 
-  public Breakpoint getBreakpoint(long address)
+  Breakpoint getBreakpoint(long address)
   {
     Breakpoint breakpoint = Breakpoint.create(address, proc);
     Object observer = map.get(breakpoint);
@@ -180,7 +219,7 @@ public class BreakpointAddresses
    * (possibly) installed starting at the from address up to (but not
    * including) the till address.
    */
-  public Iterator getBreakpoints(long from, long till)
+  Iterator getBreakpoints(long from, long till)
   {
     Breakpoint fromBreakpoint = Breakpoint.create(from, proc);
     Breakpoint tillBreakpoint = Breakpoint.create(till, proc);
@@ -191,9 +230,8 @@ public class BreakpointAddresses
    * Called from TaskState when the Task gets an execed event which
    * clears the whole address space.
    *
-   * XXX: Should not be public.
    */
-  public void removeAllCodeObservers()
+  void removeAllCodeObservers()
   {
     map.clear();
     breakpoints.clear();

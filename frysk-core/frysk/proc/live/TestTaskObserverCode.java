@@ -763,9 +763,6 @@ public class TestTaskObserverCode extends TestLib
   // get separate update events. bug #5234
   public void testMultiTaskUpdateCalledSeveralTimes() throws Exception
   {
-    if (unresolved(5234))
-      return;
-
     // Create a child.
     LegacyOffspring child = LegacyOffspring.createDaemon();
 

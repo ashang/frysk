@@ -552,14 +552,20 @@ public class LinuxPtraceProc extends LiveProc {
 
 	public void run() {
 	    if (addition) {
-		boolean mustInstall = breakpoints.addBreakpoint(code, address);
+	        BreakpointAddresses.CodeObserver observer;
+		boolean mustInstall;
+		observer = new BreakpointAddresses.CodeObserver(task, code);
+		mustInstall = breakpoints.addBreakpoint(observer, address);
 		if (mustInstall) {
 		    Breakpoint breakpoint;
 		    breakpoint = Breakpoint.create(address, LinuxPtraceProc.this);
 		    breakpoint.install(task);
 		}
 	    } else {
-		boolean mustRemove = breakpoints.removeBreakpoint(code, address);
+	        BreakpointAddresses.CodeObserver observer;
+		boolean mustRemove;
+		observer = new BreakpointAddresses.CodeObserver(task, code);
+		mustRemove = breakpoints.removeBreakpoint(observer, address);
 		if (mustRemove) {
 		    Breakpoint breakpoint;
 		    breakpoint = Breakpoint.create(address, LinuxPtraceProc.this);

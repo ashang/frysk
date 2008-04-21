@@ -966,10 +966,11 @@ public class LinuxPtraceTask extends LiveTask {
 
 	Iterator i = observers.iterator();
 	while (i.hasNext()) {
-	    TaskObserver.Code observer = (TaskObserver.Code) i.next();
-	    if (codeObservers.contains(observer))
-		if (observer.updateHit(this, address) == Action.BLOCK)
-		    blockers.add(observer);
+	    BreakpointAddresses.CodeObserver co;
+	    co = (BreakpointAddresses.CodeObserver) i.next();
+	    if (co.task.equals(this))
+		if (co.observer.updateHit(this, address) == Action.BLOCK)
+		    blockers.add(co.observer);
 	}
 	return blockers.size();
     }

@@ -1,3 +1,19 @@
+2008-04-21  Mark Wielaard  <mwielaard@redhat.com>
+
+	* BreakpointAddresses.java: Mark class and methods package private.
+	(CodeObserver): New final static helper class.
+	(addBreakpoint): Take CodeObserver as argument, not
+	TaskObserver.Code.
+	(removeBreakpoint): Likewise.
+	(getCodeObservers): Return collection of CodeObservers, not
+	TaskObserver.Code.
+	* LinuxPtraceProc.java (BreakpointAction.run): Install or remove
+	BreakpointAddresses.CodeObserver instead of bare TaskObserver.Code.
+	* LinuxPtraceTask.java (notifyCodeBreakpoint): Check Task against
+	BreakpointAddresses.CodeObserver.
+	* TestTaskObserverCode.java (testMultiTaskUpdateCalledSeveralTimes):
+	Resolved bug #5234.
+
 2008-04-15  Teresa Thomas  <tthomas@redhat.com>
 
 	* LinuxPtraceTask.java (isInstructionObserverAdded): New.
