@@ -87,7 +87,7 @@ public class TestScopeFactory
       
       assertTrue("lexical block scope" , scope1 instanceof LexicalBlock);
       assertTrue("ConcreteInlinedFunction scope" , scope2 instanceof ConcreteInlinedFunction);
-      assertTrue("Abstract Inlinable funciton" , scope9 instanceof InlinedSubroutine);
+      assertTrue("Abstract Inlinable funciton" , scope9 instanceof InlinedFunction);
       assertTrue("Subprogram scope" , scope7 instanceof Function && !((Function)scope7).isInlined());
       assertTrue("File scope" , scope3 instanceof Scope);
       

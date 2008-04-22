@@ -82,7 +82,7 @@ public class ScopeFactory {
 	case DwTag.SUBPROGRAM_:
 	    Function function = new Function(die, typeFactory);
 	    if(function.isInlined()){
-		return new InlinedSubroutine(die,typeFactory);
+		return new InlinedFunction(die,typeFactory);
 	    }
 	    return new OutOfLineFunction(die,typeFactory);
 	case DwTag.LEXICAL_BLOCK_:

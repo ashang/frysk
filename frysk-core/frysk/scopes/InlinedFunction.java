@@ -46,9 +46,12 @@ import java.util.LinkedList;
 import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeFactory;
 
-public class InlinedSubroutine extends Function{
+/**
+ * Abstract instance of an inlinable function.
+ */
+public class InlinedFunction extends Function{
 
-    public InlinedSubroutine(DwarfDie die, TypeFactory typeFactory) {
+    public InlinedFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);
     }
 

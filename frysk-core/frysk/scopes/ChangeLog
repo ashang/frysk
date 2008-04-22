@@ -1,3 +1,11 @@
+2008-04-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* InlinedSubroutine.java: Renamed this...
+	* InlinedFunction.java: ... to this.
+	* ConcreteInlinedFunction.java: Updated.
+	* ScopeFactory.java: Updated.
+	* TestScopeFactory.java: Updated.
+
 2008-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ConcreteInlinedFunction.java: New class.

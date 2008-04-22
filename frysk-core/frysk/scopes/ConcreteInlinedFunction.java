@@ -43,7 +43,7 @@ import lib.dwfl.DwarfDie;
 import frysk.debuginfo.TypeFactory;
 import frysk.value.BreakPointLocation;
 
-public class ConcreteInlinedFunction extends InlinedSubroutine implements BreakPointLocation{
+public class ConcreteInlinedFunction extends InlinedFunction implements BreakPointLocation{
 
     public ConcreteInlinedFunction(DwarfDie die, TypeFactory typeFactory) {
 	super(die, typeFactory);

@@ -89,8 +89,8 @@ public class FunctionBreakpoint
 		return addrs;
 	    }
 	    
-	    if (function instanceof frysk.scopes.InlinedSubroutine) {
-		LinkedList inlinedInstances = ((frysk.scopes.InlinedSubroutine)function).getInlinedInstances();
+	    if (function instanceof frysk.scopes.InlinedFunction) {
+		LinkedList inlinedInstances = ((frysk.scopes.InlinedFunction)function).getInlinedInstances();
 		Iterator iterator = inlinedInstances.iterator();
 		LinkedList addrs = new LinkedList();
 		while (iterator.hasNext()) {
