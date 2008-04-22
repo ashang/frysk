@@ -1,3 +1,7 @@
+2008-04-22  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestWatchCommand.java (testMultipleWatchPointSetAndHit): New.
+
 2008-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* BreakpointCommand.java: Now understands ObjectDeclaration.

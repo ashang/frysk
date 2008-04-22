@@ -64,4 +64,34 @@ public class TestWatchCommand extends TestLib {
       e.expect("Quitting\\.\\.\\.");
       e.close();
   }
+
+  public void testMultipleWatchPointSetAndHit()
+  {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-watchpoint").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+
+      e.send("watch source\n"); 
+      e.expect(".*Watchpoint set: source.*");
+      e.send("watch read_only -a\n"); 
+      e.expect(".*Watchpoint set: read_only.*");
+      
+      e.send("go\n"); 
+      e.expect(".*Watchpoint hit: source.*Value before hit ="
+	      + ".*Value after  hit =.*");
+
+      e.send("go\n"); 
+      e.expect(".*Watchpoint hit: read_only.*Value before hit ="
+	      + ".*Value after  hit =.*");
+
+      e.send("go\n"); 
+      e.expect(".*Task " + "[0-9]+" + " is exiting with status " 
+	       + "[0-9]+");
+      
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();
+  }  
+  
 }
