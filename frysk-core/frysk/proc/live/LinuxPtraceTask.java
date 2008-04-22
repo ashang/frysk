@@ -550,12 +550,15 @@ public class LinuxPtraceTask extends LiveTask {
      * Notify all Watchpoint observers of the triggered watchpoint. 
      * Return the number of blocking observers, or 0 if nothing blocks.
      */
-    int notifyWatchpoint(long address, int length) {
-	for (Iterator i = watchObservers.iterator(); i.hasNext();) {
-	    TaskObserver.Watch observer = (TaskObserver.Watch) i.next();
-	    if (observer.updateHit(this, address, length) == Action.BLOCK) {
-		blockers.add(observer);
-	    }
+    int notifyWatchpoint(long address, int  length, boolean writeOnly) {
+	LinuxPtraceProc proc  = (LinuxPtraceProc) getProc();
+	Collection observers = proc.watchpoints.getWatchObservers(this, address, length, writeOnly);
+	
+	for (Iterator z = observers.iterator(); z.hasNext();) {
+		TaskObserver.Watch observer = (TaskObserver.Watch) z.next();
+		if (observer.updateHit(this, address, length) == Action.BLOCK) {
+		    blockers.add(observer);
+		}
 	}
 	return blockers.size();
     }

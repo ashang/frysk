@@ -930,7 +930,7 @@ abstract class LinuxPtraceTaskState extends State {
 		    if (blockers == -1)
 			blockers = 0;
 		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
-		    blockers += task.notifyWatchpoint(trigger.getAddress(), trigger.getRange());
+		    blockers += task.notifyWatchpoint(trigger.getAddress(), trigger.getRange(), trigger.isWriteOnly());
 		    watchpointFunction.resetWatchpoint(task, i);
 		}
 	    }

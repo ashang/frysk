@@ -669,7 +669,7 @@ public class LinuxPtraceProc extends LiveProc {
     }
 
     // List and manager for Watchpoints within a task.
-    private final WatchpointAddresses watchpoints;
+    protected final WatchpointAddresses watchpoints;
     
     /**
      * (Internal) Tell the process to add the specified Watch

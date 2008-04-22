@@ -1,3 +1,12 @@
+2008-04-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceTaskState.java (Running.checkWatchpoint): Check
+	write state on notify.
+	* LinuxPtraceTask.java (notifyWatchpoint): Collect only
+	watchpoints that have been triggered, then notify.
+	* LinuxPtraceProc.java (LinuxPtraceProc): Wide watchpoint scope
+	to protected.
+	
 2008-04-21  Mark Wielaard  <mwielaard@redhat.com>
 
 	* BreakpointAddresses.java: Mark class and methods package private.
