@@ -459,13 +459,21 @@ abstract class LinuxPtraceTaskState extends State {
 	    new StartMainTask("wantToDetach") {
 		LinuxPtraceTaskState handleAttach(LinuxPtraceTask task) {
 		    fine.log("handleAttach", task); 
-		    ((LinuxPtraceProc)task.getProc())
-			.performTaskAttachCompleted(task);
+		    LinuxPtraceProc proc = (LinuxPtraceProc) task.getProc();
+		    // Clear left over breakpoints here. They were
+		    // captured when the Proc was created.
+		    proc.breakpoints.clearAllBreakpoints();
+		    proc.performTaskAttachCompleted(task);
 		    return StartMainTask.wantToAttach;
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
+		        LinuxPtraceProc proc;
+		        proc = (LinuxPtraceProc) task.getProc();
+		        // Clear left over breakpoints here. They were
+		        // captured when the Proc was created.
+		        proc.breakpoints.clearAllBreakpoints();
 			task.initializeAttachedState();
 			if (task.notifyForkedOffspring() > 0) {
 			    return StartMainTask.detachBlocked;

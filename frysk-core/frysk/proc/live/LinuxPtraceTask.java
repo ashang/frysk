@@ -110,6 +110,19 @@ public class LinuxPtraceTask extends LiveTask {
 	((LinuxPtraceHost)proc.getHost()).putTask(tid, this);
 	((LinuxPtraceProc)proc).addTask(this);
 	newState = LinuxPtraceTaskState.mainState();
+	// See the various FIXMEs below around the isa, ISA,
+	// currentISA, getISA(), getIsaFIXME() and clearIsa(). The
+	// current design is such that the isa isn't a constant of a
+	// proc (actually task), which means we cannot remove
+	// breakpoint instructions from the fork (the breakpoint
+	// instruction is an intrinsic of the isa).  Luckily we know
+	// that the fork will have the same isa as the task it forked
+	// from, so we explicitly set it now. We cannot do the
+	// breakpoint resetting here (the LinuxPtraceTask is created,
+	// but not fully setup yet), we do that in the
+	// LinuxPtraceTaskState.StartMainTask.wantToDetach class
+	// handlers.
+	currentISA = forkingTask.currentISA;
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation(this, attachedObservers,
 						     attached, true) {

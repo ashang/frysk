@@ -97,7 +97,8 @@ public class LinuxPtraceProc extends LiveProc {
     public LinuxPtraceProc(Task task, ProcessIdentifier fork) {
 	super(task, fork);
 	this.newState = LinuxPtraceProcState.initial(true);
-	this.breakpoints = new BreakpointAddresses(this);
+	LinuxPtraceProc forkingProc = (LinuxPtraceProc) task.getProc();
+	this.breakpoints = forkingProc.breakpoints.cloneForProc(this);
 	this.watchpoints = new WatchpointAddresses(this);
 	((LinuxPtraceHost)getHost()).addProc(this);
     }
@@ -833,9 +834,13 @@ public class LinuxPtraceProc extends LiveProc {
     }
 
     /**
-     * XXX: Should not be public.
+     * The addresses on which we have installed breakpoints (with
+     * associated Tasks and TaskObserver.Code listeners). Package
+     * private for access in LinuxPtraceTask constructor that creates
+     * a forked task and the LinuxPtraceTaskState.MainTask.wantToDetach
+     * class to clearthem. See the comments there.
      */
-    public final BreakpointAddresses breakpoints;
+    final BreakpointAddresses breakpoints;
     
     // List of available addresses for out of line stepping.
     // Used a lock in getOutOfLineAddress() and doneOutOfLine().

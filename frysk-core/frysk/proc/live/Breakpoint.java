@@ -175,8 +175,11 @@ public class Breakpoint implements Comparable
 
   /**
    * Actually removes the breakpoint.
+   * Package private for BreakpointAddresses.clearBreakpoints(),
+   * all other callers should use <code>remove()</code>.
+   *
    */
-  private void reset(Task task)
+  void reset(Task task)
   {
       ByteBuffer buffer = ((LinuxPtraceTask)task).getRawMemory();
     buffer.position(address);
@@ -378,5 +381,23 @@ public class Breakpoint implements Comparable
   {
     return this.getClass().getName() + "[proc=" + proc
       + ", address=0x" + Long.toHexString(address) + "]";
+  }
+
+  /**
+   * Makes a clone of this Breakpoint, but for a particular Proc. This
+   * is used by the BreakPointAddresses class to make a clone of all
+   * breakpoints set on a froked proc. First makes sure to have the
+   * canonical (installed) breakpoint. Then makes a copy and adds the
+   * original instruction. See BreakPointAddresses cloneForProc() and
+   * clearAllAddresses for more explanation.
+   */
+  Breakpoint cloneForProc(Proc proc)
+  {
+    // Make sure to have the canonical (installed) breakpoint.
+    // Then make a copy and add the original instruction.
+    Breakpoint breakpoint = create(this.getAddress(), this.getProc());
+    Breakpoint result = new Breakpoint(breakpoint.address, proc);
+    result.origInstruction = breakpoint.origInstruction;
+    return result;
   }
 }

@@ -1,3 +1,19 @@
+2008-04-22  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java (reset): Make package private.
+	(cloneForProc): New method.
+	* BreakpointAddresses.java (cloneForProc): New method.
+	(clearAllBreakpoints): New method.
+	* LinuxPtraceProc.java (LinuxPtraceProc(Task,ProcessIdentifier)):
+	Set breakpoints through forkingProc.breakpoints.cloneForProc().
+	(breakpoints): Make package private.
+	* LinuxPtraceTask.java (LinuxPtraceTask(LinuxPtraceTask,
+	LinuxPtraceProc,TaskAttachedObserverXXX)): Set currentISA.
+	* LinuxPtraceTaskState.java
+	(StartMainTask.wantToDetach.handleAttach): Clear breakpoints.
+	(StartMainTask.wantToDetach.StoppedEvent): Likewise.
+	* TestTaskObserverCode.java (testCodeOverFork): Resolve bug #5331.
+	
 2008-04-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxPtraceTaskState.java (Running.checkWatchpoint): Check
@@ -6,7 +22,7 @@
 	watchpoints that have been triggered, then notify.
 	* LinuxPtraceProc.java (LinuxPtraceProc): Wide watchpoint scope
 	to protected.
-	
+
 2008-04-21  Mark Wielaard  <mwielaard@redhat.com>
 
 	* BreakpointAddresses.java: Mark class and methods package private.

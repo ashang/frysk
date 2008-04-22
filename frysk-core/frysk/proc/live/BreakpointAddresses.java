@@ -236,4 +236,41 @@ class BreakpointAddresses
     map.clear();
     breakpoints.clear();
   }
+
+  /**
+   * Sets up a BreakpointAddresses map for a forked proc.  This sets
+   * the list of breakpoint addresses (plus original instructions) to
+   * be reset later with clearAllBreakpoints(). See comments in
+   * LinuxPtraceProc, LinuxPtraceTask and
+   * LinuxPtraceTaskState.StartMainTask.wantToDetach for the sequence
+   * of events.
+   */
+  BreakpointAddresses cloneForProc(Proc proc)
+  {
+    BreakpointAddresses addresses = new BreakpointAddresses(proc);
+    Iterator it = breakpoints.iterator();
+    while (it.hasNext())
+      {
+	Breakpoint breakpoint = (Breakpoint) it.next();
+	breakpoint = breakpoint.cloneForProc(proc);
+	addresses.breakpoints.add(breakpoint);
+      }
+    return addresses;
+  }
+
+  /**
+   * Actually resets the breakpoints in the breakpoint addresses left
+   * by cloneForProc(). Called when the main task of the forked proc
+   * is ready in LinuxPtraceTaskState.StartMainTask.wantToDetach.
+   */
+  void clearAllBreakpoints()
+  {
+    Iterator it = breakpoints.iterator();
+    while (it.hasNext())
+      {
+        Breakpoint breakpoint = (Breakpoint) it.next();
+        breakpoint.reset(proc.getMainTask());
+      }
+    removeAllCodeObservers();
+  }
 }

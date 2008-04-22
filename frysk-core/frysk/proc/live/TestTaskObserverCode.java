@@ -886,9 +886,6 @@ public class TestTaskObserverCode extends TestLib
   // after the fork.
   public void testCodeOverFork() throws Exception
   {
-    if (unresolved(5331))
-      return;
-
     String[] argv = {getExecPath ("funit-fib-fork"), "2"};
     child = null;
     DaemonBlockedAtEntry child = new DaemonBlockedAtEntry(argv);
