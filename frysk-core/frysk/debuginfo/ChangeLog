@@ -1,3 +1,8 @@
+2008-04-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestObjectDeclarationSearchEngine.java: Added test for
+	function search.
+
 2008-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java(getSymbolDie): now

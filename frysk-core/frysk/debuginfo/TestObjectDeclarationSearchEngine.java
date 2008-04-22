@@ -140,6 +140,14 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	verifyVariable(variableName, variableToken, fileName, srcPath);
     }
     
+    public void testFindFirstScopes(){
+	String variableName = "first"; 
+	String variableToken = "*this*"; 
+	String fileName = "funit-scopes";
+	File srcPath = getSrc(fileName + ".c");
+	
+	verifyVariable(variableName, variableToken, fileName, srcPath);
+    }    
     
     public void testFindFirstElfSymbols(){
 	String variableName = "first"; 

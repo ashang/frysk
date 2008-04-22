@@ -342,7 +342,7 @@ lib::dwfl::DwarfDie::get_type (jlong var_die, jboolean follow_type_def)
     {
       if (dwarf_formref_die (&type_attr, type_mem_die))
 	{
-	  while (dwarf_tag (type_mem_die) == DW_TAG_typedef && follow_type_def)
+	  if (dwarf_tag (type_mem_die) == DW_TAG_typedef && follow_type_def)
 	    {
 	      dwarf_attr_integrate (type_mem_die, DW_AT_type, &type_attr);
 	      dwarf_formref_die (&type_attr, type_mem_die);

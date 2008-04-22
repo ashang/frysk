@@ -5,7 +5,7 @@ inline void second(){
   a[0] = 0;
 }
 
-void first(){
+void first(){// *this* one should be found
   second();
 }
 

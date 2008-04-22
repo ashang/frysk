@@ -82,6 +82,7 @@ public class Scope
     
     final TypeFactory typeFactory;
     private final SourceLocation sourceLocation;
+    private LinkedList objectDeclarations;
     
   public Scope(DwarfDie die, TypeFactory typeFactory){
       this.die = die;
@@ -128,6 +129,30 @@ public class Scope
       return variables;
   }
 
+  public LinkedList getObjectDeclarations() {
+      if (this.objectDeclarations == null) {
+	  this.objectDeclarations = new LinkedList();
+	  DwarfDie die = this.die.getChild();
+	  
+	  while (die != null) {
+	      
+	      try{
+		  Scope scope = ScopeFactory.theFactory.getScope(die, typeFactory);
+		  if (scope instanceof NamedScope) {
+		      this.objectDeclarations.add(scope);
+		  }
+	      } catch (IllegalArgumentException e) {
+		    if (die.getTag().equals(DwTag.VARIABLE)) {
+			Variable variable = new Variable(die);
+			objectDeclarations.add(variable);
+		    }
+		}
+	      die = die.getSibling();
+	  }
+      }
+      return objectDeclarations;
+  }
+
   public SourceLocation getSourceLocation(){
       return this.sourceLocation;
   }
@@ -172,9 +197,9 @@ public class Scope
   public ObjectDeclaration getDeclaredObjectByName(String name){
       ObjectDeclaration objectDeclaration = null;
       
-      Iterator iterator = this.getVariables().iterator();
+      Iterator iterator = this.getObjectDeclarations().iterator();
       while (iterator.hasNext()) {
-	objectDeclaration = (Variable) iterator.next();
+	objectDeclaration = (ObjectDeclaration) iterator.next();
 	if(objectDeclaration.getName().equals(name)){
 	    return objectDeclaration;
 	}
