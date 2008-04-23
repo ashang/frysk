@@ -83,8 +83,9 @@ public class Breakpoint implements TaskObserver.Code {
         else {
 	    fine.log(this, "updateHit adding instruction observer", task,
 		     "address", address);
-            task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
-            this.steppingEngine.addBlocker(task, this);
+		
+	    this.steppingEngine.blockedByActionPoint(task, this);
+	    task.requestUnblock(this);
         }
 
         ++triggered;
