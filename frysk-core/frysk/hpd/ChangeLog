@@ -1,3 +1,7 @@
+2008-04-23  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestBreakpoints.java (testBreakWithStepping): New.
+
 2008-04-22  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestWatchCommand.java (testMultipleWatchPointSetAndHit): New.

@@ -204,4 +204,29 @@ public class TestBreakpoints
       e.expect("Quitting...");
       e.close();
   }
+  
+  public void testBreakWithStepping() {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-hello").getPath(),
+                                "Loaded executable file.*");
+      e.send("break main\n");
+      e.expect("break.*" + prompt);
+      e.send("break print\n");
+      e.expect("break.*" + prompt);      
+      e.sendCommandExpectPrompt("run ",
+                          "Attached to process ([0-9]+).*Running process ([0-9]+).*");
+
+      // Steps between the two break points 
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+      e.sendCommandExpectPrompt("step ", "Task stopped at line " + "[0-9]+ in file.*");
+
+      e.send("quit\n");
+      e.expect("Quitting...");
+      e.close();
+  }  
+  
 }
