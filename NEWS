@@ -13,6 +13,14 @@ multi-process, and multi-threaded systems while they are running.
 
 Post-Release 0.2 Updates:
 
+-> 2004-04-24 - New support in FHPD: sysroot
+
+   Frysk now also supports finding libraries in a special system
+   directory heirarchy as well as the previously supported source files
+   and debuginfo files.  This is specified via the -sysroot option.
+
+--
+
 -> 2004-04-16 - New command in FHPD: watch
 
    Use to set watchpoints on expressions or variables. This stops
