@@ -1,0 +1,55 @@
+<html>
+<body>
+
+This package implements frysk's sysroot support for handling a special system
+directory heirarchy.
+
+<h2>Overview</h2>
+
+Frysk supports a way to find source files, debuginfo files, and
+libraries in a special system directory heirarchy.  For example if 
+<em>mock(1)</em> is used to build a package, then we would with a
+directory that looked like:
+
+<code><pre>
+  test-sysroot/usr/bin:
+   funit-quicksort*
+
+  test-sysroot/usr/lib:
+   debug/  libbubble.so*
+
+  test-sysroot/usr/lib/debug/usr/bin:
+   funit-quicksort.debug*
+
+  test-sysroot/usr/lib/debug/usr/lib:
+   funit-bubblesort.debug*
+
+  test-sysroot/usr/src:
+   debug/
+
+  test-sysroot/usr/src/debug:
+   funit-bubblesort.c  funit-quicksort.c
+</code></pre>
+
+The command <em>fhpd -sysroot test-sysroot funit-quicksort</em> will
+search the test-sysroot heirarchy for executable files, debuginfo
+files, and libraries.  The <em>-sysroot</em> option is also available
+for most frysk commands and for the load, core, and attach requests.
+
+<h2>Implementation</h2>
+
+Frysk assumes all accesses to source, debuginfo, and libraries are
+through a sysroot, with the default sysroot
+being <em>/</em>.   <em>LinuxExeFactory.java</em>
+and <em>LinuxCoreFactory.java</em> support sysroots via:
+<br>
+SysRootCache.java - Get the sysroot that corresponds to a given task.
+<br>
+SysRoot.java - Return members of the sysroot heirarchy, for example
+the directory where libraries are located.
+<br>
+SysRootFile.java - Allows the management of files as a <sysroot><file> pair.
+</pre>
+
+</body>
+</html>

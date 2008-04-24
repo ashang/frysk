@@ -1,3 +1,7 @@
+2008-04-24  Stan Cox  <scox@redhat.com>
+
+	*  package.html: New file.
+
 2008-04-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java: Added test for
@@ -7,7 +11,7 @@
 
 	* ObjectDeclarationSearchEngine.java(getSymbolDie): now
 	returns ObjectDeclaration.  
-	
+
 2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestDebugInfoStackTrace.java (testBacktrace): Resolved bug #4468.
@@ -17,10 +21,12 @@
 	* TestObjectDeclarationSearchEngine.java: Use frysk.config.Prefix.
 
 2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
 	* DwarfRegisterMapFactory.java (PPC64BE): New.
 	(isaToMap): Add PPC64BE.
 
 2008-04-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TestFrameDebugInfo.java: Replaced use of ConcreteFunction with
 	Function.
 	* DebugInfoStackFactory.java: Updated.
