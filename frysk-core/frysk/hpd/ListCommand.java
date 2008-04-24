@@ -213,7 +213,7 @@ class ListCommand extends ParameterizedCommand {
 	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 
 	try {
-	    function = (Function) declarationSearchEngine.getSymbolDie(cmdParm);
+	    function = (Function) declarationSearchEngine.getObject(cmdParm);
 	} catch (ObjectDeclarationNotFoundException e) {
 	    function  = null;
 	}catch (ClassCastException e) {

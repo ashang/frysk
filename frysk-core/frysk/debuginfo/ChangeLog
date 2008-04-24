@@ -1,4 +1,9 @@
-2008-04-24  Stan Cox  <scox@redhat.com>
+2008-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java: renamed getSymbolDie to
+	getObject.
+
+2008-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	*  package.html: New file.
 

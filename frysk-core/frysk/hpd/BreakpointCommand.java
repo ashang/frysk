@@ -147,7 +147,7 @@ class BreakpointCommand extends ParameterizedCommand {
 		if (declarationSearchEngine != null) {
 		    ObjectDeclaration die;
 		    try {
-			die = declarationSearchEngine.getSymbolDie(breakpt);
+			die = declarationSearchEngine.getObject(breakpt);
 		    } catch (RuntimeException e) {
 			// Symbol not yet visible.
 			die = null;

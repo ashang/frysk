@@ -95,7 +95,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * - return ObjectDeclaration
      * ...   
      */
-    public ObjectDeclaration getSymbolDie(String name) {
+    public ObjectDeclaration getObject(String name) {
 	
 	ObjectDeclaration result;
 	
