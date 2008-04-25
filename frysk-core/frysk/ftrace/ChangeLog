@@ -1,3 +1,7 @@
+2008-04-25  Petr Machata  <pmachata@redhat.com>
+
+	* TaskTracer.java: Fix logging.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestMappingGuard.java: Use frysk.config.Prefix.

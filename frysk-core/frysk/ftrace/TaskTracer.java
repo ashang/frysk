@@ -70,6 +70,7 @@ class TaskTracer
     implements Ftrace.Driver
 {
     static private final Log fine = LogFactory.fine(TaskTracer.class);
+    static private final Log finest = LogFactory.finest(TaskTracer.class);
     static private final Log warning = LogFactory.warning(TaskTracer.class);
 
     // Map<Long(address), FunctionReturnObserver>
@@ -296,14 +297,16 @@ class TaskTracer
 	if (alreadyTracing.contains(sym))
 	    return;
 
-	fine.log("Request for tracing symbol", sym);
 	if (sym.isFunctionSymbol() && sym.getAddress() != 0) {
+	    fine.log("Request for tracing symbol", sym, "at", sym.getAddress());
 	    alreadyTracing.add(sym);
 	    BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
 	    final SymbolBreakpoint bp = bpManager.addSymbolBreakpoint(sym);
 	    bp.addObserver(new FunctionEnterObserver(sym));
 	    bpManager.enableBreakpoint(bp, task);
 	}
+	else
+	    finest.log("Ignoring request for tracing undefined or non-functional symbol", sym);
     }
 
     public void tracePLTEntry(Task task, PLTEntry entry)
