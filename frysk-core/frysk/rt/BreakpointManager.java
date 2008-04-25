@@ -167,7 +167,7 @@ public class BreakpointManager extends Observable {
     /**
      * Create a symbol breakpoint not associated with any process
      * @param symbol the symbol to breakpoint at
-     * @return FunctionBreakpoint object
+     * @return SymbolBreakpoint object
      */
     public SymbolBreakpoint addSymbolBreakpoint(DwflSymbol symbol) {
 	SymbolBreakpoint sourceBreakpoint =
@@ -196,9 +196,9 @@ public class BreakpointManager extends Observable {
      * performed.
      * @return FunctionBreakpoint object
      */
-    public FunctionBreakpoint addFunctionBreakpoint(String name, ObjectDeclaration die) {
+    public FunctionBreakpoint addFunctionBreakpoint(String name, ObjectDeclaration decl) {
 	FunctionBreakpoint sourceBreakpoint =
-	    new FunctionBreakpoint(CountManager.getNextId(), name, die);
+	    new FunctionBreakpoint(CountManager.getNextId(), name, decl);
 	addBreakpoint(sourceBreakpoint);
 	return sourceBreakpoint;
     }
