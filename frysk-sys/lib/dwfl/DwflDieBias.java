@@ -39,9 +39,21 @@
 
 package lib.dwfl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class DwflDieBias
 {
-  public DwarfDie die;
+    public DwarfDie die;
+    public long bias;
 
-  public long bias;
+    public ArrayList getEntryBreakpoints() {
+	ArrayList bps = die.getEntryBreakpoints();
+	ArrayList biased = new ArrayList();
+	for (Iterator it = bps.iterator(); it.hasNext(); ) {
+	    Long l = (Long)it.next();
+	    biased.add(new Long(l.longValue() + bias));
+	}
+	return biased;
+    }
 }
