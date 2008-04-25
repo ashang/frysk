@@ -51,7 +51,7 @@ public class PLTBreakpoint
     private final PLTEntry entry;
 
     /**
-     * Set a breakpoint based on a DwflSymbol.
+     * Set a breakpoint based on a PLTEntry.
      */
     public PLTBreakpoint(int id, PLTEntry entry) {
 	super (id, entry.getSymbol().getName(), entry.getSymbol().getDie());

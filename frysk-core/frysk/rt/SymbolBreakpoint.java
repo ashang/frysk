@@ -64,13 +64,14 @@ public class SymbolBreakpoint
 	if (die != null)
 	    return super.getBreakpointRawAddresses(task);
 	else {
-            // Filter any null values that have sneaked in.
 	    ModuleMatcher matcher = new ModuleMatcher() {
 		    public boolean moduleMatches(String moduleName) {
 			return moduleName.equals(symbol.getModule().getName());
 		    }
 		};
             LinkedList addrs = SymbolFactory.getAddresses(task, name, matcher);
+
+            // Filter any null values that have sneaked in.
             Long nullVal = new Long(0);
             while (addrs.remove(nullVal)) {
             }
