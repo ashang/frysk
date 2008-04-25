@@ -57,6 +57,7 @@
 #include "lib/dwfl/ElfSymbolVisibility.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/Dwfl.h"
+#include "lib/dwfl/DwflDieBias.h"
 #include "lib/dwfl/DwException.h"
 
 #include "java/util/LinkedList.h"
@@ -389,34 +390,48 @@ lib::dwfl::DwflModule::getDebuginfo()
   return getName();                 	               		      
 }    
 
-static int
-each_pubname (Dwarf *dwarf, Dwarf_Global *gl, void* thisObject)
-{
+namespace {
+  struct each_pubname_context {
+    lib::dwfl::DwflModule* const dwflModule;
+    Dwarf_Addr const bias;
 
-  lib::dwfl::DwflModule* dwflModule = (lib::dwfl::DwflModule*)thisObject;
-  lib::dwfl::Dwfl* dwfl = dwflModule->parent;
-  
-  Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
-  
-  if (dwarf_offdie (dwarf, gl->die_offset, die) == NULL){
+    each_pubname_context(lib::dwfl::DwflModule* m, Dwarf_Addr b)
+      : dwflModule(m), bias(b)
+    {}
+  };
+
+  int
+  each_pubname (Dwarf *dwarf, Dwarf_Global *gl, void* data)
+  {
+    each_pubname_context const* context = static_cast<each_pubname_context*>(data);
+    lib::dwfl::Dwfl* dwfl = context->dwflModule->parent;
+
+    Dwarf_Die* die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+
+    if (dwarf_offdie (dwarf, gl->die_offset, die) == NULL)
       throw new lib::dwfl::DwarfException(JvNewStringUTF("failed to get object die"));
-  }else{        
-    lib::dwfl::DwarfDie* dwarfDie = dwfl->factory->makeDie((jlong)die, dwflModule);  
-    dwflModule->pubNames->add(dwarfDie);
-    
+    else {
+      lib::dwfl::DwflDieBias* dwflDieBias = new lib::dwfl::DwflDieBias();
+      dwflDieBias->die = dwfl->factory->makeDie((jlong)die, context->dwflModule);
+      dwflDieBias->bias = context->bias;
+      context->dwflModule->pubNames->add(dwflDieBias);
+    }
+
+    return DWARF_CB_OK;
   }
-  
-  return DWARF_CB_OK;
 }
 
 void
 lib::dwfl::DwflModule::get_pubnames()
 {
   Dwarf_Addr bias;
-  ::Dwarf* dwarf = dwfl_module_getdwarf ((Dwfl_Module*)this->pointer, &bias);
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf ((Dwfl_Module*)this->pointer, &bias);
 
   if (dwarf != NULL)
-    dwarf_getpubnames(dwarf, each_pubname, this,0);
+    {
+      ::each_pubname_context ctx(this, bias);
+      ::dwarf_getpubnames(dwarf, each_pubname, &ctx, 0);
+    }
 }
 
 

@@ -54,6 +54,7 @@ import frysk.rsl.LogFactory;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
 
@@ -113,8 +114,8 @@ public class SymbolFactory
     private static Map getPublicTable(final DwflModule module) {
 	final Map dwSymbols = new HashMap();
 	for (Iterator it = module.getPubNames().iterator(); it.hasNext(); ) {
-	    DwarfDie die = (DwarfDie)it.next();
-	    dwSymbols.put(die.getName(), die);
+	    DwflDieBias dieBias = (DwflDieBias)it.next();
+	    dwSymbols.put(dieBias.die.getName(), dieBias);
 	}
 	return dwSymbols;
     }
@@ -130,13 +131,14 @@ public class SymbolFactory
 				   lib.dwfl.ElfSymbolBinding bind,
 				   lib.dwfl.ElfSymbolVisibility visibility)
 		{
-		    DwarfDie die = publicTable == null ? null
-			: (DwarfDie)publicTable.get(name);
+		    DwflDieBias dieBias = publicTable == null ? null
+			: (DwflDieBias)publicTable.get(name);
 		    int index;
 		    if ((index = name.indexOf('@')) != -1)
 			name = name.substring(0, index);
 		    DwflSymbol sym
-			= new DwflSymbol(value, size, name, type, die, module);
+			= new DwflSymbol(value, size, name, type,
+					 dieBias, module);
 		    table.put(name, sym);
 		}
 	};
@@ -148,14 +150,15 @@ public class SymbolFactory
 	    Map.Entry entry = (Map.Entry)it.next();
 	    String name = (String)entry.getKey();
 	    if (!table.containsKey(name)) {
-		DwarfDie die = (DwarfDie)entry.getValue();
+		DwflDieBias dieBias = (DwflDieBias)entry.getValue();
+		DwarfDie die = dieBias.die;
 		ArrayList entries = die.getEntryBreakpoints();
 		if (entries != null) {
 		    long addr = ((Long)entries.get(0)).longValue();
 		    long size = die.getHighPC() - die.getLowPC();
 		    lib.dwfl.ElfSymbolType type = null; // XXX fixme
 		    table.put(name, new DwflSymbol(addr, size, die.getName(),
-						   type, die, module));
+						   type, dieBias, module));
 		}
 	    }
 	}

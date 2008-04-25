@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -46,7 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflDieBias;
 import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
 import frysk.scopes.ConcreteInlinedFunction;
@@ -58,7 +58,7 @@ import frysk.value.ObjectDeclaration;
 public class FunctionBreakpoint
   extends SourceBreakpoint {
     protected final String name;
-    protected final DwarfDie die;
+    protected final DwflDieBias die;
 
     private boolean containsInlineInstances = false;
     private Function function;
@@ -66,7 +66,7 @@ public class FunctionBreakpoint
     /**
      * Set a breakpoint based on a DwarfDie or just a name.
      */
-    public FunctionBreakpoint(int id, String name, DwarfDie die) {
+    public FunctionBreakpoint(int id, String name, DwflDieBias die) {
         super(id);
         this.name = name;
         this.die = die;
@@ -80,7 +80,7 @@ public class FunctionBreakpoint
     }
 
     public LinkedList getBreakpointRawAddresses(Task task) {
-	
+
 	if (function != null) {
 	    if (function instanceof OutOfLineFunction) {
 		long address = ((OutOfLineFunction) function).getBreakPointAddress();
@@ -88,7 +88,7 @@ public class FunctionBreakpoint
 		addrs.add(new Long(address));
 		return addrs;
 	    }
-	    
+
 	    if (function instanceof frysk.scopes.InlinedFunction) {
 		LinkedList inlinedInstances = ((frysk.scopes.InlinedFunction)function).getInlinedInstances();
 		Iterator iterator = inlinedInstances.iterator();
@@ -99,15 +99,15 @@ public class FunctionBreakpoint
 		}
 		return addrs;
 	    }
-	    
-	    
+
+
 	}
-	
+
 	if (die != null) {
 	    ArrayList entryAddrs = die.getEntryBreakpoints();
 	    ArrayList inlineDies = null;
-	    if (die.isInlineDeclaration()) {
-		inlineDies = die.getInlinedInstances();
+	    if (die.die.isInlineDeclaration()) {
+		inlineDies = die.die.getInlinedInstances();
 	    }
 	    LinkedList addrs;
 	    if (entryAddrs == null)

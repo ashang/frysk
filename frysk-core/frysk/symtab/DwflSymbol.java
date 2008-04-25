@@ -45,21 +45,21 @@ package frysk.symtab;
  */
 
 import lib.dwfl.ElfSymbolType;
-import lib.dwfl.DwarfDie;
+import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
 
 public class DwflSymbol
     extends Symbol
 {
-    private final DwarfDie dwarfDie;
+    private final DwflDieBias dieBias;
     private final DwflModule dwflModule;
 
     // package private constructor.
     DwflSymbol(long address, long size, String name,
-	       ElfSymbolType type, DwarfDie die, DwflModule module)
+	       ElfSymbolType type, DwflDieBias dieBias, DwflModule module)
     {
 	super (address, size, name, type);
-	this.dwarfDie = die;
+	this.dieBias = dieBias;
 	this.dwflModule = module;
     }
 
@@ -67,7 +67,7 @@ public class DwflSymbol
 	return this.dwflModule;
     }
 
-    public DwarfDie getDie() {
-	return this.dwarfDie;
+    public DwflDieBias getDie() {
+	return this.dieBias;
     }
 }

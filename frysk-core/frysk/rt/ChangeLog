@@ -1,3 +1,8 @@
+2008-04-25  Petr Machata  <pmachata@redhat.com>
+
+	* FunctionBreakpoint.java: Use DwflDieBias instead of DwarfDie to
+	record the `die' type.
+
 2008-04-23  Teresa Thomas  <tthomas@redhat.com>
 
 	* Breakpoint.java (updateHit): 

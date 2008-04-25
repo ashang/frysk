@@ -1,5 +1,13 @@
 2008-04-25  Petr Machata  <pmachata@redhat.com>
 
+	* cni/DwflModule.cxx (each_pubname_context): New struct.
+	(each_pubname): Moved to anonymous namespace.  Now yields
+	DwflDieBias objects.  Uses each_pubname_context to keep track of
+	things.
+	(get_pubnames): Adjust to above.
+
+2008-04-25  Petr Machata  <pmachata@redhat.com>
+
 	* DwflDieBias.java (getEntryBreakpoints): New method.
 
 2008-04-22  Sami Wagiaalla  <swagiaal@redhat.com>
