@@ -1,3 +1,8 @@
+2008-04-25  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
+
+	* funit-scopes-multi-file-a.c: New file.
+	* funit-scopes-multi-file-b.c: New file.
+
 2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
 
 	* funit-rt-sigraise.c (handler): Make sure entry marker is really on

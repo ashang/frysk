@@ -245,7 +245,7 @@ public class TestListCommand extends TestLib {
         e.send("go\n");
         e.expect("go.*\n" + prompt + "Breakpoint");
 	e.sendCommandExpectPrompt("list x", ".*function x not found.*"); 
-	e.sendCommandExpectPrompt("list xyz", ".*symbol xyz not found.*");
+	e.sendCommandExpectPrompt("list xyz", ".*xyz not found.*");
 	e.send("quit\n");
 	e.expect("quit.*\nQuitting...");
         e.close();

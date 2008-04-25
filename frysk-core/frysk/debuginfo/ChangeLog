@@ -1,3 +1,7 @@
+2008-04-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestObjectDeclarationSearchEngineTopDown.java: New file.
+
 2008-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java: renamed getSymbolDie to

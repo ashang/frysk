@@ -322,3 +322,11 @@ frysk/pkgdatadir/test-core-x86:
 pkglib_PROGRAMS += frysk/pkglibdir/FunitSimpleInterfaceTest
 frysk/pkglibdir/FunitSimpleInterfaceTest:
 	gcj -o $@ -g --main=FunitSimpleInterfaceTest $(srcdir)/frysk/pkglibdir/FunitSimpleInterfaceTest.java $(srcdir)/frysk/pkglibdir/FunitSimpleInterface.java
+
+
+# The following links two files into one executable
+frysk_pkglibdir_funit_scopes_multi_file_a_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-b.c  -DNO_MAIN
+frysk_pkglibdir_funit_scopes_multi_file_b_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-b.c  -DNO_MAIN
+
+
+

@@ -245,7 +245,6 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	} catch (ObjectDeclarationNotFoundException e) {
 	    // exception was thrown
 	}
-	
-	
-}
+
+    }
 }

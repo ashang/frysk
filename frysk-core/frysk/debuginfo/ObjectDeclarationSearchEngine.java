@@ -92,7 +92,6 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * should be modified to
      * - use frysk search ({@link ObjectDeclarationSearchEngine})
      * - handle # syntax
-     * - return ObjectDeclaration
      * ...   
      */
     public ObjectDeclaration getObject(String name) {
@@ -106,7 +105,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	TypeFactory typeFactory = new TypeFactory(task.getISA());
 	
 	if (resultDie == null)
-	    throw new RuntimeException("symbol " + name + " not found.");
+	    throw new ObjectDeclarationNotFoundException(name);
 	
 	
 	try {
