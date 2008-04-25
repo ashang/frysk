@@ -243,7 +243,11 @@ class TaskTracer
 	}
 
     	public void updateHit(SourceBreakpoint breakpoint, Task task, long address) {
-	    if (!isPlt && sym.getAddress() != address)
+	    if (!isPlt
+		&& (address < sym.getAddress()
+		    // Some symbols are reported with size 0, and for
+		    // these we want to allow addr == getAddr + getSize
+		    || address > sym.getAddress() + sym.getSize()))
 		warning.log("Breakpoint requested for", sym.getAddress(),
 			    "hits at", address, "for symbol", sym);
 

@@ -1,5 +1,10 @@
 2008-04-25  Petr Machata  <pmachata@redhat.com>
 
+	* TaskTracer.java: Only warn about breakpoint address mismatch if
+	the breakpoint falls outside the borders of the traced symbol.
+
+2008-04-25  Petr Machata  <pmachata@redhat.com>
+
 	* TaskTracer.java: Fix logging.
 
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
