@@ -446,7 +446,7 @@ abstract public class DwarfDie {
 	LinkedList pubnames = this.getModule().getPubNames();
 	Iterator iterator = pubnames.iterator();
 	while (iterator.hasNext()) {
-	    DwarfDie die = (DwarfDie) iterator.next();
+	    DwarfDie die = ((DwflDieBias) iterator.next()).die;
 	    DwarfDie originalDie = die.getOriginalDie();
 	    if(originalDie != null && originalDie.getModule().getName().equals(this.getModule().getName()) &&
 		    originalDie.getOffset() == this.getOffset()){

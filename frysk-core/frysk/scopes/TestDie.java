@@ -45,6 +45,7 @@ import lib.dwfl.DwAt;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
+import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
 import frysk.config.Prefix;
 import frysk.debuginfo.DebugInfoFrame;
@@ -111,13 +112,13 @@ public class TestDie
 	
 	assertEquals("Size of pubnames ", 3, pubnames.size());
 	
-	DwarfDie die = (DwarfDie) iterator.next();
+	DwarfDie die = ((DwflDieBias) iterator.next()).die;
 	assertEquals("Die name", "crash", die.getName());
 	
-	die = (DwarfDie) iterator.next();
+	die = ((DwflDieBias) iterator.next()).die;
 	assertEquals("Die name", "main", die.getName());
 	
-	die = (DwarfDie) iterator.next();
+	die = ((DwflDieBias) iterator.next()).die;
 	assertEquals("Die name", "static_i", die.getName());
     }
 
