@@ -40,10 +40,8 @@
 package frysk.ftrace;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 import frysk.dwfl.ObjectFile;
 import frysk.proc.Action;
@@ -55,7 +53,6 @@ import frysk.rt.BreakpointManager;
 import frysk.rt.PLTBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
-import frysk.rt.SymbolBreakpoint;
 import frysk.stack.StackFactory;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
@@ -221,17 +218,27 @@ class TaskTracer
     private class FunctionEnterObserver
 	implements SourceBreakpointObserver
     {
-	private final DwflSymbol sym;
+	private DwflSymbol sym = null;
 	private final boolean isPlt;
 
-	public FunctionEnterObserver(DwflSymbol sym) {
-	    this.sym = sym;
+	public FunctionEnterObserver() {
 	    this.isPlt = false;
 	}
 
 	public FunctionEnterObserver(PLTEntry entry) {
-	    this.sym = entry.getSymbol();
+	    addSymbol(entry.getSymbol());
 	    this.isPlt = true;
+	}
+
+	public void addSymbol(DwflSymbol symbol) {
+	    if (sym != null
+		&& sym.getAddress() != symbol.getAddress())
+		warning.log("Two non-aliasing symbols in one observer:",
+			    sym, "and", symbol);
+
+	    if (sym == null
+		|| sym.getName().length() > symbol.getName().length())
+		sym = symbol;
 	}
 
 	private long getReturnAddress(Task task) {
@@ -260,16 +267,17 @@ class TaskTracer
 		token = entry;
 		tracePoint = new TracePoint(entry);
 	    } else {
-		DwflSymbol symbol = ((SymbolBreakpoint)breakpoint).getSymbol();
-		token = symbol;
-		tracePoint = new TracePoint(symbol);
+		token = sym;
+		tracePoint = new TracePoint(sym);
 	    }
 
 	    String eventName = "" + tracePoint;
 	    if (retAddress == 0)
-		ftrace.reporter.eventSingle(task, "call " + eventName, arch.getCallArguments(task));
+		ftrace.reporter.eventSingle(task, "call " + eventName,
+					    arch.getCallArguments(task));
 	    else {
-		ftrace.reporter.eventEntry(task, tracePoint, "call", eventName, arch.getCallArguments(task));
+		ftrace.reporter.eventEntry(task, tracePoint, "call",
+					   eventName, arch.getCallArguments(task));
 
 		Long retAddressL = new Long(retAddress);
 		FunctionReturnObserver retObserver
@@ -295,34 +303,58 @@ class TaskTracer
 	public void deletedFrom (Object observable) {}
     }
 
-    private final Set alreadyTracing = new HashSet();
-    public void traceSymbol(Task task, DwflSymbol sym)
-    {
-	if (alreadyTracing.contains(sym))
-	    return;
+    private final Map symbolObserversForTask = new HashMap(); // Map<Task, Map<address, FunctionEnterObserver>>
 
-	if (sym.isFunctionSymbol() && sym.getAddress() != 0) {
-	    fine.log("Request for tracing symbol", sym, "at", sym.getAddress());
-	    alreadyTracing.add(sym);
+    private synchronized FunctionEnterObserver getObserver(Task task, DwflSymbol sym, PLTEntry entry) {
+	Map symbolObservers = (Map)symbolObserversForTask.get(task);
+	if (symbolObservers == null) {
+	    symbolObservers = new HashMap();
+	    symbolObserversForTask.put(task, symbolObservers);
+	}
+
+	long addr = entry != null ? entry.getAddress() : sym.getAddress();
+	Long addrL = new Long(addr);
+	FunctionEnterObserver ob = (FunctionEnterObserver)symbolObservers.get(addrL);
+	if (ob == null) {
+	    finest.log("New function observer at", sym.getAddress());
+
+	    if (entry != null)
+		ob = new FunctionEnterObserver(entry);
+	    else
+		ob = new FunctionEnterObserver();
+
+	    symbolObservers.put(addrL, ob);
+
 	    BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
-	    final SymbolBreakpoint bp = bpManager.addSymbolBreakpoint(sym);
-	    bp.addObserver(new FunctionEnterObserver(sym));
+	    final SourceBreakpoint bp;
+	    if (entry != null)
+		bp = bpManager.addPLTBreakpoint(entry);
+	    else
+		bp = bpManager.addSymbolBreakpoint(sym);
+	    bp.addObserver(ob);
 	    bpManager.enableBreakpoint(bp, task);
 	}
-	else
+	return ob;
+    }
+
+    public void traceSymbol(Task task, DwflSymbol sym)
+    {
+	long addr = sym.getAddress();
+	if (!sym.isFunctionSymbol() || addr == 0) {
 	    finest.log("Ignoring request for tracing undefined or non-functional symbol", sym);
+	    return;
+	}
+
+	FunctionEnterObserver ob = getObserver(task, sym, null);
+	ob.addSymbol(sym);
+	fine.log("Request for tracing symbol", sym, "at", sym.getAddress());
     }
 
     public void tracePLTEntry(Task task, PLTEntry entry)
     {
-	if (alreadyTracing.contains(entry))
-	    return;
-
-	fine.log("Request for tracing PLT", entry.getSymbol());
-	alreadyTracing.add(entry);
-	BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
-	final PLTBreakpoint bp = bpManager.addPLTBreakpoint(entry);
-	bp.addObserver(new FunctionEnterObserver(entry));
-	bpManager.enableBreakpoint(bp, task);
+	FunctionEnterObserver ob = getObserver(task, entry.getSymbol(), entry);
+	ob.addSymbol(entry.getSymbol());
+	fine.log("Request for tracing PLT", entry.getSymbol(),
+		 "at", entry.getSymbol().getAddress());
     }
 }

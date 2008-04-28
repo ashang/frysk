@@ -1,3 +1,9 @@
+2008-04-28  Petr Machata  <pmachata@redhat.com>
+
+	* TaskTracer.java: Share one FunctionEnterObserver among several
+	symbols to reflect aliasing.  Use symbol with the shortest name to
+	report function calls and leaves.
+
 2008-04-25  Petr Machata  <pmachata@redhat.com>
 
 	* TaskTracer.java: Only warn about breakpoint address mismatch if
