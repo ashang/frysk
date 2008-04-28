@@ -89,10 +89,10 @@ public class TestTaskForkedObserver extends TestLib {
 
 	assertEquals("number of child processes created",
 		     1, forkObserver.forkCount);
-	assertEquals("number of child processes destroyed",
-		     1, forkObserver.terminatedCount);
-	assertEquals("number of times fork observer added",
-		     2, forkObserver.addedCount());
+	assertEquals("number of exits (includes initial process)",
+		     2, forkObserver.terminatedCount);
+	assertEquals("number of times fork+terminated observer added",
+		     2 + 2, forkObserver.addedCount());
     }
 
     private void runForkTest(ForkObserver forkObserver, String[] argv) {
