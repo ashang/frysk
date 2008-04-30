@@ -1,3 +1,7 @@
+2008-04-30  Stan Cox  <scox@redhat.com>
+
+	* SysRoot.java (findExe): Consider relative paths.
+
 2008-04-24  Stan Cox  <scox@redhat.com>
 
 	*  package.html: New file.

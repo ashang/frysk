@@ -115,17 +115,25 @@ public class SysRoot {
 
 
     private File findExe(String pathVar, String arg0) {
+	File exeFile = new File(arg0);
         if (pathVar == null) {
-            return new File(arg0);
+            return exeFile;
         }
 
         if (arg0.startsWith("/")) {
-            return new File(arg0);
+            return exeFile;
         }
 
         String[] path = pathVar.split(":");
         if (path == null) {
-            return new File(arg0);
+            return exeFile;
+        }
+        
+        if (sysRoot.getPath().compareTo("/") == 0) { 
+            if (! exeFile.isAbsolute() && exeFile.exists()) {
+        	// given "./executable" with sysroot "/"
+        	return exeFile;
+            }
         }
 
         for (int i = 0; i < path.length; i++) {
