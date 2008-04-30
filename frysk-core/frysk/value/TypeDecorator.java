@@ -90,6 +90,20 @@ abstract class TypeDecorator extends Type {
 	}
     }
 
+    public void toPrintBrief(StringBuilder stringBuilder, int indent) {
+	if (getUltimateType() instanceof PointerType
+	    || this instanceof ReferenceType) {
+	    decorated.toPrintBrief(stringBuilder, 0);
+	    stringBuilder.append(" ");
+	    stringBuilder.append(getName());
+	}
+	else {
+	    decorated.toPrintBrief(stringBuilder, 0);
+	    stringBuilder.insert(0, " ");
+	    stringBuilder.insert(0, getName());
+	}
+    }
+    
     void assign(Location location, Value value) {
 	decorated.assign(location, value);
     }

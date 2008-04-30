@@ -1,3 +1,11 @@
+2008-04-30  Stan Cox  <scox@redhat.com>
+
+	* Type.java (toPrintBrief): New.
+	* PointerType.java (toPrintBrief): New.
+	* CompositeType.java (toPrintBrief): New.
+	* TypeDecorator.java (toPrintBrief): New.
+	* FunctionType.java (toPrint): Use toPrintBrief. 
+
 2008-04-24  Stan Cox  <scox@redhat.com>
 
 	*  package.html: New file.

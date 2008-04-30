@@ -1,3 +1,11 @@
+2008-04-30  Stan Cox  <scox@redhat.com>
+	
+	* TypeFactory.java (getGccStructOrClassType): Set dieHash.
+	(getClassType): Likewise.
+	(getUnionType): Likewise.
+	(getType): Set "this" reference from dieHash.
+	* DebugInfo.java (what): Check type value.
+
 2008-04-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngineTopDown.java: New file.

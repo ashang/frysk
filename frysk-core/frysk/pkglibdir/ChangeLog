@@ -1,3 +1,8 @@
+2008-04-30  Stan Cox  <scox@redhat.com>
+	
+	* funit-type-class.cxx (class_nested_class): New.
+	(class_ref_method): New.
+
 2008-04-25  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
 
 	* funit-scopes-multi-file-a.c: New file.

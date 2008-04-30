@@ -180,7 +180,7 @@ Type class_inherited_new = Type ("new base", "main", "new_base");
 // Type: class Derived {
 // Type:   struct Base3 {
 // Type:     int (**_vptr.Base3) ();
-// Type:     void Base3 (void * const &);
+// Type:     void Base3 (const Base3 &);
 // Type:     void Base3 ();
 // Type:     char do_this (char);
 // Type:     short int do_this (short int);
@@ -188,7 +188,7 @@ Type class_inherited_new = Type ("new base", "main", "new_base");
 // Type:     float do_this (float);
 // Type:     void ~Base3 ();
 // Type:   } ;
-// Type:   void Derived (void * const &);
+// Type:   void Derived (const Derived &);
 // Type:   void Derived ();
 // Type:   char do_this (char);
 // Type:   short int do_this (short int);
@@ -215,6 +215,38 @@ func ()
   class_template.do_this ((int)1);
   crash();
 }
+
+class class_nested_class	
+{
+public:
+  class nested
+  {
+   public:
+    nested (int i) : z(i) {}
+    int z;
+  };
+} class_nested_class_v;
+
+// Name: class_nested_class_v
+// Type: struct class_nested_class {
+// Type: }
+
+class class_ref_method
+{
+  int z;
+    int get_z () {return z;}
+  class class_ref_method & get_this () {return *this;} 
+  class class_ref_method * also_get_this () {return this;} 
+} class_ref_method_v;
+
+// Name: class_ref_method_v
+// Type: class class_ref_method {
+// Type:  private:
+// Type:   int z;
+// Type:   int get_z ();
+// Type:   class_ref_method & get_this ();
+// Type:   class_ref_method * also_get_this ();
+// Type: }
 
 int
 main (int argc, char **argv)

@@ -395,6 +395,10 @@ public abstract class CompositeType
 	stringBuilderParm.insert(0, stringBuilder);
     }
     
+    public void toPrintBrief(StringBuilder stringBuilder, int indent) {
+	    stringBuilder.insert(0, getName());
+    }
+    
     public Value member(Value var1, String member) {
 	DynamicMember mem = (DynamicMember)nameToMember.get(member);
 	if (mem == null)

@@ -117,6 +117,14 @@ public abstract class Type {
     public abstract void toPrint(StringBuilder stringBuilder, int indent);
 
     /**
+     * Print this Type, possibly briefly, after indenting INDENT spaces.
+     * @param stringBuilder TODO
+     */
+    public void toPrintBrief(StringBuilder stringBuilder, int indent) {
+	toPrint(stringBuilder, indent);
+    }
+
+    /**
      * Print this Type to a StringBuffer and return the String.
      */
     public final String toPrint() {

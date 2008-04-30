@@ -170,7 +170,7 @@ public class TypeFactory {
 
 	    if (member.getTag() == DwTag.SUBPROGRAM) {
 		Value v = getSubprogramValue(member);
-		if (hasArtifitialParameter(member)) {
+		if (hasArtificialParameter(member)) {
 		    classType.addMember(member.getName(), sourceLocation, v
 			    .getType(), offset, access);
 		} else {
@@ -255,6 +255,7 @@ public class TypeFactory {
 	else
 	    type = new GccStructOrClassType(name, getByteSize(classDie));
 
+	dieHash.put(new Long(classDie.getOffset()), type);
 	addMembers(classDie, type);
 
 	return type;
@@ -272,6 +273,7 @@ public class TypeFactory {
 	dumpDie("classDie=", classDie);
 
 	ClassType classType = new ClassType(name, getByteSize(classDie));
+	dieHash.put(new Long(classDie.getOffset()), classType);
 	addMembers(classDie, classType);
 	return classType;
     }
@@ -295,7 +297,7 @@ public class TypeFactory {
      * @param die
      * @return
      */
-    private boolean hasArtifitialParameter(DwarfDie die) {
+    private boolean hasArtificialParameter(DwarfDie die) {
 	if (die == null
 		|| !(die.getTag().equals(DwTag.SUBPROGRAM) || die.getTag()
 			.equals(DwTag.INLINED_SUBROUTINE))) {
@@ -319,6 +321,8 @@ public class TypeFactory {
 	dumpDie("unionDie=", classDie);
 
 	UnionType classType = new UnionType(name, getByteSize(classDie));
+	dieHash.put(new Long(classDie.getOffset()), classType);
+
 	for (DwarfDie member = classDie.getChild(); 
 	     member != null; 
 	     member = member.getSibling()) {
@@ -435,10 +439,8 @@ public class TypeFactory {
 	if (mappedType != null)
 	    return mappedType;
 	else if (dieHash.containsKey(new Long(type.getOffset()))) {
-	    // ??? will this always be a pointer to ourselves?
-	    // Instead of VoidType, we need a way to reference ourselves
-	    return new PointerType("", byteorder, getByteSize(type),
-		    new VoidType());
+	    // This is a self reference
+	    return (Type)dieHash.get(new Long(type.getOffset()));
 	}
 	dieHash.put(new Long(type.getOffset()), null);
 	Type returnType = null;

@@ -108,7 +108,8 @@ public class DebugInfo {
             case DwTag.TYPEDEF_:
             case DwTag.STRUCTURE_TYPE_: {
 		Type type = typeFactory.getType(varDie.getType());
-		result.append(type.toPrint());
+		if (type != null)
+		    result.append(type.toPrint());
 		break;
             }
             default:

@@ -72,13 +72,13 @@ public class FunctionType
 	if (returnType == null) 
 	    parmStringBuilder.insert(0, "void");
 	else
-	    returnType.toPrint(parmStringBuilder, 0);
+	    returnType.toPrintBrief(parmStringBuilder, 0);
 	parmStringBuilder.append(" ");
 	stringBuilder.insert(0, parmStringBuilder);
 	stringBuilder.append(" (");
 	for (int i = 0; i < this.parmTypes.size(); i++) {
 	    parmStringBuilder.delete(0, parmStringBuilder.length());
-	    ((Type)this.parmTypes.get(i)).toPrint(parmStringBuilder, 0);
+	    ((Type)this.parmTypes.get(i)).toPrintBrief(parmStringBuilder, 0);
 	    parmStringBuilder.append((String)this.parmNames.get(i));
 	    stringBuilder.append(parmStringBuilder);
 	    if (i < this.parmTypes.size() - 1)

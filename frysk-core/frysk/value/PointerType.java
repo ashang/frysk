@@ -137,6 +137,12 @@ public class PointerType
 	}
     }
 
+    public void toPrintBrief(StringBuilder stringBuilder, int indent) {
+	    stringBuilder.insert(0, getName());
+	    stringBuilder.insert(0, " ");
+	    type.toPrintBrief(stringBuilder, indent);
+}
+
     protected Type clone(IntegerType accessor) {
 	return new PointerType(getName(), order(), getSize(), type, accessor);
     }
