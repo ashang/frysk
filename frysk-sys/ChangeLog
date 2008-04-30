@@ -1,3 +1,7 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JniRunner): Provide default tests to run.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (JniRunner): Require frysk-sys.jar and

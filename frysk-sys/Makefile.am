@@ -73,7 +73,8 @@ lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 
 
 
-# Quick hack to get a test JNI program up-and-running.
+# Quick hack to get a test JNI program up-and-running; as a package is
+# re-implemented in JNI, add it to the below.
 
 noinst_DATA += JniRunner.jar JniRunner
 CLEANFILES += JniRunner
@@ -85,7 +86,13 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "export LD_LIBRARY_PATH=.:/usr/lib64:/usr/lib"	>> $@.tmp
 	echo "export CLASSPATH=\\"				>> $@.tmp
 	echo "$(CLASSPATH):frysk-sys.jar:JniRunner.jar"		>> $@.tmp
-	echo "$(JAVA) JniRunner \"\$$@\""			>> $@.tmp
+	echo "if test \$$# -eq 0 ; then"			>> $@.tmp
+	echo "  $(JAVA) JniRunner \\"				>> $@.tmp
+	echo "    lib.stdcpp \\"				>> $@.tmp
+	echo "    ;"						>> $@.tmp
+	echo "else"						>> $@.tmp
+	echo "  $(JAVA) JniRunner \"\$$@\""			>> $@.tmp
+	echo "fi"						>> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
