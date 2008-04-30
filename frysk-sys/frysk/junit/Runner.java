@@ -42,6 +42,7 @@ package frysk.junit;
 import frysk.config.FryskVersion;
 import frysk.config.Prefix;
 import frysk.config.Host;
+import frysk.rsl.Log;
 import frysk.rsl.LogOption;
 import frysk.expunit.Expect;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
@@ -64,6 +65,8 @@ import junit.textui.TestRunner;
  */
 
 public class Runner extends TestRunner {
+    private static final Log fine = Log.fine(Runner.class);
+
     // Repeat once by default.
     private int repeatValue = 1;
     private Collection testCases = null;
@@ -95,61 +98,70 @@ public class Runner extends TestRunner {
       
 	TestSuite testSuite = new TestSuite ();
       
-	if (otherArgs.size() > 0) {
-	    // Construct the testsuite from the list of names.
-	    for (Iterator argIter = otherArgs.listIterator(0);
-		 argIter.hasNext(); ) {
-		String arg = (String)argIter.next();
-		if (arg.charAt(0) == '-') {
-		    this.repeatValue = - Integer.parseInt(arg);
-		} else {
-		    int lidot = arg.lastIndexOf('.');
-		    String testName = null;
-		    String testClass = null;
-		    if (arg.substring(lidot + 1).startsWith("test")) {
-			testClass = arg.substring(0, lidot);
-			testName = arg.substring(lidot + 1);
-		    } else if (arg.matches("test.*\\(.*\\)")) {
-			String[] testTuple = arg.split("[\\(\\)]");
-			testName = testTuple[0];
-			testClass = testTuple[1];
-		    } else {
-			testClass = arg;
-		    }
+	// Construct the testsuite from the list of names.
+	for (Iterator i = otherArgs.iterator(); i.hasNext(); ) {
+	    String arg = (String) i.next();
+
+	    // A -N argument specifying a repeat count.
+	    if (arg.matches("^-[0-9]*$")) {
+		repeatValue = - Integer.parseInt(arg);
+		fine.log(this, "repeat", repeatValue);
+		continue;
+	    }
+
+	    String testMethod;
+	    String testClass;
+	    if (arg.matches("^test.*\\(.*\\)$")) {
+		// testFoo(frysk.class)
+		String[] testTuple = arg.split("[\\(\\)]");
+		testMethod = testTuple[0];
+		testClass = testTuple[1];
+	    } else if (arg.matches(".*\\.test[A-Z][^.]*")) {
+		// frysk.class.testMethod
+		int lidot = arg.lastIndexOf('.');
+		testClass = arg.substring(0, lidot);
+		testMethod = arg.substring(lidot + 1);
+	    } else {
+		// frysk.class
+		testClass = arg;
+		testMethod = null;
+	    }
+	    fine.log(this, "testClass", testClass, "testMethod", testMethod);
 		    
-		    for (Iterator classIter = testClasses.iterator();
-			 classIter.hasNext (); ) {
-			Class testKlass = (Class)classIter.next ();
-			if (testName == null) {
-			    // class only
-			    if (testKlass.getName().startsWith(testClass)) {
-				testSuite.addTest(new TestSuite(testKlass));
-			    }
-			} else {
-			    // class.name or name(class)
-			    if (testKlass.getName().equals(testClass)) {
-				try {
-				    // Probe the class to see if the
-				    // method exists.
-				    testKlass.getMethod(testName, null);
-				    TestCase test = (TestCase)testKlass.newInstance();
-				    test.setName(testName);
-				    testSuite.addTest(test);
-				} catch (NoSuchMethodException e) {
-				    System.out.println("Couldn't find test method: " + testClass + "." + testName);
-				} catch (InstantiationException e) {
-				    System.out.println("Couldn't instantiate class with name: "
-						       + testClass);
-				} catch (IllegalAccessException e) {
-				    System.out.println("Couldn't access class with name: "
-						       + testClass);
-				}
-			    }
+	    for (Iterator c = testClasses.iterator(); c.hasNext (); ) {
+		Class testKlass = (Class) c.next ();
+		if (testMethod == null) {
+		    // class only
+		    if (testKlass.getName().startsWith(testClass)) {
+			testSuite.addTest(new TestSuite(testKlass));
+			fine.log(this, "adding", testKlass);
+		    }
+		} else {
+		    // class.name or name(class)
+		    if (testKlass.getName().equals(testClass)) {
+			try {
+			    // Probe the class to see if the method
+			    // exists.
+			    testKlass.getMethod(testMethod, null);
+			    TestCase test = (TestCase)testKlass.newInstance();
+			    test.setName(testMethod);
+			    testSuite.addTest(test);
+			    fine.log(this, "adding", testKlass);
+			} catch (NoSuchMethodException e) {
+			    System.out.println("Couldn't find test method: " + testClass + "." + testMethod);
+			} catch (InstantiationException e) {
+			    System.out.println("Couldn't instantiate class with name: "
+					       + testClass);
+			} catch (IllegalAccessException e) {
+			    System.out.println("Couldn't access class with name: "
+					       + testClass);
 			}
 		    }
 		}
 	    }
-	} else {
+	}
+
+	if (otherArgs.size() == 0) {
 	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
 		Class testKlass = (Class) i.next ();
 		// Only include tests that gets by both filters.
