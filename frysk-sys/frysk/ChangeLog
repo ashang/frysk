@@ -1,3 +1,7 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/jnixx.java: New.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/exceptions.cxx: New.

@@ -39,24 +39,28 @@
 
 
 #include <cxxabi.h>
+#include <exception>
 #include <stdio.h>
 #include <alloca.h>
 
 #include "lib_stdcpp_Demangler.h"
+#include "lib/stdcpp/Demangler-jni.hxx"
 
 using namespace abi;
 
-JNIEXPORT jstring
-Java_lib_stdcpp_Demangler_demangle(JNIEnv *env, jclass klass,
-				   jstring mangledString) {
+jstring
+lib::stdcpp::Demangler::demangle(JNIEnv *env, jclass klass,
+				 jstring mangledString) {
   if (mangledString == NULL)
     return NULL;
   
   int status = -1;
 
   const char* mangledName = env->GetStringUTFChars(mangledString, NULL);
-  if (mangledName == NULL)
-    return NULL; // exception pending
+  if (mangledName == NULL) {
+    throw new std::exception();
+  }
+
   const char *demangledName = __cxa_demangle(mangledName, 0, 0, &status);
   env->ReleaseStringUTFChars(mangledString, mangledName);
   

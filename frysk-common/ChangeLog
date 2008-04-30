@@ -1,3 +1,10 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (generate_jnixx_sources): New.
+	* Makefile.rules (JNIXX): New.
+	(%-jni.hxx: %.java): New.
+	(%-jni.cxx: %.java): New.
+
 2008-04-18  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java):

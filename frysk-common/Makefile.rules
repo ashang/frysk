@@ -390,6 +390,27 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 			$(GCJHFLAGS) $$class ; \
 	done
 
+# Generate one or more .hxx files, one per named class, and using
+# JNIXX, from the corresponding .java file.
+
+# This assumes that the directory's .jar file has already been built.
+
+JNIXX = \
+	set -e ; \
+	class=`echo $@ | sed -e 's/\.[ch]xx$$//' -e 's/-jni//' -e 's,/,.,g'` ; \
+	suffix=`echo $@ | sed -e 's/^.*\.\([ch]xx\)$$/\1/'` ; \
+	echo "$$class $$suffix => $@" ; \
+	rm -f $@.tmp ; \
+	CLASSPATH=$(GEN_DIRNAME).jar:$(CLASSPATH) \
+	    $(JAVA) frysk.jni.jnixx $$class $$suffix \
+		> $@.tmp ; \
+	mv $@.tmp $@
+%-jni.hxx: %.java
+	$(JNIXX)
+%-jni.cxx: %.java
+	$(JNIXX)
+
+
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so
 .a.so:
