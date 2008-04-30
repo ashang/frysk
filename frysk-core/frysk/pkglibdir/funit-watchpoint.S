@@ -52,21 +52,21 @@ MAIN_PROLOGUE(0)
 NOP
 
 // Load source variables address into GPR 1
-LOAD_IMMED_WORD(REG1, source)
+LOAD_REGISTER_IMMED(REG1, source)
 
 // Load the literal value 0x77 into GPR3. The value isn't important
 // the actual writing of the data is.
-LOAD_IMMED_BYTE (REG3, 0x77)
+LOAD_BYTE_IMMED(REG3, 0x77)
 
 // Clear the decks ...
 NOP
 // Write 0x77 into the location of source (held by GPR1)
-STORE_WORD(REG3, REG1)
+STORE_REGISTER(REG3, REG1)
 NOP
 
 // Read read_only memory.
-LOAD_IMMED_WORD(REG3, read_only)
-LOAD_WORD(REG3, REG3)
+LOAD_REGISTER_IMMED(REG3, read_only)
+LOAD_REGISTER(REG3, REG3)
 NOP
 
 
@@ -77,8 +77,7 @@ FUNCTION_END(main,0)
 
 // Declare a global variable source. One byte and populate it
 .globl source
-WORD(source, 0x99)
+VARIABLE(source, 0x99)
 
 .globl read_only
-WORD(read_only, 0x01)
-
+VARIABLE(read_only, 0x01)

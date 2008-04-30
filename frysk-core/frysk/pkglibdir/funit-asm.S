@@ -45,19 +45,29 @@
 	// A known global symbol for checking the PC.
 .global crash
 crash:
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NOP
 
 	FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 
-	LOAD_IMMED_WORD(REG0, 1)
-	LOAD_IMMED_WORD(REG1, 2)
-	LOAD_IMMED_WORD(REG2, 3)
-	LOAD_IMMED_WORD(REG3, 4)
-	LOAD_IMMED_WORD(SP, 5)
+	// Load REG0 from memory.
+	LOAD_REGISTER_IMMED(REG0, reg0)
+	LOAD_REGISTER(REG0, REG0)
+	LOAD_REGISTER_IMMED(REG1, 2)
+	LOAD_REGISTER_IMMED(REG2, 3)
+	LOAD_REGISTER_IMMED(REG3, 4)
+	LOAD_REGISTER_IMMED(SP, 5)
 	JUMP(crash)
 
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)
+
+	// Wrap the value in garbage so a 64-bit load of a 32-bit word
+	// picks up garbage.
+	.data
+	.byte 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7
+	VARIABLE(reg0, 1)
+	.data
+	.byte 0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7

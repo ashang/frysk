@@ -1,3 +1,18 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-asm.S: Update; use LOAD_REGISTER et.al.; initialize REG0
+	from memory.
+	* funit-watchpoint.S: Ditto.
+	* funit-stepping-asm.S: Ditto.
+	* funit-symbols.S: Ditto.
+	* funit-rt-asmstepper.S: Ditto.
+	* funit-raise.S: Ditto.
+	* funit-location.S: Ditto.
+	* funit-instructions.S: Ditto.
+	* funit-frameless.S: Ditto.
+	* funit-elf-symbols.S: Ditto.
+	* funit-iftester.S: Ditto.
+
 2008-04-30  Stan Cox  <scox@redhat.com>
 	
 	* funit-type-class.cxx (class_nested_class): New.

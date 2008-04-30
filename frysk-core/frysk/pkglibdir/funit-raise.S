@@ -66,17 +66,17 @@
 #define RAISE_FUNCTION_END(X) .size X, .-X
 
 RAISE_FUNCTION_START(div_zero)
-	LOAD_IMMED_BYTE(REG0, 0)
-	LOAD_IMMED_BYTE(REG1, 0)
+	LOAD_BYTE_IMMED(REG0, 0)
+	LOAD_BYTE_IMMED(REG1, 0)
 div_zero_label:
 	DIV_ZERO(REG1)
 	NO_OP			;  // never reached
 RAISE_FUNCTION_END(div_zero)
 
 RAISE_FUNCTION_START(bad_addr_segv)
-	LOAD_IMMED_BYTE (REG0, 0)
+	LOAD_BYTE_IMMED (REG0, 0)
 bad_addr_segv_label:
-	STORE_WORD (REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP			;  // never reached
 RAISE_FUNCTION_END(bad_addr_segv)
 
@@ -87,29 +87,29 @@ bad_inst_ill_label:
 RAISE_FUNCTION_END(bad_inst_ill)
 
 RAISE_FUNCTION_START(term_sig_hup)
-        LOAD_IMMED_BYTE(REG0, SYS_gettid)
+        LOAD_BYTE_IMMED(REG0, SYS_gettid)
 	SYSCALL
-	LOAD_IMMED_BYTE(REG1,0)
+	LOAD_BYTE_IMMED(REG1,0)
 	ADD(REG0,REG1)
-	LOAD_IMMED_BYTE(REG2,SIGHUP)
-        LOAD_IMMED_BYTE(REG0, SYS_tkill)
+	LOAD_BYTE_IMMED(REG2,SIGHUP)
+        LOAD_BYTE_IMMED(REG0, SYS_tkill)
 term_sig_hup_label:
 	SYSCALL
         NO_OP                   ;   // never reached
 RAISE_FUNCTION_END(term_sig_hup)
 
 RAISE_FUNCTION_START(ign_sig_urg)
-        LOAD_IMMED_BYTE(REG0, SYS_gettid)
+        LOAD_BYTE_IMMED(REG0, SYS_gettid)
 	SYSCALL
-	LOAD_IMMED_BYTE(REG1,0)
+	LOAD_BYTE_IMMED(REG1,0)
 	ADD(REG0,REG1)
-	LOAD_IMMED_BYTE(REG2,SIGURG)
-        LOAD_IMMED_BYTE(REG0, SYS_tkill)
+	LOAD_BYTE_IMMED(REG2,SIGURG)
+        LOAD_BYTE_IMMED(REG0, SYS_tkill)
 ign_sig_urg_label:	
 	SYSCALL
         NO_OP                   ;   // Reached!
 	// Exit nicely
-	LOAD_IMMED_BYTE(REG0, 0)	
+	LOAD_BYTE_IMMED(REG0, 0)	
 	JUMP(exit_main)
 RAISE_FUNCTION_END(ign_sig_urg)
 	
@@ -117,37 +117,37 @@ FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 
 	// Get argc (REG1) and see what the user wanted.
-	LOAD_IMMED_BYTE(REG3, 2)
+	LOAD_BYTE_IMMED(REG3, 2)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(div_zero)
 
-	LOAD_IMMED_BYTE(REG3, 3)
+	LOAD_BYTE_IMMED(REG3, 3)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(bad_addr_segv)
 
-	LOAD_IMMED_BYTE(REG3, 4)
+	LOAD_BYTE_IMMED(REG3, 4)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(bad_inst_ill)
 
-	LOAD_IMMED_BYTE(REG3, 5)
+	LOAD_BYTE_IMMED(REG3, 5)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(term_sig_hup)
 
-	LOAD_IMMED_BYTE(REG3, 6)
+	LOAD_BYTE_IMMED(REG3, 6)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(ign_sig_urg)
 
 	// Unknown, print usage.
-	LOAD_IMMED_BYTE(REG0, SYS_write)
-	LOAD_IMMED_BYTE(REG1, 1)
+	LOAD_BYTE_IMMED(REG0, SYS_write)
+	LOAD_BYTE_IMMED(REG1, 1)
 
-	LOAD_IMMED_WORD(REG2, usage)
-	LOAD_IMMED_WORD(REG3, .usage-usage)
+	LOAD_REGISTER_IMMED(REG2, usage)
+	LOAD_REGISTER_IMMED(REG3, .usage-usage)
 
 	SYSCALL
 
 	// Non-zero return
-	LOAD_IMMED_BYTE(REG0, 1)
+	LOAD_BYTE_IMMED(REG0, 1)
 	
 exit_main:	
 	MAIN_EPILOGUE(0)

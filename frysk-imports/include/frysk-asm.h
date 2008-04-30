@@ -58,43 +58,55 @@
 // simpler instrutions.  For instance, a memory increment uses the
 // sequence:
 
-//   LOAD_IMMED_WORD(REG1, memory_addres)
-//   LOAD_WORD(REG2, REG1)
-//   LOAD_IMMED_BYTE(REG3, 1)
+//   LOAD_REGISTER_IMMED(REG1, memory_addres)
+//   LOAD_REGISTER(REG2, REG1)
+//   LOAD_BYTE_IMMED(REG3, 1)
 //   ADD(REG2, REG3)
-//   STORE_WORD(REG2, REG1)
+//   STORE_REGISTER(REG2, REG1)
 
-// Note that while the i386 has an instruction for directly
+// Rationale: while the i386 has an instruction for directly
 // incrementing memory, load-store ISAs such as the PowerPC do not.
 
-// Further reading: RISC (Reduced Instruction Set Computer) and CISC
+// Background: RISC (Reduced Instruction Set Computer) and CISC
 // (Complex Instruction Set Computer).
 
 
 
-// The frysk ISA's word size:
+// The frysk ISA's natural word size:
 
-// For this architecture a WORD is the same size as both the general
-// purpose register and the program counter; you can assume that a
+// For this architecture the natural word is the same size as both the
+// general purpose register and the program counter; you can assume that a
 // word is at least 32-bits in size.  On a 32-bit system (such as
-// i386) the word is a 4-byte value, while on a 64-bit system (such as
-// x86-64) a word is 8-bytes.
+// i386) the natural word is a 4-byte value, while on a 64-bit system
+// (such as x86-64) a natural word is 8-bytes.
 
-// For instance, to declare "variable" as a word sized memory location
-// with initial value "10" use the sequence:
+// For instance, to declare a "variable" as a natural word sized memory
+// location with natural alignment and with an initial value of "10"
+// use the sequence:
 
-//        WORD(variable, 10)
+//        VARIABLE(variable, 10)
 
-// Further reading: The ALPHA Instruction Set Architecture. The
+// Background: The ALPHA Instruction Set Architecture. The
 // original ALPHA ISA only supported (64-bit) word sized memory
 // accesses.
 
-#define WORD(NAME, VALUE) \
+#if defined(__x86_64__) || defined (__powerpc64__)
+# define VARIABLE(NAME, VALUE) \
 		.data ; \
+		.balign 8 ; \
 	NAME: \
-		.long VALUE ; \
+		.quad VALUE ; \
 		.size NAME, . - NAME ; \
 		.text
+#else
+# define VARIABLE(NAME, VALUE) \
+		.data ; \
+		.balign 4 ; \
+	NAME: \
+		.int VALUE ; \
+		.size NAME, . - NAME ; \
+		.text
+#endif
 
 #define BYTE(NAME, VALUE) \
 		.data ; \
@@ -115,10 +127,10 @@
 // For instance, a conditional jump based on "variable" being 1 can be
 // implemented using:
 
-//        WORD(var, 10)
+//        VARIABLE(var, 10)
 //        ....
-//        LOAD_IMMED_WORD(REG0, var)
-//        LOAD_IMMED_BYTE(REG1, 1)
+//        LOAD_REGISTER_IMMED(REG0, var)
+//        LOAD_BYTE_IMMED(REG1, 1)
 //        COMPARE(REG0, REG1)
 //        JUMP_EQ(dest)
 //        ....
@@ -200,25 +212,25 @@
 // For instance, to move a WORD sized value from the address
 // designated by REG1 to that designated by REG2 use the sequence:
 
-//   LOAD_WORD(REG3, REG1)
-//   STORE_WORD(REG3, REG2)
+//   LOAD_REGISTER(REG3, REG1)
+//   STORE_REGISTER(REG3, REG2)
 
 #if defined __x86__
-#  define LOAD_WORD(DEST_REG,BASE_REG) mov (BASE_REG), DEST_REG
+#  define LOAD_REGISTER(DEST_REG,BASE_REG) mov (BASE_REG), DEST_REG
 #elif defined __powerpc64__
-#  define LOAD_WORD(DEST_REG,BASE_REG) ld DEST_REG, 0(BASE_REG)
+#  define LOAD_REGISTER(DEST_REG,BASE_REG) ld DEST_REG, 0(BASE_REG)
 #elif defined __powerpc__
-#  define LOAD_WORD(DEST_REG,BASE_REG) lwz DEST_REG, 0(BASE_REG)
+#  define LOAD_REGISTER(DEST_REG,BASE_REG) lwz DEST_REG, 0(BASE_REG)
 #else
 #  warning "No load instruction defined"
 #endif
 
 #if defined __x86__
-#  define STORE_WORD(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
+#  define STORE_REGISTER(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
 #elif defined __powerpc64__
-#  define STORE_WORD(SOURCE_REG,BASE_REG) std SOURCE_REG, 0(BASE_REG)
+#  define STORE_REGISTER(SOURCE_REG,BASE_REG) std SOURCE_REG, 0(BASE_REG)
 #elif defined __powerpc__
-#  define STORE_WORD(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+#  define STORE_REGISTER(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
 #else
 #  warning "No store instruction defined"
 #endif
@@ -247,42 +259,42 @@
 // Load-immediate instruction sequences:
 
 // A very small constant can be loaded directly into a register using
-// the LOAD_IMMED_BYTE instruction.
+// the LOAD_BYTE_IMMED instruction.
 
 // A WORD sized constant can be loaded directly into a register using
-// the LOAD_IMMED_WORD compound instruction.
+// the LOAD_IMMED compound instruction.
 
 // For instance, to load the WORD at VARIABLE, use the sequence:
 
-//        LOAD_IMMED_WORD(REG1, variable)
-//        LOAD_WORD(REG1, REG1)
+//        LOAD_REGISTER_IMMED(REG1, variable)
+//        LOAD_REGISTER(REG1, REG1)
 
 // And then to increment REG1 by 1 use:
 
-//        LOAD_IMMED_BYTE(REG0, 1)
+//        LOAD_BYTE_IMMED(REG0, 1)
 //        ADD(REG1, REG0)
 
-// Implementation note: The LOAD_IMMED_BYTE macro must be a single
-// instruction; while the LOAD_IMMED_WORD instruction can be a
+// Implementation note: The LOAD_BYTE_IMMED macro must be a single
+// instruction; while the LOAD_IMMED instruction can be a
 // compound sequence.  For instance, the PowerPC, which has 32-bit
-// instructions will implement LOAD_IMMED_WORD as two 16-bit immediate
+// instructions will implement LOAD_IMMED as two 16-bit immediate
 // instructions.
 
 #if defined __x86__
-#  define LOAD_IMMED_BYTE(DEST_REG,CONST) mov $CONST, DEST_REG
+#  define LOAD_BYTE_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __powerpc__
-#  define LOAD_IMMED_BYTE(DEST_REG,CONST) li DEST_REG, CONST
+#  define LOAD_BYTE_IMMED(DEST_REG,CONST) li DEST_REG, CONST
 #else
 #  warning "No load immediate instruction sequence defined"
 #endif
 
 #if defined __x86__
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) mov $CONST, DEST_REG
+#  define LOAD_REGISTER_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #elif defined __powerpc64__
 //  PowerPC instructions have a fixed length
 //  So in Power64
 //  64-bit immediate must be loaded in four 16-bit pieces
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) \
+#  define LOAD_REGISTER_IMMED(DEST_REG,CONST) \
         lis    DEST_REG, CONST@highest          ; \
         ori    DEST_REG, DEST_REG, CONST@higher ; \
         rldicr DEST_REG, DEST_REG, 32, 31       ; \
@@ -291,7 +303,7 @@
 #elif defined __powerpc__
 // In Power32
 // 32-bit immediate must be loaded in two 16-bit pieces
-#  define LOAD_IMMED_WORD(DEST_REG,CONST) \
+#  define LOAD_REGISTER_IMMED(DEST_REG,CONST) \
 	lis   DEST_REG, CONST@ha        ; \
 	addi  DEST_REG, DEST_REG, CONST@l
 #else
@@ -314,13 +326,13 @@
 
 // For instance, to add one to the register REG1, use the sequence:
 
-//   LOAD_IMMED_BYTE(REG2, 1)
+//   LOAD_BYTE_IMMED(REG2, 1)
 //   ADD(REG1, REG2)
 
 // For instance, to jump to foo when REG1 is not equal to 5, the
 // sequence:
 
-//   LOAD_IMMED_BYTE(REG2, 5)
+//   LOAD_BYTE_IMMED(REG2, 5)
 //   COMPARE(REG1, REG2)
 //   JUMP_NE(foo)
 //   ...
@@ -347,11 +359,11 @@
 #endif
 
 #if defined __i386__
-#  define MOV(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
+#  define MOVE(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
 #elif defined __x86_64__
-#  define MOV(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
+#  define MOVE(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
 #elif defined __powerpc__
-#  define MOV(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
+#  define MOVE(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
 #else
 #  warning "No register-move instruction defined"
 #endif
@@ -463,7 +475,7 @@
 
 //        FUNCTION_BEGIN(main,0)
 //        MAIN_PROLOGUE(0)
-//          LOAD_IMMED_BYTE(REG2,1) ;; Decrement ARGC
+//          LOAD_BYTE_IMMED(REG2,1) ;; Decrement ARGC
 //          SUB(REG1,REG2)
 //          MOVE(REG0,REG1) ;; Move ARGC(REG1) to return(REG0)
 //        MAIN_EPILOGUE(0)
@@ -479,7 +491,7 @@
 // function call, use:
 
 //        FUNCTION_PROLOGUE(foo, 1)
-//        STACK_STORE(REG1, 0)
+//        STACK_STORE_REGISTER(REG1, 0)
 //        FUNCTION_CALL(bar)
 
 // Implementation note: The stack SLOT is not implemented on all
@@ -643,25 +655,25 @@
 #endif
 
 //#if defined __i386__
-//#  define STACK_LOAD(DEST_REG,SLOT)
+//#  define STACK_LOAD_REGISTER(DEST_REG,SLOT)
 //#elif defined __x86_64__
-//#  define STACK_LOAD(DEST_REG,SLOT)
+//#  define STACK_LOAD_REGISTER(DEST_REG,SLOT)
 //#elif defined __powerpc64__
-//#  define STACK_LOAD(DEST_REG,SLOT)
+//#  define STACK_LOAD_REGISTER(DEST_REG,SLOT)
 //#elif defined __powerpc__
-//#  define STACK_LOAD(DEST_REG,SLOT)
+//#  define STACK_LOAD_REGISTER(DEST_REG,SLOT)
 //#else
 //#  warning "No stack-load instruction defined"
 //#endif
 
 //#if defined __i386__
-//#  define STACK_STORE(SOURCE_REG,SLOT)
+//#  define STACK_STORE_REGISTER(SOURCE_REG,SLOT)
 //#elif defined __x86_64__
-//#  define STACK_STORE(SOURCE_REG,SLOT)
+//#  define STACK_STORE_REGISTER(SOURCE_REG,SLOT)
 //#elif defined __powerpc64__
-//#  define STACK_STORE(SOURCE_REG,SLOT)
+//#  define STACK_STORE_REGISTER(SOURCE_REG,SLOT)
 //#elif defined __powerpc__
-//#  define STACK_STORE(SOURCE_REG,SLOT)
+//#  define STACK_STORE_REGISTER(SOURCE_REG,SLOT)
 //#else
 //#  warning "No stack-store instruction sequence defined"
 //#endif
@@ -676,7 +688,7 @@
 
 // For instance, the getpid system call can be made using:
 
-//         LOAD_IMMED_WORD(REG0, SYSCALL_getpid)
+//         LOAD_REGISTER_IMMED(REG0, SYSCALL_getpid)
 //         SYSCALL
 
 #if defined __i386__
@@ -702,15 +714,15 @@
 
 // For instance:
 
-//         LOAD_IMMED_BYTE(REG1, 1) ;; parameter 1
-//         LOAD_IMMED_WORD(REG0, .1) ;; return address
+//         LOAD_BYTE_IMMED(REG1, 1) ;; parameter 1
+//         LOAD_REGISTER_IMMED(REG0, .1) ;; return address
 //         JUMP(foo)
 //     .1: ....
 //     ...
 //     foo:
 //         MOVE(REG1, REG0) ;; Save return address in REG1
 //         NO_OP; NO_OP
-//         LOAD_IMMED_WORD(REG0, .1) ;; return address
+//         LOAD_REGISTER_IMMED(REG0, .1) ;; return address
 //         JUMP(bar)
 //     .1: NO_OP; NO_OP
 //         JUMP_REG(REG1) ;; REG1 has the saved return address

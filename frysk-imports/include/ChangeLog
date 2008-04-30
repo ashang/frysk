@@ -1,3 +1,12 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-asm.h (VARIABLE): Rename WORD.
+	(LOAD_REGISTER_IMMED): Rename LOAD_IMMED_WORD.
+	(LOAD_REGISTER): Rename LOAD_WORD.
+	(STORE_REGISTER): Rename STORE_WORD.
+	(LOAD_BYTE_IMMED): Rename LOAD_IMMED_BYTE.
+	(MOVE): Rename MOV.
+	
 2008-04-16  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* frysk-asm.h (ILLEGAL_INSTRUCTION): Use 0 as illegal insn.

@@ -52,8 +52,8 @@
 
 # A global symbol that includes its size.
 GLOBAL(global_st_size)
-	LOAD_IMMED_BYTE (REG0, 0)
-	STORE_WORD (REG0, REG0)
+	LOAD_BYTE_IMMED(REG0, 0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(global_st_size)
 
@@ -61,8 +61,8 @@ GLOBAL(global_st_size)
 
 # A local symbol that includes its size.
 LOCAL(local_st_size)	
-	LOAD_IMMED_BYTE (REG0, 0)
-	STORE_WORD (REG0, REG0)
+	LOAD_BYTE_IMMED(REG0, 0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(local_st_size)
 
@@ -70,16 +70,16 @@ LOCAL(local_st_size)
 
 # A global symbol that has zero size.
 GLOBAL(global_st_size_0)
-	LOAD_IMMED_BYTE (REG0, 0)
-	STORE_WORD (REG0, REG0)
+	LOAD_BYTE_IMMED(REG0, 0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	
 
 
 # A local symbol that has zero size.
 LOCAL(local_st_size_0)
-	LOAD_IMMED_BYTE (REG0, 0)
-	STORE_WORD (REG0, REG0)
+	LOAD_BYTE_IMMED(REG0, 0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	
 
@@ -87,18 +87,18 @@ LOCAL(local_st_size_0)
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
 GLOBAL(global_outer)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 GLOBAL(global_in_global)
-	STORE_WORD (REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(global_in_global)
 LOCAL(local_in_global)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(local_in_global)
 .Lglobal_outer:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(global_outer)
 
@@ -106,7 +106,7 @@ LOCAL(local_in_global)
 	
 # Code with no symbol after a global symbol with size.
 .Lno_global:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	
 
@@ -114,18 +114,18 @@ LOCAL(local_in_global)
 # A global symbol, with size, that contains a nested global and local
 # symbols each also with sizes.
 LOCAL(local_outer)
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NO_OP
 GLOBAL(global_in_local)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(global_in_local)
 LOCAL(local_in_local)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(local_in_local)
 .Llocal_outer:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	SIZE(local_outer)
 
@@ -133,7 +133,7 @@ LOCAL(local_in_local)
 
 # Code with no symbol after a local symbol with size.
 .Lno_local:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 	
 
@@ -144,20 +144,20 @@ LOCAL(local_in_local)
 GLOBAL(global_after_0)
 	NO_OP
 GLOBAL(global_0_in_global)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 LOCAL(local_0_in_global)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 .Lglobal_after_0:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	SIZE(global_after_0)
 
 
 
 # Code with no symbol after a global with nexted zero-sized symbols.
 .Lafter_global_containing_0:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 
 
@@ -168,20 +168,20 @@ LOCAL(local_0_in_global)
 LOCAL(local_after_0)
 	NO_OP
 GLOBAL(global_0_in_local)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 LOCAL(local_0_in_local)
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 .Llocal_after_0:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	SIZE(local_after_0)
 
 
 
 # Code with no symbol after a local with nexted zero-sized symbols.
 .Lafter_local_containing_0:
-	STORE_WORD(REG0, REG0)
+	STORE_REGISTER(REG0, REG0)
 	NO_OP
 
 
@@ -189,7 +189,7 @@ LOCAL(local_0_in_local)
 
 GLOBAL(large_global_at_small_global)
 GLOBAL(small_global_at_large_global)
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NO_OP
 	SIZE(small_global_at_large_global)
 	NO_OP
@@ -201,7 +201,7 @@ GLOBAL(small_global_at_large_global)
 
 GLOBAL(large_global_at_small_local)
 LOCAL(small_local_at_large_global)
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NO_OP
 	SIZE(small_local_at_large_global)
 	NO_OP
@@ -213,7 +213,7 @@ LOCAL(small_local_at_large_global)
 
 LOCAL(large_local_at_small_global)
 GLOBAL(small_global_at_large_local)
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NO_OP
 	SIZE(small_global_at_large_local)
 	NO_OP
@@ -225,7 +225,7 @@ GLOBAL(small_global_at_large_local)
 
 LOCAL(large_local_at_small_local)
 LOCAL(small_local_at_large_local)
-	STORE_WORD(REG0,REG0)
+	STORE_REGISTER(REG0,REG0)
 	NO_OP
 	SIZE(small_local_at_large_local)
 	NO_OP
@@ -239,113 +239,113 @@ LOCAL(small_local_at_large_local)
 	FUNCTION_BEGIN(main,0)
 	MAIN_PROLOGUE(0)
 	#REG1==ARGC
-	LOAD_IMMED_BYTE(REG0, 0)
+	LOAD_BYTE_IMMED(REG0, 0)
 # global_st_size?
-	LOAD_IMMED_BYTE(REG3, 2)
+	LOAD_BYTE_IMMED(REG3, 2)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_st_size)
 # local_st_size?
-	LOAD_IMMED_BYTE(REG3, 3)
+	LOAD_BYTE_IMMED(REG3, 3)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_st_size)
 # global_st_size_0.
-	LOAD_IMMED_BYTE(REG3, 4)
+	LOAD_BYTE_IMMED(REG3, 4)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_st_size_0)
 # local_st_size_0?
-	LOAD_IMMED_BYTE(REG3, 5)
+	LOAD_BYTE_IMMED(REG3, 5)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_st_size_0)
 # global_in_global?
-	LOAD_IMMED_BYTE(REG3, 6)
+	LOAD_BYTE_IMMED(REG3, 6)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_in_global)
 # local_in_global?
-	LOAD_IMMED_BYTE(REG3, 7)
+	LOAD_BYTE_IMMED(REG3, 7)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_in_global)
 # global_in_local?
-	LOAD_IMMED_BYTE(REG3, 8)
+	LOAD_BYTE_IMMED(REG3, 8)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_in_local)
 # local_in_local?
-	LOAD_IMMED_BYTE(REG3, 9)
+	LOAD_BYTE_IMMED(REG3, 9)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_in_local)
 # global_outer?
-	LOAD_IMMED_BYTE(REG3, 10)
+	LOAD_BYTE_IMMED(REG3, 10)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lglobal_outer)
 # local_outer?
-	LOAD_IMMED_BYTE(REG3, 11)
+	LOAD_BYTE_IMMED(REG3, 11)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Llocal_outer)
 # no_global?
-	LOAD_IMMED_BYTE(REG3, 12)
+	LOAD_BYTE_IMMED(REG3, 12)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lno_global)
 # no_local?
-	LOAD_IMMED_BYTE(REG3, 13)
+	LOAD_BYTE_IMMED(REG3, 13)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lno_local)
 # global_0_in_global?
-	LOAD_IMMED_BYTE(REG3, 14)
+	LOAD_BYTE_IMMED(REG3, 14)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_0_in_global)
 # local_0_in_global?
-	LOAD_IMMED_BYTE(REG3, 15)
+	LOAD_BYTE_IMMED(REG3, 15)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_0_in_global)
 # global_0_in_local?
-	LOAD_IMMED_BYTE(REG3, 16)
+	LOAD_BYTE_IMMED(REG3, 16)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(global_0_in_local)
 # local_0_in_local?
-	LOAD_IMMED_BYTE(REG3, 17)
+	LOAD_BYTE_IMMED(REG3, 17)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(local_0_in_local)
 # global_after_0?
-	LOAD_IMMED_BYTE(REG3, 18)
+	LOAD_BYTE_IMMED(REG3, 18)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lglobal_after_0)
 # local_after_0?
-	LOAD_IMMED_BYTE(REG3, 19)
+	LOAD_BYTE_IMMED(REG3, 19)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Llocal_after_0)
 # small_global_at_large_global?
-	LOAD_IMMED_BYTE(REG3, 20)
+	LOAD_BYTE_IMMED(REG3, 20)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(small_global_at_large_global)
 # small_local_at_large_global?
-	LOAD_IMMED_BYTE(REG3, 21)
+	LOAD_BYTE_IMMED(REG3, 21)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(small_local_at_large_global)
 # small_global_at_large_local?
-	LOAD_IMMED_BYTE(REG3, 22)
+	LOAD_BYTE_IMMED(REG3, 22)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(small_global_at_large_local)
 # small_local_at_large_local?
-	LOAD_IMMED_BYTE(REG3, 23)
+	LOAD_BYTE_IMMED(REG3, 23)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(small_local_at_large_local)
 # after_global_containing_0?
-	LOAD_IMMED_BYTE(REG3, 24)
+	LOAD_BYTE_IMMED(REG3, 24)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lafter_global_containing_0)
 # after_local_containing_0?
-	LOAD_IMMED_BYTE(REG3, 25)
+	LOAD_BYTE_IMMED(REG3, 25)
 	COMPARE(REG3, REG1)
 	JUMP_EQ(.Lafter_local_containing_0)
 
-	LOAD_IMMED_BYTE(REG0, SYS_write)
-	LOAD_IMMED_BYTE(REG1, 1)
+	LOAD_BYTE_IMMED(REG0, SYS_write)
+	LOAD_BYTE_IMMED(REG1, 1)
 
-	LOAD_IMMED_WORD(REG2, usage)
-	LOAD_IMMED_WORD(REG3, .usage-usage)
+	LOAD_REGISTER_IMMED(REG2, usage)
+	LOAD_REGISTER_IMMED(REG3, .usage-usage)
 
 	SYSCALL
 		// exit with a non-zero status
-	LOAD_IMMED_BYTE(REG0, 1)
+	LOAD_BYTE_IMMED(REG0, 1)
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)
