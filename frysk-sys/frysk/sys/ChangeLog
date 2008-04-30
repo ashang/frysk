@@ -1,3 +1,8 @@
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Tid.cxx (Tid::tid): Implement.
+	* jni/Pid.cxx (Pid::parentPid, Pid::pid): Implement.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Signal.cxx-sh: Replace ...

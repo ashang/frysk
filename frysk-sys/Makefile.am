@@ -89,6 +89,7 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "if test \$$# -eq 0 ; then"			>> $@.tmp
 	echo "  $(JAVA) JniRunner \\"				>> $@.tmp
 	echo "    lib.stdcpp \\"				>> $@.tmp
+	echo "    frysk.rsl \\"					>> $@.tmp
 	echo "    ;"						>> $@.tmp
 	echo "else"						>> $@.tmp
 	echo "  $(JAVA) JniRunner \"\$$@\""			>> $@.tmp

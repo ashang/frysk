@@ -1,6 +1,9 @@
 2008-04-30  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.am (JniRunner): Provide default tests to run.
+	* Makefile.am (JniRunner): Enable frysk.rsl.
+
+	* Makefile.am (JniRunner): Provide default tests to run - start
+	with lib.stdcpp.
 
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 

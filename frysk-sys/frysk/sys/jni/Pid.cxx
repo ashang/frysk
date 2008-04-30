@@ -37,25 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Pid.h"
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <jni.h>
+
+#include "frysk/sys/Pid-jni.hxx"
 
 
-JNIEXPORT jint
-Java_frysk_sys_Pid_pid (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Pid_pid not implemented");
-  }
-  return 0;
+jint
+frysk::sys::Pid::pid(JNIEnv *env, jclass) {
+  return ::getpid();
 }
 
-JNIEXPORT jint
-Java_frysk_sys_Pid_parentPid (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Pid_parentPid not implemented");
-  }
-  return 0;
+jint
+frysk::sys::Pid::parentPid(JNIEnv *env, jclass) {
+  return ::getppid();
 }

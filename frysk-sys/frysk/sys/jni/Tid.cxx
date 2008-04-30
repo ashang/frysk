@@ -37,15 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Tid.h"
+#include <sys/types.h>
+#include <unistd.h>
+#include <linux.syscall.h>
+#include <sys/syscall.h>
 
+#include <jni.h>
 
-JNIEXPORT jint
-Java_frysk_sys_Tid_tid (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Tid_tid not implemented");
-  }
-  return 0;
+#include "frysk/sys/Tid-jni.hxx"
+
+jint
+frysk::sys::Tid::tid(JNIEnv *env, jclass) {
+  return ::syscall(SYS_gettid);
 }
