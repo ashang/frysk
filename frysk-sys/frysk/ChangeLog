@@ -1,29 +1,3 @@
-2008-05-01  Andrew Cagney  <cagney@redhat.com>
-
-	* jni/jnixx.java: Use findClass and frysk/jni/xx.hxx; throw
-	jnixx_exception.
-	* jni/xx.hxx: Replace jni/members.hxx.
-	* jni/xx.cxx: Replace jni/members.cxx.
-
-	* jni/jnixx.java: Generate Class(JNIEnv*) method; drop jclass
-	parameter; don't new the exception.
-
-2008-04-30  Andrew Cagney  <cagney@redhat.com>
-
-	* jni/jnixx.java: New.
-
-2008-04-17  Andrew Cagney  <cagney@redhat.com>
-
-	* jni/exceptions.cxx: New.
-	* jni/exceptions.hxx: New.
-
-2008-04-16  Andrew Cagney  <cagney@redhat.com>
-
-	* jni/util.cxx: New.
-	* jni/print.cxx: New.
-	* jni/print.hxx: New.
-	* jni/util.hxx: New.
-
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestConfig.java: Move to frysk.config.

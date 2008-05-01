@@ -1,0 +1,32 @@
+2008-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* jnixx.java: Use findClass and frysk/jni/xx.hxx; throw
+	jnixx_exception.
+	* xx.hxx: Replace members.hxx.
+	* xx.cxx: Replace members.cxx.
+
+	* jnixx.java: Generate Class(JNIEnv*) method; drop jclass
+	parameter; don't new the exception.
+
+2008-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* jnixx.java: New.
+
+2008-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* exceptions.cxx: New.
+	* exceptions.hxx: New.
+
+2008-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* util.cxx: New.
+	* print.cxx: New.
+	* print.hxx: New.
+	* util.hxx: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
