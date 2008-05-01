@@ -90,12 +90,14 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "  $(JAVA) JniRunner \\"				>> $@.tmp
 	echo "    lib.stdcpp \\"				>> $@.tmp
 	echo "    frysk.rsl \\"					>> $@.tmp
+	echo "    frysk.junit \\"				>> $@.tmp
 	echo "    ;"						>> $@.tmp
 	echo "else"						>> $@.tmp
 	echo "  $(JAVA) JniRunner \"\$$@\""			>> $@.tmp
 	echo "fi"						>> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
+jni: JniRunner
 
 CLEANFILES += JniRunner.class JniRunner.jar
 JniRunner.jar: JniRunner.java
