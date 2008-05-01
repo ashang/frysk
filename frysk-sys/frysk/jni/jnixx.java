@@ -346,7 +346,7 @@ class jnixx {
 	print("(");
 	printActualCxxParameters(method);
 	println(");");
-	println("  } catch (const std::exception& e) {");
+	println("  } catch (jnixx_exception) {");
 	if (method.getReturnType() != Void.TYPE) {
 	    println("    return 0;");
 	}
@@ -401,7 +401,7 @@ class jnixx {
 	printActualJniParameters(method);
 	println(");");
 	println("  if (env->ExceptionCheck())");
-	println("    throw std::exception();");
+	println("    throw jnixx_exception();");
 	if (returnType != Void.TYPE) {
 	    println("  return ret;");
 	}
@@ -409,11 +409,8 @@ class jnixx {
     }
 
     static void printCxxFile(Class klass) {
-	println("#include <jni.h>");
+	println("#include \"frysk/jni/xx.hxx\"");
 	println();
-	println("#include <exception>");
-	println();
-	println("#include \"frysk/jni/members.hxx\"");
 	print("#include \"");
 	print(klass.getName().replaceAll("\\.", "/"));
 	print("-jni.hxx\"");
@@ -428,11 +425,8 @@ class jnixx {
 	printCxxName(klass);
 	println("::Class(JNIEnv* env) {");
 	println("  if (_Class == NULL) {");
-	println("    _Class = env->FindClass(\""
+	println("    _Class = findClass(env, \""
 		+ klass.getName().replace("\\.", "/") + "\");");
-	println("    if (_Class == NULL) {");
-	println("      throw std::exception();");
-	println("    }");
 	println("  }");
 	println("  return _Class;");
 	println("}");

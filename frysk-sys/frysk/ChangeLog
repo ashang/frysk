@@ -1,5 +1,10 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/jnixx.java: Use findClass and frysk/jni/xx.hxx; throw
+	jnixx_exception.
+	* jni/xx.hxx: Replace jni/members.hxx.
+	* jni/xx.cxx: Replace jni/members.cxx.
+
 	* jni/jnixx.java: Generate Class(JNIEnv*) method; drop jclass
 	parameter; don't new the exception.
 

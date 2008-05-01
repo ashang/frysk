@@ -40,73 +40,47 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include <jni.h>
+#include "frysk/jni/xx.hxx"
+#include "frysk/rsl/Log-jni.hxx"
 
 #include "frysk/jni/print.hxx"
-#include "frysk/jni/members.hxx"
 #include "frysk/rsl/jni/Log.hxx"
 
-static bool
-logging(JNIEnv* env, jobject logger) {
-  static jmethodID loggingID = NULL;
-  if (!getMethodID(&loggingID, env, logger, "logging", "()B"))
-    return false;
-  jboolean result = env->CallBooleanMethod(logger, loggingID);
-  if (env->ExceptionCheck())
-    return false;
-  return result;
-}
-
-static void
-log(JNIEnv* env, jobject logger, jstring msg) {
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log", "(Ljava/lang/String;)V"))
+void
+logf(JNIEnv *env, frysk::rsl::Log* logger, const char* format, ...) {
+  if (!frysk::rsl::Log::logging(env, logger))
     return;
-  env->CallVoidMethod(logger, logID, msg);
+  va_list ap;
+  va_start(ap, format);
+  jstring message = vajprintf(env, format, ap);
+  frysk::rsl::Log::log(env, logger, message);
+  va_end(ap);
 }
 
 void
-logf(JNIEnv *env, jobject logger, const char* format, ...) {
-  if (!logging(env, logger))
+logf(JNIEnv *env, frysk::rsl::Log* logger, jobject object,
+     const char* format, ...) {
+  if (!frysk::rsl::Log::logging(env, logger))
     return;
   va_list ap;
   va_start(ap, format);
   jstring message = vajprintf(env, format, ap);
   if (message != NULL)
-    log(env, logger, message);
+    frysk::rsl::Log::log(env, logger, message);
   va_end(ap);
 }
 
 void
-logf(JNIEnv *env, jobject logger, jobject object, const char* format, ...) {
-  if (!logging(env, logger))
+log(JNIEnv *env, frysk::rsl::Log* logger, const char* p1, jobject p2) {
+  if (!frysk::rsl::Log::logging(env, logger))
     return;
-  va_list ap;
-  va_start(ap, format);
-  jstring message = vajprintf(env, format, ap);
-  if (message != NULL)
-    log(env, logger, message);
-  va_end(ap);
+  frysk::rsl::Log::log(env, logger, newStringUTF(env, p1), p2);
 }
 
 void
-log(JNIEnv *env, jobject logger, const char* p1, jobject p2) {
-  if (!logging(env, logger))
+log(JNIEnv *env, frysk::rsl::Log* logger, jobject self, const char* p1,
+    jobject p2) {
+  if (!frysk::rsl::Log::logging(env, logger))
     return;
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log",
-		   "(Ljava/lang/String;Ljava/lang/Object;)V"))
-    return;
-  env->CallVoidMethod(logger, logID, env->NewStringUTF(p1), p2);
-}
-
-void
-log(JNIEnv *env, jobject logger, jobject self, const char* p1, jobject p2) {
-  if (!logging(env, logger))
-    return;
-  static jmethodID logID = NULL;
-  if (!getMethodID(&logID, env, logger, "log",
-		   "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V"))
-    return;
-  env->CallVoidMethod(logger, logID, self, env->NewStringUTF(p1), p2);
+  frysk::rsl::Log::log(env, logger, self, newStringUTF(env, p1), p2);
 }
