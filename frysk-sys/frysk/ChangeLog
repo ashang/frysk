@@ -1,3 +1,8 @@
+2008-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/jnixx.java: Generate Class(JNIEnv*) method; drop jclass
+	parameter; don't new the exception.
+
 2008-04-30  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/jnixx.java: New.

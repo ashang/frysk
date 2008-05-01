@@ -46,11 +46,11 @@
 
 
 jint
-frysk::sys::Pid::pid(JNIEnv *env, jclass) {
+frysk::sys::Pid::pid(JNIEnv *env) {
   return ::getpid();
 }
 
 jint
-frysk::sys::Pid::parentPid(JNIEnv *env, jclass) {
+frysk::sys::Pid::parentPid(JNIEnv *env) {
   return ::getppid();
 }

@@ -47,6 +47,6 @@
 #include "frysk/sys/Tid-jni.hxx"
 
 jint
-frysk::sys::Tid::tid(JNIEnv *env, jclass) {
+frysk::sys::Tid::tid(JNIEnv *env) {
   return ::syscall(SYS_gettid);
 }

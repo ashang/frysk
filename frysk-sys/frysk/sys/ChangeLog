@@ -1,3 +1,8 @@
+2008-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Pid.cxx (Pid::parentPid, Pid::pid): Drop jclass parameter.
+	* jni/Tid.cxx (Tid::tid): Ditto.
+
 2008-04-30  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Tid.cxx (Tid::tid): Implement.

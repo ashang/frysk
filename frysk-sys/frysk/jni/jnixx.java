@@ -204,12 +204,9 @@ class jnixx {
 	print("JNIEnv*");
 	if (printArgs)
 	    print(" env");
-	if (isStatic(method)) {
-	    print(", jclass");
-	    if (printArgs)
-		print(" klass");
-	} else {
-	    print(", jobject");
+	if (!isStatic(method)) {
+	    print(", ");
+	    printJniType(method.getDeclaringClass());
 	    if (printArgs)
 		print(" object");
 	}
@@ -224,9 +221,7 @@ class jnixx {
 
     static void printActualCxxParameters(Method method) {
 	print("env");
-	if (isStatic(method)) {
-	    print(", klass");
-	} else {
+	if (!isStatic(method)) {
 	    print(", object");
 	}
 	for (int i = 0; i < method.getParameterTypes().length; i++) {
@@ -234,11 +229,35 @@ class jnixx {
 	}
     }
 
+    static void printFormalJniParameters(Method method, boolean printArgs) {
+	print("JNIEnv*");
+	if (printArgs)
+	    print(" env");
+	if (isStatic(method)) {
+	    print(", jclass");
+	    if (printArgs)
+		print(" klass");
+	} else {
+	    print(", ");
+	    printJniType(method.getDeclaringClass());
+	    if (printArgs)
+		print(" object");
+	}
+	Class[] params = method.getParameterTypes();
+	for (int i = 0; i < params.length; i++) {
+	    print(", ");
+	    printCxxType(params[i]);
+	    if (printArgs)
+		print(" p" + i);
+	}
+    }
+
     static void printActualJniParameters(Method method) {
 	if (isStatic(method))
-	    print("klass, id");
+	    print("_Class");
 	else
-	    print("object, id");
+	    print("object");
+	print(", id");
 	for (int i = 0; i < method.getParameterTypes().length; i++) {
 	    print(", p" + i);
 	}
@@ -256,6 +275,7 @@ class jnixx {
 
     static void printCxxMethodDeclaration(Method method) {
 	println();
+	println(" public:");
 	pad(1);
 	print("static ");
 	printCxxType(method.getReturnType());
@@ -281,6 +301,15 @@ class jnixx {
 	    printCxxName(parent);
 	}
 	println(" {");
+	// Static get-class method - a class knows its own class.
+	println();
+	println(" private:");
+	println("  static jclass _Class;");
+	println(" public:");
+	println("  static jclass Class(JNIEnv* env);");
+	// Print the constructors.
+	// Print the field accessors.
+	// Print the methods
 	Method[] methods = klass.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 	    Method method = methods[i];
@@ -298,7 +327,7 @@ class jnixx {
 	print(" JNICALL ");
 	printJniName(method);
 	print("(");
-	printFormalCxxParameters(method, false);
+	printFormalJniParameters(method, false);
 	println(");");
 	println("}");
 	println();
@@ -306,7 +335,7 @@ class jnixx {
 	println();
 	printJniName(method);
 	print("(");
-	printFormalCxxParameters(method, true);
+	printFormalJniParameters(method, true);
 	println(") {");
 	println("  try {");
 	print("    ");
@@ -343,11 +372,11 @@ class jnixx {
 	println();
 	println("  static jmethodID id;");
 	println("  if (id == NULL)");
-	print("    id = getMethodID(env, ");
+	print("    id = getMethodID(env");
 	if (isStatic(method)) {
-	    print("klass");
+	    print(", Class(env)");
 	} else {
-	    print("object");
+	    print(", object");
 	}
 	print(", \"");
 	print(method.getName());
@@ -372,7 +401,7 @@ class jnixx {
 	printActualJniParameters(method);
 	println(");");
 	println("  if (env->ExceptionCheck())");
-	println("    throw new std::exception();");
+	println("    throw std::exception();");
 	if (returnType != Void.TYPE) {
 	    println("  return ret;");
 	}
@@ -390,6 +419,25 @@ class jnixx {
 	print("-jni.hxx\"");
 	println();
 
+	// The class, via reflection.
+	println();
+	print("jclass ");
+	printCxxName(klass);
+	println("::_Class;");
+	println("jclass");
+	printCxxName(klass);
+	println("::Class(JNIEnv* env) {");
+	println("  if (_Class == NULL) {");
+	println("    _Class = env->FindClass(\""
+		+ klass.getName().replace("\\.", "/") + "\");");
+	println("    if (_Class == NULL) {");
+	println("      throw std::exception();");
+	println("    }");
+	println("  }");
+	println("  return _Class;");
+	println("}");
+
+	// The methods.
 	Method[] methods = klass.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 	    Method method = methods[i];
