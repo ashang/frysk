@@ -1,5 +1,7 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner): Add inua and frysk.config.
+	
 	* Makefile.am (JniRunner): Add frysk.junit.
 	(jni): Depend on JniRunner.
 

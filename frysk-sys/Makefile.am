@@ -91,6 +91,8 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "    lib.stdcpp \\"				>> $@.tmp
 	echo "    frysk.rsl \\"					>> $@.tmp
 	echo "    frysk.junit \\"				>> $@.tmp
+	echo "    frysk.config \\"				>> $@.tmp
+	echo "    inua \\"					>> $@.tmp
 	echo "    ;"						>> $@.tmp
 	echo "else"						>> $@.tmp
 	echo "  $(JAVA) JniRunner \"\$$@\""			>> $@.tmp
