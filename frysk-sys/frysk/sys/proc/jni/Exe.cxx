@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_proc_Exe.h"
-
-
-JNIEXPORT jstring
-Java_frysk_sys_proc_Exe_get (JNIEnv *env, jclass, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_Exe_get not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/proc/Exe-jni.hxx"

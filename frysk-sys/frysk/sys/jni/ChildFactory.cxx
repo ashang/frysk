@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_ChildFactory.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_ChildFactory_child (JNIEnv *env, jclass, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_ChildFactory_child not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/ChildFactory-jni.hxx"

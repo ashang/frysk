@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_proc_ProcBuilder.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_proc_ProcBuilder_open (JNIEnv *env, jobject, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_ProcBuilder_open not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT void
-Java_frysk_sys_proc_ProcBuilder_scan (JNIEnv *env, jobject, jobject, jint, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_ProcBuilder_scan not implemented");
-  }
-  return;
-}
-
-JNIEXPORT void
-Java_frysk_sys_proc_ProcBuilder_close (JNIEnv *env, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_ProcBuilder_close not implemented");
-  }
-  return;
-}
+#include "frysk/sys/proc/ProcBuilder-jni.hxx"

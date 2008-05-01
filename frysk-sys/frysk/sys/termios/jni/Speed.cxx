@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_termios_Speed.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_termios_Speed_set (JNIEnv *env, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Speed_set not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_termios_Speed_getInput (JNIEnv *env, jclass, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Speed_getInput not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_termios_Speed_getOutput (JNIEnv *env, jclass, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Speed_getOutput not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/termios/Speed-jni.hxx"

@@ -1,5 +1,9 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* xx.hxx (jstringArray): Define.
+	* jnixx.java: Generate function signatures; wrap headers in
+	#ifdef; better handle array types.
+
 	* jnixx.java: Use findClass and frysk/jni/xx.hxx; throw
 	jnixx_exception.
 	* xx.hxx: Replace members.hxx.

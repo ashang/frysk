@@ -37,45 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_ptrace_RegisterSet.h"
-
-
-JNIEXPORT void
-Java_frysk_sys_ptrace_RegisterSet_transfer (JNIEnv *env, jclass, jint, jint, jbyteArray, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_ptrace_RegisterSet_transfer not implemented");
-  }
-  return;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_ptrace_RegisterSet_regs (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_ptrace_RegisterSet_regs not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_ptrace_RegisterSet_fpregs (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_ptrace_RegisterSet_fpregs not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_ptrace_RegisterSet_fpxregs (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_ptrace_RegisterSet_fpxregs not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/ptrace/RegisterSet-jni.hxx"

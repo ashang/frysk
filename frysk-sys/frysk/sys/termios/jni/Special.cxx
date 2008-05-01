@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_termios_Special.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_termios_Special_set (JNIEnv *env, jobject, jobject, jchar)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Special_set not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jchar
-Java_frysk_sys_termios_Special_get (JNIEnv *env, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Special_get not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/termios/Special-jni.hxx"

@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Uname.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_Uname_get (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Uname_get not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/Uname-jni.hxx"

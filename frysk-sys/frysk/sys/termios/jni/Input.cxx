@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_termios_Input.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_termios_Input_set (JNIEnv *env, jobject, jobject, jboolean)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Input_set not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jboolean
-Java_frysk_sys_termios_Input_get (JNIEnv *env, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Input_get not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/termios/Input-jni.hxx"

@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_termios_Flush.h"
-
-
-JNIEXPORT void
-Java_frysk_sys_termios_Flush_flush (JNIEnv *env, jclass, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_termios_Flush_flush not implemented");
-  }
-  return;
-}
+#include "frysk/sys/termios/Flush-jni.hxx"

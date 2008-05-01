@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_DaemonFactory.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_DaemonFactory_daemon (JNIEnv *env, jclass, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_DaemonFactory_daemon not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/DaemonFactory-jni.hxx"

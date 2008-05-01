@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_AuditLibs.h"
-
-
-JNIEXPORT jstring
-Java_frysk_sys_AuditLibs_syscallToName (JNIEnv *env, jclass, jint, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_AuditLibs_syscallToName not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_frysk_sys_AuditLibs_nameToSyscall (JNIEnv *env, jclass, jstring, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_AuditLibs_nameToSyscall not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/AuditLibs-jni.hxx"

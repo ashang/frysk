@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Pipe.h"
-
-
-JNIEXPORT jobjectArray
-Java_frysk_sys_Pipe_pipe (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Pipe_pipe not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/Pipe-jni.hxx"

@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Poll.h"
-
-
-JNIEXPORT void
-Java_frysk_sys_Poll_addSignalHandler (JNIEnv *env, jclass, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Poll_addSignalHandler not implemented");
-  }
-  return;
-}
-
-JNIEXPORT void
-Java_frysk_sys_Poll_poll (JNIEnv *env, jclass, jobject, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Poll_poll not implemented");
-  }
-  return;
-}
+#include "frysk/sys/Poll-jni.hxx"

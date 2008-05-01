@@ -42,10 +42,17 @@
  * stderr and then throws a jnixx_exception.
  */
 
+#ifndef frysk_jni_xx_hxx
+#define frysk_jni_xx_hxx
+
 #include <jni.h>
 
 class jnixx_exception {
 };
+
+struct __jstringArray : public __jobjectArray {
+};
+typedef __jstringArray* jstringArray;
 
 extern jclass findClass(JNIEnv* env, const char *signature);
 
@@ -74,3 +81,5 @@ extern jfieldID getStaticFieldID(JNIEnv* env, jobject object,
 
 extern jfieldID getStaticFieldID(JNIEnv* env, jclass klass,
 				 const char* name, const char* signature);
+
+#endif

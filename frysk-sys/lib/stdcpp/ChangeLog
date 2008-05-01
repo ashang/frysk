@@ -1,5 +1,7 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Demangler.cxx: Do not include javah generated header.
+	
 	* jni/Demangler.cxx (Demangler::demangle): Drop jclass parameter.
 
 2008-04-30  Andrew Cagney  <cagney@redhat.com>

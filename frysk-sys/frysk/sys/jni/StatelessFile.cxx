@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_StatelessFile.h"
-
-
-JNIEXPORT jint
-Java_frysk_sys_StatelessFile_pread (JNIEnv *env, jobject, jlong, jbyteArray, jint, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_StatelessFile_pread not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_frysk_sys_StatelessFile_pwrite (JNIEnv *env, jobject, jlong, jbyteArray, jint, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_StatelessFile_pwrite not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/StatelessFile-jni.hxx"

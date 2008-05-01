@@ -1,5 +1,20 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/FileDescriptor.cxx: Include jnixx generated header.
+	* jni/StatelessFile.cxx: Ditto.
+	* jni/Wait.cxx: Ditto.
+	* jni/Uname.cxx: Ditto.
+	* jni/SignalSet.cxx: Ditto.
+	* jni/Poll.cxx: Ditto.
+	* jni/Itimer.cxx: Ditto.
+	* jni/Fork.cxx: Ditto.
+	* jni/Exec.cxx: Ditto.
+	* jni/DaemonFactory.cxx: Ditto.
+	* jni/ChildFactory.cxx: Ditto.
+	* jni/AuditLibs.cxx: Ditto.
+	* jni/PseudoTerminal.cxx: Ditto.
+	* jni/Pipe.cxx: Ditto.
+
 	* jni/Pid.cxx (Pid::parentPid, Pid::pid): Drop jclass parameter.
 	* jni/Tid.cxx (Tid::tid): Ditto.
 

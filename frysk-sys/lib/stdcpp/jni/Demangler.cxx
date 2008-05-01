@@ -37,13 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 #include <cxxabi.h>
 #include <exception>
 #include <stdio.h>
 #include <alloca.h>
 
-#include "lib_stdcpp_Demangler.h"
 #include "lib/stdcpp/Demangler-jni.hxx"
 
 using namespace abi;

@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_opcodes_Disassembler.h"
-
-
-JNIEXPORT jboolean
-Java_lib_opcodes_Disassembler_available (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_opcodes_Disassembler_available not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT void
-Java_lib_opcodes_Disassembler_disassemble (JNIEnv *env, jobject, jlong, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_opcodes_Disassembler_disassemble not implemented");
-  }
-  return;
-}
-
-JNIEXPORT void
-Java_lib_opcodes_Disassembler_disassembleStartEnd (JNIEnv *env, jobject, jlong, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_opcodes_Disassembler_disassembleStartEnd not implemented");
-  }
-  return;
-}
+#include "lib/opcodes/Disassembler-jni.hxx"

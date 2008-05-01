@@ -37,4 +37,5 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/sys/ptrace/AddressSpace-jni.hxx"
+// Stub to for generation of corresponding header.
+#include "frysk/sys/termios/Mode-jni.hxx"

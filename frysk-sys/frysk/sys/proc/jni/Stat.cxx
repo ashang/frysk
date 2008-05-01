@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_proc_Stat.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_proc_Stat_scan__I (JNIEnv *env, jobject, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_Stat_scan__I not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_proc_Stat_scan___3B (JNIEnv *env, jobject, jbyteArray)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_Stat_scan___3B not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_proc_Stat_scan__II (JNIEnv *env, jobject, jint, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_proc_Stat_scan__II not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/proc/Stat-jni.hxx"

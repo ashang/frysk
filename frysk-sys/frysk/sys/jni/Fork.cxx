@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Fork.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_Fork_spawn (JNIEnv *env, jclass, jobject, jstring, jstring, jstring, jobjectArray, jstring, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Fork_spawn not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jobject
-Java_frysk_sys_Fork_daemon (JNIEnv *env, jclass, jobject, jstring, jstring, jstring, jobjectArray)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Fork_daemon not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/Fork-jni.hxx"

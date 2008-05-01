@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_unwind_ElfImage.h"
-
-
-JNIEXPORT jobject
-Java_lib_unwind_ElfImage_mapElfImage (JNIEnv *env, jclass, jstring, jlong, jlong, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_unwind_ElfImage_mapElfImage not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT void
-Java_lib_unwind_ElfImage_finalize (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_unwind_ElfImage_finalize not implemented");
-  }
-  return;
-}
+#include "lib/unwind/ElfImage-jni.hxx"

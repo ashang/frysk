@@ -1,3 +1,12 @@
+2008-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Unwind.cxx: New.
+	* jni/ElfImage.cxx: Include jnixx generated header.
+	* jni/UnwindX86.cxx: Ditto.
+	* jni/UnwindX8664.cxx: Ditto.
+	* jni/UnwindPPC64.cxx: Ditto.
+	* jni/UnwindPPC32.cxx: Ditto.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/ElfImage.cxx: New.

@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_PseudoTerminal.h"
-
-
-JNIEXPORT jstring
-Java_frysk_sys_PseudoTerminal_getName (JNIEnv *env, jclass, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_PseudoTerminal_getName not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_frysk_sys_PseudoTerminal_open (JNIEnv *env, jclass, jboolean)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_PseudoTerminal_open not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/PseudoTerminal-jni.hxx"

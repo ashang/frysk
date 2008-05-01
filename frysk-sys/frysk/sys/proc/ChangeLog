@@ -1,3 +1,13 @@
+2008-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AuxvBuilder.cxx: Include jnixx generated header.
+	* jni/Status.cxx: Ditto.
+	* jni/Stat.cxx: Ditto.
+	* jni/ProcBuilder.cxx: Ditto.
+	* jni/MapsBuilder.cxx: Ditto.
+	* jni/Exe.cxx: Ditto.
+	* jni/CmdLineBuilder.cxx: Ditto.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AuxvBuilder.cxx: New.

@@ -91,6 +91,9 @@ class jnixx {
      * Print the namespace spec for the klass.
      */
     static void printCxxNamespace(Class klass) {
+	while (klass.isArray()) {
+	    klass = klass.getComponentType();
+	}
 	if (klass.isPrimitive())
 	    return;
 	if (printedNamespaces.contains(klass))
@@ -137,14 +140,69 @@ class jnixx {
 	}
     }
 
+    static String jniSignature(Class klass) {
+	StringBuffer signature = new StringBuffer();
+	while (klass.isArray()) {
+	    klass = klass.getComponentType();
+	    signature.append("[");
+	}
+	if (klass == Boolean.TYPE) {
+	    signature.append("Z");
+	} else if (klass == Byte.TYPE) {
+	    signature.append("B");
+	} else if (klass == Character.TYPE) {
+	    signature.append("C");
+	} else if (klass == Double.TYPE) {
+	    signature.append("D");
+	} else if (klass == Float.TYPE) {
+	    signature.append("F");
+	} else if (klass == Integer.TYPE) {
+	    signature.append("I");
+	} else if (klass == Long.TYPE) {
+	    signature.append("J");
+	} else if (klass == Short.TYPE) {
+	    signature.append("S");
+	} else if (klass == Void.TYPE) {
+	    signature.append("V");
+	} else if (klass.isPrimitive()) {
+	    throw new RuntimeException("unhandled primitive type: " + klass);
+	} else {
+	    signature.append("L");
+	    signature.append(klass.getName().replaceAll("\\.", "/"));
+	    signature.append(";");
+	}
+	return signature.toString();
+    }
+
+    static void printSignature(Method method) {
+	print("(");
+	Class[] params = method.getParameterTypes();
+	for (int i = 0; i < params.length; i++) {
+	    print(jniSignature(params[i]));
+	}
+	print(")");
+	print(jniSignature(method.getReturnType()));
+    }
+
     /**
      * Given a method, print its JNI mangled name.
      */
     static void printJniName(Method method) {
 	print("Java_");
-	print(method.getDeclaringClass().getName().replaceAll("\\.", "_"));
+	print(method.getDeclaringClass().getName()
+	      .replaceAll("_", "_1")
+	      .replaceAll("\\.", "_"));
 	print("_");
-	print(method.getName());
+	print(method.getName().replaceAll("_", "_1"));
+	print("__");
+	Class[] params = method.getParameterTypes();
+	for (int i = 0; i < params.length; i++) {
+	    print(jniSignature(params[i])
+		  .replaceAll("_", "_1")
+		  .replaceAll(";", "_2")
+		  .replaceAll("\\[", "_3")
+		  .replaceAll("/", "_"));
+	}
     }
 
 
@@ -153,23 +211,7 @@ class jnixx {
      * equivalent name.  For classes, print the XX type.
      */
     static void printJniType(Class klass) {
-	if (klass.isPrimitive()) {
-	    if (klass == Void.TYPE) {
-		print("void");
-	    } else {
-		print("j");
-		print(klass.getName());
-	    }
-	} else if (klass == String.class) {
-	    print("jstring");
-	} else if (klass == Object.class) {
-	    print("jobject");
-	} else if (klass == Class.class) {
-	    print("jclass");
-	} else {
-	    printCxxName(klass);
-	    print("*");
-	}
+	printCxxType(klass);
     }
 
     /**
@@ -183,6 +225,16 @@ class jnixx {
 	    } else {
 		print("j");
 		print(klass.getName());
+	    }
+	} else if (klass.isArray()) {
+	    Class component = klass.getComponentType();
+	    if (component.isPrimitive()) {
+		printCxxType(component);
+		print("Array");
+	    } else if (component == String.class) {
+		print("jstringArray");
+	    } else {
+		print("jobjectArray");
 	    }
 	} else if (klass == String.class) {
 	    print("jstring");
@@ -288,12 +340,22 @@ class jnixx {
     }
 
     static void printHxxFile(Class klass) {
-	println("#include <jni.h>");
+	String header = klass.getName().replaceAll("\\.", "_") + "_jni_hxx";
+	println("#ifndef " + header);
+	println("#define " + header);
+	println();
+	println("#include \"frysk/jni/xx.hxx\"");
 	printCxxNamespaces(klass);
 	println();
+	Class parent = klass.getSuperclass();
+	if (parent != Object.class) {
+	    print("#include \"");
+	    print(parent.getName().replaceAll("\\.", "/"));
+	    println("-jni.hxx\"");
+	    println();
+	}
 	print("struct ");
 	printCxxName(klass);
-	Class parent = klass.getSuperclass();
 	if (parent == Object.class) {
 	    print(" : public __jobject");
 	} else if (parent != null) {
@@ -317,6 +379,8 @@ class jnixx {
 	}
 	println();
 	println("};");
+	println();
+	println("#endif");
     }
 
     static void printNativeMethodDefinition(Method method) {
@@ -352,10 +416,6 @@ class jnixx {
 	}
 	println("  }");
 	println("}");
-    }
-
-    static void printSignature(Method method) {
-
     }
 
     static void printCxxMethodDefinition(Method method) {

@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_sys_Itimer.h"
-
-
-JNIEXPORT jobject
-Java_frysk_sys_Itimer_real (JNIEnv *env, jclass, jlong, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Itimer_real not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_frysk_sys_Itimer_sleep (JNIEnv *env, jclass, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_sys_Itimer_sleep not implemented");
-  }
-  return 0;
-}
+#include "frysk/sys/Itimer-jni.hxx"
