@@ -37,4 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <errno.h>
+
 #include "frysk/sys/PseudoTerminal-jni.hxx"
+
+#include "frysk/jni/exceptions.hxx"
+
+jstring
+frysk::sys::PseudoTerminal::getName(JNIEnv* env, jint pty) {
+  const char *name = ::ptsname(pty);
+  if (name == NULL)
+    errnoException(env, errno, "ptsname");
+  return newStringUTF(env, name);
+}
+
+jint
+frysk::sys::PseudoTerminal::open(JNIEnv* env, jboolean) {
+  return -1;
+}

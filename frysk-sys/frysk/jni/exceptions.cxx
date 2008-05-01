@@ -45,6 +45,7 @@
 
 #include <jni.h>
 
+#include "frysk/jni/xx.hxx"
 #include "frysk/jni/exceptions.hxx"
 
 void
@@ -78,4 +79,5 @@ runtimeException(JNIEnv *env, const char *fmt, ...) {
     ::free(msg);
     va_end(ap);
   }
+  throw jnixx_exception();
 }

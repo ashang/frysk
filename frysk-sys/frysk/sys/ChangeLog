@@ -1,5 +1,7 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/PseudoTerminal.cxx (PseudoTerminal::getName): Implement.
+	
 	* jni/FileDescriptor.cxx: Include jnixx generated header.
 	* jni/StatelessFile.cxx: Ditto.
 	* jni/Wait.cxx: Ditto.

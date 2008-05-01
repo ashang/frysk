@@ -1,5 +1,8 @@
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* exceptions.cxx (runtimeException): Throw an exception.
+	* exceptions.hxx: Mark with noreturn.
+
 	* xx.hxx (jstringArray): Define.
 	* jnixx.java: Generate function signatures; wrap headers in
 	#ifdef; better handle array types.

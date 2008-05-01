@@ -327,6 +327,9 @@ class jnixx {
 
     static void printCxxMethodDeclaration(Method method) {
 	println();
+	if (Modifier.isNative(method.getModifiers())) {
+	    println(" // native:");
+	}
 	println(" public:");
 	pad(1);
 	print("static ");

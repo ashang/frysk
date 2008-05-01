@@ -42,10 +42,13 @@
  * code return.
  */
 
-extern void errnoException(JNIEnv *env, int error, const char *prefix);
+extern void errnoException(JNIEnv *env, int error, const char *prefix)
+  __attribute__((noreturn));
 extern void errnoException(JNIEnv *env, int error, const char *prefix,
 			   const char *fmt, ...)
+  __attribute__((noreturn))
   __attribute__((format (printf, 4, 5)));
 
 extern void runtimeException(JNIEnv *env, const char *fmt, ...)
+  __attribute__((noreturn))
   __attribute__((format (printf, 2, 3)));
