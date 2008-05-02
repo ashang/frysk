@@ -659,6 +659,7 @@ generate_cni_header () {
 
 echo "JNIXX_BUILT ="
 echo "CLEANFILES += \$(JNIXXX_BUILT)"
+echo "jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)"
 generate_jnixx_sources () {
     local file=$1
     local d=$2
@@ -682,8 +683,11 @@ generate_jnixx_sources () {
 	    echo "${sources} += ${h}-jni.cxx"
 	    echo "${h}-jni.o: ${h}-jni.hxx"
 	    j=`echo ${h} | tr '[_]' '[/]'`
-	    echo "${h}-jni.hxx: $j.java frysk/jni/jnixx.java | ${GEN_DIRNAME}.jar"
-	    echo "${h}-jni.cxx: $j.java frysk/jni/jnixx.java | ${GEN_DIRNAME}.jar"
+	    # Hack, try to trigger jni regen when jnixx changes
+	    echo "${h}-jni.hxx ${h}-jni.cxx: \$(jnixx_sources)"
+	    echo "${h}-jni.hxx ${h}-jni.cxx: | ${GEN_DIRNAME}.jar"
+	    echo "${h}-jni.hxx: $j.java"
+	    echo "${h}-jni.cxx: $j.java"
 	    case $action in
 		include)
 		    case "$suffix" in

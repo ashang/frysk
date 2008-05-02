@@ -1,5 +1,9 @@
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (root_srcdir, abs_root_srcdir): Define.
+	* Makefile.gen.sh (generate_jnixx_sources): Depend on all jnixx
+	java files.
+
 	* Makefile.rules (JNIXX): Update; frysk.jnixx.jnixx refactored,
 	main in frysk.jnixx.Main.
 

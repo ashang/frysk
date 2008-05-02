@@ -82,6 +82,8 @@ LDADD =
 ANTLR_BUILT =
 SCRIPT_BUILT =
 JAVAH_CNI_BUILT =
+root_srcdir = $(dir $(top_srcdir))
+abs_root_srcdir = $(dir $(abs_top_srcdir))
 
 check_SCRIPTS =
 check_PROGRAMS =
@@ -254,7 +256,7 @@ SUFFIXES += .c-sh
 
 # Don't be confused by top_builddir and top_srcdir, they are actually
 # the directory corresponding to current sub-directory (frysk-gui,
-# frysk-core, ...).  Instead there is root_srcdir.
+# frysk-core, ...).  Instead there is a local root_srcdir.
 
 SUBST_SED = sed \
 		-e 's,[@]prefix[@],@prefix@,g' \
@@ -263,8 +265,8 @@ SUBST_SED = sed \
 		-e 's,[@]datadir[@],@datadir@,g' \
 		-e 's,[@]builddir[@],@top_builddir@,g' \
 		-e 's,[@]srcdir[@],@top_srcdir@,g' \
-		-e 's,[@]root_srcdir[@],$(dir $(top_srcdir)),g' \
-		-e 's,[@]abs_root_srcdir[@],$(dir $(abs_top_srcdir)),g' \
+		-e 's,[@]root_srcdir[@],$(root_srcdir),g' \
+		-e 's,[@]abs_root_srcdir[@],$(abs_root_srcdir),g' \
 		-e 's,[@]abs_builddir[@],@abs_top_builddir@,g' \
 		-e 's,[@]abs_srcdir[@],@abs_top_srcdir@,g' \
 		-e 's,[@]gladedir[@],$(gladedir),g' \
