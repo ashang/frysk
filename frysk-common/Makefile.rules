@@ -402,7 +402,7 @@ JNIXX = \
 	echo "$$class $$suffix => $@" ; \
 	rm -f $@.tmp ; \
 	CLASSPATH=$(GEN_DIRNAME).jar:$(CLASSPATH) \
-	    $(JAVA) frysk.jnixx.jnixx $$class $$suffix \
+	    $(JAVA) frysk.jnixx.Main $$class $$suffix \
 		> $@.tmp ; \
 	mv $@.tmp $@
 %-jni.hxx: %.java

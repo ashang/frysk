@@ -1,5 +1,8 @@
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JNIXX): Update; frysk.jnixx.jnixx refactored,
+	main in frysk.jnixx.Main.
+
 	* Makefile.rules (JNIXX): Update; frysk.jni renamed to
 	frysk.jnixx.
 

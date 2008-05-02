@@ -1,5 +1,13 @@
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.java: Refactor into ...
+	* Main.java: ... this; new.
+	* WalkClass.java: ... this; new.
+	* PrintDeclarations.java: ... this; new.
+	* PrintDefinitions.java: ... this; new.
+	* Printer.java: ... this; new.
+	* PrintNamespaces.java: ... this; new.
+
 	* Rename directory to frysk/jnixx/
 
 	* jnixx.java: Generate constructors and field accessors.
