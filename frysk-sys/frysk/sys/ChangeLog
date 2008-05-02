@@ -1,5 +1,7 @@
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Signal.cxx-sh: Use generated jnixx header.
+	
 	* jni/PseudoTerminal.cxx: Ditto.
 	* jni/Signal.cxx-sh: Update; frysk.jni renamed to frysk.jnixx.
 

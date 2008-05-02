@@ -47,16 +47,12 @@ cat <<EOF
 #include <sys/syscall.h>
 #include <string.h>
 
-#include "frysk_sys_Signal.h"
+#include "frysk/sys/Signal-jni.hxx"
 
 #include "frysk/jnixx/exceptions.hxx"
 
-JNIEXPORT void
-Java_frysk_sys_Signal_kill__IILjava_lang_String_2(JNIEnv *env,
-                                                  jclass klass,
-                                                  jint pid,
-					          jint sig,
-						  jstring name) {
+void
+frysk::sys::Signal::kill(JNIEnv *env, jint pid, jint sig, jstring name) {
   errno = 0;
   if (::kill(pid, sig) < 0) {
     const char *sname = env->GetStringUTFChars(name, NULL);
@@ -68,9 +64,8 @@ Java_frysk_sys_Signal_kill__IILjava_lang_String_2(JNIEnv *env,
   }
 }
 
-JNIEXPORT void
-Java_frysk_sys_Signal_tkill(JNIEnv *env, jclass klass, jint tid, jint sig,
-                            jstring name) {
+void
+frysk::sys::Signal::tkill(JNIEnv *env, jint tid, jint sig, jstring name) {
   errno = 0;
   if (::syscall(__NR_tkill, tid, sig) < 0) {
     const char *sname = env->GetStringUTFChars(name, NULL);
@@ -82,8 +77,8 @@ Java_frysk_sys_Signal_tkill(JNIEnv *env, jclass klass, jint tid, jint sig,
   }
 }
 
-JNIEXPORT void
-Java_frysk_sys_Signal_drain(JNIEnv *env, jclass, jint sig) {
+void
+frysk::sys::Signal::drain(JNIEnv *env, jint sig) {
   struct sigaction oldAction = { };
   struct sigaction newAction = { };
   newAction.sa_handler = SIG_IGN;
@@ -99,24 +94,24 @@ Java_frysk_sys_Signal_drain(JNIEnv *env, jclass, jint sig) {
   }
 }
 
-JNIEXPORT jint
-Java_frysk_sys_Signal_nsig(JNIEnv *env, jclass) {
+jint
+frysk::sys::Signal::nsig(JNIEnv *env) {
   return NSIG;
 }
 
-JNIEXPORT jint
-Java_frysk_sys_Signal_rtMin(JNIEnv *env, jclass) {
+jint
+frysk::sys::Signal::rtMin(JNIEnv *env) {
   return SIGRTMIN;
 }
 
-JNIEXPORT jint
-Java_frysk_sys_Signal_rtMax(JNIEnv *env, jclass) {
+jint
+frysk::sys::Signal::rtMax(JNIEnv *env) {
   return SIGRTMAX;
 }
 EOF
 
 for sig in \
-  hup int_1 quit ill abrt fpe kill__ segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
+  hup int_ quit ill abrt fpe kill segv pipe alrm term usr1 usr2 chld cont stop tstp ttin ttou \
   bus poll prof sys trap urg vtalrm xcpu xfsz \
   iot emt stkflt io cld pwr info lost winch unused
 do
@@ -124,7 +119,7 @@ do
     cat <<EOF
 
 jint
-Java_frysk_sys_Signal_${sig}(JNIEnv *, jclass) {
+frysk::sys::Signal::${sig}(JNIEnv *) {
 #ifdef ${SIG}
     return ${SIG};
 #else
