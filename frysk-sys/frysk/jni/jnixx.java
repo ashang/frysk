@@ -40,14 +40,18 @@
 package frysk.jni;
 
 import java.lang.reflect.Member;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.io.PrintWriter;
 
 class jnixx {
+
     private static PrintWriter out = new PrintWriter(System.out, true);
     private static PrintWriter err = new PrintWriter(System.err, true);
+
     static void print(char ch) {
 	out.print(ch);
     }
@@ -86,6 +90,11 @@ class jnixx {
 	print("::");
 	print(method.getName());
     }
+    static void printCxxName(Constructor constructor) {
+	printCxxName(constructor.getDeclaringClass());
+	print("::");
+	print("New");
+    }
 
     /**
      * Print the namespace spec for the klass.
@@ -118,8 +127,14 @@ class jnixx {
     }
     private static HashSet printedNamespaces = new HashSet();
 
-    static boolean isStatic(Member member) {
-	return Modifier.isStatic(member.getModifiers());
+    /**
+     * Iterate over the klasses printing any referenced name spaces.
+     */
+    static void printCxxNamespaces(Class[] klasses) {
+	for (int i = 0; i < klasses.length; i++) {
+	    // Should this recurse?
+	    printCxxNamespace(klasses[i]);
+	}
     }
 
     /**
@@ -128,18 +143,37 @@ class jnixx {
      */
     static void printCxxNamespaces(Class klass) {
 	printCxxNamespace(klass);
+	Constructor[] constructors = klass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    Constructor constructor = constructors[i];
+	    printCxxNamespaces(constructor.getParameterTypes());
+	}
 	Method[] methods = klass.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 	    Method method = methods[i];
 	    printCxxNamespace(method.getReturnType());
-	    Class[] params = method.getParameterTypes();
-	    for (int j = 0; j < params.length; j++) {
-		Class param = params[j];
-		printCxxNamespace(param);
-	    }
+	    printCxxNamespaces(method.getParameterTypes());
 	}
+	Field[] fields = klass.getDeclaredFields();
+	for (int i = 0; i < fields.length; i++) {
+	    printCxxNamespace(fields[i].getType());
+	}
+     
     }
 
+    static boolean isStatic(Member member) {
+	return Modifier.isStatic(member.getModifiers());
+    }
+    static void printModifiers(Member member) {
+	print("  // ");
+	print(Modifier.toString(member.getModifiers()));
+	println();
+	print("  public: static");
+    }
+
+    /**
+     * Return the JNI signature for the klass.
+     */
     static String jniSignature(Class klass) {
 	StringBuffer signature = new StringBuffer();
 	while (klass.isArray()) {
@@ -174,12 +208,21 @@ class jnixx {
 	return signature.toString();
     }
 
-    static void printSignature(Method method) {
-	print("(");
-	Class[] params = method.getParameterTypes();
+    /**
+     * Print the parameter list's JNI signature.
+     */
+    static void printJniSignature(Class[] params) {
 	for (int i = 0; i < params.length; i++) {
 	    print(jniSignature(params[i]));
 	}
+    }
+
+    /**
+     * Print the method's JNI signature.
+     */
+    static void printJniSignature(Method method) {
+	print("(");
+	printJniSignature(method.getParameterTypes());
 	print(")");
 	print(jniSignature(method.getReturnType()));
     }
@@ -252,17 +295,18 @@ class jnixx {
      * Given an array of types, print them as a list (presumably this
      * is a list of parameters).
      */
-    static void printFormalCxxParameters(Method method, boolean printArgs) {
+    private static void printFormalCxxParameters(Class klass, Class[] params,
+						 boolean isStatic,
+						 boolean printArgs) {
 	print("JNIEnv*");
 	if (printArgs)
 	    print(" env");
-	if (!isStatic(method)) {
+	if (!isStatic) {
 	    print(", ");
-	    printJniType(method.getDeclaringClass());
+	    printJniType(klass);
 	    if (printArgs)
 		print(" object");
 	}
-	Class[] params = method.getParameterTypes();
 	for (int i = 0; i < params.length; i++) {
 	    print(", ");
 	    printCxxType(params[i]);
@@ -270,15 +314,29 @@ class jnixx {
 		print(" p" + i);
 	}
     }
+    static void printFormalCxxParameters(Method f, boolean printArgs) {
+	printFormalCxxParameters(f.getDeclaringClass(), f.getParameterTypes(),
+				 isStatic(f), printArgs);
+    }
+    static void printFormalCxxParameters(Constructor f, boolean printArgs) {
+	printFormalCxxParameters(f.getDeclaringClass(), f.getParameterTypes(),
+				 true/*isStatic*/, printArgs);
+    }
 
-    static void printActualCxxParameters(Method method) {
+    static void printActualCxxParameters(Member func, Class[] params) {
 	print("env");
-	if (!isStatic(method)) {
+	if (!isStatic(func)) {
 	    print(", object");
 	}
-	for (int i = 0; i < method.getParameterTypes().length; i++) {
+	for (int i = 0; i < params.length; i++) {
 	    print(", p" + i);
 	}
+    }
+    static void printActualCxxParameters(Method f) {
+	printActualCxxParameters(f, f.getParameterTypes());
+    }
+    static void printActualCxxParameters(Constructor f) {
+	printActualCxxParameters(f, f.getParameterTypes());
     }
 
     static void printFormalJniParameters(Method method, boolean printArgs) {
@@ -304,15 +362,21 @@ class jnixx {
 	}
     }
 
-    static void printActualJniParameters(Method method) {
-	if (isStatic(method))
+    static void printActualJniParameters(boolean isStatic, Class[] params) {
+	if (isStatic)
 	    print("_Class");
 	else
 	    print("object");
 	print(", id");
-	for (int i = 0; i < method.getParameterTypes().length; i++) {
+	for (int i = 0; i < params.length; i++) {
 	    print(", p" + i);
 	}
+    }
+    static void printActualJniParameters(Method f) {
+	printActualJniParameters(isStatic(f), f.getParameterTypes());
+    }
+    static void printActualJniParameters(Constructor f) {
+	printActualJniParameters(/*isStatic=*/true, f.getParameterTypes());
     }
 
     static void printReturnType(Class klass) {
@@ -327,12 +391,8 @@ class jnixx {
 
     static void printCxxMethodDeclaration(Method method) {
 	println();
-	if (Modifier.isNative(method.getModifiers())) {
-	    println(" // native:");
-	}
-	println(" public:");
-	pad(1);
-	print("static ");
+	printModifiers(method);
+	print(" ");
 	printCxxType(method.getReturnType());
 	print(" ");
 	print(method.getName());
@@ -342,48 +402,54 @@ class jnixx {
 	println();
     }
 
-    static void printHxxFile(Class klass) {
-	String header = klass.getName().replaceAll("\\.", "_") + "_jni_hxx";
-	println("#ifndef " + header);
-	println("#define " + header);
+    static void printCxxMethodDefinition(Method method) {
+	Class returnType = method.getReturnType();
 	println();
-	println("#include \"frysk/jni/xx.hxx\"");
-	printCxxNamespaces(klass);
+	printCxxType(returnType);
 	println();
-	Class parent = klass.getSuperclass();
-	if (parent != Object.class) {
-	    print("#include \"");
-	    print(parent.getName().replaceAll("\\.", "/"));
-	    println("-jni.hxx\"");
-	    println();
+	printCxxName(method.getDeclaringClass());
+	print("::");
+	print(method.getName());
+	print("(");
+	printFormalCxxParameters(method, true);
+	print(") {");
+	println();
+	println("  static jmethodID id;");
+	println("  if (id == NULL)");
+	print("    id = getMethodID(env");
+	if (isStatic(method)) {
+	    print(", Class(env)");
+	} else {
+	    print(", object");
 	}
-	print("struct ");
-	printCxxName(klass);
-	if (parent == Object.class) {
-	    print(" : public __jobject");
-	} else if (parent != null) {
-	    print(" : public ");
-	    printCxxName(parent);
+	print(", \"");
+	print(method.getName());
+	print("\", \"");
+	printJniSignature(method);
+	println("\");");
+	print("  ");
+	if (returnType != Void.TYPE) {
+	    printCxxType(returnType);
+	    print(" ret = ");
+	    if (!returnType.isPrimitive()) {
+		print("(");
+		printCxxType(returnType);
+		print(") ");
+	    }
 	}
-	println(" {");
-	// Static get-class method - a class knows its own class.
-	println();
-	println(" private:");
-	println("  static jclass _Class;");
-	println(" public:");
-	println("  static jclass Class(JNIEnv* env);");
-	// Print the constructors.
-	// Print the field accessors.
-	// Print the methods
-	Method[] methods = klass.getDeclaredMethods();
-	for (int i = 0; i < methods.length; i++) {
-	    Method method = methods[i];
-	    printCxxMethodDeclaration(method);
+	print("env->Call");
+	if (isStatic(method))
+	    print("Static");
+	printReturnType(returnType);
+	print("Method(");
+	printActualJniParameters(method);
+	println(");");
+	println("  if (env->ExceptionCheck())");
+	println("    throw jnixx_exception();");
+	if (returnType != Void.TYPE) {
+	    println("  return ret;");
 	}
-	println();
-	println("};");
-	println();
-	println("#endif");
+	println("}");
     }
 
     static void printNativeMethodDefinition(Method method) {
@@ -421,54 +487,194 @@ class jnixx {
 	println("}");
     }
 
-    static void printCxxMethodDefinition(Method method) {
-	Class returnType = method.getReturnType();
+    static void printCxxFieldAccessorDeclaration(Field field, boolean get) {
+	printModifiers(field);
+	if (get) {
+	    print(" ");
+	    printCxxType(field.getType());
+	    print(" Get");
+	} else {
+	    print(" void Set");
+	}
+	String name = field.getName();
+	print(Character.toUpperCase(name.charAt(0)));
+	print(name.substring(1));
+	print("(JNIEnv*");
+	if (!isStatic(field)) {
+	    print(", ");
+	    printCxxType(field.getDeclaringClass());
+	}
+	if (!get) {
+	    print(", ");
+	    printCxxType(field.getType());
+	    print(" value");
+	}
+	println(");");
+    }
+
+    static void printCxxFieldAccessorDefinition(Field field, boolean get) {
 	println();
-	printCxxType(returnType);
-	println();
-	printCxxName(method.getDeclaringClass());
+	if (get) {
+	    printCxxType(field.getType());
+	    println();
+	} else { 
+	    println("void");
+	}
+	printCxxName(field.getDeclaringClass());
 	print("::");
-	print(method.getName());
+	if (get) {
+	    print("Get");
+	} else {
+	    print("Set");
+	}
+	String name = field.getName();
+	print(Character.toUpperCase(name.charAt(0)));
+	print(name.substring(1));
+	print("(JNIEnv* env");
+	if (!isStatic(field)) {
+	    print(", ");
+	    printCxxType(field.getDeclaringClass());
+	    print(" object");
+	}
+	if (!get) {
+	    print(", ");
+	    printCxxType(field.getType());
+	    print(" value");
+	}
+	println(") {");
+	println("  if (" + name + "ID == NULL) {");
+	print("    " + name + "ID = getFieldID(env, ");
+	if (isStatic(field)) {
+	    print("Class(env)");
+	} else {
+	    print("object");
+	}
+	print(", \"" + name + "\"");
+	print(", \"" + jniSignature(field.getType()) + "\"");
+	println(");");
+	println("  }");
+	if (get) {
+	    print("  return");
+	    if (!field.getType().isPrimitive()) {
+		print(" (");
+		printCxxType(field.getType());
+		print(")");
+	    }
+	    print(" env->Get");
+	} else {
+	    print("  env->Set");
+	}
+	if (isStatic(field)) {
+	    print("Static");
+	}
+	printReturnType(field.getType());
+	print("Field(");
+	if (isStatic(field)) {
+	    print("_Class");
+	} else {
+	    print("object");
+	}
+	print(", " + name + "ID");
+	if (!get) {
+	    print(",");
+	    if (!field.getType().isPrimitive()) {
+		print(" (jobject)");
+	    }
+	    print(" value");
+	}
+	println(");");
+	println("}");
+    }
+
+    static void printCxxConstructorDeclaration(Constructor constructor) {
+	println();
+	printModifiers(constructor);
+	print(" ");
+	printCxxType(constructor.getDeclaringClass());
+	print(" New(");
+	printFormalCxxParameters(constructor, false);
+	print(");");
+	println();
+    }
+
+    static void printCxxConstructorDefinition(Constructor constructor) {
+	println();
+	printCxxType(constructor.getDeclaringClass());
+	println();
+	printCxxName(constructor);
 	print("(");
-	printFormalCxxParameters(method, true);
+	printFormalCxxParameters(constructor, true);
 	print(") {");
 	println();
 	println("  static jmethodID id;");
 	println("  if (id == NULL)");
-	print("    id = getMethodID(env");
-	if (isStatic(method)) {
-	    print(", Class(env)");
-	} else {
-	    print(", object");
-	}
-	print(", \"");
-	print(method.getName());
-	print("\", \"");
-	printSignature(method);
-	println("\");");
+	print("    id = getMethodID(env, Class(env), \"<init>\", \"(");
+	printJniSignature(constructor.getParameterTypes());
+	println(")V\");");
 	print("  ");
-	if (returnType != Void.TYPE) {
-	    printCxxType(returnType);
-	    print(" ret = ");
-	    if (!returnType.isPrimitive()) {
-		print("(");
-		printCxxType(returnType);
-		print(") ");
+	printCxxType(constructor.getDeclaringClass());
+	print(" object = (");
+	printCxxType(constructor.getDeclaringClass());
+	print(") env->NewObject(");
+	printActualJniParameters(constructor);
+	println(");");
+	println("  if (object == NULL)");
+	println("    throw jnixx_exception();");
+	println("  return object;");
+	print("}");
+    }
+
+    static void printHxxFile(Class klass) {
+	String header = klass.getName().replaceAll("\\.", "_") + "_jni_hxx";
+	println("#ifndef " + header);
+	println("#define " + header);
+	println();
+	println("#include \"frysk/jni/xx.hxx\"");
+	printCxxNamespaces(klass);
+	println();
+	Class parent = klass.getSuperclass();
+	if (parent != Object.class) {
+	    print("#include \"");
+	    print(parent.getName().replaceAll("\\.", "/"));
+	    println("-jni.hxx\"");
+	    println();
+	}
+	print("struct ");
+	printCxxName(klass);
+	if (parent == Object.class) {
+	    print(" : public __jobject");
+	} else if (parent != null) {
+	    print(" : public ");
+	    printCxxName(parent);
+	}
+	println(" {");
+	// Static get-class method - a class knows its own class.
+	println();
+	print("  public: static jclass Class(JNIEnv* env);");
+	// Print the constructors.
+	Constructor[] constructors = klass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    printCxxConstructorDeclaration(constructors[i]);
+	}
+	// Print the field accessors.
+	Field[] fields = klass.getDeclaredFields();
+	for (int i = 0; i < fields.length; i++) {
+	    Field field = fields[i];
+	    printCxxFieldAccessorDeclaration(field, true);
+	    if (!Modifier.isFinal(field.getModifiers())) {
+		printCxxFieldAccessorDeclaration(field, false);
 	    }
 	}
-	print("env->Call");
-	if (isStatic(method))
-	    print("Static");
-	printReturnType(returnType);
-	print("Method(");
-	printActualJniParameters(method);
-	println(");");
-	println("  if (env->ExceptionCheck())");
-	println("    throw jnixx_exception();");
-	if (returnType != Void.TYPE) {
-	    println("  return ret;");
+	// Print the methods
+	Method[] methods = klass.getDeclaredMethods();
+	for (int i = 0; i < methods.length; i++) {
+	    Method method = methods[i];
+	    printCxxMethodDeclaration(method);
 	}
-	println("}");
+	println();
+	println("};");
+	println();
+	println("#endif");
     }
 
     static void printCxxFile(Class klass) {
@@ -481,9 +687,8 @@ class jnixx {
 
 	// The class, via reflection.
 	println();
-	print("jclass ");
-	printCxxName(klass);
-	println("::_Class;");
+	println("static jclass _Class;");
+	println();
 	println("jclass");
 	printCxxName(klass);
 	println("::Class(JNIEnv* env) {");
@@ -493,6 +698,25 @@ class jnixx {
 	println("  }");
 	println("  return _Class;");
 	println("}");
+
+	// The constructors.
+	Constructor[] constructors = klass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    printCxxConstructorDefinition(constructors[i]);
+	}
+
+	// The field accessors.
+	Field[] fields = klass.getDeclaredFields();
+	for (int i = 0; i < fields.length; i++) {
+	    Field field = fields[i];
+	    String name = field.getName();
+	    println();
+	    println("static jfieldID " + name + "ID;");
+	    printCxxFieldAccessorDefinition(field, true);
+	    if (!Modifier.isFinal(field.getModifiers())) {
+		printCxxFieldAccessorDefinition(field, false);
+	    }
+	}
 
 	// The methods.
 	Method[] methods = klass.getDeclaredMethods();
