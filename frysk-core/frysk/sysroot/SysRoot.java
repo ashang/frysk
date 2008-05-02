@@ -120,7 +120,7 @@ public class SysRoot {
             return exeFile;
         }
 
-        if (arg0.startsWith("/")) {
+        if (arg0.startsWith(File.separator)) {
             return exeFile;
         }
 
@@ -129,13 +129,16 @@ public class SysRoot {
             return exeFile;
         }
         
-        if (sysRoot.getPath().compareTo("/") == 0) { 
-            if (! exeFile.isAbsolute() && exeFile.exists()) {
-        	// given "./executable" with sysroot "/"
+	// Given "./executable" with sysroot "/"
+        if (sysRoot.getPath().compareTo(File.separator) == 0) { 
+            if (! exeFile.isAbsolute() 
+        	    && exeFile.getPath().indexOf(File.separator) != -1
+        	    && exeFile.exists()) {
         	return exeFile;
             }
         }
 
+        // Otherwise search in $PATH
         for (int i = 0; i < path.length; i++) {
             File file = new File(new File(sysRoot.getPath(), path[i]), arg0);
             if (file.exists()) {

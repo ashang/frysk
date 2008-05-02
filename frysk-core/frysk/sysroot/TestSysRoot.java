@@ -42,6 +42,7 @@ package frysk.sysroot;
 import java.io.File;
 
 import frysk.config.Prefix;
+import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 
 public class TestSysRoot extends TestLib {
@@ -124,4 +125,27 @@ public class TestSysRoot extends TestLib {
 	assertEquals("getSourcePathViaSysRoot relative", 0, 
 		testPath.getSysRootedFile().compareTo(correctPath));
     }
+    
+    public void testExePath() {
+	String sysRootPath = Prefix.pkgLibFile(".").getParent()
+	+ "/test-sysroot/usr/bin";
+	
+        File fexe = Prefix.binFile("fexe");
+        TearDownExpect e = new TearDownExpect(new String[] {
+                "/bin/bash",
+                "-c",
+                "PATH=" + sysRootPath + " ; cd " + Prefix.pkgLibFile(".") + " ; "
+                + fexe.getAbsolutePath() + " ./funit-quicksort"
+            });
+        e.expect(Prefix.pkgLibFile(".").getParent() + "/funit-quicksort");
+
+        e = new TearDownExpect(new String[] {
+                "/bin/bash",
+                "-c",
+                "PATH=" + sysRootPath + " ; cd " + Prefix.pkgLibFile(".") + " ; "
+                + fexe.getAbsolutePath() + " funit-quicksort"
+            });
+        e.expect(sysRootPath + "/funit-quicksort");
+    }
+
 }

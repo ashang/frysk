@@ -1,3 +1,8 @@
+2008-05-02  Stan Cox  <scox@redhat.com>
+
+	* SysRoot.java (findExe): Follow Unix ./executable convention.
+	* TestSysRoot.java (testExePath): New.
+
 2008-04-30  Stan Cox  <scox@redhat.com>
 
 	* SysRoot.java (findExe): Consider relative paths.
