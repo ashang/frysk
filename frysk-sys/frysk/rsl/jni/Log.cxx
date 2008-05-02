@@ -40,10 +40,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "frysk/jni/xx.hxx"
+#include "frysk/jnixx/xx.hxx"
 #include "frysk/rsl/Log-jni.hxx"
 
-#include "frysk/jni/print.hxx"
+#include "frysk/jnixx/print.hxx"
 #include "frysk/rsl/jni/Log.hxx"
 
 void

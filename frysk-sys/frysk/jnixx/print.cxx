@@ -37,47 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <jni.h>
 #include <stdlib.h>
 
-#include <jni.h>
+#include "frysk/jnixx/print.hxx"
 
-#include "frysk/jni/xx.hxx"
-#include "frysk/jni/exceptions.hxx"
+/**
+ * Do printf style printing to a java String.
+ */
 
-void
-errnoException(JNIEnv *env, int error, const char *prefix) {
-  // Hack; for moment just throw something.
-  runtimeException(env, "not implemented: %s#%d#%s",
-		   __FILE__, __LINE__, __func__);
+jstring
+ajprintf(JNIEnv* env, const char *fmt, ...) {
+  va_list ap;
+  va_start (ap, fmt);
+  jstring jmessage = vajprintf(env, fmt, ap);
+  va_end (ap);
+  return jmessage;  
 }
 
-void
-errnoException(JNIEnv *env, int error, const char *prefix,
-	       const char *fmt, ...) {
-  // Hack; for moment just throw something.
-  runtimeException(env, "not implemented: %s#%d#%s",
-		   __FILE__, __LINE__, __func__);
-}
-
-void
-runtimeException(JNIEnv *env, const char *fmt, ...) {
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    va_list ap;
-    va_start(ap, fmt);
-    char *msg = NULL;
-    if (::vasprintf(&msg, fmt, ap) < 0) {
-      fprintf(stderr, "runtimeException: vasprintf failed: %s",
-	      ::strerror(errno));
-      env->ThrowNew(cls, "runtimeException: vasprintf failed");
-    }
-    env->ThrowNew(cls, msg);
-    ::free(msg);
-    va_end(ap);
+/**
+ * Do vprintf style printing to a java String.
+ */
+jstring
+vajprintf(JNIEnv* env, const char *fmt, va_list ap) {
+  char* message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    return NULL;
   }
-  throw jnixx_exception();
+  jstring jmessage = env->NewStringUTF(message);  
+  ::free(message);  
+  if (jmessage == NULL) {
+    return NULL;
+  }
+  return jmessage;
 }

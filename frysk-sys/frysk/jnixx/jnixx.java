@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jni;
+package frysk.jnixx;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Field;
@@ -629,7 +629,7 @@ class jnixx {
 	println("#ifndef " + header);
 	println("#define " + header);
 	println();
-	println("#include \"frysk/jni/xx.hxx\"");
+	println("#include \"frysk/jnixx/xx.hxx\"");
 	printCxxNamespaces(klass);
 	println();
 	Class parent = klass.getSuperclass();
@@ -678,8 +678,6 @@ class jnixx {
     }
 
     static void printCxxFile(Class klass) {
-	println("#include \"frysk/jni/xx.hxx\"");
-	println();
 	print("#include \"");
 	print(klass.getName().replaceAll("\\.", "/"));
 	print("-jni.hxx\"");

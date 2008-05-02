@@ -49,7 +49,7 @@ cat <<EOF
 
 #include "frysk_sys_Signal.h"
 
-#include "frysk/jni/exceptions.hxx"
+#include "frysk/jnixx/exceptions.hxx"
 
 JNIEXPORT void
 Java_frysk_sys_Signal_kill__IILjava_lang_String_2(JNIEnv *env,

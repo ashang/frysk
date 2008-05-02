@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/jni/xx.hxx"
+#include "frysk/jnixx/xx.hxx"
 
 jclass
 findClass(JNIEnv* env, const char *signature) {

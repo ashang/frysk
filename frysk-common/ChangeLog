@@ -1,3 +1,8 @@
+2008-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (JNIXX): Update; frysk.jni renamed to
+	frysk.jnixx.
+
 2008-04-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (generate_jnixx_sources): New.

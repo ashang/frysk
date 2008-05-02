@@ -42,7 +42,7 @@
 
 #include "frysk/sys/PseudoTerminal-jni.hxx"
 
-#include "frysk/jni/exceptions.hxx"
+#include "frysk/jnixx/exceptions.hxx"
 
 jstring
 frysk::sys::PseudoTerminal::getName(JNIEnv* env, jint pty) {

@@ -1,5 +1,7 @@
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Rename directory to frysk/jnixx/
+
 	* jnixx.java: Generate constructors and field accessors.
 
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
