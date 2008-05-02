@@ -1,3 +1,7 @@
+2008-05-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Remove CDTParser.
+
 2008-04-25  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
 
 	* Makefile.am: Added rule to link two files into one

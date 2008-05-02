@@ -1,3 +1,8 @@
+2008-05-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Remove CDTParser.
+	* cdtparser: Ditto.
+
 2007-12-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	* .gitignore: Remove libunwind-*.

@@ -1,3 +1,9 @@
+2008-05-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* fparser.java: Remove.
+	* fparser.xml-in: Remove.
+	* test_main_looper.c: Remove.
+
 2008-04-30  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-asm.S: Update; use LOAD_REGISTER et.al.; initialize REG0

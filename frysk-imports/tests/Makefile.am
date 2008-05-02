@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, 2007 Red Hat Inc.
+# Copyright 2005, 2006, 2007,2008, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -331,32 +331,6 @@ frysk1929/gcj.sh: $(frysk1929_FILES)
 		$(srcdir)/frysk1929/frysk/proc/LinuxHost.java \
 		> $@
 	chmod a+x $@
-
-CDTPARSER_JAR = ../cdtparser/cdtparser.jar
-cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
-cdtparserversion_FILES += cdtparserversion/main.cpp
-EXTRA_DIST += $(cdtparserversion_FILES)
-cdtparserversion/CDTParserTest.class: $(cdtparserversion_FILES) $(CDTPARSER_JAR)
-	mkdir -p cdtparserversion
-	$(JAVAC) $(JAVAC_FLAGS) -d . \
-		-classpath $(CDTPARSER_JAR) \
-		$(srcdir)/cdtparserversion/CDTParserTest.java
-CLEANFILES += cdtparserversion/RESULT
-TESTS += cdtparserversion/cdttest.sh
-cdtparserversion/cdttest.sh: cdtparserversion/CDTParserTest.class $(CDTPARSER_JAR)
-	mkdir -p cdtparserversion
-	rm -f $@.tmp
-	echo "#!/bin/sh" >> $@.tmp
-	echo '$(JAVA) \' >> $@.tmp
-	echo '  -classpath .:$(CDTPARSER_JAR) \' >> $@.tmp
-	echo '  cdtparserversion.CDTParserTest \' >> $@.tmp
-	echo '  $(srcdir)/cdtparserversion/main.cpp \' >> $@.tmp
-	echo '  > cdtparserversion/RESULT' >> $@.tmp
-	echo 'test `cat cdtparserversion/RESULT` == 4,5' >> $@.tmp
-	chmod a+x $@.tmp
-	mv $@.tmp $@
-$(CDTPARSER_JAR):
-	cd `dirname $(CDTPARSER_JAR)` && $(MAKE)
 
 # Test effect of argv on /proc/PID/cmdline (should not abort)
 noinst_PROGRAMS += cmdline/dump cmdline/print

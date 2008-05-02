@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="antlr/|cdtparser/|elfutils/|getopt|jargs/|junit/|tests/|getopt/src/getopt/gnu/|getopt/src/getopt/" kind="src" path="frysk-imports"/>
+	<classpathentry excluding="antlr/|elfutils/|getopt|jargs/|junit/|tests/|getopt/src/getopt/gnu/|getopt/src/getopt/" kind="src" path="frysk-imports"/>
 	<classpathentry kind="src" path="frysk-imports/getopt/src/getopt"/>
 	<classpathentry excluding="tlwidgets/src/java/" kind="src" path="frysk-gtk"/>
 	<classpathentry kind="src" path="frysk-sys"/>

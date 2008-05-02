@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
 import frysk.scopes.SourceLocation;
 
@@ -155,9 +154,9 @@ public class DOMImage
         }
         // Parse the file and populate the DOM if the Frame says this is the
         // current source file
-        StaticParser parser = new CDTParser();
-        parser.parse(dom, source, this.image);
-        source.setParsed(true);
+        //StaticParser parser = new CDTParser();
+        //parser.parse(dom, source, this.image);
+        //source.setParsed(true);
         
         addSource(source);
         if (DEBUG)

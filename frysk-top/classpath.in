@@ -29,8 +29,6 @@
 			sourcepath="@abs_srcdir@/frysk-imports/jdom/src"/>
 	<classpathentry kind="lib" path="@abs_builddir@/frysk-imports/antlr.jar"
 			sourcepath="@abs_srcdir@/frysk-imports/antlr"/>
-	<classpathentry kind="lib" path="@abs_builddir@/frysk-imports/cdtparser.jar"
-			sourcepath="@abs_srcdir@/frysk-imports/cdtparser"/>
 
 	<classpathentry kind="lib" path="/usr/share/java/glade2.12.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/glib0.2.jar"/>
