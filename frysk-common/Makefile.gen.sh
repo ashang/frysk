@@ -657,9 +657,15 @@ generate_cni_header () {
 # Assume these are all generated from .class files found in the master
 # .jar.
 
-echo "JNIXX_BUILT ="
-echo "CLEANFILES += \$(JNIXXX_BUILT)"
-echo "jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)"
+cat <<EOF
+JNIXX_BUILT =
+CLEANFILES += \$(JNIXXX_BUILT)
+# Generate sources after the .jar is built
+\$(JNIXX_BUILT): | \${GEN_DIRNAME}.jar
+jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
+# If any of the JNI sources change, re-generate everything.
+\$(JNIXX_BUILT): \$(jnixx_sources)
+EOF
 generate_jnixx_sources () {
     local file=$1
     local d=$2
@@ -678,16 +684,18 @@ generate_jnixx_sources () {
             # Assume file defining macro depends on this file
 	    automake_variable $m = \$\($_file\)
 	elif has_java_source ${h} ; then
-	    echo "JNIXX_BUILT += ${h}-jni.hxx"
-	    echo "JNIXX_BUILT += ${h}-jni.cxx"
-	    echo "${sources} += ${h}-jni.cxx"
-	    echo "${h}-jni.o: ${h}-jni.hxx"
 	    j=`echo ${h} | tr '[_]' '[/]'`
-	    # Hack, try to trigger jni regen when jnixx changes
-	    echo "${h}-jni.hxx ${h}-jni.cxx: \$(jnixx_sources)"
-	    echo "${h}-jni.hxx ${h}-jni.cxx: | ${GEN_DIRNAME}.jar"
-	    echo "${h}-jni.hxx: $j.java"
-	    echo "${h}-jni.cxx: $j.java"
+	    cat <<EOF
+JNIXX_BUILT += ${h}-jni.hxx
+JNIXX_BUILT += ${h}-jni.cxx
+${sources} += ${h}-jni.cxx
+${h}-jni.o: ${h}-jni.hxx
+# Require all code to be generated before compiling so that
+# any indirectly included headers are present.
+${h}-jni.o: | \$(JNIXX_BUILT)
+${h}-jni.hxx: $j.java
+${h}-jni.cxx: $j.java
+EOF
 	    case $action in
 		include)
 		    case "$suffix" in
