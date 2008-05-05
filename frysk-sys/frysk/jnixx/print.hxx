@@ -40,10 +40,10 @@
 /**
  * Do printf style printing to a java String.
  */
-extern jstring ajprintf(JNIEnv* env, const char *fmt, ...)
+extern jstring ajprintf(jnixx::env&, const char*, ...)
   __attribute__ ((format (printf, 2, 3)));
 
 /**
  * Do vprintf style printing to a java String.
  */
-extern jstring vajprintf(JNIEnv* env, const char *fmt, va_list ap);
+extern jstring vajprintf(jnixx::env&, const char*, va_list);

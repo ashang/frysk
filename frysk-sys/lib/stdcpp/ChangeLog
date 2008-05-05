@@ -1,3 +1,7 @@
+2008-05-05  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Demangler.cxx: Replace JNIEnv* with jnixx::env&.
+
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Demangler.cxx: Do not include javah generated header.

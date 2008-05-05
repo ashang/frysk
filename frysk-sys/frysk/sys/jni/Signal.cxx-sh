@@ -52,33 +52,33 @@ cat <<EOF
 #include "frysk/jnixx/exceptions.hxx"
 
 void
-frysk::sys::Signal::kill(JNIEnv *env, jint pid, jint sig, jstring name) {
+frysk::sys::Signal::kill(jnixx::env& env, jint pid, jint sig, jstring name) {
   errno = 0;
   if (::kill(pid, sig) < 0) {
-    const char *sname = env->GetStringUTFChars(name, NULL);
+    const char *sname = env.getStringUTFChars(name, NULL);
     if (sname == NULL)
       return; // exception pending
     errnoException(env, errno, "kill", "process %d, signal %s (%d)",
     		   pid, sname, sig);
-    env->ReleaseStringUTFChars(name, sname);
+    env.releaseStringUTFChars(name, sname);
   }
 }
 
 void
-frysk::sys::Signal::tkill(JNIEnv *env, jint tid, jint sig, jstring name) {
+frysk::sys::Signal::tkill(jnixx::env& env, jint tid, jint sig, jstring name) {
   errno = 0;
   if (::syscall(__NR_tkill, tid, sig) < 0) {
-    const char *sname = env->GetStringUTFChars(name, NULL);
+    const char *sname = env.getStringUTFChars(name, NULL);
     if (sname == NULL)
       return; // exception pending
     errnoException(env, errno, "tkill", "task %d, signal %s (%d)",
     		   tid, sname, sig);
-    env->ReleaseStringUTFChars(name, sname);
+    env.releaseStringUTFChars(name, sname);
   }
 }
 
 void
-frysk::sys::Signal::drain(JNIEnv *env, jint sig) {
+frysk::sys::Signal::drain(jnixx::env& env, jint sig) {
   struct sigaction oldAction = { };
   struct sigaction newAction = { };
   newAction.sa_handler = SIG_IGN;
@@ -95,17 +95,17 @@ frysk::sys::Signal::drain(JNIEnv *env, jint sig) {
 }
 
 jint
-frysk::sys::Signal::nsig(JNIEnv *env) {
+frysk::sys::Signal::nsig(jnixx::env& env) {
   return NSIG;
 }
 
 jint
-frysk::sys::Signal::rtMin(JNIEnv *env) {
+frysk::sys::Signal::rtMin(jnixx::env& env) {
   return SIGRTMIN;
 }
 
 jint
-frysk::sys::Signal::rtMax(JNIEnv *env) {
+frysk::sys::Signal::rtMax(jnixx::env& env) {
   return SIGRTMAX;
 }
 EOF
@@ -119,7 +119,7 @@ do
     cat <<EOF
 
 jint
-frysk::sys::Signal::${sig}(JNIEnv *) {
+frysk::sys::Signal::${sig}(jnixx::env& ) {
 #ifdef ${SIG}
     return ${SIG};
 #else

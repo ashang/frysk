@@ -1,3 +1,15 @@
+2008-05-05  Andrew Cagney  <cagney@redhat.com>
+
+	* jnixx.hxx: New.
+	* Printer.java: Generate jnixx::env& instead of JNIEnv*, and
+	jnixx::exception instead of jnixx_exception.
+	* PrintDefinitions.java: Ditto.
+	* PrintDeclarations.java: Ditto.
+	* Main.java: Generate #include jnixx.hxx instead of xx.hxx. 
+	* print.hxx: Use jnixx.hxx; replace JNIEnv* with jnixx::env&.
+	* print.cxx: Ditto.
+	* exceptions.hxx: Ditto.
+	
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* jnixx.java: Refactor into ...

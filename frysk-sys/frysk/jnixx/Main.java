@@ -46,7 +46,7 @@ class Main {
 	p.println("#ifndef " + header);
 	p.println("#define " + header);
 	p.println();
-	p.println("#include \"frysk/jnixx/xx.hxx\"");
+	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	WalkClass.visit(klass, new PrintNamespaces(p));
 	p.println();
 	Class parent = klass.getSuperclass();

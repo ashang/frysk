@@ -43,20 +43,18 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include <jni.h>
-
-#include "frysk/jnixx/xx.hxx"
+#include "frysk/jnixx/jnixx.hxx"
 #include "frysk/jnixx/exceptions.hxx"
 
 void
-errnoException(JNIEnv *env, int error, const char *prefix) {
+errnoException(jnixx::env& env, int error, const char *prefix) {
   // Hack; for moment just throw something.
   runtimeException(env, "not implemented: %s#%d#%s",
 		   __FILE__, __LINE__, __func__);
 }
 
 void
-errnoException(JNIEnv *env, int error, const char *prefix,
+errnoException(jnixx::env& env, int error, const char *prefix,
 	       const char *fmt, ...) {
   // Hack; for moment just throw something.
   runtimeException(env, "not implemented: %s#%d#%s",
@@ -64,20 +62,24 @@ errnoException(JNIEnv *env, int error, const char *prefix,
 }
 
 void
-runtimeException(JNIEnv *env, const char *fmt, ...) {
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    va_list ap;
-    va_start(ap, fmt);
-    char *msg = NULL;
-    if (::vasprintf(&msg, fmt, ap) < 0) {
-      fprintf(stderr, "runtimeException: vasprintf failed: %s",
-	      ::strerror(errno));
-      env->ThrowNew(cls, "runtimeException: vasprintf failed");
-    }
-    env->ThrowNew(cls, msg);
-    ::free(msg);
-    va_end(ap);
+runtimeException(jnixx::env& env, const char *fmt, ...) {
+  jclass cls = env.findClass("java/lang/RuntimeException");
+  va_list ap;
+  va_start(ap, fmt);
+  char *msg = NULL;
+  int status = ::vasprintf(&msg, fmt, ap);
+  va_end(ap);
+  if (status < 0) {
+    fprintf(stderr, "runtimeException: vasprintf failed: %s",
+	    ::strerror(errno));
+    env.throwNew(cls, "runtimeException: vasprintf failed");
   }
-  throw jnixx_exception();
+  try {
+    env.throwNew(cls, msg);
+  } catch (jnixx::exception e) {
+    // XXX: Work around lack of finally by catchching, then
+    // re-throwing, the exception
+    ::free(msg);
+    throw e;
+  }
 }

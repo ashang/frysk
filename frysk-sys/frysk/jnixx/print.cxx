@@ -37,8 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <jni.h>
 #include <stdlib.h>
+
+#include "frysk/jnixx/jnixx.hxx"
 
 #include "frysk/jnixx/print.hxx"
 
@@ -47,7 +48,7 @@
  */
 
 jstring
-ajprintf(JNIEnv* env, const char *fmt, ...) {
+ajprintf(jnixx::env& env, const char *fmt, ...) {
   va_list ap;
   va_start (ap, fmt);
   jstring jmessage = vajprintf(env, fmt, ap);
@@ -59,12 +60,12 @@ ajprintf(JNIEnv* env, const char *fmt, ...) {
  * Do vprintf style printing to a java String.
  */
 jstring
-vajprintf(JNIEnv* env, const char *fmt, va_list ap) {
+vajprintf(jnixx::env& env, const char *fmt, va_list ap) {
   char* message = NULL;
   if (::vasprintf(&message, fmt, ap) < 0) {
-    return NULL;
+    return NULL;    
   }
-  jstring jmessage = env->NewStringUTF(message);  
+  jstring jmessage = env.newStringUTF(message);  
   ::free(message);  
   if (jmessage == NULL) {
     return NULL;

@@ -40,14 +40,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "frysk/jnixx/xx.hxx"
 #include "frysk/rsl/Log-jni.hxx"
 
 #include "frysk/jnixx/print.hxx"
 #include "frysk/rsl/jni/Log.hxx"
 
 void
-logf(JNIEnv *env, frysk::rsl::Log* logger, const char* format, ...) {
+logf(jnixx::env& env, frysk::rsl::Log* logger, const char* format, ...) {
   if (!frysk::rsl::Log::logging(env, logger))
     return;
   va_list ap;
@@ -58,7 +57,7 @@ logf(JNIEnv *env, frysk::rsl::Log* logger, const char* format, ...) {
 }
 
 void
-logf(JNIEnv *env, frysk::rsl::Log* logger, jobject object,
+logf(jnixx::env& env, frysk::rsl::Log* logger, jobject object,
      const char* format, ...) {
   if (!frysk::rsl::Log::logging(env, logger))
     return;
@@ -71,16 +70,16 @@ logf(JNIEnv *env, frysk::rsl::Log* logger, jobject object,
 }
 
 void
-log(JNIEnv *env, frysk::rsl::Log* logger, const char* p1, jobject p2) {
+log(jnixx::env& env, frysk::rsl::Log* logger, const char* p1, jobject p2) {
   if (!frysk::rsl::Log::logging(env, logger))
     return;
-  frysk::rsl::Log::log(env, logger, newStringUTF(env, p1), p2);
+  frysk::rsl::Log::log(env, logger, env.newStringUTF(p1), p2);
 }
 
 void
-log(JNIEnv *env, frysk::rsl::Log* logger, jobject self, const char* p1,
+log(jnixx::env& env, frysk::rsl::Log* logger, jobject self, const char* p1,
     jobject p2) {
   if (!frysk::rsl::Log::logging(env, logger))
     return;
-  frysk::rsl::Log::log(env, logger, self, newStringUTF(env, p1), p2);
+  frysk::rsl::Log::log(env, logger, self, env.newStringUTF(p1), p2);
 }

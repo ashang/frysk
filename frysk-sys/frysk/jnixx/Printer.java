@@ -302,7 +302,7 @@ class Printer {
     private Printer printFormalCxxParameters(Class klass, Class[] params,
 					     boolean isStatic,
 					     boolean printArgs) {
-	print("JNIEnv*");
+	print("jnixx::env&");
 	if (printArgs)
 	    print(" env");
 	if (!isStatic) {
@@ -344,7 +344,7 @@ class Printer {
      */
     private Printer printActualCxxParameters(Member func,
 					     Class[] params) {
-	print("env");
+	print("jnixxEnv");
 	if (!Modifier.isStatic(func.getModifiers())) {
 	    print(", object");
 	}
@@ -373,7 +373,7 @@ class Printer {
     Printer printFormalJniParameters(Method method, boolean printArgs) {
 	print("JNIEnv*");
 	if (printArgs)
-	    print(" env");
+	    print(" jniEnv");
 	if (Modifier.isStatic(method.getModifiers())) {
 	    print(", jclass");
 	    if (printArgs)

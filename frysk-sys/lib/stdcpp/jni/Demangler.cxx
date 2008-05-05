@@ -47,22 +47,18 @@
 using namespace abi;
 
 jstring
-lib::stdcpp::Demangler::demangle(JNIEnv *env, jstring mangledString) {
+lib::stdcpp::Demangler::demangle(jnixx::env& env, jstring mangledString) {
   if (mangledString == NULL)
     return NULL;
   
   int status = -1;
 
-  const char* mangledName = env->GetStringUTFChars(mangledString, NULL);
-  if (mangledName == NULL) {
-    throw new std::exception();
-  }
-
+  const char* mangledName = env.getStringUTFChars(mangledString, NULL);
   const char *demangledName = __cxa_demangle(mangledName, 0, 0, &status);
-  env->ReleaseStringUTFChars(mangledString, mangledName);
+  env.releaseStringUTFChars(mangledString, mangledName);
   
   if (status == 0)
-    return env->NewStringUTF(demangledName);
+    return env.newStringUTF(demangledName);
   else
     return mangledString;
 }

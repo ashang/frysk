@@ -45,14 +45,14 @@
 #include "frysk/jnixx/exceptions.hxx"
 
 jstring
-frysk::sys::PseudoTerminal::getName(JNIEnv* env, jint pty) {
+frysk::sys::PseudoTerminal::getName(jnixx::env& env, jint pty) {
   const char *name = ::ptsname(pty);
   if (name == NULL)
     errnoException(env, errno, "ptsname");
-  return newStringUTF(env, name);
+  return env.newStringUTF(name);
 }
 
 jint
-frysk::sys::PseudoTerminal::open(JNIEnv* env, jboolean) {
+frysk::sys::PseudoTerminal::open(jnixx::env& env, jboolean) {
   return -1;
 }

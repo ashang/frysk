@@ -54,7 +54,7 @@ class PrintDeclarations implements ClassWalker {
     public boolean acceptClass(Class klass) {
 	// Static get-class method - a class knows its own class.
 	p.println();
-	p.print("  public: static jclass Class(JNIEnv* env);");
+	p.print("  public: static jclass Class(jnixx::env& env);");
 	return true;
     }
 
@@ -81,7 +81,7 @@ class PrintDeclarations implements ClassWalker {
 	String name = field.getName();
 	p.print(Character.toUpperCase(name.charAt(0)));
 	p.print(name.substring(1));
-	p.print("(JNIEnv*");
+	p.print("(jnixx::env&");
 	if (!Modifier.isStatic(field.getModifiers())) {
 	    p.print(", ");
 	    p.printCxxType(field.getDeclaringClass());

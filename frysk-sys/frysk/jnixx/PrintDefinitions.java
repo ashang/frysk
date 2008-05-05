@@ -58,9 +58,9 @@ class PrintDefinitions implements ClassWalker {
 	p.println();
 	p.println("jclass");
 	p.printQualifiedCxxName(klass);
-	p.println("::Class(JNIEnv* env) {");
+	p.println("::Class(jnixx::env& env) {");
 	p.println("  if (_Class == NULL) {");
-	p.println("    _Class = findClass(env, \""
+	p.println("    _Class = env.findClass(\""
 		+ klass.getName().replace("\\.", "/") + "\");");
 	p.println("  }");
 	p.println("  return _Class;");
@@ -78,23 +78,24 @@ class PrintDefinitions implements ClassWalker {
 	p.println(") {");
 	p.println("  static jmethodID id;");
 	p.println("  if (id == NULL)");
-	p.print("    id = getMethodID(env, Class(env), \"<init>\", \"(");
+	p.print("    id = env.getMethodID(Class(env), \"<init>\", \"(");
 	p.printJniSignature(constructor.getParameterTypes());
 	p.println(")V\");");
 	p.print("  ");
 	p.printCxxType(constructor.getDeclaringClass());
 	p.print(" object = (");
 	p.printCxxType(constructor.getDeclaringClass());
-	p.print(") env->NewObject(");
+	p.print(") env.newObject(");
 	p.printActualJniParameters(constructor);
 	p.println(");");
 	p.println("  if (object == NULL)");
-	p.println("    throw jnixx_exception();");
+	p.println("    throw jnixx::exception();");
 	p.println("  return object;");
 	p.println("}");
     }
 
     private void printCxxFieldAccessorDefinition(Field field, boolean get) {
+	boolean isStatic = Modifier.isStatic(field.getModifiers());
 	p.println();
 	if (get) {
 	    p.printCxxType(field.getType());
@@ -112,8 +113,8 @@ class PrintDefinitions implements ClassWalker {
 	String name = field.getName();
 	p.print(Character.toUpperCase(name.charAt(0)));
 	p.print(name.substring(1));
-	p.print("(JNIEnv* env");
-	if (!Modifier.isStatic(field.getModifiers())) {
+	p.print("(jnixx::env& env");
+	if (!isStatic) {
 	    p.print(", ");
 	    p.printCxxType(field.getDeclaringClass());
 	    p.print(" object");
@@ -125,14 +126,13 @@ class PrintDefinitions implements ClassWalker {
 	}
 	p.println(") {");
 	p.println("  if (" + name + "ID == NULL) {");
-	p.print("    " + name + "ID = getFieldID(env, ");
-	if (Modifier.isStatic(field.getModifiers())) {
-	    p.print("Class(env)");
-	} else {
-	    p.print("object");
+	p.print("    " + name + "ID = env.get");
+	if (isStatic) {
+	    p.print("Static");
 	}
-	p.print(", \"" + name + "\"");
-	p.print(", \"");
+	p.print("FieldID(Class(env), \"");
+	p.print(name);
+	p.print("\", \"");
 	p.printJniSignature(field.getType());
 	p.print("\"");
 	p.println(");");
@@ -144,16 +144,16 @@ class PrintDefinitions implements ClassWalker {
 		p.printCxxType(field.getType());
 		p.print(")");
 	    }
-	    p.print(" env->Get");
+	    p.print(" env.get");
 	} else {
-	    p.print("  env->Set");
+	    p.print("  env.set");
 	}
-	if (Modifier.isStatic(field.getModifiers())) {
+	if (isStatic) {
 	    p.print("Static");
 	}
 	p.printJniReturnTypeName(field.getType());
 	p.print("Field(");
-	if (Modifier.isStatic(field.getModifiers())) {
+	if (isStatic) {
 	    p.print("_Class");
 	} else {
 	    p.print("object");
@@ -182,6 +182,7 @@ class PrintDefinitions implements ClassWalker {
     }
 
     private void printCxxMethodDefinition(Method method) {
+	boolean isStatic = Modifier.isStatic(method.getModifiers());
 	Class returnType = method.getReturnType();
 	p.println();
 	p.printCxxType(returnType);
@@ -191,17 +192,15 @@ class PrintDefinitions implements ClassWalker {
 	p.print(method.getName());
 	p.print("(");
 	p.printFormalCxxParameters(method, true);
-	p.print(") {");
+	p.println(") {");
 	p.println();
 	p.println("  static jmethodID id;");
 	p.println("  if (id == NULL)");
-	p.print("    id = getMethodID(env");
-	if (Modifier.isStatic(method.getModifiers())) {
-	    p.print(", Class(env)");
-	} else {
-	    p.print(", object");
+	p.print("    id = env.get");
+	if (isStatic) {
+	    p.print("Static");
 	}
-	p.print(", \"");
+	p.print("MethodID(Class(env), \"");
 	p.print(method.getName());
 	p.print("\", \"");
 	p.printJniSignature(method);
@@ -216,15 +215,14 @@ class PrintDefinitions implements ClassWalker {
 		p.print(") ");
 	    }
 	}
-	p.print("env->Call");
-	if (Modifier.isStatic(method.getModifiers()))
+	p.print("env.call");
+	if (isStatic) {
 	    p.print("Static");
+	}
 	p.printJniReturnTypeName(returnType);
 	p.print("Method(");
 	p.printActualJniParameters(method);
 	p.println(");");
-	p.println("  if (env->ExceptionCheck())");
-	p.println("    throw jnixx_exception();");
 	if (returnType != Void.TYPE) {
 	    p.println("  return ret;");
 	}
@@ -250,6 +248,7 @@ class PrintDefinitions implements ClassWalker {
 	p.printFormalJniParameters(method, true);
 	p.println(") {");
 	p.println("  try {");
+	p.println("    jnixx::env jnixxEnv = jnixx::env(jniEnv);");
 	p.print("    ");
 	if (method.getReturnType() != Void.TYPE) {
 	    p.print("return ");
@@ -258,7 +257,7 @@ class PrintDefinitions implements ClassWalker {
 	p.print("(");
 	p.printActualCxxParameters(method);
 	p.println(");");
-	p.println("  } catch (jnixx_exception) {");
+	p.println("  } catch (jnixx::exception) {");
 	if (method.getReturnType() != Void.TYPE) {
 	    p.println("    return 0;");
 	}

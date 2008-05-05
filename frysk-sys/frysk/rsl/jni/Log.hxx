@@ -37,11 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-extern void logf(frysk::rsl::Log*, const char*, ...)
-  __attribute__((format(printf, 2, 3)));
-
-extern void logf(frysk::rsl::Log*, jobject, const char*, ...)
+extern void logf(jnixx::env&, frysk::rsl::Log*, const char*, ...)
   __attribute__((format(printf, 3, 4)));
 
-extern void log(frysk::rsl::Log*, const char*, jobject);
-extern void log(frysk::rsl::Log*, jobject, const char*, jobject);
+extern void logf(jnixx::env&, frysk::rsl::Log*, jobject, const char*, ...)
+  __attribute__((format(printf, 4, 5)));
+
+extern void log(jnixx::env&, frysk::rsl::Log*, const char*, jobject);
+extern void log(jnixx::env&, frysk::rsl::Log*, jobject, const char*, jobject);
