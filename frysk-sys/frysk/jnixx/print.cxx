@@ -38,20 +38,22 @@
 // exception.
 
 #include <stdlib.h>
+#include <errno.h>
 
 #include "frysk/jnixx/jnixx.hxx"
 
 #include "frysk/jnixx/print.hxx"
+#include "frysk/jnixx/exceptions.hxx"
 
 /**
  * Do printf style printing to a java String.
  */
 
-jstring
+java::lang::String
 ajprintf(jnixx::env& env, const char *fmt, ...) {
   va_list ap;
   va_start (ap, fmt);
-  jstring jmessage = vajprintf(env, fmt, ap);
+  java::lang::String jmessage = vajprintf(env, fmt, ap);
   va_end (ap);
   return jmessage;  
 }
@@ -59,16 +61,16 @@ ajprintf(jnixx::env& env, const char *fmt, ...) {
 /**
  * Do vprintf style printing to a java String.
  */
-jstring
+java::lang::String
 vajprintf(jnixx::env& env, const char *fmt, va_list ap) {
   char* message = NULL;
   if (::vasprintf(&message, fmt, ap) < 0) {
-    return NULL;    
+    errnoException(env, errno, "vasprintf");
   }
-  jstring jmessage = env.newStringUTF(message);  
-  ::free(message);  
-  if (jmessage == NULL) {
-    return NULL;
+  try {
+    return env.newStringUTF(message);
+  } catch (jnixx::exception) {
+    ::free(message);  
+    throw;
   }
-  return jmessage;
 }

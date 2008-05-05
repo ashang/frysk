@@ -1,5 +1,8 @@
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/PseudoTerminal.cxx: Use jnixx::object.
+	* jni/Signal.cxx-sh: Ditto.
+	
 	* jni/Pid.cxx: Update; use jnixx::env&.
 	* jni/Tid.cxx: Ditto.
 	* jni/Signal.cxx-sh: Ditto.

@@ -46,40 +46,41 @@
 #include "frysk/rsl/jni/Log.hxx"
 
 void
-logf(jnixx::env& env, frysk::rsl::Log* logger, const char* format, ...) {
-  if (!frysk::rsl::Log::logging(env, logger))
-    return;
-  va_list ap;
-  va_start(ap, format);
-  jstring message = vajprintf(env, format, ap);
-  frysk::rsl::Log::log(env, logger, message);
-  va_end(ap);
-}
-
-void
-logf(jnixx::env& env, frysk::rsl::Log* logger, jobject object,
+logf(jnixx::env& env, frysk::rsl::Log& logger,
      const char* format, ...) {
-  if (!frysk::rsl::Log::logging(env, logger))
+  if (!logger.logging(env))
     return;
   va_list ap;
   va_start(ap, format);
-  jstring message = vajprintf(env, format, ap);
-  if (message != NULL)
-    frysk::rsl::Log::log(env, logger, message);
+  java::lang::String message = vajprintf(env, format, ap);
+  logger.log(env, message);
   va_end(ap);
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log* logger, const char* p1, jobject p2) {
-  if (!frysk::rsl::Log::logging(env, logger))
+logf(jnixx::env& env, frysk::rsl::Log& logger,
+     jnixx::object object, const char* format, ...) {
+  if (!logger.logging(env))
     return;
-  frysk::rsl::Log::log(env, logger, env.newStringUTF(p1), p2);
+  va_list ap;
+  va_start(ap, format);
+  java::lang::String message = vajprintf(env, format, ap);
+  logger.log(env, message);
+  va_end(ap);
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log* logger, jobject self, const char* p1,
-    jobject p2) {
-  if (!frysk::rsl::Log::logging(env, logger))
+log(jnixx::env& env, frysk::rsl::Log& logger,
+    const char* p1, jnixx::object p2) {
+  if (!logger.logging(env))
     return;
-  frysk::rsl::Log::log(env, logger, self, env.newStringUTF(p1), p2);
+  logger.log(env, env.newStringUTF(p1), p2);
+}
+
+void
+log(jnixx::env& env, frysk::rsl::Log& logger,
+    jnixx::object self, const char* p1, jnixx::object p2) {
+  if (!logger.logging(env))
+    return;
+  logger.log(env, self, env.newStringUTF(p1), p2);
 }

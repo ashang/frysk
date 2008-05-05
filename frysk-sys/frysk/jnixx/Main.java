@@ -41,41 +41,65 @@ package frysk.jnixx;
 
 class Main {
 
+    static void printHxxBody(Printer p, Class klass,
+			     PrintNamespaces printNamespaces) {
+	Class parent = klass.getSuperclass();
+	p.println();
+	WalkClass.visit(klass, printNamespaces);
+	p.println();
+	p.print("struct ");
+	p.printQualifiedCxxName(klass);
+	p.print(" : public ");
+	if (parent == Object.class) {
+	    p.print("jnixx::object");
+	} else if (parent == null) {
+	    p.print("jnixx::interface");
+	} else {
+	    p.printQualifiedCxxName(parent);
+	}
+	while(p.dent(0, "{", "};")) {
+	    // Constructor.
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("(jobject o)");
+	    p.print(" : ");
+	    if (parent == Object.class) {
+		p.print("jnixx::object(o)");
+	    } else if (parent == null) {
+		p.print("jnixx::interface(o)");
+	    } else {
+		p.printQualifiedCxxName(parent);
+		p.print("(o)");
+	    }
+	    p.println(" { }");
+	    // Static get-class method - a class knows its own class.
+	    p.println("static jclass Class(jnixx::env& env);");
+	    WalkClass.visit(klass, new PrintDeclarations(p));
+	    p.println();
+	}
+    }
+
     private static void printHxxFile(Printer p, Class klass) {
 	String header = klass.getName().replaceAll("\\.", "_") + "_jni_hxx";
 	p.println("#ifndef " + header);
 	p.println("#define " + header);
 	p.println();
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
-	WalkClass.visit(klass, new PrintNamespaces(p));
-	p.println();
 	Class parent = klass.getSuperclass();
 	if (parent != Object.class) {
+	    p.println();
 	    p.print("#include \"");
 	    p.printHeaderFileName(parent);
 	    p.print("\"");
 	    p.println();
 	}
-	p.print("struct ");
-	p.printQualifiedCxxName(klass);
-	if (parent == Object.class) {
-	    p.print(" : public __jobject");
-	} else if (parent != null) {
-	    p.print(" : public ");
-	    p.printQualifiedCxxName(parent);
-	}
-	while(p.dent(0, "{", "};")) {
-	    WalkClass.visit(klass, new PrintDeclarations(p));
-	    p.println();
-	}
+	printHxxBody(p, klass, new PrintNamespaces(p));
 	p.println();
 	p.println("#endif");
     }
 
     private static void printCxxFile(Printer p, Class klass) {
-	p.print("#include \"");
-	p.printHeaderFileName(klass);
-	p.println("\"");
+	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
+	WalkClass.visit(klass, new PrintIncludes(p, new PrintNamespaces(p)));
 	WalkClass.visit(klass, new PrintDefinitions(p));
     }
 

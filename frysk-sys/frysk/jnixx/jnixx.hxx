@@ -43,17 +43,77 @@
 #include <jni.h>
 #include <stdarg.h>
 
-struct __jstringArray : public __jobjectArray {
-};
-typedef __jstringArray* jstringArray;
-
 namespace jnixx {
-  class exception;
+  struct object {
+    jobject _object;
+    object(jobject _object) {
+      this->_object = _object;
+    }
+    bool operator==(jobject p) {
+      return _object == p;
+    }
+  };
+  struct array : public object {
+    array(jobject _object) : object(_object) {
+    }
+  };
+  struct interface {
+    jobject _object;
+    interface(jobject _object) {
+      this->_object = _object;
+    }
+  };
+  class exception {
+  };
   class env;
 }
 
-class jnixx::exception {
-};
+// XXX: Generate this; or template it?
+
+namespace java {
+  namespace lang {
+    struct String : public jnixx::object {
+      String(jobject o) : jnixx::object(o) { }
+    };
+    struct StringBuffer : public jnixx::object {
+      StringBuffer(jobject o) : jnixx::object(o) { }
+    };
+    struct Number : public jnixx::object {
+      Number(jobject o) : jnixx::object(o) { }
+    };
+    struct Throwable : public jnixx::object {
+      Throwable(jobject o) : jnixx::object(o) { }
+    };
+  }
+  namespace io {
+    struct PrintStream : public jnixx::object {
+      PrintStream(jobject o) : jnixx::object(o) { }
+    };
+    struct PrintWriter : public jnixx::object {
+      PrintWriter(jobject o) : jnixx::object(o) { }
+    };
+    struct Writer : public jnixx::object {
+      Writer(jobject o) : jnixx::object(o) { }
+    };
+    struct File : public jnixx::object {
+      File(jobject o) : jnixx::object(o) { }
+    };
+    struct OutputStream : public jnixx::object {
+      OutputStream(jobject o) : jnixx::object(o) { }
+    };
+    struct InputStream : public jnixx::object {
+      InputStream(jobject o) : jnixx::object(o) { }
+    };
+  }
+  namespace util {
+    struct Map : public jnixx::object {
+      Map(jobject o) : jnixx::object(o) { }
+    };
+    struct List : public jnixx::object {
+      List(jobject o) : jnixx::object(o) { }
+    };
+  }
+}
 
 class jnixx::env {
 
@@ -76,7 +136,7 @@ public:
     return klass;
   }
 
-  jstring newStringUTF(const char string[]) {
+  java::lang::String newStringUTF(const char string[]) {
     jstring utf = jniEnv->NewStringUTF(string);
     if (utf == NULL) {
       fprintf(stderr,
@@ -84,27 +144,29 @@ public:
 	      string);
       throw jnixx::exception();
     }
-    return utf;
+    return java::lang::String(utf);
   }
 
-  const char* getStringUTFChars(jstring string, jboolean* isCopy) {
-    const char* chars = jniEnv->GetStringUTFChars(string, isCopy);
+  const char* getStringUTFChars(java::lang::String string, jboolean* isCopy) {
+    const char* chars = jniEnv->GetStringUTFChars((jstring) string._object,
+						  isCopy);
     if (chars == NULL) {
       fprintf(stderr,
 	      "frysk: JNIEnv.GetStringUTFChars(%p,%s) failed\n",
-	      string,
+	      string._object,
 	      isCopy == NULL ? "<null>" : (*isCopy ? "<true>" : "<false>"));
       throw jnixx::exception();
     }
     return chars;
   }
 
-  void releaseStringUTFChars(jstring string, const char* chars) {
-    jniEnv->ReleaseStringUTFChars(string, chars);
+  void releaseStringUTFChars(java::lang::String string, const char* chars) {
+    jniEnv->ReleaseStringUTFChars((jstring) string._object,
+				  chars);
     if (jniEnv->ExceptionCheck()) {
       fprintf(stderr,
 	      "frysk: JNIEnv.ReleaseStringUTFChars(%p,%s) failed\n",
-	      string, chars);
+	      string._object, chars);
       throw jnixx::exception();
     }
   }

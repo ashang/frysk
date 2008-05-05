@@ -52,21 +52,16 @@ class PrintDeclarations implements ClassWalker {
     }
 
     public boolean acceptClass(Class klass) {
-	// Static get-class method - a class knows its own class.
-	p.println();
-	p.println("public: static jclass Class(jnixx::env& env);");
 	return true;
     }
 
     public void acceptConstructor(Constructor constructor) {
-	p.println();
 	p.printModifiers(constructor);
 	p.print(" ");
 	p.printCxxType(constructor.getDeclaringClass());
 	p.print(" New(");
 	p.printFormalCxxParameters(constructor, false);
-	p.print(");");
-	p.println();
+	p.println(");");
     }
 
     private void printCxxFieldAccessorDeclaration(Field field, boolean get) {
@@ -82,10 +77,6 @@ class PrintDeclarations implements ClassWalker {
 	p.print(Character.toUpperCase(name.charAt(0)));
 	p.print(name.substring(1));
 	p.print("(jnixx::env&");
-	if (!Modifier.isStatic(field.getModifiers())) {
-	    p.print(", ");
-	    p.printCxxType(field.getDeclaringClass());
-	}
 	if (!get) {
 	    p.print(", ");
 	    p.printCxxType(field.getType());
@@ -95,7 +86,6 @@ class PrintDeclarations implements ClassWalker {
     }
 
     public void acceptField(Field field) {
-	p.println();
 	printCxxFieldAccessorDeclaration(field, true);
 	if (!Modifier.isFinal(field.getModifiers())) {
 	    printCxxFieldAccessorDeclaration(field, false);
@@ -103,7 +93,6 @@ class PrintDeclarations implements ClassWalker {
     }
 
     public void acceptMethod(Method method) {
-	p.println();
 	p.printModifiers(method);
 	p.print(" ");
 	p.printCxxType(method.getReturnType());
@@ -111,7 +100,6 @@ class PrintDeclarations implements ClassWalker {
 	p.print(method.getName());
 	p.print("(");
 	p.printFormalCxxParameters(method, false);
-	p.print(");");
-	p.println();
+	p.println(");");
     }
 }

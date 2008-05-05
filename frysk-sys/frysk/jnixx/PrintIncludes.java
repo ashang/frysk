@@ -44,39 +44,33 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.lang.reflect.Constructor;
 
-class PrintNamespaces implements ClassWalker {
+class PrintIncludes implements ClassWalker {
 
     private final Printer p;
-    PrintNamespaces(Printer p) {
+    private final PrintNamespaces printNamespaces;
+    PrintIncludes(Printer p, PrintNamespaces printNamespaces) {
 	this.p = p;
+	this.printNamespaces = printNamespaces;
     }
 
     /**
-     * Print the namespace spec for the klass.
+     * Print #includes for any non system headers..
      */
-    private void printCxxNamespace(Class klass) {
+    private void printCxxInclude(Class klass) {
 	while (klass.isArray()) {
 	    klass = klass.getComponentType();
 	}
 	if (klass.isPrimitive())
 	    return;
+	if (klass.getName().startsWith("java."))
+	    return;
 	if (printedNamespaces.contains(klass))
 	    return;
-	if (klass.getPackage().getName().startsWith("java."))
-	    return;
-	String[] names = klass.getName().split("\\.");
-	for (int i = 0; i < names.length - 1; i++) {
-	    p.print("namespace ");
-	    p.print(names[i]);
-	    p.print(" { ");
+	Class superclass = klass.getSuperclass();
+	if (superclass != null) {
+	    printCxxInclude(superclass);
 	}
-	p.print("struct ");
-	p.print(names[names.length - 1]);
-	p.print(";");
-	for (int i = names.length - 2; i >= 0; i--) {
-	    p.print(" }");
-	}
-	p.println();
+	Main.printHxxBody(p, klass, printNamespaces);
 	printedNamespaces.add(klass);
     }
     private HashSet printedNamespaces = new HashSet();
@@ -84,31 +78,28 @@ class PrintNamespaces implements ClassWalker {
     /**
      * Iterate over the klasses printing any referenced name spaces.
      */
-    private void printCxxNamespaces(Class[] klasses) {
+    private void printCxxIncludes(Class[] klasses) {
 	for (int i = 0; i < klasses.length; i++) {
 	    // Should this recurse?
-	    printCxxNamespace(klasses[i]);
+	    printCxxInclude(klasses[i]);
 	}
     }
 
     public boolean acceptClass(Class klass) {
-	if (klass == null)
-	    return false;
-	acceptClass(klass.getSuperclass());
-	printCxxNamespace(klass);
+	printCxxInclude(klass);
 	return true;
     }
 
     public void acceptConstructor(Constructor constructor) {
-	printCxxNamespaces(constructor.getParameterTypes());
+	printCxxIncludes(constructor.getParameterTypes());
     }
 
     public void acceptField(Field field) {
-	printCxxNamespace(field.getType());
+	printCxxInclude(field.getType());
     }
 
     public void acceptMethod(Method method) {
-	printCxxNamespace(method.getReturnType());
-	printCxxNamespaces(method.getParameterTypes());
+	printCxxInclude(method.getReturnType());
+	printCxxIncludes(method.getParameterTypes());
     }
 }

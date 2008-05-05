@@ -141,8 +141,20 @@ class Printer {
      * replaced by "::".
      */
     Printer printQualifiedCxxName(Class klass) {
-	print(klass.getName().replaceAll("\\.", "::"));
-	return this;
+	if (klass.isArray())
+	    throw new RuntimeException("array class: " + klass);
+	if (klass.isPrimitive())
+	    throw new RuntimeException("primitive class: " + klass);
+	return print(klass.getName().replaceAll("\\.", "::"));
+    }
+    /**
+     * Print the class's unqualified C++ name; that is just the class
+     * name.
+     */
+    Printer printUnqualifiedCxxName(Class klass) {
+	String name = klass.getName();
+	int dot = name.lastIndexOf('.');
+	return print(name.substring(dot + 1));
     }
     /**
      * Print the method's fully qualified C++ name; that is "."
@@ -178,10 +190,11 @@ class Printer {
      * Print the modifiers associated with the declaration.
      */
     Printer printModifiers(Member member) {
-	print("// ");
+	print("/* ");
 	print(Modifier.toString(member.getModifiers()));
-	println();
-	print("public: static");
+	print(" */");
+	if (Modifier.isStatic(member.getModifiers()))
+	    print(" static");
 	return this;
     }
 
@@ -278,7 +291,28 @@ class Printer {
      * equivalent name.
      */
     Printer printJniType(Class klass) {
-	printCxxType(klass);
+	if (klass.isPrimitive()) {
+	    if (klass == Void.TYPE) {
+		print("void");
+	    } else {
+		print("j");
+		print(klass.getName());
+	    }
+	} else if (klass.isArray()) {
+	    Class component = klass.getComponentType();
+	    if (component.isPrimitive()) {
+		printJniType(component);
+		print("Array");
+	    } else {
+		print("jobjectArray");
+	    }
+	} else if (klass == String.class) {
+	    print("jstring");
+	} else if (klass == Class.class) {
+	    print("jclass");
+	} else {
+	    print("jobject");
+	}
 	return this;
     }
 
@@ -299,20 +333,15 @@ class Printer {
 	    if (component.isPrimitive()) {
 		printCxxType(component);
 		print("Array");
-	    } else if (component == String.class) {
-		print("jstringArray");
 	    } else {
-		print("jobjectArray");
+		print("jnixx::array");
 	    }
-	} else if (klass == String.class) {
-	    print("jstring");
-	} else if (klass == Object.class) {
-	    print("jobject");
 	} else if (klass == Class.class) {
 	    print("jclass");
+	} else if (klass == Object.class) {
+	    print("jnixx::object");
 	} else {
 	    printQualifiedCxxName(klass);
-	    print("*");
 	}
 	return this;
     }
@@ -327,12 +356,6 @@ class Printer {
 	print("jnixx::env&");
 	if (printArgs)
 	    print(" env");
-	if (!isStatic) {
-	    print(", ");
-	    printJniType(klass);
-	    if (printArgs)
-		print(" object");
-	}
 	for (int i = 0; i < params.length; i++) {
 	    print(", ");
 	    printCxxType(params[i]);
@@ -366,12 +389,21 @@ class Printer {
      */
     private Printer printActualCxxParameters(Member func,
 					     Class[] params) {
-	print("jnixxEnv");
-	if (!Modifier.isStatic(func.getModifiers())) {
-	    print(", object");
-	}
+	print("env");
 	for (int i = 0; i < params.length; i++) {
-	    print(", p" + i);
+	    Class param = params[i];
+	    print(", ");
+	    if (param.isPrimitive()) {
+		print("p" + i);
+	    } else if (param == Class.class) {
+		print("p" + i);
+	    } else if (param.isArray()
+		       && param.getComponentType().isPrimitive()) {
+		print("p" + i);
+	    } else {
+		printCxxType(param);
+		print("(p" + i + ")");
+	    }
 	}
 	return this;
     }
@@ -395,7 +427,7 @@ class Printer {
     Printer printFormalJniParameters(Method method, boolean printArgs) {
 	print("JNIEnv*");
 	if (printArgs)
-	    print(" jniEnv");
+	    print(" jni");
 	if (Modifier.isStatic(method.getModifiers())) {
 	    print(", jclass");
 	    if (printArgs)
@@ -409,7 +441,7 @@ class Printer {
 	Class[] params = method.getParameterTypes();
 	for (int i = 0; i < params.length; i++) {
 	    print(", ");
-	    printCxxType(params[i]);
+	    printJniType(params[i]);
 	    if (printArgs)
 		print(" p" + i);
 	}
@@ -419,15 +451,28 @@ class Printer {
     /**
      * Print the actual JNI parameter list.
      */
-    private Printer printActualJniParameters(boolean isStatic,
-					     Class[] params) {
+    Printer printActualJniParameters(boolean isStatic,
+				     String id,
+				     Class[] params) {
 	if (isStatic)
-	    print("_Class");
+	    print("_class");
 	else
-	    print("object");
-	print(", id");
+	    print("_object");
+	print(", ");
+	print(id);
 	for (int i = 0; i < params.length; i++) {
-	    print(", p" + i);
+	    Class param = params[i];
+	    print(", ");
+	    if (param.isPrimitive()) {
+		print("p" + i);
+	    } else if (param == Class.class) {
+		print("p" + i);
+	    } else if (param.isArray()
+		       && param.getComponentType().isPrimitive()) {
+		print("p" + i);
+	    } else {
+		print("p" + i + "._object");
+	    }
 	}
 	return this;
     }
@@ -436,6 +481,7 @@ class Printer {
      */
     Printer printActualJniParameters(Method f) {
 	return printActualJniParameters(Modifier.isStatic(f.getModifiers()),
+					"id",
 					f.getParameterTypes());
     }
     /**
@@ -443,6 +489,7 @@ class Printer {
      */
     Printer printActualJniParameters(Constructor f) {
 	return printActualJniParameters(/*isStatic=*/true,
+					"id",
 					f.getParameterTypes());
     }
 

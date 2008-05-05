@@ -1,5 +1,16 @@
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx (jnixx::object): New.
+	* Main.java: Generate each class extending jnixx::object instead
+	of __jobject.
+	* PrintDeclarations.java: Ditto
+	* PrintDefinitions.java: Ditto.
+	* PrintNamespaces.java: Ditto.
+	* Printer.java: Ditto.
+	* PrintIncludes.java: New; same.
+	* print.cxx: Convert to jnixx::object.
+	* print.cxx: Ditto.
+	
 	* Printer(dent(int,String,String)): New.
 	* PrintNamespaces.java: Clean up generated indentation.
 	* PrintDefinitions.java: Ditto.

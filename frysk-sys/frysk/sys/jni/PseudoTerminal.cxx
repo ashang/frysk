@@ -44,7 +44,7 @@
 
 #include "frysk/jnixx/exceptions.hxx"
 
-jstring
+java::lang::String
 frysk::sys::PseudoTerminal::getName(jnixx::env& env, jint pty) {
   const char *name = ::ptsname(pty);
   if (name == NULL)

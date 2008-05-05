@@ -52,7 +52,8 @@ cat <<EOF
 #include "frysk/jnixx/exceptions.hxx"
 
 void
-frysk::sys::Signal::kill(jnixx::env& env, jint pid, jint sig, jstring name) {
+frysk::sys::Signal::kill(jnixx::env& env, jint pid, jint sig,
+                         java::lang::String name) {
   errno = 0;
   if (::kill(pid, sig) < 0) {
     const char *sname = env.getStringUTFChars(name, NULL);
@@ -65,7 +66,8 @@ frysk::sys::Signal::kill(jnixx::env& env, jint pid, jint sig, jstring name) {
 }
 
 void
-frysk::sys::Signal::tkill(jnixx::env& env, jint tid, jint sig, jstring name) {
+frysk::sys::Signal::tkill(jnixx::env& env, jint tid, jint sig,
+                          java::lang::String name) {
   errno = 0;
   if (::syscall(__NR_tkill, tid, sig) < 0) {
     const char *sname = env.getStringUTFChars(name, NULL);

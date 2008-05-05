@@ -46,8 +46,9 @@
 
 using namespace abi;
 
-jstring
-lib::stdcpp::Demangler::demangle(jnixx::env& env, jstring mangledString) {
+java::lang::String
+lib::stdcpp::Demangler::demangle(jnixx::env& env,
+				 java::lang::String mangledString) {
   if (mangledString == NULL)
     return NULL;
   
