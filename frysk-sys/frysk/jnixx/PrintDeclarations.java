@@ -54,7 +54,7 @@ class PrintDeclarations implements ClassWalker {
     public boolean acceptClass(Class klass) {
 	// Static get-class method - a class knows its own class.
 	p.println();
-	p.print("  public: static jclass Class(jnixx::env& env);");
+	p.println("public: static jclass Class(jnixx::env& env);");
 	return true;
     }
 
@@ -95,6 +95,7 @@ class PrintDeclarations implements ClassWalker {
     }
 
     public void acceptField(Field field) {
+	p.println();
 	printCxxFieldAccessorDeclaration(field, true);
 	if (!Modifier.isFinal(field.getModifiers())) {
 	    printCxxFieldAccessorDeclaration(field, false);

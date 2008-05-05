@@ -67,8 +67,7 @@ class PrintNamespaces implements ClassWalker {
 	for (int i = 0; i < names.length - 1; i++) {
 	    p.print("namespace ");
 	    p.print(names[i]);
-	    p.print(" {");
-	    p.println();
+	    p.println("{");
 	    p.indent();
 	}
 	p.print("struct ");
@@ -76,9 +75,8 @@ class PrintNamespaces implements ClassWalker {
 	p.print(";");
 	p.println();
 	for (int i = names.length - 2; i >= 0; i--) {
-	    p.print("}");
-	    p.println();
 	    p.outdent();
+	    p.println("}");
 	}
 	printedNamespaces.add(klass);
     }

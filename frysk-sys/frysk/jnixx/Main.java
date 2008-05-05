@@ -64,10 +64,10 @@ class Main {
 	    p.print(" : public ");
 	    p.printQualifiedCxxName(parent);
 	}
-	p.println(" {");
-	WalkClass.visit(klass, new PrintDeclarations(p));
-	p.println();
-	p.println("};");
+	while(p.dent(0, "{", "};")) {
+	    WalkClass.visit(klass, new PrintDeclarations(p));
+	    p.println();
+	}
 	p.println();
 	p.println("#endif");
     }

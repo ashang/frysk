@@ -1,5 +1,11 @@
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Printer(dent(int,String,String)): New.
+	* PrintNamespaces.java: Clean up generated indentation.
+	* PrintDefinitions.java: Ditto.
+	* PrintDeclarations.java: Ditto.
+	* Main.java: Ditto.
+
 	* jnixx.hxx: New.
 	* Printer.java: Generate jnixx::env& instead of JNIEnv*, and
 	jnixx::exception instead of jnixx_exception.

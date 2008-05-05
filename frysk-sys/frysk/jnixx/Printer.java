@@ -106,6 +106,28 @@ class Printer {
     private boolean indentationNeeded = true;
 
     /**
+     * Hack to allow the generation of indentation using a while loop.
+     * Use as: while(p.dent(0,"{","}")){...}.
+     */
+    boolean dent(int level, String prefix, String suffix) {
+	levels[level] = !levels[level];
+	if (levels[level]) {
+	    // Starting an indentation: false->true
+	    if (!indentationNeeded)
+		// part way through a line, space separate
+		print(" ");
+	    println(prefix);
+	    indent();
+	} else {
+	    // Finishing an indentation: true->false
+	    outdent();
+	    println(suffix);
+	}
+	return levels[level];
+    }
+    private boolean[] levels = new boolean[10];
+
+    /**
      * Pad using white space by N indentation units.
      */
     Printer pad(int n) {
