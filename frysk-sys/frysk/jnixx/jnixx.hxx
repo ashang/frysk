@@ -430,6 +430,140 @@ public:
       throw jnixx::exception();
   }
 
+  jobjectArray newObjectArray(jsize length, jclass elementType,
+			 jobject initialElement) {
+    jobjectArray tmp = jniEnv->NewObjectArray(length, elementType, initialElement);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbooleanArray newBooleanArray(jsize length) {
+    jbooleanArray tmp = jniEnv->NewBooleanArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbyteArray newByteArray(jsize length) {
+    jbyteArray tmp = jniEnv->NewByteArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jcharArray newCharArray(jsize length) {
+    jcharArray tmp = jniEnv->NewCharArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jshortArray newShortArray(jsize length) {
+    jshortArray tmp = jniEnv->NewShortArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jintArray newIntArray(jsize length) {
+    jintArray tmp = jniEnv->NewIntArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jlongArray newLongArray(jsize length) {
+    jlongArray tmp = jniEnv->NewLongArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jfloatArray newFloatArray(jsize length) {
+    jfloatArray tmp = jniEnv->NewFloatArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jdoubleArray newDoubleArray(jsize length) {
+    jdoubleArray tmp = jniEnv->NewDoubleArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+
+  jsize getArrayLength(jarray array) {
+    return jniEnv->GetArrayLength(array);
+  }
+
+  jboolean* getBooleanArrayElements(jbooleanArray array, jboolean *isCopy) {
+    jboolean* tmp = jniEnv->GetBooleanArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbyte* getByteArrayElements(jbyteArray array, jboolean *isCopy) {
+    jbyte* tmp = jniEnv->GetByteArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jchar* getCharArrayElements(jcharArray array, jboolean *isCopy) {
+    jchar* tmp = jniEnv->GetCharArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jshort* getShortArrayElements(jshortArray array, jboolean *isCopy) {
+    jshort* tmp = jniEnv->GetShortArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jint* getIntArrayElements(jintArray array, jboolean *isCopy) {
+    jint* tmp = jniEnv->GetIntArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jlong* getLongArrayElements(jlongArray array, jboolean *isCopy) {
+    jlong* tmp = jniEnv->GetLongArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jfloat* getFloatArrayElements(jfloatArray array, jboolean *isCopy) {
+    jfloat* tmp = jniEnv->GetFloatArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jdouble* getDoubleArrayElements(jdoubleArray array, jboolean *isCopy) {
+    jdouble* tmp = jniEnv->GetDoubleArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+
+  void releaseBooleanArrayElements(jbooleanArray array, jboolean* elements, jint mode) {
+    jniEnv->ReleaseBooleanArrayElements(array, elements, mode);
+  }
+  void releaseByteArrayElements(jbyteArray array, jbyte* elements, jint mode) {
+    jniEnv->ReleaseByteArrayElements(array, elements, mode);
+  }
+  void releaseCharArrayElements(jcharArray array, jchar* elements, jint mode) {
+    jniEnv->ReleaseCharArrayElements(array, elements, mode);
+  }
+  void releaseShortArrayElements(jshortArray array, jshort* elements, jint mode) {
+    jniEnv->ReleaseShortArrayElements(array, elements, mode);
+  }
+  void releaseIntArrayElements(jintArray array, jint* elements, jint mode) {
+    jniEnv->ReleaseIntArrayElements(array, elements, mode);
+  }
+  void releaseLongArrayElements(jlongArray array, jlong* elements, jint mode) {
+    jniEnv->ReleaseLongArrayElements(array, elements, mode);
+  }
+  void releaseFloatArrayElements(jfloatArray array, jfloat* elements, jint mode) {
+    jniEnv->ReleaseFloatArrayElements(array, elements, mode);
+  }
+  void releaseDoubleArrayElements(jdoubleArray array, jdouble* elements, jint mode) {
+    jniEnv->ReleaseDoubleArrayElements(array, elements, mode);
+  }
+
   void callVoidMethod(jobject object, jmethodID id, ...) {
     va_list ap;
     va_start(ap, id);

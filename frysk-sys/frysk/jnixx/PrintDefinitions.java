@@ -286,7 +286,11 @@ class PrintDefinitions implements ClassWalker {
 		    } else if (returnType == String.class) {
 			p.print("(jstring) ret._object");
 		    } else if (returnType.isArray()) {
-			p.print("(jobjectArray) ret._object");
+			if (returnType.getComponentType().isPrimitive()) {
+			    p.print("ret");
+			} else {
+			    p.print("(jobjectArray) ret._object");
+			}
 		    } else {
 			p.print("ret._object");
 		    }

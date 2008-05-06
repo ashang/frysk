@@ -1,3 +1,8 @@
+2008-05-06  Andrew Cagney  <cagney@redhat.com>
+
+	* jnixx.hxx (jnixx::env): Add <Type>Array methods.
+	* PrintDefinitions.java: Don't cast primitive array results.
+
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
 	* jnixx.hxx (jnixx::object): New.
