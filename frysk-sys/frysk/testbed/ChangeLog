@@ -1,3 +1,10 @@
+2008-05-06  Andrew Cagney  <cagney@redhat.com>
+
+	* LocalMemory.java (dataByte, dataShort, dataInt, dataLong):
+	Delete.
+	* cni/LocalMemory.cxx: Update.
+	* TestLocalMemory.java: Update.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/LocalMemory.cxx: New.
