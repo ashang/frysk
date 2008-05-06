@@ -48,18 +48,24 @@ import frysk.isa.registers.PPC32Registers;
 
 public class PPCBankRegisters {
 
+    /**
+     * This map corresponds to the layout of registers in the child's USER area.
+     */
     public static final BankArrayRegisterMap PPC32BE
 	= new BankArrayRegisterMap()
 	.add(0, LinuxPPCRegisterBanks.GREGS32)
-	.add(1, LinuxPPCRegisterBanks.FPREGS32)
+	.add(0, LinuxPPCRegisterBanks.FPREGS32)
 	;
 
+    /**
+     * This map corresponds to the layout of registers in the child's USER area.
+     */
     public static final BankArrayRegisterMap PPC64BE
 	= new BankArrayRegisterMap()
 	.add(0, LinuxPPCRegisterBanks.GREGS64)
-	.add(1, LinuxPPCRegisterBanks.FPREGS64)
+	.add(0, LinuxPPCRegisterBanks.FPREGS64)
 	// AltiVec registers go to a separate note section called NT_PPC_VMX
-	.add(2, LinuxPPCRegisterBanks.VRREGS64)
+	.add(0, LinuxPPCRegisterBanks.VRREGS64)
 	;
 
     public static final BankArrayRegisterMap PPC32BE_ON_PPC64BE
