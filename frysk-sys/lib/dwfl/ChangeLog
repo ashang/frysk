@@ -44,6 +44,12 @@
 	* jni/DwException.cxx: Ditto.
 	* jni/DwarfDie.cxx: Ditto.
 
+2008-05-06  Petr Machata  <pmachata@redhat.com>
+
+	* cni/Elf.cxx (elfBegin): Drop over-zealous checking of errno and
+	format the error message so that it gives a bit more insight into
+	what went wrong.
+
 2008-04-25  Petr Machata  <pmachata@redhat.com>
 
 	* cni/DwflModule.cxx (each_pubname_context): New struct.

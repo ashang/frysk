@@ -78,13 +78,17 @@ lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
       fd->close();
       throw new lib::dwfl::ElfException(JvNewStringUTF("Elf library version out of date"));
     }
-  errno = 0;	
   ::Elf* new_elf = ::elf_begin (fd->getFd(), (Elf_Cmd) (command->getValue()),
 				NULL);
-  if(errno != 0 || !new_elf) 
+  if(new_elf == NULL)
     {
+      char buf[128];
+      snprintf(buf, sizeof buf,
+	       "Could not open Elf file: fd=%d; error=\"%s\".",
+	       (int)fd->getFd(), elf_errmsg(elf_errno()));
+
       fd->close();
-      throw new lib::dwfl::ElfException(JvNewStringUTF("Could not open Elf file"));
+      throw new lib::dwfl::ElfException(JvNewStringUTF(buf));
     }
   return (gnu::gcj::RawData*)new_elf;
 }
