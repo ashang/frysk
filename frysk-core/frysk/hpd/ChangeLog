@@ -1,3 +1,8 @@
+2008-05-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java (interpret): Use
+	Input.stringValue().
+
 2008-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Renamed getSymbolDie to getObject.

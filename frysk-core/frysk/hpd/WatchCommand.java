@@ -79,8 +79,8 @@ class WatchCommand extends ParameterizedCommand {
                 ("missing argument");
         }
         
-        String expressionStr = cmd.parameter(0);        
-        
+        String expressionStr = cmd.stringValue();
+
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskIter = ptset.getTasks();
 
