@@ -1,3 +1,7 @@
+2008-05-07  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceBuffer.java: Fix hover over variable error.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java: Use frysk.config.Prefix's

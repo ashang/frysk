@@ -620,7 +620,7 @@ public class SourceBuffer extends TextBuffer {
     public String getVariable(TextIter iter) {
 	
 	if (this.scope == null || this.scope.getLine() == SourceLocation.UNKNOWN 
-	    || debugInfo == null)
+	    || debugInfo == null) 
 	    return null;
 
 	DOMSource source = this.scope.getLineXXX().getDOMSource();
@@ -633,22 +633,6 @@ public class SourceBuffer extends TextBuffer {
 	if (line == null)
 	    return null;
 
-	DOMTag tag = line.getTag(iter.getLineOffset());
-
-	// No var (or no tag), do nothing
-	if (tag == null || !tag.getType().equals(DOMTagTypes.LOCAL_VAR))
-	    return null;
-
-	Value var;
-	try {
-	    var = debugInfo.print(line.getText().substring(tag.getStart(),
-		    tag.getStart() + tag.getLength()), scope);
-	    if (var == null)
-		return null;
-	} catch (RuntimeException e) {
-	    return null;
-	}
-	
 	return getWordAtIter(iter);
     }
 
@@ -1305,20 +1289,21 @@ public class SourceBuffer extends TextBuffer {
     {
 	TextIter startIter = this.getIter(iter.getOffset());
 	// First, we back up iter to a point where there is a non-alphanumeric character
-	while(Character.isLetter(startIter.getChar()) ||
-		Character.isDigit(startIter.getChar())){
+	while(Character.isJavaIdentifierPart(startIter.getChar())) {
 	    startIter.moveBackwardChar();
 	}
+	startIter.moveForwardChar();
+	
+	//Now see if the starting character is valid
+	if (!Character.isJavaIdentifierStart(startIter.getChar()))
+	    return null;
 	
 	// Now, find the end of the word
 	TextIter endIter = this.getIter(iter.getOffset()+1);
-	while(Character.isLetter(endIter.getChar()) ||
-		Character.isDigit(endIter.getChar())) {
+	while(Character.isJavaIdentifierPart(endIter.getChar())) {
 	    endIter.moveForwardChar();
 	}
-	
 	String word = this.getText(startIter, endIter, true);
-	
 	return word.trim();
     }
 
