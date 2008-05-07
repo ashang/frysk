@@ -59,13 +59,13 @@ public class Glob {
     private static int matchBrack(String glob, int from)
 	throws PatternSyntaxException
     {
-	// On first character, both [ and ] are legal.  But when [ is
-	// foolowed with :, it's character class.
 	int i = from + 1;
 
 	if (glob.charAt(i) == '^') // Complement operator.
 	    ++i;
 
+	// On first character, both [ and ] are legal.  But when [ is
+	// foolowed with :, it's character class.
 	if (glob.charAt(i) == '[' && glob.charAt(i + 1) == ':')
 	    i = matchCharacterClass(glob, i) + 1;
 	else

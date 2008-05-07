@@ -116,15 +116,16 @@ public class FtraceController
 	    final Rule rule = (Rule)it.next();
 	    fine.log("Considering " + what + " rule `" + rule + "'.");
 	    if (!rule.apply(candidates, workingSet, stackTraceSet))
-		warning.log("Rule `" + rule + "' didn't match any " + what + ".");
+		warning.log("Rule", rule, "didn't match any", what);
 	}
 
 	// Apply the two sets.
 	Map ret = new HashMap();
 	for (Iterator it = workingSet.iterator(); it.hasNext(); ) {
-	    Object syscall = it.next();
-	    ret.put(syscall, Boolean.valueOf(stackTraceEverything
-					     || stackTraceSet.contains(syscall)));
+	    Object sysOrSig = it.next();
+	    ret.put(sysOrSig,
+		    Boolean.valueOf(stackTraceEverything
+				    || stackTraceSet.contains(sysOrSig)));
 	}
 	return ret;
     }

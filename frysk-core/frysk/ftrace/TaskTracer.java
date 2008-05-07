@@ -154,10 +154,12 @@ class TaskTracer
 	private final LinkedList symbolList = new LinkedList();
 
 	public FunctionReturnObserver(Task task, long address) {
+	    fine.log("New FunctionReturnObserver", address);
 	    task.requestAddCodeObserver(this, address);
 	}
 
 	public void add(TracePoint tracePoint) {
+	    fine.log("Adding to FunctionReturnObserver", tracePoint.getSymbol());
 	    if (!symbolList.isEmpty()) {
 		TracePoint previous = (TracePoint)symbolList.getLast();
 		if (!previous.isFrozen()
