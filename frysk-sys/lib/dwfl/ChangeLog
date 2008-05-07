@@ -44,6 +44,14 @@
 	* jni/DwException.cxx: Ditto.
 	* jni/DwarfDie.cxx: Ditto.
 
+2008-05-07  Petr Machata  <pmachata@redhat.com>
+
+	* SymbolBuilder.java: The interface supports new parameter
+	"defined".  The only thing that mattered so far was value, but
+	that can be non-0 even for undefined symbol.
+	* cni/DwflModule.cxx
+	(builder_callout, getPLTEntries): Adjust to above.
+
 2008-05-06  Petr Machata  <pmachata@redhat.com>
 
 	* cni/Elf.cxx (elfBegin): Drop over-zealous checking of errno and

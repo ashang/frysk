@@ -44,5 +44,6 @@ public interface SymbolBuilder
   void symbol (String name, long value, long size,
 	       ElfSymbolType type,
 	       ElfSymbolBinding bind,
-	       ElfSymbolVisibility visibility);
+	       ElfSymbolVisibility visibility,
+	       boolean defined);
 }

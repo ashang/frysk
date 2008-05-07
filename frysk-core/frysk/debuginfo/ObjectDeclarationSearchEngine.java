@@ -188,7 +188,8 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	    public void symbol(String name, long value, long size,
 			       lib.dwfl.ElfSymbolType type,
 			       lib.dwfl.ElfSymbolBinding bind,
-			       lib.dwfl.ElfSymbolVisibility visibility)
+			       lib.dwfl.ElfSymbolVisibility visibility,
+			       boolean defined)
 	    {
 		if(name.equals(objectName)){
 		    objectDeclaration =  new SymbolObjectDeclaration(name, type, value, size);

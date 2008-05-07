@@ -487,7 +487,8 @@ public class TestLinuxCore extends TestLib {
     public void symbol(String name, long value, long size,
 		       lib.dwfl.ElfSymbolType type,
 		       lib.dwfl.ElfSymbolBinding bind,
-		       lib.dwfl.ElfSymbolVisibility visibility)
+		       lib.dwfl.ElfSymbolVisibility visibility,
+		       boolean defined)
     {
       if (name.equals(this.name))
         {

@@ -10,6 +10,11 @@
 	* TestObjectDeclarationSearchEngineTopDown.java 
 	(testGetObjectHashFileHashSymbol): enabled test.
 
+2008-05-07  Petr Machata  <pmachata@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (getObjectUsingBinaryInfo):
+	Adjust SymbolBuilder instance to changes in interface.
+
 2008-04-30  Stan Cox  <scox@redhat.com>
 	
 	* TypeFactory.java (getGccStructOrClassType): Set dieHash.

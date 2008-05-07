@@ -1,3 +1,10 @@
+2008-05-07  Petr Machata  <pmachata@redhat.com>
+
+	* DwflSymbol.java: The symbol can now be defined or
+	undefined.
+	* SymbolFactory.java (getSymbol, getSymbolTable, getPLTEntries):
+	Adjust SymbolBuilder instance to changes in interface.
+
 2008-04-25  Petr Machata  <pmachata@redhat.com>
 
 	* SymbolFactory.java: Use DwflDieBias.

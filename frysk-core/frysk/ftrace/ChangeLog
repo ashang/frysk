@@ -1,3 +1,8 @@
+2008-05-07  Petr Machata  <pmachata@redhat.com>
+
+	* TaskTracer.java (traceSymbol): Only allow tracing when symbol is
+	really defined (i.e. having a value is not enough).
+
 2008-04-28  Petr Machata  <pmachata@redhat.com>
 
 	* TaskTracer.java: Share one FunctionEnterObserver among several

@@ -340,7 +340,7 @@ class TaskTracer
     public void traceSymbol(Task task, DwflSymbol sym)
     {
 	long addr = sym.getAddress();
-	if (!sym.isFunctionSymbol() || addr == 0) {
+	if (!sym.isFunctionSymbol() || !sym.isDefined() || addr == 0) {
 	    finest.log("Ignoring request for tracing undefined or non-functional symbol", sym);
 	    return;
 	}

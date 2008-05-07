@@ -69,6 +69,7 @@ import lib.dwfl.SymbolBuilder;
 public class SymbolFactory
 {
     private static final Log fine = LogFactory.fine(SymbolFactory.class);
+    private static final Log finest = LogFactory.finest(SymbolFactory.class);
     private static final Log warning = LogFactory.warning(SymbolFactory.class);
 
     /**
@@ -93,13 +94,16 @@ public class SymbolFactory
 	    public void symbol(String name, long value, long size,
 			       lib.dwfl.ElfSymbolType type,
 			       lib.dwfl.ElfSymbolBinding bind,
-			       lib.dwfl.ElfSymbolVisibility visibility)
+			       lib.dwfl.ElfSymbolVisibility visibility,
+			       boolean defined)
 	    {
 		if (symbol != null)
 		    warning.log("Symbol", name, "reported on address", value,
-				"where symbol was already reported:", symbol.getName());
+				"where symbol was already reported:",
+				symbol.getName());
 		else if (name != null)
-		    symbol = new DwflSymbol (value, size, name, type, null, module);
+		    symbol = new DwflSymbol (value, size, name, type, null,
+					     module, defined);
 	    }
 	}
 	Builder builder = new Builder();
@@ -129,7 +133,8 @@ public class SymbolFactory
 		public void symbol(String name, long value, long size,
 				   lib.dwfl.ElfSymbolType type,
 				   lib.dwfl.ElfSymbolBinding bind,
-				   lib.dwfl.ElfSymbolVisibility visibility)
+				   lib.dwfl.ElfSymbolVisibility visibility,
+				   boolean defined)
 		{
 		    DwflDieBias dieBias = publicTable == null ? null
 			: (DwflDieBias)publicTable.get(name);
@@ -138,12 +143,13 @@ public class SymbolFactory
 			name = name.substring(0, index);
 		    DwflSymbol sym
 			= new DwflSymbol(value, size, name, type,
-					 dieBias, module);
+					 dieBias, module, defined);
+		    finest.log("Symbol", name, "value", value, "type", type);
 		    table.put(name, sym);
 		}
 	};
 	module.getSymtab(builder);
-	fine.log("Got", table.size(), "symbols after sweep over symtab.");
+	fine.log("Got", table.size(), "symbols.");
 
 	// This will probably not add anything, but just to make sure...
 	for (Iterator it = publicTable.entrySet().iterator(); it.hasNext(); ) {
@@ -158,11 +164,11 @@ public class SymbolFactory
 		    long size = die.getHighPC() - die.getLowPC();
 		    lib.dwfl.ElfSymbolType type = null; // XXX fixme
 		    table.put(name, new DwflSymbol(addr, size, die.getName(),
-						   type, dieBias, module));
+						   type, dieBias, module,
+						   addr != 0));
 		}
 	    }
 	}
-	fine.log("Got", table.size(), "symbols after sweep over debuginfo.");
 
 	return table;
     }
@@ -198,7 +204,8 @@ public class SymbolFactory
 		public void symbol(String name, long value, long size,
 				   lib.dwfl.ElfSymbolType type,
 				   lib.dwfl.ElfSymbolBinding bind,
-				   lib.dwfl.ElfSymbolVisibility visibility)
+				   lib.dwfl.ElfSymbolVisibility visibility,
+				   boolean defined)
 		{
 		    DwflSymbol ref = (DwflSymbol)symtab.get(name);
 		    PLTEntry sym = new PLTEntry(value, ref);
@@ -225,7 +232,8 @@ public class SymbolFactory
 		public void symbol(String name, long value, long size,
 				   lib.dwfl.ElfSymbolType type,
 				   lib.dwfl.ElfSymbolBinding bind,
-				   lib.dwfl.ElfSymbolVisibility visibility)
+				   lib.dwfl.ElfSymbolVisibility visibility,
+				   boolean defined)
 		{
 		    addrs.add(new Long(value));
 		}

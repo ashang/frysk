@@ -643,7 +643,8 @@ extends TestLib
 	}
 
 	public void symbol(String name, long value, long size, ElfSymbolType type,
-		ElfSymbolBinding bind, ElfSymbolVisibility visibility) {
+			   ElfSymbolBinding bind, ElfSymbolVisibility visibility,
+			   boolean defined) {
 	    if (name.equals(this.name)) {
 		this.address = value;
 		this.found = true;

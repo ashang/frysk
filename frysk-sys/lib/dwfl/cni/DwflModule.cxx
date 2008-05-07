@@ -135,9 +135,9 @@ namespace {
       = ElfSymbolVisibility::intern(ELF64_ST_VISIBILITY(sym->st_other));
 
     symbolBuilder->symbol(name,
-			  sym->st_value,
-			  sym->st_size,
-			  type, bind, visibility);
+			  sym->st_value, sym->st_size,
+			  type, bind, visibility,
+			  sym->st_shndx != SHN_UNDEF);
   }
 }
 
@@ -324,7 +324,7 @@ lib::dwfl::DwflModule::getPLTEntries(lib::dwfl::SymbolBuilder* symbolBuilder)
       ::GElf_Addr addr = plt_addr + (i + 1) * plt_entry_size + bias;
 
       symbolBuilder->symbol(JvNewStringUTF(name), addr, plt_entry_size,
-			    NULL, NULL, NULL);
+			    NULL, NULL, NULL, true);
     }
 }
 

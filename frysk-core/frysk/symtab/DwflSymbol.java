@@ -53,14 +53,17 @@ public class DwflSymbol
 {
     private final DwflDieBias dieBias;
     private final DwflModule dwflModule;
+    private final boolean defined;
 
     // package private constructor.
     DwflSymbol(long address, long size, String name,
-	       ElfSymbolType type, DwflDieBias dieBias, DwflModule module)
+	       ElfSymbolType type, DwflDieBias dieBias, DwflModule module,
+	       boolean defined)
     {
 	super (address, size, name, type);
 	this.dieBias = dieBias;
 	this.dwflModule = module;
+	this.defined = defined;
     }
 
     public DwflModule getModule() {
@@ -69,5 +72,9 @@ public class DwflSymbol
 
     public DwflDieBias getDie() {
 	return this.dieBias;
+    }
+
+    public boolean isDefined() {
+	return this.defined;
     }
 }
