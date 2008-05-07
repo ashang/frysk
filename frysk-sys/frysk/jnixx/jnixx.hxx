@@ -155,6 +155,40 @@ public:
     }
   }
 
+  jint getStringUTFLength(java::lang::String string) {
+    jint length = jniEnv->GetStringUTFLength((jstring) (string._object));
+    // Cannot fail?
+    return length;
+  }
+
+  void getStringUTFRegion(java::lang::String string, jsize start,
+			  jsize len, char *buf) {
+    jniEnv->GetStringUTFRegion((jstring) (string._object), start, len, buf);
+    if (jniEnv->ExceptionCheck()) {
+      fprintf(stderr,
+	      "frysk: JNIEnv.GetStringUTFRegion(%p,%d,%d,%p) failed\n",
+	      string._object, (int) start, (int) len, buf);
+      throw jnixx::exception();
+    }
+  }
+
+  jint getStringLength(java::lang::String string) {
+    jint length = jniEnv->GetStringLength((jstring) (string._object));
+    // Cannot fail?
+    return length;
+  }
+
+  void getStringRegion(java::lang::String string, jsize start,
+			  jsize len, jchar *buf) {
+    jniEnv->GetStringRegion((jstring) (string._object), start, len, buf);
+    if (jniEnv->ExceptionCheck()) {
+      fprintf(stderr,
+	      "frysk: JNIEnv.GetStringRegion(%p,%d,%d,%p) failed\n",
+	      string._object, (int) start, (int) len, buf);
+      throw jnixx::exception();
+    }
+  }
+
   jmethodID getMethodID(jclass klass, const char name[],
 			const char signature[]) {
     jmethodID methodID = jniEnv->GetMethodID(klass, name, signature);

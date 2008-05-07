@@ -1,5 +1,8 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx (getStringUTFLength): New.
+	(getStringUTFRegion): New.
+
 	* Printer.java: Parameterize with PrintWriter.
 	* Main.java: Flush the Printer.
 	* PrintDeclarations.java: Generate classes that extend either
