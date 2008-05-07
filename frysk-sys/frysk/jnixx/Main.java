@@ -39,6 +39,8 @@
 
 package frysk.jnixx;
 
+import java.io.PrintWriter;
+
 class Main {
 
     private static void printHxxFile(Printer p, Class klass) {
@@ -46,16 +48,12 @@ class Main {
 	p.println("#ifndef " + header);
 	p.println("#define " + header);
 	p.println();
-	p.println("#include <jni.h>");
-	p.println("#include <stdarg.h>");
-	p.println();
-	p.println("namespace jnixx {");
-	p.println("  struct exception;");
-	p.println("  struct env;");
-	p.println("}");
+	p.println("// Get declarations.");
+	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	new PrintNamespaces(p).walk(klass);
 	new PrintDeclarations(p).walk(klass);
 	p.println();
+	p.println("// Get definitions.");
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	new PrintHxxDefinitions(p).walk(klass);
 	p.println();
@@ -80,11 +78,12 @@ class Main {
 
 	Class klass = Class.forName(args[0], false,
 				    Main.class.getClassLoader());
-	Printer p = new Printer();
+	Printer p = new Printer(new PrintWriter(System.out));
 
 	if (args[1].equals("hxx"))
 	    printHxxFile(p, klass);
 	else
 	    printCxxFile(p, klass);
+	p.flush();
     }
 }

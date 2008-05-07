@@ -1,5 +1,12 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Printer.java: Parameterize with PrintWriter.
+	* Main.java: Flush the Printer.
+	* PrintDeclarations.java: Generate classes that extend either
+	jnixx::object or jnixx::objectArray.
+	* jnixx.hxx (jnixx): Declare env, exception, object, and
+	objectArray.
+
 	* PrintCxxDefinitions.java: Generate _class$ variable of nested
 	classes.
 	* Main.java: Ditto.

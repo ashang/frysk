@@ -37,15 +37,59 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#ifndef frysk_jnixx_hxx
-#define frysk_jnixx_hxx
+/**
+ * XXX: This header is included twice, first to get the declarations
+ * and, second, to get the corresponding definitions.
+ */
+
+#if !defined frysk_jnixx_hxx_1
+#define frysk_jnixx_hxx_1
+/**
+ * First pass, declare everything used by generated code.
+ */
 
 #include <jni.h>
+#include <stdarg.h>
 
 namespace jnixx {
+  /**
+   * JNIXX wrapper for the JNIEnv.
+   */
   struct env;
-  struct exception;
+  /**
+   * An exception to throw when JNI makes an exception pending, caught
+   * by the JNI wrapper stub.
+   */
+  struct exception {
+  };
+  /**
+   * The JNIXX root, wraps the jobject pointer, all generated object
+   * wrappers extend this.
+   */
+  struct object {
+    jobject _object;
+    object(jobject _object) {
+      this->_object = _object;
+    }
+    inline bool operator==(jobject o) {
+      return _object == o;
+    }
+  };
+  /**
+   * The JNIXX array root, any array object extends this (which
+   * extends jnixx::object).
+   */
+  struct objectArray : public object {
+    objectArray(jobject _object) : object(_object) {
+    }
+  };
 }
+
+#elif !defined frysk_jnixx_hxx_2
+#define frysk_jnixx_hxx_2
+/**
+ * Second pass, define everything declared above.
+ */
 
 namespace java {
   namespace lang {
@@ -53,9 +97,6 @@ namespace java {
     struct Object;
     struct Class;
   }
-};
-
-class jnixx::exception {
 };
 
 class jnixx::env {

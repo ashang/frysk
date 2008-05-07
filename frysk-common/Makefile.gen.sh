@@ -666,6 +666,7 @@ generate_cni_header () {
 # Assume these are all generated from .class files found in the master
 # .jar.
 
+print_header "... jnixx headers"
 cat <<EOF
 JNIXX_BUILT =
 CLEANFILES += \$(JNIXXX_BUILT)
@@ -675,7 +676,6 @@ jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
 # If any of the JNI sources change, re-generate everything.
 \$(JNIXX_BUILT): \$(jnixx_sources)
 EOF
-print_header "jnixx"
 rm -f files.jnixx
 while read file dir base suffix ; do
     case "$file" in
@@ -700,9 +700,6 @@ while read action m h j; do
 JNIXX_BUILT += ${h}-jni.hxx
 JNIXX_BUILT += ${h}-jni.cxx
 ${h}-jni.o: ${h}-jni.hxx
-# Require all code to be generated before compiling so that
-# any indirectly included headers are present.
-${h}-jni.o: | \$(JNIXX_BUILT)
 ${h}-jni.hxx: $j.java
 ${h}-jni.cxx: $j.java
 EOF
@@ -723,6 +720,19 @@ EOF
     fi
 done < files.jnixx
 rm -f $$.tmp
+
+print_header "... jnixx dependencies"
+while read file dir base suffix ; do
+    case "$file" in
+	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
+	sed -n < $file \
+	    -e 's,#include "\(.*-jni\.hxx\)".*,\1,p' \
+	    | while read h ; do
+	    echo ${dir}/${base}.o: $h
+	done
+	;;
+    esac
+done < files.base
 
 
 # For any java file that contains "native" declarations, generate a

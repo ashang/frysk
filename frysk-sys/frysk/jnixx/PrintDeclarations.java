@@ -127,13 +127,11 @@ class PrintDeclarations extends ClassWalker {
 	p.println();
 	p.print("struct ");
 	p.printQualifiedCxxName(klass);
-	p.print(" : public ");
-	p.printGlobalCxxName(Object.class);
+	p.print(" : public ::jnixx::objectArray");
 	while(p.dent(0, "{", "};")) {
 	    p.printUnqualifiedCxxName(klass);
 	    p.print("(jobject _object)");
-	    p.print(" : ");
-	    p.printGlobalCxxName(Object.class);
+	    p.print(" : ::jnixx::objectArray");
 	    p.print("(_object)");
 	    p.println(" { }");
 	}	
@@ -150,29 +148,24 @@ class PrintDeclarations extends ClassWalker {
 	p.print("struct ");
 	p.printQualifiedCxxName(klass);
 	Class parent = klass.getSuperclass();
-	if (parent != null) {
-	    p.print(" : public ");
+	p.print(" : public ");
+	if (parent == null) {
+	    p.print("::jnixx::object");
+	} else {
 	    p.printGlobalCxxName(parent);
 	}
 	while(p.dent(0, "{", "};")) {
 	    // Constructor.
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("(jobject _object)");
+	    p.print(" : ");
 	    if (parent == null) {
-		p.println("jobject _object;");
-		p.printUnqualifiedCxxName(klass);
-		p.println("(jobject _object) {");
-		p.println("  this->_object = _object;");
-		p.println("}");
-		p.println("bool operator==(jobject o) {");
-		p.println("  return _object == o;");
-		p.println("}");
+		p.print("::jnixx::object");
 	    } else {
-		p.printUnqualifiedCxxName(klass);
-		p.print("(jobject _object)");
-		p.print(" : ");
 		p.printGlobalCxxName(parent);
-		p.print("(_object)");
-		p.println(" { }");
 	    }
+	    p.print("(_object)");
+	    p.println(" { }");
 	    // Static get-class method - a class knows its own class.
 	    p.println("private: static jclass _class$; public:");
 	    p.println("static inline jclass _class(jnixx::env& env);");

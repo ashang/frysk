@@ -43,18 +43,24 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.io.PrintWriter;
 
 /**
  * A class for generating indented output.
  */
 class Printer {
 
+    private final PrintWriter out;
+    Printer(PrintWriter out) {
+	this.out = out;
+    }
+
     /**
      * Print CH.  If the start of the line, prefix with indent.
      */
     Printer print(char ch) {
 	printIndentation();
-	System.out.print(ch);
+	out.print(ch);
 	return this;
     }
     /**
@@ -63,14 +69,14 @@ class Printer {
      */
     Printer print(Object o) {
 	printIndentation();
-	System.out.print(o.toString());
+	out.print(o.toString());
 	return this;
     }
     /**
      * Start a new line.
      */
     Printer println() {
-	System.out.println();
+	out.println();
 	indentationNeeded = true;
 	return this;
     }
@@ -132,7 +138,7 @@ class Printer {
      */
     Printer pad(int n) {
 	for (int i = 0 ; i < n; i++)
-	    System.out.print("  ");
+	    out.print("  ");
 	return this;
     }
 
@@ -542,5 +548,12 @@ class Printer {
 	    print("Object");
 	}
 	return this;
+    }
+
+    /**
+     * Flush the output.
+     */
+    void flush() {
+	out.flush();
     }
 }
