@@ -132,7 +132,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	}
 	else
 	    throw new RuntimeException("Invalid size for watchpoint " +
-				       "range. Has to be 1, 2, 4 or 8");
+				       "range. Has to be 1, 2 or 4");
     }
 
 
