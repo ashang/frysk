@@ -79,6 +79,25 @@ public class ElfSymbolType
     ELF_STT_PROC_2
   };
 
+  private static String[] typeNames = {
+    "NOTYPE",
+    "OBJECT",
+    "FUNC",
+    "SECTION",
+    "FILE",
+    "COMMON",
+    "TLS",
+    "NUM",
+    null,
+    null,
+    "OS_0",
+    "OS_1",
+    "OS_2",
+    "PROC_0",
+    "PROC_1",
+    "PROC_2"
+  };
+
   private int value;
 
   private ElfSymbolType(int value)
@@ -123,4 +142,8 @@ public class ElfSymbolType
   {
     return types[value];
   }
+
+    public String toString() {
+	return typeNames[value];
+    }
 }
