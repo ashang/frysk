@@ -1,5 +1,8 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (generate_jni_header, generate_jni_dependency):
+	Delete; do not generate JAVAH headers.
+	
 	* Makefile.gen.sh (jnixx_sources): Replace ordering dependency of
 	jnixx generated files before jnixx objects, with hard dependency
 	based on includes.

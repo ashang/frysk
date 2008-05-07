@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfPrXFPRegSet.h"
-
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfPrXFPRegSet_getNoteData (JNIEnv *env, jclass, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfPrXFPRegSet_getNoteData not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfPrXFPRegSet_getEntrySize (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfPrXFPRegSet_getEntrySize not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfPrXFPRegSet_fillMemRegion (JNIEnv *env, jobject, jbyteArray, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfPrXFPRegSet_fillMemRegion not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfPrXFPRegSet-jni.hxx"

@@ -37,45 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_Dwarf.h"
-
-
-JNIEXPORT void
-Java_lib_dwfl_Dwarf_dwarf_1begin_1elf (JNIEnv *env, jobject, jobject, jint, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_Dwarf_dwarf_1begin_1elf not implemented");
-  }
-  return;
-}
-
-JNIEXPORT void
-Java_lib_dwfl_Dwarf_dwarf_1begin (JNIEnv *env, jobject, jstring, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_Dwarf_dwarf_1begin not implemented");
-  }
-  return;
-}
-
-JNIEXPORT jobjectArray
-Java_lib_dwfl_Dwarf_get_1source_1files (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_Dwarf_get_1source_1files not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_lib_dwfl_Dwarf_dwarf_1end (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_Dwarf_dwarf_1end not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/Dwarf-jni.hxx"

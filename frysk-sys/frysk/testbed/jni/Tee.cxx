@@ -37,15 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_testbed_Tee.h"
+#include <stdio.h>
+#include <unistd.h>
 
+#include "frysk/testbed/Tee-jni.hxx"
 
-JNIEXPORT void
-Java_frysk_testbed_Tee_execute (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_Tee_execute not implemented");
+void
+frysk::testbed::Tee::execute(jnixx::env& env) {
+  char b;
+  while (::read (STDIN_FILENO, &b, 1) > 0) {
+    ::write (STDOUT_FILENO, &b, 1);
   }
-  return;
 }

@@ -39,45 +39,45 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <frysk_config_PrefixFactory.h>
+#include "frysk/config/PrefixFactory-jni.hxx"
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_gladeDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@gladedir@");
+java::lang::String
+frysk::config::PrefixFactory::gladeDir(jnixx::env& env) {
+  return env.newStringUTF("@gladedir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_helpDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@helpdir@");
+java::lang::String
+frysk::config::PrefixFactory::helpDir(jnixx::env& env) {
+  return env.newStringUTF("@helpdir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_imagesDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@imagesdir@");
+java::lang::String
+frysk::config::PrefixFactory::imagesDir(jnixx::env& env) {
+  return env.newStringUTF("@imagesdir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_binDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@bindir@");
+java::lang::String
+frysk::config::PrefixFactory::binDir(jnixx::env& env) {
+  return env.newStringUTF("@bindir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_pkgDataDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@pkgdatadir@");
+java::lang::String
+frysk::config::PrefixFactory::pkgDataDir(jnixx::env& env) {
+  return env.newStringUTF("@pkgdatadir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_pkgLibDir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@pkglibdir@");
+java::lang::String
+frysk::config::PrefixFactory::pkgLibDir(jnixx::env& env) {
+  return env.newStringUTF("@pkglibdir@");
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_PrefixFactory_pkgLib32Dir(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@pkglib32dir@");
+java::lang::String
+frysk::config::PrefixFactory::pkgLib32Dir(jnixx::env& env) {
+  return env.newStringUTF("@pkglib32dir@");
 }
 
-jstring
-Java_frysk_config_PrefixFactory_sourceDir(JNIEnv *env, jclass) {
+java::lang::String
+frysk::config::PrefixFactory::sourceDir(jnixx::env& env) {
   // An educated guess.
-  return env->NewStringUTF("@prefix@/src/debug/frysk-@VERSION@");
+  return env.newStringUTF("@prefix@/src/debug/frysk-@VERSION@");
 }

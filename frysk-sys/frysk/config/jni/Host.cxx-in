@@ -39,14 +39,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_config_Host.h"
+#include "frysk/config/Host-jni.hxx"
 
-JNIEXPORT jint JNICALL
-Java_frysk_config_Host_wordSize(JNIEnv *env, jclass) {
+jint 
+frysk::config::Host::wordSize(jnixx::env& env) {
   return sizeof(long) * 8;
 }
 
-JNIEXPORT jstring JNICALL
-Java_frysk_config_Host_cpuXXX(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@host_cpu@");
+java::lang::String
+frysk::config::Host::cpuXXX(jnixx::env& env) {
+  return env.newStringUTF("@host_cpu@");
 }

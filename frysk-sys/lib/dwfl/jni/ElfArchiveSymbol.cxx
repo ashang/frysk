@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfArchiveSymbol.h"
-
-
-JNIEXPORT jstring
-Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1name (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1name not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1offset (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1offset not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1hash (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfArchiveSymbol_elf_1as_1get_1hash not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfArchiveSymbol-jni.hxx"

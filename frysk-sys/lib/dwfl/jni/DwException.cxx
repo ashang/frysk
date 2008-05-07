@@ -37,25 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_DwException.h"
-
-
-JNIEXPORT jstring
-Java_lib_dwfl_DwException_getDwErrMessage (JNIEnv *env, jclass, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_DwException_getDwErrMessage not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT void
-Java_lib_dwfl_DwException_throwDwException (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_DwException_throwDwException not implemented");
-  }
-  return;
-}
+#include "lib/dwfl/DwException-jni.hxx"

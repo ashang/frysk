@@ -735,56 +735,6 @@ while read file dir base suffix ; do
 done < files.base
 
 
-# For any java file that contains "native" declarations, generate a
-# jni header.
-
-echo 'all-local: $(JAVAH_JNI_BUILT)'
-generate_jni_header ()
-{
-    local file=$1
-    local d=$2
-    local b=$3
-    local suffix=$4
-    if grep ' native ' $file > /dev/null ; then
-	local h=`echo $d/$b | tr '[/]' '[_]'`
-	local c=`echo $d/$b | tr '[/]' '[.]'`
-	automake_variable JAVAH_JNI_BUILT += ${h}.h
-	cat <<EOF
-CLEANFILES += ${h}.h
-${h}.h: $file | ${GEN_DIRNAME}.jar
-	@echo "$c => ${h}.h"
-	rm -f \$@.tmp
-	\$(GCJH) \$(GCJHFLAGS) \\
-		-jni \\
-		-classpath=\$(CLASSPATH):${GEN_DIRNAME}.jar \\
-		-o \$@.tmp \\
-		$c
-	mv \$@.tmp \$@
-EOF
-    fi
-}
-
-# For JNI .cxx files, generate an explict depend on what should be the
-# corresponding JNI header.  What about .cxx files that are not jni?
-
-generate_jni_dependency()
-{
-    local file=$1
-    local d=$2 # contains /jni
-    local b=$3
-    local suffix=$4
-    local j=`dirname $d` # drop /jni
-    if has_java_source $j/$b ; then
-	# The corresponding jni header file.
-	local h=`echo $j/$b | tr '[/]' '[_]'`
-	# check it is included.
-	if grep "$h.h" $file > /dev/null 2>&1 ; then
-	    echo "$d/$b.o: $h.h"
-	fi
-    fi
-}
-
-
 # Generate rules for all .xml-in files, assume that they are converted
 # to man pages.
 
@@ -979,12 +929,10 @@ while read file dir base suffix ; do
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
 	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
-	    generate_jni_dependency $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix \
 		lib${GEN_MAKENAME}_jni_a_SOURCES
 	    ;;
 	*.java | *.java-in | *.java-sh )
-	    generate_jni_header $file $dir $base $suffix
 	    ;;
 	*.cxx | *.c | *.S | *.cxx-in | *.c-in | *.S-in \
 	    | *.cxx-sh | *.c-sh | *.S-sh )

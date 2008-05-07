@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfRel.h"
-
-
-JNIEXPORT jboolean
-Java_lib_dwfl_ElfRel_elf_1fillreloc (JNIEnv *env, jclass, jlong, jint, jlong, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfRel_elf_1fillreloc not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfRel-jni.hxx"

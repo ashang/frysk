@@ -37,15 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfDynamic.h"
-
-
-JNIEXPORT jboolean
-Java_lib_dwfl_ElfDynamic_elf_1buildentry (JNIEnv *env, jclass, jobject, jlong, jlong, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfDynamic_elf_1buildentry not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfDynamic-jni.hxx"

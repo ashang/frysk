@@ -37,35 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfNhdr.h"
-
-
-JNIEXPORT jint
-Java_lib_dwfl_ElfNhdr_getNhdrSize (JNIEnv *env, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfNhdr_getNhdrSize not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfNhdr_fillNhdr (JNIEnv *env, jobject, jbyteArray, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfNhdr_fillNhdr not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jlong
-Java_lib_dwfl_ElfNhdr_fillNhdrName (JNIEnv *env, jobject, jbyteArray, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfNhdr_fillNhdrName not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfNhdr-jni.hxx"

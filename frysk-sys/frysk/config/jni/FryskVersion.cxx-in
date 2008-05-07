@@ -37,9 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_config_FryskVersion.h"
+#include "frysk/config/FryskVersion-jni.hxx"
 
-JNIEXPORT jstring
-Java_frysk_config_FryskVersion_version(JNIEnv *env, jclass) {
-  return env->NewStringUTF("@VERSION@");
+java::lang::String
+frysk::config::FryskVersion::version(jnixx::env& env) {
+  return env.newStringUTF("@VERSION@");
 }

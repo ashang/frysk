@@ -37,11 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_config_BuildCompiler.h"
+#include "frysk/config/BuildCompiler-jni.hxx"
 
 
-JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getVersion(JNIEnv *env, jclass) {
+jint
+frysk::config::BuildCompiler::getVersion(jnixx::env& env) {
 #ifdef __GNUC__
   return (jint) __GNUC__;
 #else
@@ -49,8 +49,8 @@ Java_frysk_config_BuildCompiler_getVersion(JNIEnv *env, jclass) {
 #endif
 }
 
-JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getMinorVersion(JNIEnv *env, jclass) {
+jint
+frysk::config::BuildCompiler::getMinorVersion(jnixx::env& env) {
 #ifdef __GNUC_MINOR__
   return (jint) __GNUC_MINOR__;
 #else
@@ -58,8 +58,8 @@ Java_frysk_config_BuildCompiler_getMinorVersion(JNIEnv *env, jclass) {
 #endif
 }
 
-JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getPatchLevel(JNIEnv *env, jclass) {
+jint
+frysk::config::BuildCompiler::getPatchLevel(jnixx::env& env) {
 #ifdef __GNUC_PATCHLEVEL__
   return (jint) __GNUC_PATCHLEVEL__;
 #else
@@ -67,8 +67,8 @@ Java_frysk_config_BuildCompiler_getPatchLevel(JNIEnv *env, jclass) {
 #endif
 }
 
-JNIEXPORT jint
-Java_frysk_config_BuildCompiler_getRHRelease(JNIEnv *env, jclass) {
+jint
+frysk::config::BuildCompiler::getRHRelease(jnixx::env& env) {
 #ifdef __GNUC_RH_RELEASE__
   return (jint) __GNUC_RH_RELEASE__;
 #else

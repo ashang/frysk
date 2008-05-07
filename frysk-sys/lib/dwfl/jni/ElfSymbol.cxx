@@ -37,45 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib_dwfl_ElfSymbol.h"
-
-
-JNIEXPORT jboolean
-Java_lib_dwfl_ElfSymbol_elf_1buildsymbol (JNIEnv *env, jclass, jobject, jlong, jlong, jlong, jobject, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfSymbol_elf_1buildsymbol not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_lib_dwfl_ElfSymbol_elf_1getversym (JNIEnv *env, jclass, jlong, jlong)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfSymbol_elf_1getversym not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jboolean
-Java_lib_dwfl_ElfSymbol_elf_1load_1verneed (JNIEnv *env, jclass, jobject, jlong, jlong, jobjectArray)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfSymbol_elf_1load_1verneed not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jboolean
-Java_lib_dwfl_ElfSymbol_elf_1load_1verdef (JNIEnv *env, jclass, jobject, jlong, jlong, jobjectArray)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_lib_dwfl_ElfSymbol_elf_1load_1verdef not implemented");
-  }
-  return 0;
-}
+#include "lib/dwfl/ElfSymbol-jni.hxx"

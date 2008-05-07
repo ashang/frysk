@@ -1,5 +1,7 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Tee.cxx: Implement in jnixx.
+
 	* jni/LocalMemory.cxx: Implement.
 
 2008-05-06  Andrew Cagney  <cagney@redhat.com>
