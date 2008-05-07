@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,105 +37,74 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk_testbed_LocalMemory.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
+#include "frysk/testbed/LocalMemory-jni.hxx"
+#include "frysk/jnixx/exceptions.hxx"
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getByteDataAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getByteDataAddr not implemented");
-  }
-  return 0;
+static jbyteArray
+getBytes(jnixx::env& env, void *addr, size_t length) {
+  jbyteArray bytes = env.newByteArray(length);
+  jbyte* elements = env.getByteArrayElements(bytes, NULL);
+  memcpy(elements, addr, length);
+  env.releaseByteArrayElements(bytes, elements, 0);
+  return bytes;
 }
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getShortDataAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getShortDataAddr not implemented");
-  }
-  return 0;
+struct m {
+  jbyte byteData;
+  jshort shortData;
+  jint intData;
+  jlong longData;
+} memory = { 43, 45, 42, 44 };
+
+jlong
+frysk::testbed::LocalMemory::getDataAddr(jnixx::env&) {
+  return (jlong) &memory;
 }
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getIntDataAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getIntDataAddr not implemented");
-  }
-  return 0;
+jbyteArray
+frysk::testbed::LocalMemory::getDataBytes(jnixx::env& env) {
+  return getBytes(env, &memory, sizeof(memory));
 }
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getLongDataAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getLongDataAddr not implemented");
-  }
-  return 0;
+/**
+ * Function used by getCode*(), must be on a single line for __LINE__
+ * to work correctly.
+ */
+jint frysk::testbed::LocalMemory::getCodeLine (jnixx::env&) { return __LINE__; }
+
+java::lang::String
+frysk::testbed::LocalMemory::getCodeFile(jnixx::env& env) {
+  return env.newStringUTF (__FILE__);
 }
 
-JNIEXPORT jbyteArray
-Java_frysk_testbed_LocalMemory_getBytes (JNIEnv *env, jclass, jlong, jint)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getBytes not implemented");
-  }
-  return 0;
+static void*
+codeAddr() {
+#ifdef __powerpc64__
+  return *((void**) frysk::testbed::LocalMemory::getCodeLine);
+#else
+  return (void*)&frysk::testbed::LocalMemory::getCodeLine;
+#endif
+}
+jlong
+frysk::testbed::LocalMemory::getCodeAddr(jnixx::env&) {
+  return (jlong)codeAddr();
 }
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getDataAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getDataAddr not implemented");
-  }
-  return 0;
+jbyteArray
+frysk::testbed::LocalMemory::getCodeBytes(jnixx::env& env) {
+  return getBytes(env, codeAddr(), sizeof(memory));
 }
 
-JNIEXPORT jlong
-Java_frysk_testbed_LocalMemory_getCodeAddr (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getCodeAddr not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jint
-Java_frysk_testbed_LocalMemory_getCodeLine (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getCodeLine not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT jstring
-Java_frysk_testbed_LocalMemory_getCodeFile (JNIEnv *env, jclass)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_getCodeFile not implemented");
-  }
-  return 0;
-}
-
-JNIEXPORT void
-Java_frysk_testbed_LocalMemory_constructStack (JNIEnv *env, jclass, jobject)
-{
-  jclass cls = env->FindClass("java/lang/RuntimeException");
-  if (cls != NULL) {
-    env->ThrowNew(cls, __FILE__ ":Java_frysk_testbed_LocalMemory_constructStack not implemented");
-  }
-  return;
+void
+frysk::testbed::LocalMemory::constructStack(jnixx::env& env,
+					    frysk::testbed::LocalMemory$StackBuilder builder) {
+  // Copy known data onto the stack.
+  uint8_t addr[sizeof(memory)];
+  memcpy(addr, &memory, sizeof(memory));
+  jbyteArray bytes = getBytes(env, addr, sizeof(memory));
+  builder.stack(env, (jlong)addr, bytes);
 }

@@ -1,5 +1,15 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* PrintCxxDefinitions.java: Generate _class$ variable of nested
+	classes.
+	* Main.java: Ditto.
+	* ClassVisitor.java: Visit nested classes.
+	* ClassWalker.java: Update.
+	* PrintCxxDefinitions.java: Update.
+	* PrintHxxDefinitions.java: Update.
+	* PrintDeclarations.java: Update.
+	* Printer.java: Encode "$".
+	
 	* print.cxx: Include Errno-jni.hxx.
 	* exceptions.cxx: Include Errno-jni.hxx.
 	* Main.java: Move jnixx::exception definition to ...

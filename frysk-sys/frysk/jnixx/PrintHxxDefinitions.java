@@ -195,7 +195,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 	    void acceptInterface(Class klass) {
 	    }
-	    void acceptNested(Class klass) {
+	    void acceptClass(Class klass) {
 	    }
 	    void acceptConstructor(Constructor constructor) {
 		p.println();
@@ -250,6 +250,7 @@ class PrintHxxDefinitions extends ClassWalker {
     void acceptPrimitive(Class klass) {
     }
     void acceptInterface(Class klass) {
+	acceptClass(klass);
     }
     void acceptClass(Class klass) {
 	// The class, via reflection.

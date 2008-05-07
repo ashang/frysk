@@ -98,7 +98,11 @@ class PrintCxxDefinitions extends ClassVisitor {
 		    } else if (returnType == String.class) {
 			p.print("(jstring) ret._object");
 		    } else if (returnType.isArray()) {
-			p.print("(jobjectArray) ret._object");
+			if (returnType.getComponentType().isPrimitive()) {
+			    p.print("ret");
+			} else {
+			    p.print("(jobjectArray) ret._object");
+			}
 		    } else {
 			p.print("ret._object");
 		    }
@@ -133,6 +137,10 @@ class PrintCxxDefinitions extends ClassVisitor {
     }
     void acceptComponent(Class klass) {
     }
-    void acceptNested(Class klass) {
+    void acceptClass(Class klass) {
+	p.println();
+	p.print("jclass ");
+	p.printQualifiedCxxName(klass);
+	p.println("::_class$;");
     }
 }

@@ -68,7 +68,7 @@ abstract class ClassWalker {
 		walk(method.getReturnType());
 		walk(method.getParameterTypes());
 	    }
-	    void acceptNested(Class klass) {
+	    void acceptClass(Class klass) {
 		walk(klass);
 	    }
 	};

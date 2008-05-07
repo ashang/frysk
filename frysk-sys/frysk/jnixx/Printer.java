@@ -325,6 +325,7 @@ class Printer {
 		  .replaceAll("_", "_1")
 		  .replaceAll(";", "_2")
 		  .replaceAll("\\[", "_3")
+		  .replaceAll("\\$", "_00024")
 		  .replaceAll("/", "_"));
 	}
 	return this;

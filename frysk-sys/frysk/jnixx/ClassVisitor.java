@@ -71,6 +71,11 @@ abstract class ClassVisitor {
 		continue;
 	    acceptMethod(method);
 	}
+	Class[] classes = klass.getClasses();
+	for (int i = 0; i < classes.length; i++) {
+	    Class inner = classes[i];
+	    acceptClass(inner);
+	}
     }
 
     abstract void acceptInterface(Class constructor);
@@ -78,5 +83,5 @@ abstract class ClassVisitor {
     abstract void acceptField(Field field);
     abstract void acceptMethod(Method method);
     abstract void acceptComponent(Class klass);
-    abstract void acceptNested(Class klass);
+    abstract void acceptClass(Class klass);
 }

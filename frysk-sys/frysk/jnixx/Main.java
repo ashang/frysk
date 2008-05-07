@@ -66,6 +66,7 @@ class Main {
 	p.print("#include \"");
 	p.printHeaderFileName(klass);
 	p.println("\"");
+	p.println();
 	p.print("jclass ");
 	p.printQualifiedCxxName(klass);
 	p.println("::_class$;");
