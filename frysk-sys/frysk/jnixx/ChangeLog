@@ -1,3 +1,10 @@
+2008-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* print.cxx: Include Errno-jni.hxx.
+	* exceptions.cxx: Include Errno-jni.hxx.
+	* Main.java: Move jnixx::exception definition to ...
+	* jnixx.hxx (jnixx::exception): ... here.
+	
 2008-05-06  Andrew Cagney  <cagney@redhat.com>
 
 	Generate inlined C++ headers.

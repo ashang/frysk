@@ -50,7 +50,7 @@ class Main {
 	p.println("#include <stdarg.h>");
 	p.println();
 	p.println("namespace jnixx {");
-	p.println("  struct exception {};");
+	p.println("  struct exception;");
 	p.println("  struct env;");
 	p.println("}");
 	new PrintNamespaces(p).walk(klass);

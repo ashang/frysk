@@ -40,6 +40,24 @@
 #ifndef frysk_jnixx_hxx
 #define frysk_jnixx_hxx
 
+#include <jni.h>
+
+namespace jnixx {
+  struct env;
+  struct exception;
+}
+
+namespace java {
+  namespace lang {
+    struct String;
+    struct Object;
+    struct Class;
+  }
+};
+
+class jnixx::exception {
+};
+
 class jnixx::env {
 
 private:

@@ -1,3 +1,9 @@
+2008-05-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (generate_jnixx_sources): Delete.
+	(files.jnixx): New; eliminate duplicate jnixx files.
+	(jni): Depend on ${GEN_DIRNAME}.jar.
+
 2008-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (generate_jnixx_sources): Order build so that

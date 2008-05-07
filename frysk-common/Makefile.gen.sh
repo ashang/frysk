@@ -137,6 +137,15 @@ else
     mv files.tmp files.list
 fi
 
+# It is assumed that each file is of the form DIRNAME/BASENAME.SUFFIX,
+# pre-process each into: FILE DIRNAME BASENAME SUFFIX
+
+sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-zA-Z-]*\)\),\1 \2 \3 \4,' \
+    -e 's,-in$,,' \
+    -e 's,-sh$,,' \
+    < files.list \
+    > files.base
+
 #
 
 echo Creating Makefile.gen from directories ${dirs} ...
@@ -666,29 +675,30 @@ jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
 # If any of the JNI sources change, re-generate everything.
 \$(JNIXX_BUILT): \$(jnixx_sources)
 EOF
-generate_jnixx_sources () {
-    local file=$1
-    local d=$2
-    local b=$3
-    local suffix=$4
-    local sources=$5
-    local _file=`echo $file | tr '[/.]' '[__]'`
-    sed -n \
-	-e 's,#include "\(.*\)-jni\.hxx".*,include - \1,p' \
-	-e 's,#include \([A-Z][A-Z0-9_]*\).*,minclude \1 -,p' \
-	-e 's,#define \([A-Z0-9_]*\) "\(.*\)-jni\.hxx".*,define \1 \2,p' \
-	< $file > $$.tmp
-    while read action m h j; do
-	echo "# file=$file action=$action m=$m h=$h"
-	if test "$action" = "minclude" ; then
-            # Assume file defining macro depends on this file
-	    automake_variable $m = \$\($_file\)
-	elif has_java_source ${h} ; then
-	    j=`echo ${h} | tr '[_]' '[/]'`
-	    cat <<EOF
+print_header "jnixx"
+rm -f files.jnixx
+while read file dir base suffix ; do
+    case "$file" in
+	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
+	sed -n \
+	    -e 's,#include "\(.*\)-jni\.hxx".*,include - \1,p' \
+	    -e 's,#include \([A-Z][A-Z0-9_]*\).*,minclude \1 -,p' \
+	    -e 's,#define \([A-Z0-9_]*\) "\(.*\)-jni\.hxx".*,define \1 \2,p' \
+	    < $file
+	;;
+    esac
+done < files.base | sort -u > files.jnixx
+while read action m h j; do
+    echo "# action=$action m=$m h=$h"
+    if test "$action" = "minclude" ; then
+        # Assume file defining macro depends on this file
+	automake_variable $m = \$\($_file\)
+    elif has_java_source ${h} ; then
+	j=`echo ${h} | tr '[_]' '[/]'`
+	automake_variable lib${GEN_MAKENAME}_jni_a_SOURCES += ${h}-jni.cxx
+	cat <<EOF
 JNIXX_BUILT += ${h}-jni.hxx
 JNIXX_BUILT += ${h}-jni.cxx
-${sources} += ${h}-jni.cxx
 ${h}-jni.o: ${h}-jni.hxx
 # Require all code to be generated before compiling so that
 # any indirectly included headers are present.
@@ -696,24 +706,24 @@ ${h}-jni.o: | \$(JNIXX_BUILT)
 ${h}-jni.hxx: $j.java
 ${h}-jni.cxx: $j.java
 EOF
-	    case $action in
-		include)
-		    case "$suffix" in
-			cxx) echo "$d/$b.o: ${h}-jni.hxx" ;;
-			hxx) # remember what this file includes
-			    automake_variable $_file += ${h}-jni.hxx ;;
-		    esac
-		    ;;
-		define)
-		    echo "$d/$b.o: ${h}-jni.hxx"
+	case $action in
+	    include)
+		case "$suffix" in
+		    cxx) echo "$d/$b.o: ${h}-jni.hxx" ;;
+		    hxx) # remember what this file includes
+			automake_variable $_file += ${h}-jni.hxx ;;
+		esac
+		;;
+	    define)
+		echo "$d/$b.o: ${h}-jni.hxx"
 		    # Assume file using this macro is a dependency.
-		    echo "$d/$b.o: \$($m)"
-		    ;;
-	    esac
-	fi
-    done < $$.tmp
-    rm -f $$.tmp
-}
+		echo "$d/$b.o: \$($m)"
+		;;
+	esac
+    fi
+done < files.jnixx
+rm -f $$.tmp
+
 
 # For any java file that contains "native" declarations, generate a
 # jni header.
@@ -940,15 +950,6 @@ done
 # generation rules to each file type.  There are no smarts, each file
 # type gets all operations listed explicitly.
 
-# It is assumed that each file is of the form DIRNAME/BASENAME.SUFFIX,
-# pre-process each into: FILE DIRNAME BASENAME SUFFIX
-
-sed -e 's,^\(\(.*\)/\([^/]*\)\.\([a-zA-Z-]*\)\),\1 \2 \3 \4,' \
-    -e 's,-in$,,' \
-    -e 's,-sh$,,' \
-    < files.list \
-    > files.base
-
 print_header "bulk processing"
 
 while read file dir base suffix ; do
@@ -967,10 +968,8 @@ while read file dir base suffix ; do
 	    generate_cni_header $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
-	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh)
+	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
 	    generate_jni_dependency $file $dir $base $suffix
-	    generate_jnixx_sources $file $dir $base $suffix \
-		lib${GEN_MAKENAME}_jni_a_SOURCES
 	    generate_compile $file $dir $base $suffix \
 		lib${GEN_MAKENAME}_jni_a_SOURCES
 	    ;;
@@ -994,6 +993,6 @@ lib${GEN_MAKENAME}_jni_so_SOURCES =
 solib_PROGRAMS += lib${GEN_DIRNAME}-jni.so
 lib${GEN_DIRNAME}-jni.so: lib${GEN_DIRNAME}-jni.a
 .PHONY: jni
-jni: lib${GEN_DIRNAME}-jni.so
+jni: lib${GEN_DIRNAME}-jni.so ${GEN_DIRNAME}.jar
 EOF
 fi
