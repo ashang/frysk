@@ -8,4 +8,6 @@ compile
 depcomp
 config.guess
 config.sub
+files.base
+files.jnixx
 *~
