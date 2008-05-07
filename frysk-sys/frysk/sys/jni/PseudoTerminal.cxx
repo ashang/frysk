@@ -53,6 +53,6 @@ frysk::sys::PseudoTerminal::getName(jnixx::env& env, jint pty) {
 }
 
 jint
-frysk::sys::PseudoTerminal::open(jnixx::env& env, jboolean) {
+frysk::sys::PseudoTerminal::open(jnixx::env& env, bool) {
   return -1;
 }

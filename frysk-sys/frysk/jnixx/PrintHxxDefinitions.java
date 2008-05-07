@@ -44,57 +44,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-class PrintDefinitions implements ClassWalker {
+class PrintHxxDefinitions extends ClassWalker {
 
     private final Printer p;
-    PrintDefinitions(Printer p) {
+    PrintHxxDefinitions(Printer p) {
 	this.p = p;
-    }
-
-    public boolean acceptClass(Class klass) {
-	// The class, via reflection.
-	p.println();
-	p.println("static jclass _class;");
-	p.println();
-	p.println("jclass");
-	p.printQualifiedCxxName(klass);
-	p.print("::Class(jnixx::env& env)");
-	while (p.dent(0, "{", "}")) {
-	    p.print("if (_class == NULL)");
-	    while (p.dent(1, "{", "}")) {
-		p.println("_class = env.findClass(\""
-			  + klass.getName().replace("\\.", "/") + "\");");
-	    }
-	    p.println("return _class;");
-	}
-	return true;
-    }
-
-    public void acceptConstructor(Constructor constructor) {
-	p.println();
-	p.printCxxType(constructor.getDeclaringClass());
-	p.println();
-	p.printQualifiedCxxName(constructor);
-	p.print("(");
-	p.printFormalCxxParameters(constructor, true);
-	p.print(")");
-	while (p.dent(0, "{", "}")) {
-	    p.println("static jmethodID id;");
-	    while (p.dent(1, "if (id == NULL) {", "}")) {
-		p.print("id = env.getMethodID(Class(env), \"<init>\", \"(");
-		p.printJniSignature(constructor.getParameterTypes());
-		p.println(")V\");");
-	    }
-	    p.print("jobject object = env.newObject(");
-	    p.printActualJniParameters(constructor);
-	    p.println(");");
-	    while (p.dent(1, "if (object == NULL) {", "}")) {
-		p.println("throw jnixx::exception();");
-	    }
-	    p.print("return ");
-	    p.printCxxType(constructor.getDeclaringClass());
-	    p.println("(object);");
-	}
     }
 
     private void printCxxFieldAccessorDefinition(Field field, boolean get) {
@@ -125,12 +79,16 @@ class PrintDefinitions implements ClassWalker {
 	}
 	p.print(")");
 	while (p.dent(0, "{", "}")) {
-	    while (p.dent(1, "if (" + name + "ID == NULL) {", "}")) {
-		p.print(name + "ID = env.get");
+	    p.print("if (");
+	    p.printID(field);
+	    p.print(" == NULL)");
+	    while (p.dent(1, "{", "}")) {
+		p.printID(field);
+		p.print(" = env.get");
 		if (isStatic) {
 		    p.print("Static");
 		}
-		p.print("FieldID(Class(env), \"");
+		p.print("FieldID(_class(env), \"");
 		p.print(name);
 		p.print("\", \"");
 		p.printJniSignature(type);
@@ -153,11 +111,9 @@ class PrintDefinitions implements ClassWalker {
 	    p.printJniReturnTypeName(type);
 	    p.print("Field(");
 	    if (get) {
-		p.printActualJniParameters(isStatic, name + "ID",
-					   new Class[0]);
+		p.printActualJniParameters(isStatic, field, new Class[0]);
 	    } else {
-		p.printActualJniParameters(isStatic, name + "ID",
-					   new Class[] { type });
+		p.printActualJniParameters(isStatic, field, new Class[] { type });
 	    }
 	    p.println(");");
 	    if (get) {
@@ -175,37 +131,30 @@ class PrintDefinitions implements ClassWalker {
 	}
     }
 
-    public void acceptField(Field field) {
-	p.println();
-	p.print("static jfieldID ");
-	p.print(field.getName());
-	p.println("ID;");
-	printCxxFieldAccessorDefinition(field, true);
-	if (!Modifier.isFinal(field.getModifiers())) {
-	    printCxxFieldAccessorDefinition(field, false);
-	}
-    }
-
     private void printCxxMethodDefinition(Method method) {
 	boolean isStatic = Modifier.isStatic(method.getModifiers());
 	Class returnType = method.getReturnType();
 	p.println();
 	p.printCxxType(returnType);
 	p.println();
-	p.printQualifiedCxxName(method.getDeclaringClass());
-	p.print("::");
-	p.print(method.getName());
+	p.printQualifiedCxxName(method);
 	p.print("(");
 	p.printFormalCxxParameters(method, true);
 	p.print(")");
 	while (p.dent(0, "{", "}")) {
-	    p.println("static jmethodID id;");
-	    while (p.dent(1, "if (id == NULL) {", "}")) {
-		p.print("id = env.get");
+	    p.print("static jmethodID ");
+	    p.printID(method);
+	    p.println(";");
+	    p.print("if (");
+	    p.printID(method);
+	    p.print(" == NULL)");
+	    while (p.dent(1, "{", "}")) {
+		p.printID(method);
+		p.print(" = env.get");
 		if (isStatic) {
 		    p.print("Static");
 		}
-		p.print("MethodID(Class(env), \"");
+		p.print("MethodID(_class(env), \"");
 		p.print(method.getName());
 		p.print("\", \"");
 		p.printJniSignature(method);
@@ -240,83 +189,82 @@ class PrintDefinitions implements ClassWalker {
 	}
     }
 
-    private void printNativeMethodDefinition(Method method) {
-	boolean isStatic = Modifier.isStatic(method.getModifiers());
-	p.println();
-	while (p.dent(0, "extern \"C\" {", "};")) {
-	    p.print("JNIEXPORT ");
-	    p.printJniType(method.getReturnType());
-	    p.print(" JNICALL ");
-	    p.printJniName(method);
-	    p.print("(");
-	    p.printFormalJniParameters(method, false);
-	    p.println(");");
-	}
-	p.println();
-	p.printJniType(method.getReturnType());
-	p.println();
-	p.printJniName(method);
-	p.print("(");
-	p.printFormalJniParameters(method, true);
-	p.print(")");
-	while (p.dent(0, "{", "};")) {
-	    p.println("try {");
-	    {
-		p.indent();
-		p.println("jnixx::env env = jnixx::env(jni);");
-		Class returnType = method.getReturnType();
-		if (returnType != Void.TYPE) {
-		    p.printCxxType(returnType);
-		    p.print(" ret = ");
-		}
-		if (isStatic) {
-		    p.printQualifiedCxxName(method);
-		} else {
-		    p.printCxxType(method.getDeclaringClass());
-		    p.print("(object).");
-		    p.print(method.getName());
-		}
-		p.print("(");
-		p.printActualCxxParameters(method);
-		p.println(");");
-		if (returnType != Void.TYPE) {
-		    p.print("return ");
-		    if (returnType.isPrimitive()) {
-			p.print("ret");
-		    } else if (returnType == String.class) {
-			p.print("(jstring) ret._object");
-		    } else if (returnType.isArray()) {
-			if (returnType.getComponentType().isPrimitive()) {
-			    p.print("ret");
-			} else {
-			    p.print("(jobjectArray) ret._object");
-			}
-		    } else {
-			p.print("ret._object");
-		    }
-		    p.println(";");
-		}
-		p.outdent();
-	    }
-	    p.println("} catch (jnixx::exception) {");
-	    {
-		p.indent();
-		if (method.getReturnType() != Void.TYPE) {
-		    p.println("return 0;");
-		} else {
-		    p.println("return;");
-		}
-		p.outdent();
-	    }
-	    p.println("}");
-	}
-    }
+    private final ClassVisitor printer = new ClassVisitor() {
 
-    public void acceptMethod(Method method) {
-	if (Modifier.isNative(method.getModifiers())) {
-	    printNativeMethodDefinition(method);
-	} else {
-	    printCxxMethodDefinition(method);
+	    void acceptComponent(Class klass) {
+	    }
+	    void acceptInterface(Class klass) {
+	    }
+	    void acceptNested(Class klass) {
+	    }
+	    void acceptConstructor(Constructor constructor) {
+		p.println();
+		p.printCxxType(constructor.getDeclaringClass());
+		p.println();
+		p.printQualifiedCxxName(constructor);
+		p.print("(");
+		p.printFormalCxxParameters(constructor, true);
+		p.print(")");
+		while (p.dent(0, "{", "}")) {
+		    p.print("static jmethodID ");
+		    p.printID(constructor);
+		    p.println(";");
+		    p.print("if (");
+		    p.printID(constructor);
+		    p.print(" == NULL)");
+		    while (p.dent(1, "{", "}")) {
+			p.printID(constructor);
+			p.print(" = env.getMethodID(_class(env), \"<init>\", \"(");
+			p.printJniSignature(constructor.getParameterTypes());
+			p.println(")V\");");
+		    }
+		    p.print("jobject object = env.newObject(");
+		    p.printActualJniParameters(constructor);
+		    p.println(");");
+		    while (p.dent(1, "if (object == NULL) {", "}")) {
+			p.println("throw jnixx::exception();");
+		    }
+		    p.print("return ");
+		    p.printCxxType(constructor.getDeclaringClass());
+		    p.println("(object);");
+		}
+	    }
+
+	    void acceptField(Field field) {
+		p.println();
+		printCxxFieldAccessorDefinition(field, true);
+		if (!Modifier.isFinal(field.getModifiers())) {
+		    printCxxFieldAccessorDefinition(field, false);
+		}
+	    }
+
+	    public void acceptMethod(Method method) {
+		if (!Modifier.isNative(method.getModifiers())) {
+		    printCxxMethodDefinition(method);
+		}
+	    }
+	};
+
+    void acceptArray(Class klass) {
+    }
+    void acceptPrimitive(Class klass) {
+    }
+    void acceptInterface(Class klass) {
+    }
+    void acceptClass(Class klass) {
+	// The class, via reflection.
+	p.println();
+	p.println("jclass");
+	p.printQualifiedCxxName(klass);
+	p.print("::_class(jnixx::env& env)");
+	while (p.dent(0, "{", "}")) {
+	    while (p.dent(1, "if (_class$ == NULL) {", "}")) {
+		p.print("_class$ = env.findClass(\"");
+		p.print(klass.getName());
+		p.println("\");");
+	    }
+	    p.println("return _class$;");
 	}
+	printer.visit(klass);
     }
 }

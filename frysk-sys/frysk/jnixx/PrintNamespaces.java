@@ -39,12 +39,7 @@
 
 package frysk.jnixx;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.lang.reflect.Constructor;
-
-class PrintNamespaces implements ClassWalker {
+class PrintNamespaces extends ClassWalker {
 
     private final Printer p;
     PrintNamespaces(Printer p) {
@@ -54,61 +49,45 @@ class PrintNamespaces implements ClassWalker {
     /**
      * Print the namespace spec for the klass.
      */
-    private void printCxxNamespace(Class klass) {
-	while (klass.isArray()) {
-	    klass = klass.getComponentType();
-	}
-	if (klass.isPrimitive())
-	    return;
-	if (printedNamespaces.contains(klass))
-	    return;
-	if (klass.getPackage().getName().startsWith("java."))
-	    return;
+    private void printCxxNamespace(Class klass, int arrays) {
+	p.println();
+	p.print("// ");
+	p.println(klass);
 	String[] names = klass.getName().split("\\.");
 	for (int i = 0; i < names.length - 1; i++) {
 	    p.print("namespace ");
 	    p.print(names[i]);
-	    p.print(" { ");
+	    p.println(" { ");
+	    p.indent();
 	}
 	p.print("struct ");
 	p.print(names[names.length - 1]);
-	p.print(";");
+	for (int i = 0; i < arrays; i++) {
+	    p.print("Array");
+	}
+	p.println(";");
 	for (int i = names.length - 2; i >= 0; i--) {
-	    p.print(" }");
-	}
-	p.println();
-	printedNamespaces.add(klass);
-    }
-    private HashSet printedNamespaces = new HashSet();
-
-    /**
-     * Iterate over the klasses printing any referenced name spaces.
-     */
-    private void printCxxNamespaces(Class[] klasses) {
-	for (int i = 0; i < klasses.length; i++) {
-	    // Should this recurse?
-	    printCxxNamespace(klasses[i]);
+	    p.outdent();
+	    p.println("}");
 	}
     }
 
-    public boolean acceptClass(Class klass) {
-	if (klass == null)
-	    return false;
-	acceptClass(klass.getSuperclass());
-	printCxxNamespace(klass);
-	return true;
+    void acceptInterface(Class klass) {
+	printCxxNamespace(klass, 0);
     }
-
-    public void acceptConstructor(Constructor constructor) {
-	printCxxNamespaces(constructor.getParameterTypes());
+    void acceptArray(Class klass) {
+	int arrays = 0;
+	while (klass.isArray()) {
+	    arrays++;
+	    klass = klass.getComponentType();
+	}
+	if (klass.isPrimitive())
+	    return;
+	printCxxNamespace(klass, arrays);
     }
-
-    public void acceptField(Field field) {
-	printCxxNamespace(field.getType());
+    void acceptPrimitive(Class klass) {
     }
-
-    public void acceptMethod(Method method) {
-	printCxxNamespace(method.getReturnType());
-	printCxxNamespaces(method.getParameterTypes());
+    void acceptClass(Class klass) {
+	printCxxNamespace(klass, 0);
     }
 }

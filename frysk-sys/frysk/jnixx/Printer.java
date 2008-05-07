@@ -140,30 +140,53 @@ class Printer {
      * Print the class's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    Printer printQualifiedCxxName(Class klass) {
-	if (klass.isArray())
+    void printGlobalCxxName(Class klass) {
+	if (klass == null) {
+	    print("::jnixx::interface");
+	} else if (klass.isArray()) {
 	    throw new RuntimeException("array class: " + klass);
-	if (klass.isPrimitive())
-	    throw new RuntimeException("primitive class: " + klass);
-	return print(klass.getName().replaceAll("\\.", "::"));
+	} else if (klass.isPrimitive()) {
+	    print("j");
+	    print(klass.getName());
+	} else {
+	    print("::");
+	    print(klass.getName().replaceAll("\\.", "::"));
+	}
     }
+    void printQualifiedCxxName(Class klass) {
+	if (klass.isPrimitive()) {
+	    print("j");
+	    print(klass.getName());
+	} else if (klass.isArray()) {
+	    printQualifiedCxxName(klass.getComponentType());
+	    print("Array");
+	} else {
+	    print(klass.getName().replaceAll("\\.", "::"));
+	}
+    }
+
     /**
      * Print the class's unqualified C++ name; that is just the class
      * name.
      */
-    Printer printUnqualifiedCxxName(Class klass) {
-	String name = klass.getName();
-	int dot = name.lastIndexOf('.');
-	return print(name.substring(dot + 1));
+    void printUnqualifiedCxxName(Class klass) {
+	if (klass.isArray()) {
+	    printUnqualifiedCxxName(klass.getComponentType());
+	    print("Array");
+	} else {
+	    String name = klass.getName();
+	    int dot = name.lastIndexOf('.');
+	    print(name.substring(dot + 1));
+	}
     }
     /**
      * Print the method's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    Printer printQualifiedCxxName(Method method) {
-	printQualifiedCxxName(method.getDeclaringClass());
+    Printer printQualifiedCxxName(Member member) {
+	printQualifiedCxxName(member.getDeclaringClass());
 	print("::");
-	print(method.getName());
+	printName(member);
 	return this;
     }
     /**
@@ -189,13 +212,34 @@ class Printer {
     /**
      * Print the modifiers associated with the declaration.
      */
-    Printer printModifiers(Member member) {
-	print("/* ");
-	print(Modifier.toString(member.getModifiers()));
-	print(" */");
-	if (Modifier.isStatic(member.getModifiers()))
-	    print(" static");
-	return this;
+    void printlnModifiers(Member member) {
+	print("// ");
+	print(member.toString());
+	println();
+    }
+
+    /**
+     * Print the "ID" used when accessing JNI.
+     */
+    void printID(Member member) {
+	print("_");
+	print(member.getName().replaceAll("\\.", "_"));
+	print("_ID");
+    }
+
+    /**
+     * Print tne name (possibly with a few extra chars thrown in).
+     */
+    void printName(Member member) {
+	print(member.getName());
+	if (member.getName().equals("delete")
+	    || member.getName().equals("and")
+	    || member.getName().equals("or")
+	    || member.getName().equals("xor")
+	    || member.getName().equals("not")
+	    ) {
+	    print("$");
+	}
     }
 
     /**
@@ -318,32 +362,29 @@ class Printer {
 
     /**
      * Given a class describing a type (class of basic), print the JNI
-     * equivalent name.  For classes, print the XX type.
+     * equivalent name.
      */
-    Printer printCxxType(Class klass) {
+    void printCxxType(Class klass) {
 	if (klass.isPrimitive()) {
 	    if (klass == Void.TYPE) {
 		print("void");
+	    } else if (klass == Boolean.TYPE) {
+		print("bool");
 	    } else {
 		print("j");
 		print(klass.getName());
 	    }
 	} else if (klass.isArray()) {
-	    Class component = klass.getComponentType();
-	    if (component.isPrimitive()) {
-		printCxxType(component);
-		print("Array");
+	    if (klass.getComponentType() == Boolean.TYPE) {
+		print("jbooleanArray");
 	    } else {
-		print("jnixx::array");
+		printCxxType(klass.getComponentType());
+		print("Array");
 	    }
-	} else if (klass == Class.class) {
-	    print("jclass");
-	} else if (klass == Object.class) {
-	    print("jnixx::object");
 	} else {
-	    printQualifiedCxxName(klass);
+	    print("::");
+	    print(klass.getName().replaceAll("\\.", "::"));
 	}
-	return this;
     }
 
     /**
@@ -451,21 +492,19 @@ class Printer {
     /**
      * Print the actual JNI parameter list.
      */
-    Printer printActualJniParameters(boolean isStatic,
-				     String id,
-				     Class[] params) {
+    void printActualJniParameters(boolean isStatic,
+				  Member member,
+				  Class[] params) {
 	if (isStatic)
-	    print("_class");
+	    print("_class$");
 	else
 	    print("_object");
 	print(", ");
-	print(id);
+	printID(member);
 	for (int i = 0; i < params.length; i++) {
 	    Class param = params[i];
 	    print(", ");
 	    if (param.isPrimitive()) {
-		print("p" + i);
-	    } else if (param == Class.class) {
 		print("p" + i);
 	    } else if (param.isArray()
 		       && param.getComponentType().isPrimitive()) {
@@ -474,23 +513,20 @@ class Printer {
 		print("p" + i + "._object");
 	    }
 	}
-	return this;
     }
     /**
      * Print the method's JNI actual parameter list.
      */
-    Printer printActualJniParameters(Method f) {
-	return printActualJniParameters(Modifier.isStatic(f.getModifiers()),
-					"id",
-					f.getParameterTypes());
+    void printActualJniParameters(Method f) {
+	printActualJniParameters(Modifier.isStatic(f.getModifiers()),
+				 f, f.getParameterTypes());
     }
     /**
      * Print the constructor's JNI actual parameter list.
      */
-    Printer printActualJniParameters(Constructor f) {
-	return printActualJniParameters(/*isStatic=*/true,
-					"id",
-					f.getParameterTypes());
+    void printActualJniParameters(Constructor f) {
+	printActualJniParameters(/*isStatic=*/true,
+				 f, f.getParameterTypes());
     }
 
     /**

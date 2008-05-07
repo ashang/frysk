@@ -42,16 +42,59 @@ package frysk.jnixx;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.util.Set;
+import java.util.HashSet;
 
-interface ClassWalker {
-
+abstract class ClassWalker {
+    private final Set visited = new HashSet();
+    private void walk(Class[] klasses) {
+	for (int i = 0; i < klasses.length; i++) {
+	    walk(klasses[i]);
+	}
+    }
+    private final ClassVisitor visitor = new ClassVisitor() {
+	    void acceptComponent(Class klass) {
+	    }
+	    void acceptInterface(Class klass) {
+		walk(klass);
+	    }
+	    void acceptConstructor(Constructor constructor) {
+		walk(constructor.getParameterTypes());
+	    }
+	    void acceptField(Field field) {
+		walk(field.getType());
+	    }
+	    void acceptMethod(Method method) {
+		walk(method.getReturnType());
+		walk(method.getParameterTypes());
+	    }
+	    void acceptNested(Class klass) {
+		walk(klass);
+	    }
+	};
+    void walk(Class klass) {
+	if (klass == null)
+	    return;
+	if (visited.contains(klass))
+	    return;
+	visited.add(klass);
+	walk(klass.getSuperclass());
+	if (klass.isArray()) {
+	    acceptArray(klass);
+	} else if (klass.isPrimitive()) {
+	    acceptPrimitive(klass);
+	} else if (klass.isInterface()) {
+	    acceptInterface(klass);
+	} else {
+	    acceptClass(klass);
+	}
+	visitor.visit(klass);
+    }
     /**
-     * Returns true to indicate the need to walk this classes
-     * internals.
+     * Accept/visit the specified class.
      */
-    boolean acceptClass(Class klass);
-    void acceptConstructor(Constructor constructor);
-    void acceptField(Field field);
-    void acceptMethod(Method method);
-
+    abstract void acceptArray(Class klass);
+    abstract void acceptPrimitive(Class klass);
+    abstract void acceptClass(Class klass);
+    abstract void acceptInterface(Class klass);
 }

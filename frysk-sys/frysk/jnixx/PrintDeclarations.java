@@ -44,34 +44,25 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-class PrintDeclarations implements ClassWalker {
+class PrintDeclarations extends ClassWalker {
 
     private final Printer p;
     PrintDeclarations(Printer p) {
 	this.p = p;
     }
 
-    public boolean acceptClass(Class klass) {
-	return true;
-    }
-
-    public void acceptConstructor(Constructor constructor) {
-	p.printModifiers(constructor);
-	p.print(" ");
-	p.printCxxType(constructor.getDeclaringClass());
-	p.print(" New(");
-	p.printFormalCxxParameters(constructor, false);
-	p.println(");");
-    }
-
-    private void printCxxFieldAccessorDeclaration(Field field, boolean get) {
-	p.printModifiers(field);
+    private void printCxxFieldAccessorDeclaration(Field field,
+						  boolean get) {
+	p.printlnModifiers(field);
+	if (Modifier.isStatic(field.getModifiers())) {
+	    p.print("static ");
+	}
+	p.print("inline ");
 	if (get) {
-	    p.print(" ");
 	    p.printCxxType(field.getType());
 	    p.print(" Get");
 	} else {
-	    p.print(" void Set");
+	    p.print("void Set");
 	}
 	String name = field.getName();
 	p.print(Character.toUpperCase(name.charAt(0)));
@@ -85,21 +76,107 @@ class PrintDeclarations implements ClassWalker {
 	p.println(");");
     }
 
-    public void acceptField(Field field) {
-	printCxxFieldAccessorDeclaration(field, true);
-	if (!Modifier.isFinal(field.getModifiers())) {
-	    printCxxFieldAccessorDeclaration(field, false);
-	}
-    }
+    private final ClassVisitor printer = new ClassVisitor() {
+	    public void acceptComponent(Class klass) {
+	    }
+	    public void acceptNested(Class klass) {
+	    }
+	    public void acceptInterface(Class klass) {
+	    }
+	    public void acceptConstructor(Constructor constructor) {
+		p.printlnModifiers(constructor);
+		p.print("static inline ");
+		p.printCxxType(constructor.getDeclaringClass());
+		p.print(" New(");
+		p.printFormalCxxParameters(constructor, false);
+		p.println(");");
+	    }
+	    public void acceptField(Field field) {
+		p.println();
+		p.print("private: static jfieldID ");
+		p.printID(field);
+		p.println("; public:");
+		printCxxFieldAccessorDeclaration(field, true);
+		if (!Modifier.isFinal(field.getModifiers())) {
+		    printCxxFieldAccessorDeclaration(field, false);
+		}
+	    }
+	    public void acceptMethod(Method method) {
+		p.printlnModifiers(method);
+		if (Modifier.isStatic(method.getModifiers())) {
+		    p.print("static ");
+		}
+		if (!Modifier.isNative(method.getModifiers())) {
+		    p.print("inline ");
+		}
+		p.printCxxType(method.getReturnType());
+		p.print(" ");
+		p.printName(method);
+		p.print("(");
+		p.printFormalCxxParameters(method, false);
+		p.println(");");
+	    }
+	};
 
-    public void acceptMethod(Method method) {
-	p.printModifiers(method);
-	p.print(" ");
-	p.printCxxType(method.getReturnType());
-	p.print(" ");
-	p.print(method.getName());
-	p.print("(");
-	p.printFormalCxxParameters(method, false);
-	p.println(");");
+    void acceptArray(Class klass) {
+	for (Class component = klass; component != null;
+	     component = component.getComponentType()) {
+	    if (component.isPrimitive())
+		return;
+	}
+	p.println();
+	p.print("struct ");
+	p.printQualifiedCxxName(klass);
+	p.print(" : public ");
+	p.printGlobalCxxName(Object.class);
+	while(p.dent(0, "{", "};")) {
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("(jobject _object)");
+	    p.print(" : ");
+	    p.printGlobalCxxName(Object.class);
+	    p.print("(_object)");
+	    p.println(" { }");
+	}	
+    }
+    void acceptPrimitive(Class klass) {
+    }
+    void acceptInterface(Class klass) {
+	acceptClass(klass);
+    }
+    void acceptClass(Class klass) {
+	p.println();
+	p.print("// ");
+	p.println(klass);
+	p.print("struct ");
+	p.printQualifiedCxxName(klass);
+	Class parent = klass.getSuperclass();
+	if (parent != null) {
+	    p.print(" : public ");
+	    p.printGlobalCxxName(parent);
+	}
+	while(p.dent(0, "{", "};")) {
+	    // Constructor.
+	    if (parent == null) {
+		p.println("jobject _object;");
+		p.printUnqualifiedCxxName(klass);
+		p.println("(jobject _object) {");
+		p.println("  this->_object = _object;");
+		p.println("}");
+		p.println("bool operator==(jobject o) {");
+		p.println("  return _object == o;");
+		p.println("}");
+	    } else {
+		p.printUnqualifiedCxxName(klass);
+		p.print("(jobject _object)");
+		p.print(" : ");
+		p.printGlobalCxxName(parent);
+		p.print("(_object)");
+		p.println(" { }");
+	    }
+	    // Static get-class method - a class knows its own class.
+	    p.println("private: static jclass _class$; public:");
+	    p.println("static inline jclass _class(jnixx::env& env);");
+	    printer.visit(klass);
+	}
     }
 }
