@@ -94,13 +94,6 @@ public class TestLocalMemory
      */
     public void testDataContents() {
 	byte[] bytes = LocalMemory.getDataBytes();
-	assertEquals("data byte[0]", LocalMemory.byteData, bytes[0]);
-    }
-    /**
-     * Check the data addresses have the expected offsets.
-     */
-    public void testDataAddresses() {
-	assertEquals("byteData address", LocalMemory.getDataAddr(),
-		     LocalMemory.getByteDataAddr());
+	assertEquals("data byte[0]", 43, bytes[0]);
     }
 }

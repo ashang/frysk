@@ -46,7 +46,7 @@
 #include "frysk/rsl/jni/Log.hxx"
 
 void
-logf(jnixx::env& env, frysk::rsl::Log& logger,
+logf(jnixx::env& env, frysk::rsl::Log logger,
      const char* format, ...) {
   if (!logger.logging(env))
     return;
@@ -58,8 +58,8 @@ logf(jnixx::env& env, frysk::rsl::Log& logger,
 }
 
 void
-logf(jnixx::env& env, frysk::rsl::Log& logger,
-     jnixx::object object, const char* format, ...) {
+logf(jnixx::env& env, frysk::rsl::Log logger, java::lang::Object object,
+     const char* format, ...) {
   if (!logger.logging(env))
     return;
   va_list ap;
@@ -70,16 +70,16 @@ logf(jnixx::env& env, frysk::rsl::Log& logger,
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log& logger,
-    const char* p1, jnixx::object p2) {
+log(jnixx::env& env, frysk::rsl::Log logger,
+    const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;
   logger.log(env, env.newStringUTF(p1), p2);
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log& logger,
-    jnixx::object self, const char* p1, jnixx::object p2) {
+log(jnixx::env& env, frysk::rsl::Log logger, java::lang::Object self,
+    const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;
   logger.log(env, self, env.newStringUTF(p1), p2);

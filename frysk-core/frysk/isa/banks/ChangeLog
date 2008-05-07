@@ -1,3 +1,8 @@
+2008-05-06  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* PPCBankRegisters.java (PPC32BE, PPC64BE): Fix bank index, to
+	to refer to the USER area.
+
 2008-04-15  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* LinuxPPCRegisterBanks.java (VRREGS): Rename to ...

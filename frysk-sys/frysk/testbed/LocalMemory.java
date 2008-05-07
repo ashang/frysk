@@ -39,56 +39,34 @@
 
 package frysk.testbed;
 
-import frysk.rsl.Log;
+/**
+ * Provide access to known local areas of memory.
+ *
+ * Most useful by doing a fork to create a mirror image of the address
+ * space that can then be manipulated using ptrace calls.
+ */
 
 public class LocalMemory {
-    private static final Log fine = Log.fine(LocalMemory.class);
-
     /**
-     * Known memory values.
+     * Returns the address of a bunch of data.
      */
-     public static final byte byteData = 43;
-     public static final short shortData = 45;
-     public static final int intData = 42;
-     public static final long longData = 44;
+    public static native long getDataAddr();
 
-    public static final int SIZE = 32;
-
-    /**
-     * Returns the address of a variable for inspection.
-     */
-    public static native long getByteDataAddr();
-    public static native long getShortDataAddr();
-    public static native long getIntDataAddr();
-    public static native long getLongDataAddr();
-
-    private static native byte[] getBytes(long addr, int bytes);
-
-    /**
-     * Returns the address of the variables.
-     */
-    public static native long getDataAddr ();
     /**
      * Returns a copy of SIZE data bytes starting at getDataAddr.
      */
-    public static byte[] getDataBytes () {
-	fine.log("getDataBytes", getDataAddr(), "size", SIZE);
-	return getBytes(getDataAddr(), SIZE);
-    }
+    public static native byte[] getDataBytes();
 
     /**
      * Returns the address of a function.
      */
     public static native long getCodeAddr();
+
     /*
      * Returns a copy of SIZE instruction bytes starting at
      * getCodeAddr().
      */
-    public static byte[] getCodeBytes() {
-	fine.log("getCodeBytes", getCodeAddr(), "size", SIZE);
-	return getBytes(getCodeAddr(), SIZE);
-    }
-
+    public static native byte[] getCodeBytes();
 
     /**
      * Returns the line number of a function.

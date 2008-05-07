@@ -41,79 +41,22 @@
 #define frysk_jnixx_hxx
 
 #include <jni.h>
-#include <stdarg.h>
 
 namespace jnixx {
-  struct object {
-    jobject _object;
-    object(jobject _object) {
-      this->_object = _object;
-    }
-    bool operator==(jobject p) {
-      return _object == p;
-    }
-  };
-  struct array : public object {
-    array(jobject _object) : object(_object) {
-    }
-  };
-  struct interface {
-    jobject _object;
-    interface(jobject _object) {
-      this->_object = _object;
-    }
-  };
-  class exception {
-  };
-  class env;
+  struct env;
+  struct exception;
 }
-
-// XXX: Generate this; or template it?
 
 namespace java {
   namespace lang {
-    struct String : public jnixx::object {
-      String(jobject o) : jnixx::object(o) { }
-    };
-    struct StringBuffer : public jnixx::object {
-      StringBuffer(jobject o) : jnixx::object(o) { }
-    };
-    struct Number : public jnixx::object {
-      Number(jobject o) : jnixx::object(o) { }
-    };
-    struct Throwable : public jnixx::object {
-      Throwable(jobject o) : jnixx::object(o) { }
-    };
+    struct String;
+    struct Object;
+    struct Class;
   }
-  namespace io {
-    struct PrintStream : public jnixx::object {
-      PrintStream(jobject o) : jnixx::object(o) { }
-    };
-    struct PrintWriter : public jnixx::object {
-      PrintWriter(jobject o) : jnixx::object(o) { }
-    };
-    struct Writer : public jnixx::object {
-      Writer(jobject o) : jnixx::object(o) { }
-    };
-    struct File : public jnixx::object {
-      File(jobject o) : jnixx::object(o) { }
-    };
-    struct OutputStream : public jnixx::object {
-      OutputStream(jobject o) : jnixx::object(o) { }
-    };
-    struct InputStream : public jnixx::object {
-      InputStream(jobject o) : jnixx::object(o) { }
-    };
-  }
-  namespace util {
-    struct Map : public jnixx::object {
-      Map(jobject o) : jnixx::object(o) { }
-    };
-    struct List : public jnixx::object {
-      List(jobject o) : jnixx::object(o) { }
-    };
-  }
-}
+};
+
+class jnixx::exception {
+};
 
 class jnixx::env {
 
@@ -428,6 +371,140 @@ public:
     jniEnv->SetDoubleField(object, id, value);
     if (jniEnv->ExceptionCheck())
       throw jnixx::exception();
+  }
+
+  jobjectArray newObjectArray(jsize length, jclass elementType,
+			 jobject initialElement) {
+    jobjectArray tmp = jniEnv->NewObjectArray(length, elementType, initialElement);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbooleanArray newBooleanArray(jsize length) {
+    jbooleanArray tmp = jniEnv->NewBooleanArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbyteArray newByteArray(jsize length) {
+    jbyteArray tmp = jniEnv->NewByteArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jcharArray newCharArray(jsize length) {
+    jcharArray tmp = jniEnv->NewCharArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jshortArray newShortArray(jsize length) {
+    jshortArray tmp = jniEnv->NewShortArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jintArray newIntArray(jsize length) {
+    jintArray tmp = jniEnv->NewIntArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jlongArray newLongArray(jsize length) {
+    jlongArray tmp = jniEnv->NewLongArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jfloatArray newFloatArray(jsize length) {
+    jfloatArray tmp = jniEnv->NewFloatArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jdoubleArray newDoubleArray(jsize length) {
+    jdoubleArray tmp = jniEnv->NewDoubleArray(length);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+
+  jsize getArrayLength(jarray array) {
+    return jniEnv->GetArrayLength(array);
+  }
+
+  jboolean* getBooleanArrayElements(jbooleanArray array, jboolean *isCopy) {
+    jboolean* tmp = jniEnv->GetBooleanArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jbyte* getByteArrayElements(jbyteArray array, jboolean *isCopy) {
+    jbyte* tmp = jniEnv->GetByteArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jchar* getCharArrayElements(jcharArray array, jboolean *isCopy) {
+    jchar* tmp = jniEnv->GetCharArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jshort* getShortArrayElements(jshortArray array, jboolean *isCopy) {
+    jshort* tmp = jniEnv->GetShortArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jint* getIntArrayElements(jintArray array, jboolean *isCopy) {
+    jint* tmp = jniEnv->GetIntArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jlong* getLongArrayElements(jlongArray array, jboolean *isCopy) {
+    jlong* tmp = jniEnv->GetLongArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jfloat* getFloatArrayElements(jfloatArray array, jboolean *isCopy) {
+    jfloat* tmp = jniEnv->GetFloatArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+  jdouble* getDoubleArrayElements(jdoubleArray array, jboolean *isCopy) {
+    jdouble* tmp = jniEnv->GetDoubleArrayElements(array, isCopy);
+    if (tmp == NULL)
+      throw jnixx::exception();
+    return tmp;
+  }
+
+  void releaseBooleanArrayElements(jbooleanArray array, jboolean* elements, jint mode) {
+    jniEnv->ReleaseBooleanArrayElements(array, elements, mode);
+  }
+  void releaseByteArrayElements(jbyteArray array, jbyte* elements, jint mode) {
+    jniEnv->ReleaseByteArrayElements(array, elements, mode);
+  }
+  void releaseCharArrayElements(jcharArray array, jchar* elements, jint mode) {
+    jniEnv->ReleaseCharArrayElements(array, elements, mode);
+  }
+  void releaseShortArrayElements(jshortArray array, jshort* elements, jint mode) {
+    jniEnv->ReleaseShortArrayElements(array, elements, mode);
+  }
+  void releaseIntArrayElements(jintArray array, jint* elements, jint mode) {
+    jniEnv->ReleaseIntArrayElements(array, elements, mode);
+  }
+  void releaseLongArrayElements(jlongArray array, jlong* elements, jint mode) {
+    jniEnv->ReleaseLongArrayElements(array, elements, mode);
+  }
+  void releaseFloatArrayElements(jfloatArray array, jfloat* elements, jint mode) {
+    jniEnv->ReleaseFloatArrayElements(array, elements, mode);
+  }
+  void releaseDoubleArrayElements(jdoubleArray array, jdouble* elements, jint mode) {
+    jniEnv->ReleaseDoubleArrayElements(array, elements, mode);
   }
 
   void callVoidMethod(jobject object, jmethodID id, ...) {

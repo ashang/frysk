@@ -1,3 +1,38 @@
+2008-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* PrintCxxDefinitions.java: Generate _class$ variable of nested
+	classes.
+	* Main.java: Ditto.
+	* ClassVisitor.java: Visit nested classes.
+	* ClassWalker.java: Update.
+	* PrintCxxDefinitions.java: Update.
+	* PrintHxxDefinitions.java: Update.
+	* PrintDeclarations.java: Update.
+	* Printer.java: Encode "$".
+	
+	* print.cxx: Include Errno-jni.hxx.
+	* exceptions.cxx: Include Errno-jni.hxx.
+	* Main.java: Move jnixx::exception definition to ...
+	* jnixx.hxx (jnixx::exception): ... here.
+	
+2008-05-06  Andrew Cagney  <cagney@redhat.com>
+
+	Generate inlined C++ headers.
+	* ClassWalker.java: Replace WalkClass.
+	* ClassVisitor.java: Replace ClassWalker.
+	* PrintDefinitions.java: Delete; split into ...
+	* PrintCxxDefinitions.java: New; ... this ...
+	* PrintHxxDefinitions.java: New; ... and this.
+	* Main.java: Use.
+	* PrintDeclarations.java: Extend ClassWalker.
+	* PrintNamespaces.java: Extend ClassWalker.
+	* Printer.java: Update.
+	* jnixx.hxx: Simplify.
+	* PrintIncludes.java: Delete.
+	
+	* jnixx.hxx (jnixx::env): Add <Type>Array methods.
+	* PrintDefinitions.java: Don't cast primitive array results.
+
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
 	* jnixx.hxx (jnixx::object): New.

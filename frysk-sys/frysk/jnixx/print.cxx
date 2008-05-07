@@ -40,8 +40,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "frysk/jnixx/jnixx.hxx"
-
+#include "frysk/sys/Errno-jni.hxx"
 #include "frysk/jnixx/print.hxx"
 #include "frysk/jnixx/exceptions.hxx"
 
@@ -73,4 +72,5 @@ vajprintf(jnixx::env& env, const char *fmt, va_list ap) {
     ::free(message);  
     throw;
   }
+  ::free(message);
 }

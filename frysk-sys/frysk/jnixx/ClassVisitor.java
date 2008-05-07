@@ -41,65 +41,47 @@ package frysk.jnixx;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.lang.reflect.Constructor;
 
-class PrintIncludes implements ClassWalker {
-
-    private final Printer p;
-    private final PrintNamespaces printNamespaces;
-    PrintIncludes(Printer p, PrintNamespaces printNamespaces) {
-	this.p = p;
-	this.printNamespaces = printNamespaces;
-    }
-
-    /**
-     * Print #includes for any non system headers..
-     */
-    private void printCxxInclude(Class klass) {
-	while (klass.isArray()) {
-	    klass = klass.getComponentType();
+abstract class ClassVisitor {
+    void visit(Class klass) {
+	acceptComponent(klass.getComponentType());
+	Class[] interfaces = klass.getInterfaces();
+	for (int i = 0; i < interfaces.length; i++) {
+	    acceptInterface(interfaces[i]);
 	}
-	if (klass.isPrimitive())
-	    return;
-	if (klass.getName().startsWith("java."))
-	    return;
-	if (printedNamespaces.contains(klass))
-	    return;
-	Class superclass = klass.getSuperclass();
-	if (superclass != null) {
-	    printCxxInclude(superclass);
+	Constructor[] constructors = klass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    Constructor constructor = constructors[i];
+	    if (constructor.isSynthetic())
+		continue;
+	    acceptConstructor(constructor);
 	}
-	Main.printHxxBody(p, klass, printNamespaces);
-	printedNamespaces.add(klass);
-    }
-    private HashSet printedNamespaces = new HashSet();
-
-    /**
-     * Iterate over the klasses printing any referenced name spaces.
-     */
-    private void printCxxIncludes(Class[] klasses) {
-	for (int i = 0; i < klasses.length; i++) {
-	    // Should this recurse?
-	    printCxxInclude(klasses[i]);
+	Field[] fields = klass.getDeclaredFields();
+	for (int i = 0; i < fields.length; i++) {
+	    Field field = fields[i];
+	    if (field.isSynthetic())
+		continue;
+	    acceptField(field);
+	}
+	Method[] methods = klass.getDeclaredMethods();
+	for (int i = 0; i < methods.length; i++) {
+	    Method method = methods[i];
+	    if (method.isSynthetic())
+		continue;
+	    acceptMethod(method);
+	}
+	Class[] classes = klass.getClasses();
+	for (int i = 0; i < classes.length; i++) {
+	    Class inner = classes[i];
+	    acceptClass(inner);
 	}
     }
 
-    public boolean acceptClass(Class klass) {
-	printCxxInclude(klass);
-	return true;
-    }
-
-    public void acceptConstructor(Constructor constructor) {
-	printCxxIncludes(constructor.getParameterTypes());
-    }
-
-    public void acceptField(Field field) {
-	printCxxInclude(field.getType());
-    }
-
-    public void acceptMethod(Method method) {
-	printCxxInclude(method.getReturnType());
-	printCxxIncludes(method.getParameterTypes());
-    }
+    abstract void acceptInterface(Class constructor);
+    abstract void acceptConstructor(Constructor constructor);
+    abstract void acceptField(Field field);
+    abstract void acceptMethod(Method method);
+    abstract void acceptComponent(Class klass);
+    abstract void acceptClass(Class klass);
 }

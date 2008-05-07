@@ -1,3 +1,7 @@
+2008-05-06  Thiago Jung Bauermann  <bauerman@br.ibm.com>
+
+	* funit-regs.S: Use LOAD_REGISTER_IMMED instead of LOAD_IMMED_WORD.
+
 2008-05-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* fparser.java: Remove.

@@ -1,3 +1,8 @@
+2008-05-06  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Log.cxx: Replace jnixx::object with java::lang::Object.
+	* jni/Log.hxx: Ditto.
+
 2008-05-05  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Log.hxx: Use jnixx::object.

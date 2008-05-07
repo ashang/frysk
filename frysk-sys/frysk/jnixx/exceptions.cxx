@@ -43,7 +43,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "frysk/jnixx/jnixx.hxx"
+#include "frysk/sys/Errno-jni.hxx"
+
 #include "frysk/jnixx/exceptions.hxx"
 
 void

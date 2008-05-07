@@ -46,40 +46,28 @@
 #include "frysk/testbed/LocalMemory.h"
 #include "frysk/testbed/LocalMemory$StackBuilder.h"
 
-jlong
-frysk::testbed::LocalMemory::getByteDataAddr ()
-{
-  return (jlong) &byteData;
-}
-jlong
-frysk::testbed::LocalMemory::getShortDataAddr ()
-{
-  return (jlong) &shortData;
-}
-jlong
-frysk::testbed::LocalMemory::getIntDataAddr ()
-{
-  return (jlong) &intData;
-}
-jlong
-frysk::testbed::LocalMemory::getLongDataAddr ()
-{
-  return (jlong) &longData;
+static jbyteArray
+getBytes(void *addr, size_t length) {
+  jbyteArray bytes = JvNewByteArray(length);
+  memcpy(elements (bytes), addr, length);
+  return bytes;
 }
 
+struct m {
+  jbyte byteData;
+  jshort shortData;
+  jint intData;
+  jlong longData;
+} memory = { 43, 45, 42, 44 };
+
 jlong
-frysk::testbed::LocalMemory::getDataAddr ()
-{
-  return (jlong) &byteData;
+frysk::testbed::LocalMemory::getDataAddr() {
+  return (jlong) &memory;
 }
 
 jbyteArray
-frysk::testbed::LocalMemory::getBytes (jlong addr, jint length)
-{
-  uint8_t *start = (uint8_t*)addr;
-  jbyteArray bytes = JvNewByteArray (length);
-  memcpy (elements (bytes), start, bytes->length);
-  return bytes;
+frysk::testbed::LocalMemory::getDataBytes() {
+  return getBytes(&memory, sizeof(memory));
 }
 
 /**
@@ -89,28 +77,33 @@ frysk::testbed::LocalMemory::getBytes (jlong addr, jint length)
 jint frysk::testbed::LocalMemory::getCodeLine () { return __LINE__; }
 
 jstring
-frysk::testbed::LocalMemory::getCodeFile ()
-{
+frysk::testbed::LocalMemory::getCodeFile() {
   return JvNewStringUTF (__FILE__);
 }
 
-jlong
-frysk::testbed::LocalMemory::getCodeAddr ()
-{
+static void*
+codeAddr() {
 #ifdef __powerpc64__
-  return *((jlong*) frysk::testbed::LocalMemory::getCodeLine);
+  return *((void**) frysk::testbed::LocalMemory::getCodeLine);
 #else
-  return (jlong) frysk::testbed::LocalMemory::getCodeLine;
+  return (void*)&frysk::testbed::LocalMemory::getCodeLine;
 #endif
+}
+jlong
+frysk::testbed::LocalMemory::getCodeAddr() {
+  return (jlong)codeAddr();
+}
+
+jbyteArray
+frysk::testbed::LocalMemory::getCodeBytes() {
+  return getBytes(codeAddr(), sizeof(memory));
 }
 
 void
-frysk::testbed::LocalMemory::constructStack(frysk::testbed::LocalMemory$StackBuilder* builder)
-{
-  uint8_t addr[SIZE];
-  uint8_t *start = (uint8_t*)frysk::testbed::LocalMemory::getDataAddr();
-  // Copy the known data to the stack.
-  memcpy (addr, start, SIZE);
-  jbyteArray bytes = frysk::testbed::LocalMemory::getBytes((jlong)addr, SIZE);
+frysk::testbed::LocalMemory::constructStack(frysk::testbed::LocalMemory$StackBuilder* builder) {
+  // Copy known data onto the stack.
+  uint8_t addr[sizeof(memory)];
+  memcpy(addr, &memory, sizeof(memory));
+  jbyteArray bytes = getBytes(addr, sizeof(memory));
   builder->stack((jlong)addr, bytes);
 }
