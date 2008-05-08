@@ -37,4 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "lib/unwind/UnwindPPC32-jni.hxx"
+#include "jni.hxx"

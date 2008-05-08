@@ -40,13 +40,13 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "frysk/rsl/Log-jni.hxx"
+#include "jni.hxx"
 
 #include "frysk/jnixx/print.hxx"
 #include "frysk/rsl/jni/Log.hxx"
 
 void
-logf(jnixx::env& env, frysk::rsl::Log logger,
+logf(::jnixx::env env, frysk::rsl::Log logger,
      const char* format, ...) {
   if (!logger.logging(env))
     return;
@@ -58,7 +58,7 @@ logf(jnixx::env& env, frysk::rsl::Log logger,
 }
 
 void
-logf(jnixx::env& env, frysk::rsl::Log logger, java::lang::Object object,
+logf(::jnixx::env env, frysk::rsl::Log logger, java::lang::Object object,
      const char* format, ...) {
   if (!logger.logging(env))
     return;
@@ -70,7 +70,7 @@ logf(jnixx::env& env, frysk::rsl::Log logger, java::lang::Object object,
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log logger,
+log(::jnixx::env env, frysk::rsl::Log logger,
     const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;
@@ -78,7 +78,7 @@ log(jnixx::env& env, frysk::rsl::Log logger,
 }
 
 void
-log(jnixx::env& env, frysk::rsl::Log logger, java::lang::Object self,
+log(::jnixx::env env, frysk::rsl::Log logger, java::lang::Object self,
     const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;

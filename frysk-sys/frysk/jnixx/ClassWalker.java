@@ -47,7 +47,7 @@ import java.util.HashSet;
 
 abstract class ClassWalker {
     private final Set visited = new HashSet();
-    private void walk(Class[] klasses) {
+    void walk(Class[] klasses) {
 	for (int i = 0; i < klasses.length; i++) {
 	    walk(klasses[i]);
 	}

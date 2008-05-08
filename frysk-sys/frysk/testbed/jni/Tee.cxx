@@ -40,10 +40,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "frysk/testbed/Tee-jni.hxx"
+#include "jni.hxx"
 
 void
-frysk::testbed::Tee::execute(jnixx::env env) {
+frysk::testbed::Tee::execute(::jnixx::env env) {
   char b;
   while (::read (STDIN_FILENO, &b, 1) > 0) {
     ::write (STDOUT_FILENO, &b, 1);

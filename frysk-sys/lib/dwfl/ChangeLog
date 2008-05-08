@@ -1,5 +1,25 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/DwarfDie.cxx: Include jni.hxx.	
+	* jni/ElfSymbol.cxx: Ditto.
+	* jni/ElfSection.cxx: Ditto.
+	* jni/ElfRel.cxx: Ditto.
+	* jni/ElfPrXFPRegSet.cxx: Ditto.
+	* jni/ElfPrstatus.cxx: Ditto.
+	* jni/ElfPrpsinfo.cxx: Ditto.
+	* jni/ElfPrFPRegSet.cxx: Ditto.
+	* jni/ElfPrAuxv.cxx: Ditto.
+	* jni/ElfNhdr.cxx: Ditto.
+	* jni/ElfDynamic.cxx: Ditto.
+	* jni/ElfData.cxx: Ditto.
+	* jni/Elf.cxx: Ditto.
+	* jni/Dwarf.cxx: Ditto.
+	* jni/ElfArchiveSymbol.cxx: Ditto.
+	* jni/DwflModule.cxx: Ditto.
+	* jni/DwflLine.cxx: Ditto.
+	* jni/Dwfl.cxx: Ditto.
+	* jni/DwException.cxx: Ditto.
+
 	* jni/Dwarf.cxx: Include jnixx header.
 	* jni/ElfSection.cxx: Ditto.
 	* jni/ElfRel.cxx: Ditto.

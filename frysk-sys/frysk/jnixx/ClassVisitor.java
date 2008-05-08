@@ -44,6 +44,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
 abstract class ClassVisitor {
+    void visit(Class[] classes) {
+	for (int i = 0; i < classes.length; i++) {
+	    visit(classes[i]);
+	}
+    }
     void visit(Class klass) {
 	acceptComponent(klass.getComponentType());
 	Class[] interfaces = klass.getInterfaces();

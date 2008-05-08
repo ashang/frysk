@@ -662,78 +662,20 @@ generate_cni_header () {
     rm -f $$.tmp
 }
 
-# Grep the *.cxx and *.hxx files forming a list of included files.
-# Assume these are all generated from .class files found in the master
-# .jar.
+# Grep the *.cxx and *.hxx files forming a list of classes that are
+# native.
 
-print_header "... jnixx headers"
-cat <<EOF
-JNIXX_BUILT =
-CLEANFILES += \$(JNIXXX_BUILT)
-# Generate sources after the .jar is built
-\$(JNIXX_BUILT): | \${GEN_DIRNAME}.jar
-jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
-# If any of the JNI sources change, re-generate everything.
-\$(JNIXX_BUILT): \$(jnixx_sources)
-EOF
-rm -f files.jnixx
-while read file dir base suffix ; do
-    case "$file" in
-	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
-	sed -n \
-	    -e 's,#include "\(.*\)-jni\.hxx".*,include - \1,p' \
-	    -e 's,#include \([A-Z][A-Z0-9_]*\).*,minclude \1 -,p' \
-	    -e 's,#define \([A-Z0-9_]*\) "\(.*\)-jni\.hxx".*,define \1 \2,p' \
-	    < $file
-	;;
-    esac
-done < files.base | sort -u > files.jnixx
-while read action m h j; do
-    echo "# action=$action m=$m h=$h"
-    if test "$action" = "minclude" ; then
-        # Assume file defining macro depends on this file
-	automake_variable $m = \$\($_file\)
-    elif has_java_source ${h} ; then
-	j=`echo ${h} | tr '[_]' '[/]'`
-	automake_variable lib${GEN_MAKENAME}_jni_a_SOURCES += ${h}-jni.cxx
-	cat <<EOF
-JNIXX_BUILT += ${h}-jni.hxx
-JNIXX_BUILT += ${h}-jni.cxx
-${h}-jni.o: ${h}-jni.hxx
-${h}-jni.hxx: $j.java
-${h}-jni.cxx: $j.java
-EOF
-	case $action in
-	    include)
-		case "$suffix" in
-		    cxx) echo "$d/$b.o: ${h}-jni.hxx" ;;
-		    hxx) # remember what this file includes
-			automake_variable $_file += ${h}-jni.hxx ;;
-		esac
-		;;
-	    define)
-		echo "$d/$b.o: ${h}-jni.hxx"
-		    # Assume file using this macro is a dependency.
-		echo "$d/$b.o: \$($m)"
-		;;
-	esac
+generate_jnixx_class() {
+    local file=$1
+    local d=$2
+    local b=$3
+    local suffix=$4
+    local j=$(echo $(dirname $dir)/$base)
+    if has_java_source $j ; then
+	automake_variable JNIXX_CLASSES += $(echo $j | tr '[/]' '[.]')
+	echo "${dir}/${base}.o: $j.java"
     fi
-done < files.jnixx
-rm -f $$.tmp
-
-print_header "... jnixx dependencies"
-while read file dir base suffix ; do
-    case "$file" in
-	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
-	sed -n < $file \
-	    -e 's,#include "\(.*-jni\.hxx\)".*,\1,p' \
-	    | while read h ; do
-	    echo ${dir}/${base}.o: $h
-	done
-	;;
-    esac
-done < files.base
-
+}
 
 # Generate rules for all .xml-in files, assume that they are converted
 # to man pages.
@@ -929,6 +871,7 @@ while read file dir base suffix ; do
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
 	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
+	    generate_jnixx_class $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix \
 		lib${GEN_MAKENAME}_jni_a_SOURCES
 	    ;;
@@ -952,5 +895,21 @@ solib_PROGRAMS += lib${GEN_DIRNAME}-jni.so
 lib${GEN_DIRNAME}-jni.so: lib${GEN_DIRNAME}-jni.a
 .PHONY: jni
 jni: lib${GEN_DIRNAME}-jni.so ${GEN_DIRNAME}.jar
+lib${GEN_MAKENAME}_jni_a_SOURCES += jni.cxx
+jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
+CLEANFILES += jni.hxx jni.cxx jni.hxx.gch
+\$(lib${GEN_MAKENAME}_jni_a_SOURCES): | jni.hxx jni.hxx.gch
+jni.hxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
+	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \
+	    \$(JAVA) frysk.jnixx.Main hxx \$(JNIXX_CLASSES) \
+	        > \$@.tmp
+	mv \$@.tmp \$@
+jni.hxx.gch: jni.hxx
+	\$(CXXCOMPILE) -c -x c++-header jni.hxx
+jni.cxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar jni.hxx.gch
+	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \
+	    \$(JAVA) frysk.jnixx.Main cxx \$(JNIXX_CLASSES) \
+	        > \$@.tmp
+	mv \$@.tmp \$@
 EOF
 fi

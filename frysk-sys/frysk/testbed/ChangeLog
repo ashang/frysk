@@ -1,5 +1,8 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/LocalMemory.cxx: Include jni.hxx; fully qualify names.
+	* jni/Tee.cxx: Ditto.
+	
 	* jni/LocalMemory.cxx: Pass jnixx::env by value.
 	* jni/Tee.cxx: Ditto.
 

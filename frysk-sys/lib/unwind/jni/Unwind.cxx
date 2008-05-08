@@ -38,4 +38,4 @@
 // exception.
 
 // Stub to for generation of corresponding header.
-#include "lib/unwind/Unwind-jni.hxx"
+#include "jni.hxx"

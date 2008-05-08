@@ -1,5 +1,23 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/AuditLibs.cxx: Include jni.hxx; fully qualify jnixx::env.
+	* jni/Wait.cxx: Ditto.
+	* jni/Tid.cxx: Ditto.
+	* jni/Uname.cxx: Ditto.
+	* jni/StatelessFile.cxx: Ditto.
+	* jni/SignalSet.cxx: Ditto.
+	* jni/Signal.cxx-sh: Ditto.
+	* jni/PseudoTerminal.cxx: Ditto.
+	* jni/Poll.cxx: Ditto.
+	* jni/Pipe.cxx: Ditto.
+	* jni/Pid.cxx: Ditto.
+	* jni/Itimer.cxx: Ditto.
+	* jni/Fork.cxx: Ditto.
+	* jni/FileDescriptor.cxx: Ditto.
+	* jni/Exec.cxx: Ditto.
+	* jni/DaemonFactory.cxx: Ditto.
+	* jni/ChildFactory.cxx: Ditto.
+
 	* jni/Pid.cxx: Pass jnixx::env by reference.
 	* jni/Tid.cxx: Ditto.
 	* jni/Signal.cxx-sh: Ditto.

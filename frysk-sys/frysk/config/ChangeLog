@@ -1,5 +1,10 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/BuildCompiler.cxx: Include "jni.hxx".
+	* jni/PrefixFactory.cxx-in: Ditto.
+	* jni/Host.cxx-in: Ditto.
+	* jni/FryskVersion.cxx-in: Ditto.
+	
 	* jni/BuildCompiler.cxx: Pass jnixx::env by value.
 	* jni/PrefixFactory.cxx-in: Ditto.
 	* jni/Host.cxx-in: Ditto.

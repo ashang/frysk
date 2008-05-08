@@ -38,4 +38,4 @@
 // exception.
 
 // Stub to for generation of corresponding header.
-#include "frysk/sys/termios/Mode-jni.hxx"
+#include "jni.hxx"

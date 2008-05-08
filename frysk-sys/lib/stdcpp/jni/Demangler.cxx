@@ -42,13 +42,13 @@
 #include <stdio.h>
 #include <alloca.h>
 
-#include "lib/stdcpp/Demangler-jni.hxx"
+#include "jni.hxx"
 
 using namespace abi;
 
-java::lang::String
-lib::stdcpp::Demangler::demangle(jnixx::env env,
-				 java::lang::String mangledString) {
+::java::lang::String
+lib::stdcpp::Demangler::demangle(::jnixx::env env,
+				 ::java::lang::String mangledString) {
   if (mangledString == NULL)
     return NULL;
   

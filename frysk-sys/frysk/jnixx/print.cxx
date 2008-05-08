@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "frysk/sys/Errno-jni.hxx"
+#include "jni.hxx"
 #include "frysk/jnixx/print.hxx"
 #include "frysk/jnixx/exceptions.hxx"
 
@@ -49,7 +49,7 @@
  */
 
 java::lang::String
-ajprintf(jnixx::env& env, const char *fmt, ...) {
+ajprintf(::jnixx::env& env, const char *fmt, ...) {
   va_list ap;
   va_start (ap, fmt);
   java::lang::String jmessage = vajprintf(env, fmt, ap);
@@ -61,7 +61,7 @@ ajprintf(jnixx::env& env, const char *fmt, ...) {
  * Do vprintf style printing to a java String.
  */
 java::lang::String
-vajprintf(jnixx::env& env, const char *fmt, va_list ap) {
+vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
   char* message = NULL;
   if (::vasprintf(&message, fmt, ap) < 0) {
     errnoException(env, errno, "vasprintf");

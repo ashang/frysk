@@ -37,4 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/sys/proc/ProcBuilder-jni.hxx"
+#include "jni.hxx"

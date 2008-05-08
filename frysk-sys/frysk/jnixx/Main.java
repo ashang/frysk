@@ -43,47 +43,44 @@ import java.io.PrintWriter;
 
 class Main {
 
-    private static void printHxxFile(Printer p, Class klass) {
-	String header = klass.getName().replaceAll("\\.", "_") + "_jni_hxx";
-	p.println("#ifndef " + header);
-	p.println("#define " + header);
-	p.println();
+    private static void printHxxFile(Printer p, Class[] classes) {
 	p.println("// Get declarations.");
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
-	new PrintNamespaces(p).walk(klass);
-	new PrintDeclarations(p).walk(klass);
+	new PrintNamespaces(p).walk(classes);
+	new PrintDeclarations(p).walk(classes);
 	p.println();
 	p.println("// Get definitions.");
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
-	new PrintHxxDefinitions(p).walk(klass);
-	p.println();
-	p.println("#endif");
+	new PrintHxxDefinitions(p).walk(classes);
     }
 
-    private static void printCxxFile(Printer p, Class klass) {
-	p.print("#include \"");
-	p.printHeaderFileName(klass);
-	p.println("\"");
+    private static void printCxxFile(Printer p, Class[] classes) {
+	printHxxFile(p, classes); // #include
 	p.println();
-	p.print("jclass ");
-	p.printQualifiedCxxName(klass);
-	p.println("::_class;");
-	new PrintCxxDefinitions(p).visit(klass);
+	for (int i = 0; i < classes.length; i++) {
+	    p.print("jclass ");
+	    p.printQualifiedCxxName(classes[i]);
+	    p.println("::_class;");
+	}
+	new PrintCxxDefinitions(p).visit(classes);
     }
 
     public static void main(String[] args) throws ClassNotFoundException {
-	if (args.length != 2) {
-	    throw new RuntimeException("Usage: jnixx <class-name>");
+	if (args.length < 2) {
+	    throw new RuntimeException("Usage: jnixx cxx}hxx <class-name> ...");
 	}
 
-	Class klass = Class.forName(args[0], false,
-				    Main.class.getClassLoader());
-	Printer p = new Printer(new PrintWriter(System.out));
+	Class[] classes = new Class[args.length - 1];
+	for (int i = 0; i < classes.length; i++) {
+	    classes[i] = Class.forName(args[i + 1], false,
+				       Main.class.getClassLoader());
+	}
 
-	if (args[1].equals("hxx"))
-	    printHxxFile(p, klass);
+	Printer p = new Printer(new PrintWriter(System.out));
+	if (args[0].equals("hxx"))
+	    printHxxFile(p, classes);
 	else
-	    printCxxFile(p, klass);
+	    printCxxFile(p, classes);
 	p.flush();
     }
 }

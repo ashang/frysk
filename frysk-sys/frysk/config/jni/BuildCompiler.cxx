@@ -37,11 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/config/BuildCompiler-jni.hxx"
+#include "jni.hxx"
 
 
 jint
-frysk::config::BuildCompiler::getVersion(jnixx::env env) {
+frysk::config::BuildCompiler::getVersion(::jnixx::env env) {
 #ifdef __GNUC__
   return (jint) __GNUC__;
 #else
@@ -50,7 +50,7 @@ frysk::config::BuildCompiler::getVersion(jnixx::env env) {
 }
 
 jint
-frysk::config::BuildCompiler::getMinorVersion(jnixx::env env) {
+frysk::config::BuildCompiler::getMinorVersion(::jnixx::env env) {
 #ifdef __GNUC_MINOR__
   return (jint) __GNUC_MINOR__;
 #else
@@ -59,7 +59,7 @@ frysk::config::BuildCompiler::getMinorVersion(jnixx::env env) {
 }
 
 jint
-frysk::config::BuildCompiler::getPatchLevel(jnixx::env env) {
+frysk::config::BuildCompiler::getPatchLevel(::jnixx::env env) {
 #ifdef __GNUC_PATCHLEVEL__
   return (jint) __GNUC_PATCHLEVEL__;
 #else
@@ -68,7 +68,7 @@ frysk::config::BuildCompiler::getPatchLevel(jnixx::env env) {
 }
 
 jint
-frysk::config::BuildCompiler::getRHRelease(jnixx::env env) {
+frysk::config::BuildCompiler::getRHRelease(::jnixx::env env) {
 #ifdef __GNUC_RH_RELEASE__
   return (jint) __GNUC_RH_RELEASE__;
 #else

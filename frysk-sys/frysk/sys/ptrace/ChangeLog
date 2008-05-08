@@ -1,3 +1,10 @@
+2008-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx: Include jni.hxx.
+	* jni/Utrace.cxx: Ditto.
+	* jni/RegisterSet.cxx: Ditto.
+	* jni/Ptrace.cxx: Ditto.
+
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Ptrace.cxx: Include jnihxx generated header.

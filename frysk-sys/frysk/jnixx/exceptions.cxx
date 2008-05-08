@@ -43,19 +43,19 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include "frysk/sys/Errno-jni.hxx"
+#include "jni.hxx"
 
 #include "frysk/jnixx/exceptions.hxx"
 
 void
-errnoException(jnixx::env& env, int error, const char *prefix) {
+errnoException(::jnixx::env& env, int error, const char *prefix) {
   // Hack; for moment just throw something.
   runtimeException(env, "not implemented: %s#%d#%s",
 		   __FILE__, __LINE__, __func__);
 }
 
 void
-errnoException(jnixx::env& env, int error, const char *prefix,
+errnoException(::jnixx::env& env, int error, const char *prefix,
 	       const char *fmt, ...) {
   // Hack; for moment just throw something.
   runtimeException(env, "not implemented: %s#%d#%s",
@@ -63,7 +63,7 @@ errnoException(jnixx::env& env, int error, const char *prefix,
 }
 
 void
-runtimeException(jnixx::env& env, const char *fmt, ...) {
+runtimeException(::jnixx::env& env, const char *fmt, ...) {
   jclass cls = env.findClass("java/lang/RuntimeException");
   va_list ap;
   va_start(ap, fmt);

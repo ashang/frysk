@@ -1,5 +1,11 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (JNIXX_CLASSES): Generate list of classes.
+	(jni.hxx, jni.cxx, jni.hxx.gch): Generate JNIXX file rules.
+	(JNIXX_BUILT): Delete.
+	* Makefile.rules (JNIXX): Delete.
+	(%-jni.hxx, %-jni.cxx): Delete.
+
 	* Makefile.gen.sh (generate_jni_header, generate_jni_dependency):
 	Delete; do not generate JAVAH headers.
 	

@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/jnixx/Native-jni.hxx"
+#include "jni.hxx"
 
 bool
 frysk::jnixx::Native::isJni(::jnixx::env) {

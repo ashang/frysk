@@ -1,3 +1,16 @@
+2008-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Control.cxx: Include jni.hxx.
+	* jni/Termios.cxx: Ditto.
+	* jni/Speed.cxx: Ditto.
+	* jni/Special.cxx: Ditto.
+	* jni/Output.cxx: Ditto.
+	* jni/Mode.cxx: Ditto.
+	* jni/Local.cxx: Ditto.
+	* jni/Input.cxx: Ditto.
+	* jni/Flush.cxx: Ditto.
+	* jni/Flow.cxx: Ditto.
+
 2008-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Control.cxx: Include jnixx generated header.

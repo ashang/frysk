@@ -1,5 +1,12 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Native.cxx: Include jni.hxx; fully qualify jnixx::env.
+	* print.cxx: Ditto.
+	* print.hxx: Ditto.
+	* exceptions.cxx: Ditto.
+	* exceptions.hxx: Ditto.
+	* Main.java: Accept a list of classes.
+
 	* Printer.java: Generate passing jnixx::env by value, not reference.
 	* Native.java: New.
 	* jni/Native.cxx: New.
