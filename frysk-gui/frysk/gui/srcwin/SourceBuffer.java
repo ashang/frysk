@@ -1097,7 +1097,6 @@ public class SourceBuffer extends TextBuffer {
 		String bufferText = loadLines(lines);
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);
-		this.createTags();
 		return;
 	    }
 	}
@@ -1112,7 +1111,6 @@ public class SourceBuffer extends TextBuffer {
 
 	this.deleteText(this.getStartIter(), this.getEndIter());
 	this.insertText(bufferText);
-	this.createTags();
     }
 
     public void clear() {
@@ -1181,82 +1179,6 @@ public class SourceBuffer extends TextBuffer {
 		bufferText += line.getText();
 	}
 	return bufferText;
-    }
-
-    /*
-         * Reads through the DOM and creates all the tags necessary
-         */
-    protected void createTags() {
-	DOMSource source = this.scope.getLineXXX().getDOMSource();
-
-	// System.out.println("Creating tags for " +
-        // this.scope.getMethodName());
-	// If there is no source or the parser errored while parsing, return 
-	if (source == null || source.getParserError())
-	    return;
-
-	Iterator lines = source.getLines();
-
-	// Iterate through all the lines
-	while (lines.hasNext()) {
-	    DOMLine line = new DOMLine((Element) lines.next());
-
-	    Iterator tags = line.getTags();
-	    int lineOffset = line.getOffset();
-
-	    // Iterator though all the tags on the line
-	    while (tags.hasNext()) {
-		Element e = (Element) tags.next();
-		DOMTag tag = new DOMTag(e);
-
-		String type = tag.getType();
-
-		// if (type.equals(DOMTagTypes.FUNCTION_BODY))
-		if (type.equals(DOMTagTypes.FUNCTION_CALL)) {
-		    String funcName = tag.getToken();
-
-		    String[] nameArray = funcName.split("\\s*");
-		    StringBuffer buffer = new StringBuffer();
-
-		    for (int i = 0; i < nameArray.length; i++)
-			buffer.append(nameArray[i]);
-
-		    funcName = buffer.toString();
-
-		    this.functions.add(funcName);
-		    this.createMark(funcName, this.getLineIter(line
-			    .getLineNum()), true);
-
-		} else if (type.equals(DOMTagTypes.FUNCTION_BODY)) {
-		} else {
-		    this.applyTag(type, this.getIter(lineOffset
-			    + tag.getStart()), this.getIter(lineOffset
-			    + tag.getStart() + tag.getLength()));
-		}
-	    }
-
-	    Iterator inlines = source.getInlines(line.getLineNum());
-
-	    while (inlines.hasNext()) {
-		DOMInlineInstance func = new DOMInlineInstance(
-			(Element) inlines.next());
-
-		this.applyTag(DOMTagTypes.FUNCTION, this.getIter(lineOffset
-			+ func.getStart()), this.getIter(lineOffset
-			+ func.getStart() + func.getEnd()));
-	    }
-	}// end lines.hasNext()
-
-	// Now iterate through the comments
-	CommentList list = (CommentList) comments.get(source.getFileName());
-
-	while (list != null) {
-	    // this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine(),
-	    // list.getStartCol()),
-	    // this.getIter(list.getEndLine(), list.getEndCol()));
-
-	    list = list.getNextComment();
-	}
     }
 
     /*

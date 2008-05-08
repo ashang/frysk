@@ -1,6 +1,8 @@
 2008-05-08  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Remove error message from pane label.
+	
+	* SourceBuffer.java(createtags): Remove.
 
 2008-05-07  Rick Moseley  <rmoseley@redhat.com>
 
