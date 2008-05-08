@@ -1,3 +1,9 @@
+2008-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* JniBindings.java: New; enbed JNI in class.
+	* PrintHxxDefinitions.java: Use.
+	* PrintDeclarations.java: Use.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Printer.java (printReturn): New.

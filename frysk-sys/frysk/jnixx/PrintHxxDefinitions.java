@@ -252,6 +252,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 	    p.println("return _class;");
 	}
+	JniBindings.printDefinitions(p, klass);
 	printer.visit(klass);
     }
 }

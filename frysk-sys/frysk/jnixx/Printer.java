@@ -86,6 +86,14 @@ class Printer {
     Printer println(Object o) {
 	return print(o).println();
     }
+    /**
+     * Print all the objects, one per line.
+     */
+    void println(Object[] o) {
+	for (int i = 0; i < o.length; i++) {
+	    println(o[i]);
+	}
+    }
 
     /**
      * Increase indentation by one unit.
