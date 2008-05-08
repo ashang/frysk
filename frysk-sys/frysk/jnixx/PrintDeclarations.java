@@ -167,8 +167,8 @@ class PrintDeclarations extends ClassWalker {
 	    p.print("(_object)");
 	    p.println(" { }");
 	    // Static get-class method - a class knows its own class.
-	    p.println("private: static jclass _class$; public:");
-	    p.println("static inline jclass _class(jnixx::env& env);");
+	    p.println("private: static jclass _class; public:");
+	    p.println("static inline jclass _class_(jnixx::env& env);");
 	    printer.visit(klass);
 	}
     }

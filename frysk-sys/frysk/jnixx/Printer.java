@@ -475,7 +475,7 @@ class Printer {
     Printer printFormalJniParameters(Method method, boolean printArgs) {
 	print("JNIEnv*");
 	if (printArgs)
-	    print(" jni");
+	    print(" _jni");
 	if (Modifier.isStatic(method.getModifiers())) {
 	    print(", jclass");
 	    if (printArgs)
@@ -503,7 +503,7 @@ class Printer {
 				  Member member,
 				  Class[] params) {
 	if (isStatic)
-	    print("_class$");
+	    print("_class");
 	else
 	    print("_object");
 	print(", ");

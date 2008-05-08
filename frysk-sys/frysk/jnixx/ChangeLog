@@ -1,5 +1,11 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx (jnixx::env): Rename jniEnv to _jni, make public.
+	* Printer.java: Generate _jni, _class, and _class_().
+	* PrintDeclarations.java: Ditto.
+	* PrintCxxDefinitions.java: Ditto.
+	* Main.java: Ditto.
+	
 	* jnixx.hxx (getStringUTFLength): New.
 	(getStringUTFRegion): New.
 

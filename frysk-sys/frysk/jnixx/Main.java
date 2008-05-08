@@ -67,7 +67,7 @@ class Main {
 	p.println();
 	p.print("jclass ");
 	p.printQualifiedCxxName(klass);
-	p.println("::_class$;");
+	p.println("::_class;");
 	new PrintCxxDefinitions(p).visit(klass);
     }
 
