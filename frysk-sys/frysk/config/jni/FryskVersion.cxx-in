@@ -41,5 +41,5 @@
 
 java::lang::String
 frysk::config::FryskVersion::version(::jnixx::env env) {
-  return env.newStringUTF("@VERSION@");
+  return env.NewStringUTF("@VERSION@");
 }

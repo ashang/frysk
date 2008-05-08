@@ -1,3 +1,7 @@
+2008-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Log.cxx: Update to match jnixx::env.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Log.cxx: Include jni.hxx; fully qualify jnixx::env.

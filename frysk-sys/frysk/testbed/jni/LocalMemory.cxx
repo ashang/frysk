@@ -46,10 +46,10 @@
 
 static jbyteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
-  jbyteArray bytes = env.newByteArray(length);
-  jbyte* elements = env.getByteArrayElements(bytes, NULL);
+  jbyteArray bytes = env.NewByteArray(length);
+  jbyte* elements = env.GetByteArrayElements(bytes, NULL);
   memcpy(elements, addr, length);
-  env.releaseByteArrayElements(bytes, elements, 0);
+  env.ReleaseByteArrayElements(bytes, elements, 0);
   return bytes;
 }
 
@@ -78,7 +78,7 @@ jint frysk::testbed::LocalMemory::getCodeLine (::jnixx::env) { return __LINE__; 
 
 java::lang::String
 frysk::testbed::LocalMemory::getCodeFile(::jnixx::env env) {
-  return env.newStringUTF (__FILE__);
+  return env.NewStringUTF(__FILE__);
 }
 
 static void*

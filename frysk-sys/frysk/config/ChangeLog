@@ -1,3 +1,9 @@
+2008-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/FryskVersion.cxx-in: Update to match jnixx::env.
+	* jni/PrefixFactory.cxx-in: Ditto.
+	* jni/Host.cxx-in: Ditto.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/BuildCompiler.cxx: Include "jni.hxx".

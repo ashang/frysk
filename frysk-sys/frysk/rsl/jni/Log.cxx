@@ -74,7 +74,7 @@ log(::jnixx::env env, frysk::rsl::Log logger,
     const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;
-  logger.log(env, env.newStringUTF(p1), p2);
+  logger.log(env, env.NewStringUTF(p1), p2);
 }
 
 void
@@ -82,5 +82,5 @@ log(::jnixx::env env, frysk::rsl::Log logger, java::lang::Object self,
     const char* p1, java::lang::Object p2) {
   if (!logger.logging(env))
     return;
-  logger.log(env, self, env.newStringUTF(p1), p2);
+  logger.log(env, self, env.NewStringUTF(p1), p2);
 }

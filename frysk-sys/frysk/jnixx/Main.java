@@ -44,13 +44,9 @@ import java.io.PrintWriter;
 class Main {
 
     private static void printHxxFile(Printer p, Class[] classes) {
-	p.println("// Get declarations.");
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	new PrintNamespaces(p).walk(classes);
 	new PrintDeclarations(p).walk(classes);
-	p.println();
-	p.println("// Get definitions.");
-	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	new PrintHxxDefinitions(p).walk(classes);
     }
 

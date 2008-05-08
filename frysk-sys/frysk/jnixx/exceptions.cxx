@@ -64,7 +64,7 @@ errnoException(::jnixx::env& env, int error, const char *prefix,
 
 void
 runtimeException(::jnixx::env& env, const char *fmt, ...) {
-  jclass cls = env.findClass("java/lang/RuntimeException");
+  jclass cls = env.FindClass("java/lang/RuntimeException");
   va_list ap;
   va_start(ap, fmt);
   char *msg = NULL;
@@ -73,10 +73,10 @@ runtimeException(::jnixx::env& env, const char *fmt, ...) {
   if (status < 0) {
     fprintf(stderr, "runtimeException: vasprintf failed: %s",
 	    ::strerror(errno));
-    env.throwNew(cls, "runtimeException: vasprintf failed");
+    env.ThrowNew(cls, "runtimeException: vasprintf failed");
   }
   try {
-    env.throwNew(cls, msg);
+    env.ThrowNew(cls, msg);
   } catch (jnixx::exception e) {
     // XXX: Work around lack of finally by catchching, then
     // re-throwing, the exception

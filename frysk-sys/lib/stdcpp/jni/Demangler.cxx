@@ -54,12 +54,12 @@ lib::stdcpp::Demangler::demangle(::jnixx::env env,
   
   int status = -1;
 
-  const char* mangledName = env.getStringUTFChars(mangledString, NULL);
+  const char* mangledName = mangledString.GetStringUTFChars(env);
   const char *demangledName = __cxa_demangle(mangledName, 0, 0, &status);
-  env.releaseStringUTFChars(mangledString, mangledName);
+  mangledString.ReleaseStringUTFChars(env, mangledName);
   
   if (status == 0)
-    return env.newStringUTF(demangledName);
+    return env.NewStringUTF(demangledName);
   else
     return mangledString;
 }

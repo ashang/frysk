@@ -48,5 +48,5 @@ frysk::config::Host::wordSize(::jnixx::env env) {
 
 java::lang::String
 frysk::config::Host::cpuXXX(::jnixx::env env) {
-  return env.newStringUTF("@host_cpu@");
+  return env.NewStringUTF("@host_cpu@");
 }

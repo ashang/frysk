@@ -67,7 +67,7 @@ vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
     errnoException(env, errno, "vasprintf");
   }
   try {
-    return env.newStringUTF(message);
+    return env.NewStringUTF(message);
   } catch (jnixx::exception) {
     ::free(message);  
     throw;

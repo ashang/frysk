@@ -56,12 +56,12 @@ frysk::sys::Signal::kill(::jnixx::env env, jint pid, jint sig,
                          ::java::lang::String name) {
   errno = 0;
   if (::kill(pid, sig) < 0) {
-    const char *sname = env.getStringUTFChars(name, NULL);
+    const char *sname = name.GetStringUTFChars(env);
     if (sname == NULL)
       return; // exception pending
     errnoException(env, errno, "kill", "process %d, signal %s (%d)",
     		   pid, sname, sig);
-    env.releaseStringUTFChars(name, sname);
+    name.ReleaseStringUTFChars(env, sname);
   }
 }
 
@@ -70,12 +70,12 @@ frysk::sys::Signal::tkill(::jnixx::env env, jint tid, jint sig,
                           ::java::lang::String name) {
   errno = 0;
   if (::syscall(__NR_tkill, tid, sig) < 0) {
-    const char *sname = env.getStringUTFChars(name, NULL);
+    const char *sname = name.GetStringUTFChars(env);
     if (sname == NULL)
       return; // exception pending
     errnoException(env, errno, "tkill", "task %d, signal %s (%d)",
     		   tid, sname, sig);
-    env.releaseStringUTFChars(name, sname);
+    name.ReleaseStringUTFChars(env, sname);
   }
 }
 

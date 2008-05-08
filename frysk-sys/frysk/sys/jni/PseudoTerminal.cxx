@@ -49,7 +49,7 @@ frysk::sys::PseudoTerminal::getName(::jnixx::env env, jint pty) {
   const char *name = ::ptsname(pty);
   if (name == NULL)
     errnoException(env, errno, "ptsname");
-  return env.newStringUTF(name);
+  return env.NewStringUTF(name);
 }
 
 jint

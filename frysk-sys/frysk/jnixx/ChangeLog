@@ -1,5 +1,10 @@
 2008-05-08  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx (jnixx::env): Fill in missing JNI bindings; match JNI
+	names.
+	* print.cxx: Update.
+	* exceptions.cxx: Update.
+	
 	* JniBindings.java: New; enbed JNI in class.
 	* PrintHxxDefinitions.java: Use.
 	* PrintDeclarations.java: Use.
