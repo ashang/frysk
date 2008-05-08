@@ -37,47 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <gcj/cni.h>
+package frysk.sys;
 
-#include "frysk/sys/Environ.h"
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
+import frysk.junit.TestCase;
 
-void
-frysk::sys::Environ::getEnvironment()
-{
-  extern char **environ;
-  int env_idx;
+/**
+ * Test environ support
+ */
+public class TestEnviron extends TestCase {
 
-  for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
-}
-
-void
-frysk::sys::Environ::getEnvironment(jlong environ_p)
-{
-  int env_idx;
-  char ** environ = (char **) environ_p;
-
-  for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
-}
-
-char **new_environ;
-
-jlong
-frysk::sys::Environ::putEnvironment(jobjectArray envs)
-{
-  jstring* env_member = (jstring*)elements(envs);
-  int envs_length = JvGetArrayLength(envs);
-  new_environ = (char**)JvMalloc(sizeof(void*) * (envs_length + 1));
-  for (int i = 0; i < envs_length; i++) 
-    {
-      int sym_len = env_member[i]->length ();
-      char *sym = (char*)JvMalloc(sym_len + 1);
-      JvGetStringUTFRegion (env_member[i], 0, sym_len, sym);
-      sym[sym_len] = '\0';
-      new_environ[i] = sym;
+    public void testEnviron() {
+        Environ env1 = new Environ();
+        // Grab the environment hash table
+	HashMap env1Hash = env1.getEnvHash();
+	Set env1Keys = env1Hash.keySet();
+	// Load the environment from the environment hash table
+	long environ = env1.putEnviron();
+	// Create a new environment hash table from that environment
+	Environ env2 = new Environ(environ);
+	HashMap env2Hash = env2.getEnvHash();
+	
+	// Ensure that both environment hash tables match
+        Iterator iterator = env1Keys.iterator();
+        while(iterator.hasNext()){
+            String key = (String) iterator.next();
+            assertTrue ("env value test fails for key=" + key, 
+        	    ((String)env1Hash.get(key)).compareTo((String)env2Hash.get(key)) == 0);
+        }
     }
-  new_environ[envs_length] = NULL;
-  return (jlong)new_environ;
 }

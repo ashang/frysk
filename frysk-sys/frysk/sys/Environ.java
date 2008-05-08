@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,6 +58,23 @@ public class Environ
     }
     
     /**
+     * Construct an environment hash given an existing environ.  Used for testing
+     */
+    Environ (long environ)
+    {
+	env = new HashMap();   
+	getEnvironment(environ);
+    }
+    
+    /**
+     * Get the environment hash.  Used for testing
+     * @return the array of environment values.
+     */
+    HashMap getEnvHash() {
+	return env;
+    }
+    
+    /**
      * Get an environment variable.
      * @param name is the environment variable name.
      * @return the value of the variable.
@@ -106,5 +123,6 @@ public class Environ
     }
 
     native void getEnvironment();
+    native void getEnvironment(long environ);
     native long putEnvironment(Object[] envs);
 }

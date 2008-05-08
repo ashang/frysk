@@ -1,3 +1,11 @@
+2008-05-08  Stan Cox  <scox@redhat.com>
+
+	* Environ.java (Environ(long)): New.
+	(getEnvHash): New.
+	* cni/Environ.cxx (getEnvironment(long)): New.
+	(putEnvironment): Fix off by one error.
+	* TestEnviron.java: New.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AuditLibs.cxx: Include jni.hxx; fully qualify jnixx::env.
