@@ -1,5 +1,13 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Printer.java: Generate passing jnixx::env by value, not reference.
+	* Native.java: New.
+	* jni/Native.cxx: New.
+	* cni/Native.cxx: New.
+	* TestJnixx.java: New.
+	* PrintHxxDefinitions.java: Ditto.
+	* PrintCxxDefinitions.java: Ditto.
+
 	* jnixx.hxx (jnixx::env): Rename jniEnv to _jni, make public.
 	* Printer.java: Generate _jni, _class, and _class_().
 	* PrintDeclarations.java: Ditto.

@@ -1,3 +1,10 @@
+2008-05-07  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Pid.cxx: Pass jnixx::env by reference.
+	* jni/Tid.cxx: Ditto.
+	* jni/Signal.cxx-sh: Ditto.
+	* jni/PseudoTerminal.cxx: Ditto.
+
 2008-05-06  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/PseudoTerminal.cxx: Update, jboolean -> bool.

@@ -42,42 +42,42 @@
 #include "frysk/config/PrefixFactory-jni.hxx"
 
 java::lang::String
-frysk::config::PrefixFactory::gladeDir(jnixx::env& env) {
+frysk::config::PrefixFactory::gladeDir(jnixx::env env) {
   return env.newStringUTF("@gladedir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::helpDir(jnixx::env& env) {
+frysk::config::PrefixFactory::helpDir(jnixx::env env) {
   return env.newStringUTF("@helpdir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::imagesDir(jnixx::env& env) {
+frysk::config::PrefixFactory::imagesDir(jnixx::env env) {
   return env.newStringUTF("@imagesdir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::binDir(jnixx::env& env) {
+frysk::config::PrefixFactory::binDir(jnixx::env env) {
   return env.newStringUTF("@bindir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::pkgDataDir(jnixx::env& env) {
+frysk::config::PrefixFactory::pkgDataDir(jnixx::env env) {
   return env.newStringUTF("@pkgdatadir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::pkgLibDir(jnixx::env& env) {
+frysk::config::PrefixFactory::pkgLibDir(jnixx::env env) {
   return env.newStringUTF("@pkglibdir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::pkgLib32Dir(jnixx::env& env) {
+frysk::config::PrefixFactory::pkgLib32Dir(jnixx::env env) {
   return env.newStringUTF("@pkglib32dir@");
 }
 
 java::lang::String
-frysk::config::PrefixFactory::sourceDir(jnixx::env& env) {
+frysk::config::PrefixFactory::sourceDir(jnixx::env env) {
   // An educated guess.
   return env.newStringUTF("@prefix@/src/debug/frysk-@VERSION@");
 }

@@ -67,11 +67,10 @@ class PrintDeclarations extends ClassWalker {
 	String name = field.getName();
 	p.print(Character.toUpperCase(name.charAt(0)));
 	p.print(name.substring(1));
-	p.print("(jnixx::env&");
+	p.print("(::jnixx::env");
 	if (!get) {
 	    p.print(", ");
 	    p.printCxxType(field.getType());
-	    p.print(" value");
 	}
 	p.println(");");
     }
@@ -168,7 +167,7 @@ class PrintDeclarations extends ClassWalker {
 	    p.println(" { }");
 	    // Static get-class method - a class knows its own class.
 	    p.println("private: static jclass _class; public:");
-	    p.println("static inline jclass _class_(jnixx::env& env);");
+	    p.println("static inline jclass _class_(::jnixx::env _env);");
 	    printer.visit(klass);
 	}
     }

@@ -71,7 +71,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	String name = field.getName();
 	p.print(Character.toUpperCase(name.charAt(0)));
 	p.print(name.substring(1));
-	p.print("(jnixx::env& env");
+	p.print("(::jnixx::env _env");
 	if (!get) {
 	    p.print(", ");
 	    p.printCxxType(type);
@@ -84,11 +84,11 @@ class PrintHxxDefinitions extends ClassWalker {
 	    p.print(" == NULL)");
 	    while (p.dent(1, "{", "}")) {
 		p.printID(field);
-		p.print(" = env.get");
+		p.print(" = _env.get");
 		if (isStatic) {
 		    p.print("Static");
 		}
-		p.print("FieldID(_class_(env), \"");
+		p.print("FieldID(_class_(_env), \"");
 		p.print(name);
 		p.print("\", \"");
 		p.printJniSignature(type);
@@ -101,9 +101,9 @@ class PrintHxxDefinitions extends ClassWalker {
 		p.print("(");
 		p.printJniType(type);
 		p.print(")");
-		p.print(" env.get");
+		p.print(" _env.get");
 	    } else {
-		p.print("env.set");
+		p.print("_env.set");
 	    }
 	    if (isStatic) {
 		p.print("Static");
@@ -150,11 +150,11 @@ class PrintHxxDefinitions extends ClassWalker {
 	    p.print(" == NULL)");
 	    while (p.dent(1, "{", "}")) {
 		p.printID(method);
-		p.print(" = env.get");
+		p.print(" = _env.get");
 		if (isStatic) {
 		    p.print("Static");
 		}
-		p.print("MethodID(_class_(env), \"");
+		p.print("MethodID(_class_(_env), \"");
 		p.print(method.getName());
 		p.print("\", \"");
 		p.printJniSignature(method);
@@ -168,7 +168,7 @@ class PrintHxxDefinitions extends ClassWalker {
 		}
 		p.print(" ret = ");
 	    }
-	    p.print("env.call");
+	    p.print("_env.call");
 	    if (isStatic) {
 		p.print("Static");
 	    }
@@ -214,15 +214,15 @@ class PrintHxxDefinitions extends ClassWalker {
 		    p.print(" == NULL)");
 		    while (p.dent(1, "{", "}")) {
 			p.printID(constructor);
-			p.print(" = env.getMethodID(_class_(env), \"<init>\", \"(");
+			p.print(" = _env.getMethodID(_class_(_env), \"<init>\", \"(");
 			p.printJniSignature(constructor.getParameterTypes());
 			p.println(")V\");");
 		    }
-		    p.print("jobject object = env.newObject(");
+		    p.print("jobject object = _env.newObject(");
 		    p.printActualJniParameters(constructor);
 		    p.println(");");
 		    while (p.dent(1, "if (object == NULL) {", "}")) {
-			p.println("throw jnixx::exception();");
+			p.println("throw ::jnixx::exception();");
 		    }
 		    p.print("return ");
 		    p.printCxxType(constructor.getDeclaringClass());
@@ -257,10 +257,10 @@ class PrintHxxDefinitions extends ClassWalker {
 	p.println();
 	p.println("jclass");
 	p.printQualifiedCxxName(klass);
-	p.print("::_class_(jnixx::env& env)");
+	p.print("::_class_(::jnixx::env _env)");
 	while (p.dent(0, "{", "}")) {
 	    while (p.dent(1, "if (_class == NULL) {", "}")) {
-		p.print("_class = env.findClass(\"");
+		p.print("_class = _env.findClass(\"");
 		p.print(klass.getName());
 		p.println("\");");
 	    }

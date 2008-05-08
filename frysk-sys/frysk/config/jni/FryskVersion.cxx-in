@@ -40,6 +40,6 @@
 #include "frysk/config/FryskVersion-jni.hxx"
 
 java::lang::String
-frysk::config::FryskVersion::version(jnixx::env& env) {
+frysk::config::FryskVersion::version(jnixx::env env) {
   return env.newStringUTF("@VERSION@");
 }

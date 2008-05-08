@@ -401,9 +401,9 @@ class Printer {
     private Printer printFormalCxxParameters(Class klass, Class[] params,
 					     boolean isStatic,
 					     boolean printArgs) {
-	print("jnixx::env&");
+	print("::jnixx::env");
 	if (printArgs)
-	    print(" env");
+	    print(" _env");
 	for (int i = 0; i < params.length; i++) {
 	    print(", ");
 	    printCxxType(params[i]);
@@ -437,7 +437,7 @@ class Printer {
      */
     private Printer printActualCxxParameters(Member func,
 					     Class[] params) {
-	print("env");
+	print("_env");
 	for (int i = 0; i < params.length; i++) {
 	    Class param = params[i];
 	    print(", ");

@@ -37,41 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/config/BuildCompiler-jni.hxx"
+package frysk.jnixx;
 
+import frysk.config.Host;
+import frysk.junit.TestCase;
 
-jint
-frysk::config::BuildCompiler::getVersion(jnixx::env env) {
-#ifdef __GNUC__
-  return (jint) __GNUC__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getMinorVersion(jnixx::env env) {
-#ifdef __GNUC_MINOR__
-  return (jint) __GNUC_MINOR__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getPatchLevel(jnixx::env env) {
-#ifdef __GNUC_PATCHLEVEL__
-  return (jint) __GNUC_PATCHLEVEL__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getRHRelease(jnixx::env env) {
-#ifdef __GNUC_RH_RELEASE__
-  return (jint) __GNUC_RH_RELEASE__;
-#else
-  return -1;
-#endif
+public class TestJnixx extends TestCase {
+    public void testSizeOfJnixxEnv() {
+	if (unsupported("CNI", !Native.isJni()))
+	    return;
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfJnixxEnv() * 8);
+    }
+    public void testSizeofJnixxObject() {
+	if (unsupported("CNI", !Native.isJni()))
+	    return;
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfJnixxObject() * 8);
+    }
 }

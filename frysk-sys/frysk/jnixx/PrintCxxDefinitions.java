@@ -75,7 +75,7 @@ class PrintCxxDefinitions extends ClassVisitor {
 	    p.println("try {");
 	    {
 		p.indent();
-		p.println("jnixx::env env = jnixx::env(_jni);");
+		p.println("::jnixx::env _env = ::jnixx::env(_jni);");
 		Class returnType = method.getReturnType();
 		if (returnType != Void.TYPE) {
 		    p.printCxxType(returnType);

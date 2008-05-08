@@ -37,41 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "frysk/config/BuildCompiler-jni.hxx"
+package frysk.jnixx;
 
-
-jint
-frysk::config::BuildCompiler::getVersion(jnixx::env env) {
-#ifdef __GNUC__
-  return (jint) __GNUC__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getMinorVersion(jnixx::env env) {
-#ifdef __GNUC_MINOR__
-  return (jint) __GNUC_MINOR__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getPatchLevel(jnixx::env env) {
-#ifdef __GNUC_PATCHLEVEL__
-  return (jint) __GNUC_PATCHLEVEL__;
-#else
-  return -1;
-#endif
-}
-
-jint
-frysk::config::BuildCompiler::getRHRelease(jnixx::env env) {
-#ifdef __GNUC_RH_RELEASE__
-  return (jint) __GNUC_RH_RELEASE__;
-#else
-  return -1;
-#endif
+class Native {
+    static native boolean isJni();
+    static native int sizeOfJnixxEnv();
+    static native int sizeOfJnixxObject();
 }

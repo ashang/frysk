@@ -1,5 +1,8 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/LocalMemory.cxx: Pass jnixx::env by value.
+	* jni/Tee.cxx: Ditto.
+
 	* jni/Tee.cxx: Implement in jnixx.
 
 	* jni/LocalMemory.cxx: Implement.

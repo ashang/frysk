@@ -45,7 +45,7 @@
 #include "frysk/jnixx/exceptions.hxx"
 
 java::lang::String
-frysk::sys::PseudoTerminal::getName(jnixx::env& env, jint pty) {
+frysk::sys::PseudoTerminal::getName(jnixx::env env, jint pty) {
   const char *name = ::ptsname(pty);
   if (name == NULL)
     errnoException(env, errno, "ptsname");
@@ -53,6 +53,6 @@ frysk::sys::PseudoTerminal::getName(jnixx::env& env, jint pty) {
 }
 
 jint
-frysk::sys::PseudoTerminal::open(jnixx::env& env, bool) {
+frysk::sys::PseudoTerminal::open(jnixx::env env, bool) {
   return -1;
 }

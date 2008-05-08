@@ -61,12 +61,12 @@ struct m {
 } memory = { 43, 45, 42, 44 };
 
 jlong
-frysk::testbed::LocalMemory::getDataAddr(jnixx::env&) {
+frysk::testbed::LocalMemory::getDataAddr(jnixx::env) {
   return (jlong) &memory;
 }
 
 jbyteArray
-frysk::testbed::LocalMemory::getDataBytes(jnixx::env& env) {
+frysk::testbed::LocalMemory::getDataBytes(jnixx::env env) {
   return getBytes(env, &memory, sizeof(memory));
 }
 
@@ -74,10 +74,10 @@ frysk::testbed::LocalMemory::getDataBytes(jnixx::env& env) {
  * Function used by getCode*(), must be on a single line for __LINE__
  * to work correctly.
  */
-jint frysk::testbed::LocalMemory::getCodeLine (jnixx::env&) { return __LINE__; }
+jint frysk::testbed::LocalMemory::getCodeLine (jnixx::env) { return __LINE__; }
 
 java::lang::String
-frysk::testbed::LocalMemory::getCodeFile(jnixx::env& env) {
+frysk::testbed::LocalMemory::getCodeFile(jnixx::env env) {
   return env.newStringUTF (__FILE__);
 }
 
@@ -90,17 +90,17 @@ codeAddr() {
 #endif
 }
 jlong
-frysk::testbed::LocalMemory::getCodeAddr(jnixx::env&) {
+frysk::testbed::LocalMemory::getCodeAddr(jnixx::env) {
   return (jlong)codeAddr();
 }
 
 jbyteArray
-frysk::testbed::LocalMemory::getCodeBytes(jnixx::env& env) {
+frysk::testbed::LocalMemory::getCodeBytes(jnixx::env env) {
   return getBytes(env, codeAddr(), sizeof(memory));
 }
 
 void
-frysk::testbed::LocalMemory::constructStack(jnixx::env& env,
+frysk::testbed::LocalMemory::constructStack(jnixx::env env,
 					    frysk::testbed::LocalMemory$StackBuilder builder) {
   // Copy known data onto the stack.
   uint8_t addr[sizeof(memory)];
