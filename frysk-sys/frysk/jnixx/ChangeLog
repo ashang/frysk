@@ -1,5 +1,8 @@
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Printer.java (printReturn): New.
+	* PrintHxxDefinitions.java: Use.
+
 	* jni/Native.cxx: Include jni.hxx; fully qualify jnixx::env.
 	* print.cxx: Ditto.
 	* print.hxx: Ditto.

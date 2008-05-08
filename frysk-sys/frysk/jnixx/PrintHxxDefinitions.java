@@ -117,15 +117,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 	    p.println(");");
 	    if (get) {
-		p.print("return ");
-		if (type.isPrimitive()) {
-		    p.print("ret");
-		} else if (type.getName().startsWith("java.")) {
-		    p.print("ret");
-		} else {
-		    p.printCxxType(type);
-		    p.print("(ret)");
-		}
+		p.printReturn(isStatic, type, "ret");
 		p.println(";");
 	    }
 	}
@@ -177,13 +169,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    p.printActualJniParameters(method);
 	    p.println(");");
 	    if (returnType != Void.TYPE) {
-		p.print("return ");
-		if (returnType.isPrimitive()) {
-		    p.print("ret;");
-		} else {
-		    p.printCxxType(returnType);
-		    p.print("(ret)");
-		}
+		p.printReturn(isStatic, returnType, "ret");
 		p.println(";");
 	    }
 	}
@@ -224,9 +210,9 @@ class PrintHxxDefinitions extends ClassWalker {
 		    while (p.dent(1, "if (object == NULL) {", "}")) {
 			p.println("throw ::jnixx::exception();");
 		    }
-		    p.print("return ");
-		    p.printCxxType(constructor.getDeclaringClass());
-		    p.println("(object);");
+		    p.printReturn(true, constructor.getDeclaringClass(),
+				  "object");
+		    p.println(";");
 		}
 	    }
 

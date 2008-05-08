@@ -551,6 +551,27 @@ class Printer {
     }
 
     /**
+     * Print a return statement, possibly using casts.
+     */
+    void printReturn(boolean isStatic, Class returnType, String variable) {
+	print("return ");
+	if (returnType.isPrimitive()) {
+	    print(variable);
+	} else if (returnType.isArray()
+		   && returnType.getComponentType().isPrimitive()) {
+	    print("(");
+	    printCxxType(returnType);
+	    print(")");
+	    print(variable);
+	} else {
+	    printCxxType(returnType);
+	    print("(");
+	    print(variable);
+	    print(")");
+	}
+    }
+
+    /**
      * Flush the output.
      */
     void flush() {
