@@ -1,3 +1,7 @@
+2008-05-08  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Remove error message from pane label.
+
 2008-05-07  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceBuffer.java: Fix hover over variable error.

@@ -2198,8 +2198,8 @@ public class SourceWindow extends Window {
 	    boolean noDOMFunction, DOMSource source) {
 	if (noDOMFunction && !(source == null))
 	    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-		    + header + task + " -- PID: " + pid + " -- TID: " + tid
-		    + " **** Parser could not find function ****" + "</b>");
+		    + header + task + " -- PID: " + pid + " -- TID: " + tid + "</b>");
+		//    + " **** Parser could not find function ****" + "</b>");
 	else
 	    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
 		    + header + task + " -- PID: " + pid + " -- TID: " + tid
