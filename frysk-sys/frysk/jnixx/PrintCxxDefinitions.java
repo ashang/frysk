@@ -79,13 +79,13 @@ class PrintCxxDefinitions extends ClassWalker {
 			p.println("::jnixx::env _env = ::jnixx::env(_jni);");
 			Class returnType = method.getReturnType();
 			if (returnType != Void.TYPE) {
-			    p.printCxxType(returnType);
+			    p.printGlobalCxxName(returnType);
 			    p.print(" ret = ");
 			}
 			if (isStatic) {
-			    p.printQualifiedCxxName(method);
+			    p.printGlobalCxxName(method);
 			} else {
-			    p.printCxxType(method.getDeclaringClass());
+			    p.printGlobalCxxName(method.getDeclaringClass());
 			    p.print("(object).");
 			    p.print(method.getName());
 			}

@@ -80,6 +80,7 @@ abstract class ClassWalker {
 	visited.add(klass);
 	walk(klass.getSuperclass());
 	if (klass.isArray()) {
+	    walk(klass.getComponentType());
 	    acceptArray(klass);
 	} else if (klass.isPrimitive()) {
 	    acceptPrimitive(klass);

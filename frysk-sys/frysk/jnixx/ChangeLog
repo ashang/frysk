@@ -1,5 +1,17 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* ClassWalker.java: Walk an array's component type, and before the
+	wrapping array.
+
+	* Printer.java (printCxxType(Class)): Delete.
+	(printCxxName(Class,boolean)): New.
+	(printQualifiedCxxName(Class)): Use.
+	(printGlobalCxxName(Class)): Use.
+	(printGlobalCxxName(Member)): New.
+	* PrintHxxDefinitions.java: Update.
+	* PrintCxxDefinitions.java: Update.
+	* PrintDeclarations.java: Update.
+
 	* Main.java (treatAsNative(Method)): New.
 	(treatAsPrivate(Member)): New.
 	* PrintDeclarations.java: Use.
