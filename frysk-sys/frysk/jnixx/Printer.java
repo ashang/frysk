@@ -176,8 +176,15 @@ class Printer {
 		print(componentType.getName());
 		print("Array");
 	    } else {
-		printCxxName(klass.getComponentType(), global);
-		print("Array");
+		if (global) {
+		    print("::");
+		}
+		print("jnixx::array<");
+		printCxxName(klass.getComponentType(), false);
+		if (!componentType.isPrimitive()) {
+		    print(" "); // prevent's ">>".
+		}
+		print(">");
 	    }
 	} else {
 	    if (global) {

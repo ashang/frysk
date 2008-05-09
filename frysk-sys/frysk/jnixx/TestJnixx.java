@@ -49,11 +49,17 @@ public class TestJnixx extends TestCase {
 	assertEquals("word-size", Host.wordSize(),
 		     Native.sizeOfJnixxEnv() * 8);
     }
-    public void testSizeofJnixxObject() {
-	if (unsupported("CNI", !Native.isJni()))
-	    return;
+    public void testSizeOfObject() {
 	assertEquals("word-size", Host.wordSize(),
-		     Native.sizeOfJnixxObject() * 8);
+		     Native.sizeOfObject() * 8);
+    }
+    public void testSizeOfClass() {
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfClass() * 8);
+    }
+    public void testSizeOfObjectArray() {
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfObjectArray() * 8);
     }
     public void testCharsConversion() {
 	if (unsupported("CNI", !Native.isJni()))

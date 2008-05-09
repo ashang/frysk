@@ -1,5 +1,18 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Native.cxx (Native::sizeOfObject): Replace sizeOfJnixxObject.
+	(Native::sizeOfObjectArray, Native::sizeOfClass): New.
+	* cni/Native.cxx (Native::sizeOfObject): Replace sizeOfJnixxObject
+	(Native::sizeOfClass, Native::sizeOfObjectArray): New.
+	* TestJnixx.java (testSizeOfObject): Replace testSizeofJnixxObject.
+	(testSizeOfObjectArray, testSizeOfClass): New.
+	* Native.java (sizeOfObjectArray()): New.
+	* Printer.java (printCxxName): For object array's generate a
+	templated class instance.
+	* PrintNamespaces.java: Don't generate array namespace names.
+	* chars.cxx (strings2chars): Use Array templates.
+	* chars.hxx: Ditto.
+
 	* ClassWalker.java: Walk an array's component type, and before the
 	wrapping array.
 

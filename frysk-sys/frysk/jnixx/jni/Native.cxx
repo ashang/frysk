@@ -54,15 +54,25 @@ frysk::jnixx::Native::sizeOfJnixxEnv(::jnixx::env) {
 }
 
 jint
-frysk::jnixx::Native::sizeOfJnixxObject(::jnixx::env) {
-  return sizeof(::jnixx::object);
+frysk::jnixx::Native::sizeOfClass(::jnixx::env) {
+  return sizeof(::java::lang::Class);
 }
 
-::java::lang::StringArray
+jint
+frysk::jnixx::Native::sizeOfObject(::jnixx::env) {
+  return sizeof(::java::lang::Object);
+}
+
+jint
+frysk::jnixx::Native::sizeOfObjectArray(::jnixx::env) {
+  return sizeof(::jnixx::array<java::lang::Object>);
+}
+
+::jnixx::array<java::lang::String>
 frysk::jnixx::Native::copy(::jnixx::env env,
-			   ::java::lang::StringArray strings) {
+			   ::jnixx::array<java::lang::String> strings) {
   char** chars = strings2chars(env, strings);
-  ::java::lang::StringArray copiedStrings = chars2strings(env, chars);
+  ::jnixx::array<java::lang::String> copiedStrings = chars2strings(env, chars);
   ::free(chars);
   return copiedStrings;
 }

@@ -118,22 +118,6 @@ class PrintDeclarations extends ClassWalker {
 	};
 
     void acceptArray(Class klass) {
-	for (Class component = klass; component != null;
-	     component = component.getComponentType()) {
-	    if (component.isPrimitive())
-		return;
-	}
-	p.println();
-	p.print("struct ");
-	p.printQualifiedCxxName(klass);
-	p.print(" : public ::jnixx::objectArray");
-	while(p.dent(0, "{", "};")) {
-	    p.printUnqualifiedCxxName(klass);
-	    p.print("(jobject _object)");
-	    p.print(" : ::jnixx::objectArray");
-	    p.print("(_object)");
-	    p.println(" { }");
-	}	
     }
     void acceptPrimitive(Class klass) {
     }

@@ -40,8 +40,10 @@
 #include "jni.hxx"
 #include <malloc.h>
 
+#include "frysk/jnixx/chars.hxx"
+
 char**
-strings2chars(jnixx::env env, ::java::lang::StringArray strings) {
+strings2chars(jnixx::env env, ::jnixx::array<java::lang::String> strings) {
   jsize arrayLength = env.GetArrayLength((jobjectArray)strings._object);
   // compute the allocated size.
   size_t size = 0;
@@ -72,7 +74,7 @@ strings2chars(jnixx::env env, ::java::lang::StringArray strings) {
   return elements;
 }
 
-::java::lang::StringArray
+::jnixx::array<java::lang::String>
 chars2strings(::jnixx::env env, char** argv) {
   int length = 0;
   for (char **p = argv; *p != NULL; p++) {

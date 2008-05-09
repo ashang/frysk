@@ -48,14 +48,15 @@ namespace jnixx {
    * An exception to throw when JNI makes an exception pending, caught
    * by the JNI wrapper stub.
    */
-  struct exception {
+  class exception {
   };
 
   /**
    * JNIXX wrapper for the JNIEnv; just like JNIEnv except it throws
    * an exception for any error or exception check.
    */
-  struct env {
+  class env {
+  public:
 
     JNIEnv* _jni;
     env(JNIEnv* _jni) {
@@ -1468,7 +1469,8 @@ namespace jnixx {
    * The JNIXX root, wraps the jobject pointer, all generated object
    * wrappers extend this.
    */
-  struct object {
+  class object {
+  public:
     jobject _object;
     object(jobject _object) {
       this->_object = _object;
@@ -1482,11 +1484,11 @@ namespace jnixx {
    * The JNIXX array root, any array object extends this (which
    * extends jnixx::object).
    */
-  struct objectArray : public object {
-    objectArray(jobject _object) : object(_object) {
+  template <typename Object> class array : public object {
+  public:
+    array(jobject _object) : object(_object) {
     }
   };
-
 }
 
 #endif

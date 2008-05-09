@@ -52,8 +52,18 @@ frysk::jnixx::Native::sizeOfJnixxEnv() {
 }
 
 jint
-frysk::jnixx::Native::sizeOfJnixxObject() {
-  return -1;
+frysk::jnixx::Native::sizeOfClass() {
+  return sizeof(jclass);
+}
+
+jint
+frysk::jnixx::Native::sizeOfObject() {
+  return sizeof(jobject);
+}
+
+jint
+frysk::jnixx::Native::sizeOfObjectArray() {
+  return sizeof(jobjectArray);
 }
 
 JArray<jstring>*

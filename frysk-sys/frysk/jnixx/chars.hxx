@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-extern char** strings2chars(jnixx::env env,
-			    ::java::lang::StringArray strings);
+extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
 
-extern ::java::lang::StringArray chars2strings(::jnixx::env env,
-					       char** argv);
+extern ::jnixx::array<java::lang::String> chars2strings(::jnixx::env, char**);

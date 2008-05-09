@@ -42,6 +42,8 @@ package frysk.jnixx;
 class Native {
     static native boolean isJni();
     static native int sizeOfJnixxEnv();
-    static native int sizeOfJnixxObject();
+    static native int sizeOfObject();
+    static native int sizeOfClass();
+    static native int sizeOfObjectArray();
     static native String[] copy(String[] strings);
 }
