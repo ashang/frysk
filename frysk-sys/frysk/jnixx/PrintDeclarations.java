@@ -59,7 +59,7 @@ class PrintDeclarations extends ClassWalker {
 	}
 	p.print("inline ");
 	if (get) {
-	    p.printCxxType(field.getType());
+	    p.printGlobalCxxName(field.getType());
 	    p.print(" Get");
 	} else {
 	    p.print("void Set");
@@ -70,7 +70,7 @@ class PrintDeclarations extends ClassWalker {
 	p.print("(::jnixx::env");
 	if (!get) {
 	    p.print(", ");
-	    p.printCxxType(field.getType());
+	    p.printGlobalCxxName(field.getType());
 	}
 	p.println(");");
     }
@@ -85,7 +85,7 @@ class PrintDeclarations extends ClassWalker {
 	    public void acceptConstructor(Constructor constructor) {
 		p.printlnModifiers(constructor);
 		p.print("static inline ");
-		p.printCxxType(constructor.getDeclaringClass());
+		p.printGlobalCxxName(constructor.getDeclaringClass());
 		p.print(" New(");
 		p.printFormalCxxParameters(constructor, false);
 		p.println(");");
@@ -108,7 +108,7 @@ class PrintDeclarations extends ClassWalker {
 		if (!Main.treatAsNative(method)) {
 		    p.print("inline ");
 		}
-		p.printCxxType(method.getReturnType());
+		p.printGlobalCxxName(method.getReturnType());
 		p.print(" ");
 		p.printName(method);
 		p.print("(");

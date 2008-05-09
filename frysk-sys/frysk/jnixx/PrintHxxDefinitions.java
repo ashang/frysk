@@ -56,7 +56,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	Class type = field.getType();
 	p.println();
 	if (get) {
-	    p.printCxxType(type);
+	    p.printGlobalCxxName(type);
 	    p.println();
 	} else { 
 	    p.println("void");
@@ -74,7 +74,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	p.print("(::jnixx::env _env");
 	if (!get) {
 	    p.print(", ");
-	    p.printCxxType(type);
+	    p.printGlobalCxxName(type);
 	    p.print(" p0");
 	}
 	p.print(")");
@@ -127,7 +127,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	boolean isStatic = Modifier.isStatic(method.getModifiers());
 	Class returnType = method.getReturnType();
 	p.println();
-	p.printCxxType(returnType);
+	p.printGlobalCxxName(returnType);
 	p.println();
 	p.printQualifiedCxxName(method);
 	p.print("(");
@@ -185,7 +185,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 	    void acceptConstructor(Constructor constructor) {
 		p.println();
-		p.printCxxType(constructor.getDeclaringClass());
+		p.printGlobalCxxName(constructor.getDeclaringClass());
 		p.println();
 		p.printQualifiedCxxName(constructor);
 		p.print("(");

@@ -151,32 +151,51 @@ class Printer {
     }
 
     /**
+     * Given a class describing a type (class of basic), print the JNI
+     * equivalent name.
+     */
+    private void printCxxName(Class klass, boolean global) {
+	if (klass == null) {
+	    if (global) {
+		print("::");
+	    }
+	    print("jnixx::interface");
+	} else if (klass.isPrimitive()) {
+	    if (klass == Void.TYPE) {
+		print("void");
+	    } else if (klass == Boolean.TYPE) {
+		print("bool");
+	    } else {
+		print("j");
+		print(klass.getName());
+	    }
+	} else if (klass.isArray()) {
+	    Class componentType = klass.getComponentType();
+	    if (componentType.isPrimitive()) {
+		print("j");
+		print(componentType.getName());
+		print("Array");
+	    } else {
+		printCxxName(klass.getComponentType(), global);
+		print("Array");
+	    }
+	} else {
+	    if (global) {
+		print("::");
+	    }
+	    print(klass.getName().replaceAll("\\.", "::"));
+	}
+    }
+
+    /**
      * Print the class's fully qualified C++ name; that is "."
      * replaced by "::".
      */
     void printGlobalCxxName(Class klass) {
-	if (klass == null) {
-	    print("::jnixx::interface");
-	} else if (klass.isArray()) {
-	    throw new RuntimeException("array class: " + klass);
-	} else if (klass.isPrimitive()) {
-	    print("j");
-	    print(klass.getName());
-	} else {
-	    print("::");
-	    print(klass.getName().replaceAll("\\.", "::"));
-	}
+	printCxxName(klass, true);
     }
     void printQualifiedCxxName(Class klass) {
-	if (klass.isPrimitive()) {
-	    print("j");
-	    print(klass.getName());
-	} else if (klass.isArray()) {
-	    printQualifiedCxxName(klass.getComponentType());
-	    print("Array");
-	} else {
-	    print(klass.getName().replaceAll("\\.", "::"));
-	}
+	printCxxName(klass, false);
     }
 
     /**
@@ -197,21 +216,37 @@ class Printer {
      * Print the method's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    Printer printQualifiedCxxName(Member member) {
+    void printQualifiedCxxName(Member member) {
 	printQualifiedCxxName(member.getDeclaringClass());
 	print("::");
 	printName(member);
-	return this;
+    }
+    /**
+     * Print the method's fully qualified C++ name; that is "."
+     * replaced by "::".
+     */
+    void printGlobalCxxName(Member member) {
+	printGlobalCxxName(member.getDeclaringClass());
+	print("::");
+	printName(member);
     }
     /**
      * Print the constructor's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    Printer printQualifiedCxxName(Constructor constructor) {
+    void printQualifiedCxxName(Constructor constructor) {
 	printQualifiedCxxName(constructor.getDeclaringClass());
 	print("::");
 	print("New");
-	return this;
+    }
+    /**
+     * Print the constructor's fully qualified C++ name; that is "."
+     * replaced by "::".
+     */
+    void printGlobalCxxName(Constructor constructor) {
+	printGlobalCxxName(constructor.getDeclaringClass());
+	print("::");
+	print("New");
     }
 
     /**
@@ -376,33 +411,6 @@ class Printer {
     }
 
     /**
-     * Given a class describing a type (class of basic), print the JNI
-     * equivalent name.
-     */
-    void printCxxType(Class klass) {
-	if (klass.isPrimitive()) {
-	    if (klass == Void.TYPE) {
-		print("void");
-	    } else if (klass == Boolean.TYPE) {
-		print("bool");
-	    } else {
-		print("j");
-		print(klass.getName());
-	    }
-	} else if (klass.isArray()) {
-	    if (klass.getComponentType() == Boolean.TYPE) {
-		print("jbooleanArray");
-	    } else {
-		printCxxType(klass.getComponentType());
-		print("Array");
-	    }
-	} else {
-	    print("::");
-	    print(klass.getName().replaceAll("\\.", "::"));
-	}
-    }
-
-    /**
      * Given an array of types, print them as a list (presumably this
      * is a list of parameters).
      */
@@ -414,7 +422,7 @@ class Printer {
 	    print(" _env");
 	for (int i = 0; i < params.length; i++) {
 	    print(", ");
-	    printCxxType(params[i]);
+	    printGlobalCxxName(params[i]);
 	    if (printArgs)
 		print(" p" + i);
 	}
@@ -457,7 +465,7 @@ class Printer {
 		       && param.getComponentType().isPrimitive()) {
 		print("p" + i);
 	    } else {
-		printCxxType(param);
+		printGlobalCxxName(param);
 		print("(p" + i + ")");
 	    }
 	}
@@ -568,11 +576,11 @@ class Printer {
 	} else if (returnType.isArray()
 		   && returnType.getComponentType().isPrimitive()) {
 	    print("(");
-	    printCxxType(returnType);
+	    printGlobalCxxName(returnType);
 	    print(")");
 	    print(variable);
 	} else {
-	    printCxxType(returnType);
+	    printGlobalCxxName(returnType);
 	    print("(");
 	    print(variable);
 	    print(")");
