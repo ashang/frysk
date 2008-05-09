@@ -41,43 +41,45 @@
 
 #include "jni.hxx"
 
-java::lang::String
+using namespace java::lang;
+
+String
 frysk::config::PrefixFactory::gladeDir(::jnixx::env env) {
-  return env.NewStringUTF("@gladedir@");
+  return String::NewStringUTF(env, "@gladedir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::helpDir(::jnixx::env env) {
-  return env.NewStringUTF("@helpdir@");
+  return String::NewStringUTF(env, "@helpdir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::imagesDir(::jnixx::env env) {
-  return env.NewStringUTF("@imagesdir@");
+  return String::NewStringUTF(env, "@imagesdir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::binDir(::jnixx::env env) {
-  return env.NewStringUTF("@bindir@");
+  return String::NewStringUTF(env, "@bindir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::pkgDataDir(::jnixx::env env) {
-  return env.NewStringUTF("@pkgdatadir@");
+  return String::NewStringUTF(env, "@pkgdatadir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::pkgLibDir(::jnixx::env env) {
-  return env.NewStringUTF("@pkglibdir@");
+  return String::NewStringUTF(env, "@pkglibdir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::pkgLib32Dir(::jnixx::env env) {
-  return env.NewStringUTF("@pkglib32dir@");
+  return String::NewStringUTF(env, "@pkglib32dir@");
 }
 
-java::lang::String
+String
 frysk::config::PrefixFactory::sourceDir(::jnixx::env env) {
   // An educated guess.
-  return env.NewStringUTF("@prefix@/src/debug/frysk-@VERSION@");
+  return String::NewStringUTF(env, "@prefix@/src/debug/frysk-@VERSION@");
 }

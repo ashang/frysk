@@ -1,5 +1,12 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* PrintDeclarations.java: Generate a protected constructor; and a
+	static Cast method.
+	* jnixx.hxx (jnixx::array): Add Cast method.
+	* Printer.java: Generate calls to Cast.
+	* PrintCxxDefinitions.java: Ditto
+	* print.cxx: Use explicit casts.
+
 	* jnixx.hxx (jnixx::array): Add templated JNI array method.
 	* chars.cxx: Use tempated array methods.
 	* JniBindings.java: Drop String parameter to GetStringLength.

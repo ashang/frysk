@@ -39,7 +39,9 @@
 
 #include "jni.hxx"
 
-java::lang::String
+using namespace java::lang;
+
+String
 frysk::config::FryskVersion::version(::jnixx::env env) {
-  return env.NewStringUTF("@VERSION@");
+  return String::NewStringUTF(env, "@VERSION@");
 }

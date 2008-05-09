@@ -45,6 +45,8 @@
 #include "frysk/jnixx/print.hxx"
 #include "frysk/rsl/jni/Log.hxx"
 
+using namespace java::lang;
+
 void
 logf(::jnixx::env env, frysk::rsl::Log logger,
      const char* format, ...) {
@@ -52,35 +54,41 @@ logf(::jnixx::env env, frysk::rsl::Log logger,
     return;
   va_list ap;
   va_start(ap, format);
-  java::lang::String message = vajprintf(env, format, ap);
+  String message = vajprintf(env, format, ap);
   logger.log(env, message);
+  message.DeleteLocalRef(env);
   va_end(ap);
 }
 
 void
-logf(::jnixx::env env, frysk::rsl::Log logger, java::lang::Object object,
+logf(::jnixx::env env, frysk::rsl::Log logger, Object object,
      const char* format, ...) {
   if (!logger.logging(env))
     return;
   va_list ap;
   va_start(ap, format);
-  java::lang::String message = vajprintf(env, format, ap);
+  String message = vajprintf(env, format, ap);
   logger.log(env, message);
+  message.DeleteLocalRef(env);
   va_end(ap);
 }
 
 void
 log(::jnixx::env env, frysk::rsl::Log logger,
-    const char* p1, java::lang::Object p2) {
+    const char* p1, Object p2) {
   if (!logger.logging(env))
     return;
-  logger.log(env, env.NewStringUTF(p1), p2);
+  String message = String::NewStringUTF(env, p1);
+  logger.log(env, message, p2);
+  message.DeleteLocalRef(env);
 }
 
 void
-log(::jnixx::env env, frysk::rsl::Log logger, java::lang::Object self,
-    const char* p1, java::lang::Object p2) {
+log(::jnixx::env env, frysk::rsl::Log logger, Object self,
+    const char* p1, Object p2) {
   if (!logger.logging(env))
     return;
-  logger.log(env, self, env.NewStringUTF(p1), p2);
+  String message = String::NewStringUTF(env, p1);
+  logger.log(env, self, message, p2);
+  message.DeleteLocalRef(env);
 }

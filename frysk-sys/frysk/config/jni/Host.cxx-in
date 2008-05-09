@@ -41,12 +41,14 @@
 
 #include "jni.hxx"
 
+using namespace java::lang;
+
 jint 
 frysk::config::Host::wordSize(::jnixx::env env) {
   return sizeof(long) * 8;
 }
 
-java::lang::String
+String
 frysk::config::Host::cpuXXX(::jnixx::env env) {
-  return env.NewStringUTF("@host_cpu@");
+  return String::NewStringUTF(env, "@host_cpu@");
 }

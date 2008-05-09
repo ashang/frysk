@@ -44,15 +44,17 @@
 #include "frysk/jnixx/print.hxx"
 #include "frysk/jnixx/exceptions.hxx"
 
+using namespace java::lang;
+
 /**
  * Do printf style printing to a java String.
  */
 
-java::lang::String
+String
 ajprintf(::jnixx::env& env, const char *fmt, ...) {
   va_list ap;
   va_start (ap, fmt);
-  java::lang::String jmessage = vajprintf(env, fmt, ap);
+  String jmessage = vajprintf(env, fmt, ap);
   va_end (ap);
   return jmessage;  
 }
@@ -60,14 +62,14 @@ ajprintf(::jnixx::env& env, const char *fmt, ...) {
 /**
  * Do vprintf style printing to a java String.
  */
-java::lang::String
+String
 vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
   char* message = NULL;
   if (::vasprintf(&message, fmt, ap) < 0) {
     errnoException(env, errno, "vasprintf");
   }
   try {
-    return env.NewStringUTF(message);
+    return String::NewStringUTF(env, message);
   } catch (jnixx::exception) {
     ::free(message);  
     throw;

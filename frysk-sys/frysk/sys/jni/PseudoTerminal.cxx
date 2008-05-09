@@ -44,12 +44,14 @@
 
 #include "frysk/jnixx/exceptions.hxx"
 
-::java::lang::String
+using namespace java::lang;
+
+::String
 frysk::sys::PseudoTerminal::getName(::jnixx::env env, jint pty) {
   const char *name = ::ptsname(pty);
   if (name == NULL)
     errnoException(env, errno, "ptsname");
-  return env.NewStringUTF(name);
+  return String::NewStringUTF(env, name);
 }
 
 jint

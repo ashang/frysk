@@ -45,12 +45,13 @@
 #include "jni.hxx"
 
 using namespace abi;
+using namespace java::lang;
 
-::java::lang::String
+String
 lib::stdcpp::Demangler::demangle(::jnixx::env env,
-				 ::java::lang::String mangledString) {
+				 String mangledString) {
   if (mangledString == NULL)
-    return NULL;
+    return mangledString;
   
   int status = -1;
 
@@ -59,7 +60,7 @@ lib::stdcpp::Demangler::demangle(::jnixx::env env,
   mangledString.ReleaseStringUTFChars(env, mangledName);
   
   if (status == 0)
-    return env.NewStringUTF(demangledName);
+    return String::NewStringUTF(env, demangledName);
   else
     return mangledString;
 }

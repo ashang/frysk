@@ -181,7 +181,7 @@ class Printer {
 		}
 		print("jnixx::array<");
 		printCxxName(klass.getComponentType(), false);
-		if (!componentType.isPrimitive()) {
+		if (componentType.isArray()) {
 		    print(" "); // prevent's ">>".
 		}
 		print(">");
@@ -473,6 +473,7 @@ class Printer {
 		print("p" + i);
 	    } else {
 		printGlobalCxxName(param);
+		print("::Cast");
 		print("(p" + i + ")");
 	    }
 	}
@@ -588,6 +589,7 @@ class Printer {
 	    print(variable);
 	} else {
 	    printGlobalCxxName(returnType);
+	    print("::Cast");
 	    print("(");
 	    print(variable);
 	    print(")");

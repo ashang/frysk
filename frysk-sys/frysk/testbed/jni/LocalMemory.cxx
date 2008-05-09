@@ -44,6 +44,8 @@
 #include "jni.hxx"
 #include "frysk/jnixx/exceptions.hxx"
 
+using namespace java::lang;
+
 static jbyteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
   jbyteArray bytes = env.NewByteArray(length);
@@ -76,9 +78,9 @@ frysk::testbed::LocalMemory::getDataBytes(::jnixx::env env) {
  */
 jint frysk::testbed::LocalMemory::getCodeLine (::jnixx::env) { return __LINE__; }
 
-java::lang::String
+String
 frysk::testbed::LocalMemory::getCodeFile(::jnixx::env env) {
-  return env.NewStringUTF(__FILE__);
+  return String::NewStringUTF(env, __FILE__);
 }
 
 static void*

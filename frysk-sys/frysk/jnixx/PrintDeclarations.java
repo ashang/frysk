@@ -128,7 +128,7 @@ class PrintDeclarations extends ClassWalker {
 	p.println();
 	p.print("// ");
 	p.println(klass);
-	p.print("struct ");
+	p.print("class ");
 	p.printQualifiedCxxName(klass);
 	Class parent = klass.getSuperclass();
 	p.print(" : public ");
@@ -139,6 +139,7 @@ class PrintDeclarations extends ClassWalker {
 	}
 	while(p.dent(0, "{", "};")) {
 	    // Constructor.
+	    p.print("protected: ");
 	    p.printUnqualifiedCxxName(klass);
 	    p.print("(jobject _object)");
 	    p.print(" : ");
@@ -147,11 +148,16 @@ class PrintDeclarations extends ClassWalker {
 	    } else {
 		p.printGlobalCxxName(parent);
 	    }
-	    p.print("(_object)");
-	    p.println(" { }");
+	    p.println("(_object) {}");
+	    // Explicit cast operator.
+	    p.print("public: static ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.print(" Cast(jobject object) { return ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.println("(object); }");
 	    // Static get-class method - a class knows its own class.
-	    p.println("private: static jclass _class; public:");
-	    p.println("static inline jclass _class_(::jnixx::env _env);");
+	    p.println("private: static jclass _class;");
+	    p.println("public: static inline jclass _class_(::jnixx::env _env);");
 	    JniBindings.printDeclarations(p, klass);
 	    printer.visit(klass);
 	}
