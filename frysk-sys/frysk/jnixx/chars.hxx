@@ -37,11 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+extern char** strings2chars(jnixx::env env,
+			    ::java::lang::StringArray strings);
 
-class Native {
-    static native boolean isJni();
-    static native int sizeOfJnixxEnv();
-    static native int sizeOfJnixxObject();
-    static native String[] copy(String[] strings);
-}
+extern ::java::lang::StringArray chars2strings(::jnixx::env env,
+					       char** argv);

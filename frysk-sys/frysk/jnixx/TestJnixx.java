@@ -55,4 +55,10 @@ public class TestJnixx extends TestCase {
 	assertEquals("word-size", Host.wordSize(),
 		     Native.sizeOfJnixxObject() * 8);
     }
+    public void testCharsConversion() {
+	if (unsupported("CNI", !Native.isJni()))
+	    return;
+	String[] strings = new String[] { "arg1", "arg2", "arg3" };
+	assertEquals("converted", strings, Native.copy(strings));
+    }
 }

@@ -55,3 +55,8 @@ jint
 frysk::jnixx::Native::sizeOfJnixxObject() {
   return -1;
 }
+
+JArray<jstring>*
+frysk::jnixx::Native::copy(JArray<jstring>* strings) {
+  return NULL;
+}

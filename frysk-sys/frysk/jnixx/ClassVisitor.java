@@ -67,12 +67,16 @@ abstract class ClassVisitor {
 	    Field field = fields[i];
 	    if (field.isSynthetic())
 		continue;
+	    if (Main.treatAsInvisible(field))
+		continue;
 	    acceptField(field);
 	}
 	Method[] methods = klass.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 	    Method method = methods[i];
 	    if (method.isSynthetic())
+		continue;
+	    if (Main.treatAsInvisible(method))
 		continue;
 	    acceptMethod(method);
 	}

@@ -37,7 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <malloc.h>
+
 #include "jni.hxx"
+
+#include "frysk/jnixx/chars.hxx"
 
 bool
 frysk::jnixx::Native::isJni(::jnixx::env) {
@@ -52,4 +56,13 @@ frysk::jnixx::Native::sizeOfJnixxEnv(::jnixx::env) {
 jint
 frysk::jnixx::Native::sizeOfJnixxObject(::jnixx::env) {
   return sizeof(::jnixx::object);
+}
+
+::java::lang::StringArray
+frysk::jnixx::Native::copy(::jnixx::env env,
+			   ::java::lang::StringArray strings) {
+  char** chars = strings2chars(env, strings);
+  ::java::lang::StringArray copiedStrings = chars2strings(env, chars);
+  ::free(chars);
+  return copiedStrings;
 }

@@ -1,3 +1,16 @@
+2008-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Main.java (treatAsNative(Method)): New.
+	(treatAsPrivate(Member)): New.
+	* PrintDeclarations.java: Use.
+	* PrintHxxDefinitions.java: Use.
+	* PrintCxxDefinitions.java: Use; Extend ClassWalker.
+	* TestJnixx.java (testCharsConversion()): New.
+	* chars.hxx: New.
+	* chars.cxx: .New.
+	* jni/Native.cxx (Native::copy): New.
+	* cni/Native.cxx (Native::copy): New.
+
 2008-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* jnixx.hxx (jnixx::env): Fill in missing JNI bindings; match JNI

@@ -105,7 +105,7 @@ class PrintDeclarations extends ClassWalker {
 		if (Modifier.isStatic(method.getModifiers())) {
 		    p.print("static ");
 		}
-		if (!Modifier.isNative(method.getModifiers())) {
+		if (!Main.treatAsNative(method)) {
 		    p.print("inline ");
 		}
 		p.printCxxType(method.getReturnType());

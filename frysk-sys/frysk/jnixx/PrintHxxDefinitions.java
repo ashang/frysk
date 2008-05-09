@@ -225,7 +225,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 
 	    public void acceptMethod(Method method) {
-		if (!Modifier.isNative(method.getModifiers())) {
+		if (!Main.treatAsNative(method)) {
 		    printCxxMethodDefinition(method);
 		}
 	    }

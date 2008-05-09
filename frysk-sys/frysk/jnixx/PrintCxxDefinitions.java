@@ -44,103 +44,123 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-class PrintCxxDefinitions extends ClassVisitor {
+class PrintCxxDefinitions extends ClassWalker {
 
     private final Printer p;
     PrintCxxDefinitions(Printer p) {
 	this.p = p;
     }
 
+    private ClassVisitor printer = new ClassVisitor() {
 
-    private void printNativeMethodDefinition(Method method) {
-	boolean isStatic = Modifier.isStatic(method.getModifiers());
-	p.println();
-	while (p.dent(0, "extern \"C\" {", "};")) {
-	    p.print("JNIEXPORT ");
-	    p.printJniType(method.getReturnType());
-	    p.print(" JNICALL ");
-	    p.printJniName(method);
-	    p.print("(");
-	    p.printFormalJniParameters(method, false);
-	    p.println(");");
-	}
-	p.println();
-	p.printJniType(method.getReturnType());
-	p.println();
-	p.printJniName(method);
-	p.print("(");
-	p.printFormalJniParameters(method, true);
-	p.print(")");
-	while (p.dent(0, "{", "};")) {
-	    p.println("try {");
-	    {
-		p.indent();
-		p.println("::jnixx::env _env = ::jnixx::env(_jni);");
-		Class returnType = method.getReturnType();
-		if (returnType != Void.TYPE) {
-		    p.printCxxType(returnType);
-		    p.print(" ret = ");
+	    private void printNativeMethodDefinition(Method method) {
+		boolean isStatic = Modifier.isStatic(method.getModifiers());
+		p.println();
+		while (p.dent(0, "extern \"C\" {", "};")) {
+		    p.print("JNIEXPORT ");
+		    p.printJniType(method.getReturnType());
+		    p.print(" JNICALL ");
+		    p.printJniName(method);
+		    p.print("(");
+		    p.printFormalJniParameters(method, false);
+		    p.println(");");
 		}
-		if (isStatic) {
-		    p.printQualifiedCxxName(method);
-		} else {
-		    p.printCxxType(method.getDeclaringClass());
-		    p.print("(object).");
-		    p.print(method.getName());
-		}
+		p.println();
+		p.printJniType(method.getReturnType());
+		p.println();
+		p.printJniName(method);
 		p.print("(");
-		p.printActualCxxParameters(method);
-		p.println(");");
-		if (returnType != Void.TYPE) {
-		    p.print("return ");
-		    if (returnType.isPrimitive()) {
-			p.print("ret");
-		    } else if (returnType == String.class) {
-			p.print("(jstring) ret._object");
-		    } else if (returnType.isArray()) {
-			if (returnType.getComponentType().isPrimitive()) {
-			    p.print("ret");
-			} else {
-			    p.print("(jobjectArray) ret._object");
+		p.printFormalJniParameters(method, true);
+		p.print(")");
+		while (p.dent(0, "{", "};")) {
+		    p.println("try {");
+		    {
+			p.indent();
+			p.println("::jnixx::env _env = ::jnixx::env(_jni);");
+			Class returnType = method.getReturnType();
+			if (returnType != Void.TYPE) {
+			    p.printCxxType(returnType);
+			    p.print(" ret = ");
 			}
-		    } else {
-			p.print("ret._object");
+			if (isStatic) {
+			    p.printQualifiedCxxName(method);
+			} else {
+			    p.printCxxType(method.getDeclaringClass());
+			    p.print("(object).");
+			    p.print(method.getName());
+			}
+			p.print("(");
+			p.printActualCxxParameters(method);
+			p.println(");");
+			if (returnType != Void.TYPE) {
+			    p.print("return ");
+			    if (returnType.isPrimitive()) {
+				p.print("ret");
+			    } else if (returnType == String.class) {
+				p.print("(jstring) ret._object");
+			    } else if (returnType.isArray()) {
+				if (returnType.getComponentType().isPrimitive()) {
+				    p.print("ret");
+				} else {
+				    p.print("(jobjectArray) ret._object");
+				}
+			    } else {
+				p.print("ret._object");
+			    }
+			    p.println(";");
+			}
+			p.outdent();
 		    }
-		    p.println(";");
+		    p.println("} catch (jnixx::exception) {");
+		    {
+			p.indent();
+			if (method.getReturnType() != Void.TYPE) {
+			    p.println("return 0;");
+			} else {
+			    p.println("return;");
+			}
+			p.outdent();
+		    }
+		    p.println("}");
 		}
-		p.outdent();
 	    }
-	    p.println("} catch (jnixx::exception) {");
-	    {
-		p.indent();
-		if (method.getReturnType() != Void.TYPE) {
-		    p.println("return 0;");
-		} else {
-		    p.println("return;");
-		}
-		p.outdent();
-	    }
-	    p.println("}");
-	}
-    }
 
-    public void acceptMethod(Method method) {
-	if (Modifier.isNative(method.getModifiers())) {
-	    printNativeMethodDefinition(method);
-	}
+	    public void acceptMethod(Method method) {
+		if (Main.treatAsNative(method)) {
+		    printNativeMethodDefinition(method);
+		}
+	    }
+	    void acceptInterface(Class constructor) {
+	    }
+	    void acceptConstructor(Constructor constructor) {
+	    }
+	    void acceptField(Field field) {
+	    }
+	    void acceptComponent(Class klass) {
+	    }
+	    void acceptClass(Class klass) {
+	    }
+	};
+
+    void acceptArray(Class klass) {
+	acceptClass(klass);
     }
-    void acceptInterface(Class constructor) {
-    }
-    void acceptConstructor(Constructor constructor) {
-    }
-    void acceptField(Field field) {
-    }
-    void acceptComponent(Class klass) {
+    void acceptPrimitive(Class klass) {
+	acceptClass(klass);
     }
     void acceptClass(Class klass) {
+	if (klass.isPrimitive())
+	    return;
+	if (klass.isArray())
+	    return;
 	p.println();
 	p.print("jclass ");
 	p.printQualifiedCxxName(klass);
 	p.println("::_class;");
+	printer.visit(klass);
+    }
+    void acceptInterface(Class klass) {
+	acceptClass(klass);
     }
 }
+

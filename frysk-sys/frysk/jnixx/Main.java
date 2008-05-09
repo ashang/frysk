@@ -40,8 +40,44 @@
 package frysk.jnixx;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Member;
 
 class Main {
+
+    /**
+     * Does this method require native bindings?  Methods that are not
+     * part of this JNI library, that are native, must be treated as
+     * virtual.
+     */
+    static boolean treatAsNative(Method method) {
+	// FIXME: Should be filtering based on something smarter than
+	// this.
+	if (method.getDeclaringClass().getName().startsWith("java."))
+	    return false;
+	if (method.getDeclaringClass().getName().startsWith("gnu."))
+	    return false;
+	if (Modifier.isNative(method.getModifiers()))
+	    return true;
+	return false;
+    }
+
+    /**
+     * Is the member visible to this generated JNI code.  Private
+     * methods and fileds and the java package are not visible.
+     */
+    static boolean treatAsInvisible(Member member) {
+	if (Modifier.isPrivate(member.getModifiers())) {
+	    // FIXME: Should be filtering based on something smarter
+	    // than is.
+	    if (member.getDeclaringClass().getName().startsWith("java."))
+		return true;
+	    if (member.getDeclaringClass().getName().startsWith("gnu."))
+		return true;
+	}
+	return false;
+    }
 
     private static void printHxxFile(Printer p, Class[] classes) {
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
@@ -53,12 +89,9 @@ class Main {
     private static void printCxxFile(Printer p, Class[] classes) {
 	printHxxFile(p, classes); // #include
 	p.println();
-	for (int i = 0; i < classes.length; i++) {
-	    p.print("jclass ");
-	    p.printQualifiedCxxName(classes[i]);
-	    p.println("::_class;");
-	}
-	new PrintCxxDefinitions(p).visit(classes);
+	p.println("\f");
+	p.println();
+	new PrintCxxDefinitions(p).walk(classes);
     }
 
     public static void main(String[] args) throws ClassNotFoundException {

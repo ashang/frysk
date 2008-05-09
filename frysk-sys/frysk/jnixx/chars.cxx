@@ -37,11 +37,53 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+#include "jni.hxx"
+#include <malloc.h>
 
-class Native {
-    static native boolean isJni();
-    static native int sizeOfJnixxEnv();
-    static native int sizeOfJnixxObject();
-    static native String[] copy(String[] strings);
+char**
+strings2chars(jnixx::env env, ::java::lang::StringArray strings) {
+  jsize arrayLength = env.GetArrayLength((jobjectArray)strings._object);
+  // compute the allocated size.
+  size_t size = 0;
+  size += sizeof(void*); // NULL
+  for (int i = 0; i < arrayLength; i++) {
+    size += sizeof(void*); // pointer
+    jstring string = (jstring) env.GetObjectArrayElement((jobjectArray)strings._object, i);
+    size += env.GetStringUTFLength(string); // chars
+    size += 1; // NUL
+    env.DeleteLocalRef(string);
+  }
+  // Create the array.
+  char **elements = (char**) ::malloc(size);
+  char **argv = elements;
+  // Store strings after the array
+  char *arg = (char*) (argv + arrayLength + 1);
+  // Copy
+  for (int i = 0; i < arrayLength; i++) {
+    *argv++ = arg;
+    jstring string = (jstring)env.GetObjectArrayElement((jobjectArray)strings._object, i);
+    int utfLength = env.GetStringUTFLength(string);
+    env.GetStringUTFRegion(string, 0, env.GetStringLength(string), arg);
+    arg += utfLength;
+    env.DeleteLocalRef(string);
+    *arg++ = '\0';
+  }
+  *argv = NULL;
+  return elements;
+}
+
+::java::lang::StringArray
+chars2strings(::jnixx::env env, char** argv) {
+  int length = 0;
+  for (char **p = argv; *p != NULL; p++) {
+    length++;
+  }
+  jclass stringClass = ::java::lang::String::_class_(env);
+  jobjectArray strings = env.NewObjectArray(length, stringClass, NULL);
+  for (int i = 0; i < length; i++) {
+    jstring string = env.NewStringUTF(argv[i]);
+    env.SetObjectArrayElement(strings, i, string);
+    env.DeleteLocalRef(string);
+  }
+  return strings;
 }
