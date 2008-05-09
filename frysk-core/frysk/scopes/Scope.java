@@ -86,7 +86,6 @@ public class Scope
     
   public Scope(DwarfDie die, TypeFactory typeFactory){
       this.die = die;
-      this.scopes = new LinkedList();
       this.typeFactory = typeFactory;
       this.sourceLocation = SourceLocationFactory.getSourceLocation(die);
   }
@@ -105,7 +104,22 @@ public class Scope
   }
   
   public LinkedList getScopes(){
-    return this.scopes;
+
+      if (this.scopes == null) {
+	  this.scopes = new LinkedList();
+	  DwarfDie die = this.die.getChild();
+	  
+	  while (die != null) {
+	      try{
+		  Scope scope = ScopeFactory.theFactory.getScope(die, typeFactory);
+		  this.scopes.add(scope);
+	      } catch (IllegalArgumentException e) {
+		  // not a scope
+	      }
+	      die = die.getSibling();
+	  }
+      }
+      return scopes;
   }
   
   protected DwarfDie getDie(){
@@ -195,6 +209,7 @@ public class Scope
   }
   
   public ObjectDeclaration getDeclaredObjectByName(String name){
+      
       ObjectDeclaration objectDeclaration = null;
       
       Iterator iterator = this.getObjectDeclarations().iterator();
@@ -209,6 +224,33 @@ public class Scope
       while (iterator.hasNext()) {
 	Enumeration enumiration = (Enumeration) iterator.next();
 	objectDeclaration = enumiration.getVariableByName(name);
+	
+	if(objectDeclaration != null){
+	    return objectDeclaration;
+	}
+      }
+      
+      
+      return null;
+  }
+  
+  /**
+   * Searches child scopes for the given name
+   * @param name
+   * @return
+   */
+  public ObjectDeclaration getDeclaredObjectByNameRecursive(String name){
+      
+      ObjectDeclaration objectDeclaration = this.getDeclaredObjectByName(name);
+      
+      if(objectDeclaration != null){
+	  return objectDeclaration;
+      }
+      
+      Iterator iterator = this.getScopes().iterator();
+      while (iterator.hasNext()) {
+	Scope scope = (Scope) iterator.next();
+	objectDeclaration = scope.getDeclaredObjectByNameRecursive(name);
 	
 	if(objectDeclaration != null){
 	    return objectDeclaration;

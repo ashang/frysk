@@ -92,33 +92,63 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * should be modified to
      * - use frysk search ({@link ObjectDeclarationSearchEngine})
      * - handle # syntax
-     * ...   
+     * ...
+     * handles:
+     * [file#]name
+     *    
      */
     public ObjectDeclaration getObject(String name) {
 	
-	ObjectDeclaration result;
+	ObjectDeclaration result = null;
+	
+	DwarfDie cu;
+	String symbol;
 	
 	Elf elf = new Elf(new File(task.getProc().getExeFile().getSysRootedPath()), ElfCommand.ELF_C_READ);
 	Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-	
-	DwarfDie resultDie = DwarfDie.getDecl(dwarf, name);
 	TypeFactory typeFactory = new TypeFactory(task.getISA());
 	
-	if (resultDie == null)
-	    throw new ObjectDeclarationNotFoundException(name);
+	String[] names = name.split("#");
 	
+	if(names.length == 2){
+	    LinkedList cuDies = dwarf.getCUByName(names[0]);
+
+	    if(cuDies.size() == 0){
+		throw new ObjectDeclarationNotFoundException(names[0]);
+	    }else{
+		//XXX: modify this to use the entire list.
+		cu = (DwarfDie) cuDies.getFirst();
+	    }
+	    
+	    symbol = names[1];
+	    
+	    Scope scope = ScopeFactory.theFactory.getScope(cu, typeFactory);
+	    result =  scope.getDeclaredObjectByNameRecursive(symbol);
+	}
 	
-	try {
-	    result =  (ObjectDeclaration) ScopeFactory.theFactory.getScope(resultDie, typeFactory);
-	} catch (IllegalArgumentException e) {
-	    try {
-		result = new Variable(resultDie);
-	    } catch (Exception e2) { 
+	if (names.length == 1) {
+	    DwarfDie resultDie = DwarfDie.getDecl(dwarf, name);
+
+	    if (resultDie == null)
 		throw new ObjectDeclarationNotFoundException(name);
+
+	    try {
+		result = (ObjectDeclaration) ScopeFactory.theFactory.getScope(
+			resultDie, typeFactory);
+	    } catch (IllegalArgumentException e) {
+		try {
+		    result = new Variable(resultDie);
+		} catch (Exception e2) {
+		    throw new ObjectDeclarationNotFoundException(name);
+		}
 	    }
 	}
 	
-	return (ObjectDeclaration)result;
+	if (result == null) {
+	    throw new ObjectDeclarationNotFoundException(name);
+	}
+	
+	return result;
     }
  
     /**

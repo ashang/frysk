@@ -41,8 +41,15 @@
 #include <fcntl.h>
 #include <gcj/cni.h>
 #include <libdw.h>
+#include <stdio.h>
 
 #include "lib/dwfl/Dwarf.h"
+#include "lib/dwfl/DwarfDie.h"
+#include "lib/dwfl/DwarfDieFactory.h"
+
+#include <java/lang/String.h>
+#include <java/util/LinkedList.h>
+#include <java/lang/Long.h>
 
 #define DWARF_POINTER (::Dwarf *) this->pointer
 
@@ -66,6 +73,43 @@ lib::dwfl::Dwarf::dwarf_begin(jstring file, jint command){
 	
   this->pointer = (jlong) ::dwarf_begin(fd, (::Dwarf_Cmd) command);
 }
+
+
+java::util::LinkedList*
+lib::dwfl::Dwarf::get_cu_by_name(java::lang::String* name)
+{
+	
+	java::util::LinkedList* list = new java::util::LinkedList();
+	
+	Dwarf_Off offset = 0;
+	Dwarf_Off old_offset;
+	Dwarf_Die cudie_mem;
+	size_t hsize;
+	  
+	while (dwarf_nextcu ((::Dwarf *)this->pointer, old_offset = offset, &offset, 
+	                       &hsize, NULL, NULL, NULL) == 0)
+	{
+		
+		Dwarf_Die *cudie = dwarf_offdie ((::Dwarf *)this->pointer, old_offset + hsize, &cudie_mem);
+		const char *die_name = dwarf_diename (cudie);
+		java::lang::String* die_name_string = JvNewStringLatin1 (die_name);
+		
+		if(die_name_string->endsWith(name)){
+
+			Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+			
+			memcpy(die, cudie, sizeof(*die));
+			lib::dwfl::DwarfDie* cuDie = lib::dwfl::DwarfDieFactory::getFactory()->makeDie((jlong)die, NULL);
+			cuDie->setManageDie(true);
+			 
+			list->add(cuDie);
+		}
+		
+	}
+	  
+	return list;
+}
+
 
 JArray<jstring>*
 lib::dwfl::Dwarf::get_source_files()
@@ -124,7 +168,6 @@ lib::dwfl::Dwarf::get_source_files()
 
   return jfiles;
 }
-
 
 jint 
 lib::dwfl::Dwarf::dwarf_end(){

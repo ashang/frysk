@@ -1,3 +1,10 @@
+2008-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (getObject): Added support
+	for [file#]name lookup
+	* TestObjectDeclarationSearchEngineTopDown.java 
+	(testGetObjectHashFileHashSymbol): enabled test.
+
 2008-04-30  Stan Cox  <scox@redhat.com>
 	
 	* TypeFactory.java (getGccStructOrClassType): Set dieHash.

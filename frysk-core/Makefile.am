@@ -323,8 +323,9 @@ frysk/pkglibdir/FunitSimpleInterfaceTest:
 
 
 # The following links two files into one executable
-frysk_pkglibdir_funit_scopes_multi_file_a_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-b.c  -DNO_MAIN
-frysk_pkglibdir_funit_scopes_multi_file_b_LINK = $(LINK) $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-b.c  -DNO_MAIN
-
+pkglib_PROGRAMS += frysk/pkglibdir/funit-scopes-multi-file
+frysk_pkglibdir_funit_scopes_multi_file_SOURCES =
+frysk/pkglibdir/funit-scopes-multi-file:
+	gcc -g $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-a.c  $(srcdir)/frysk/pkglibdir/funit-scopes-multi-file-b.c  -o   frysk/pkglibdir/funit-scopes-multi-file
 
 

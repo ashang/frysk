@@ -72,12 +72,10 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
     }
     
     public void testGetObjectHashFileHashSymbol() {
-	if (unresolved(6459)) {
-	    return;
-	}
-	String objectName = "#funit-scopes-multi-file-b.c#first";
+	
+	String objectName = "funit-scopes-multi-file-b.c#first";
 	String objectToken = "*this*";
-	String fileName = "funit-scopes-multi-file-a";
+	String fileName = "funit-scopes-multi-file";
 	File srcPath = getSrc("funit-scopes-multi-file-b.c");
 
 	verifyObjectFound(objectName, objectToken, fileName, srcPath);
@@ -98,7 +96,7 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
 		.getObject(objectName);
 
 	assertNotNull("Variable found", objectDeclaration);
-	assertEquals("Correct name", objectName, objectDeclaration.getName());
+	assertTrue("Correct name", objectName.endsWith(objectDeclaration.getName()));
 	assertEquals("Found the correct variable on the correct line ",
 		objectLine, objectDeclaration.getSourceLocation().getLine());
 

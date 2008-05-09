@@ -39,9 +39,9 @@
 
 package lib.dwfl;
 
-import lib.dwfl.Elf;
-import lib.dwfl.ElfSection;
 import gnu.gcj.RawData;
+
+import java.util.LinkedList;
 
 public class Dwarf {
 	
@@ -94,9 +94,24 @@ public class Dwarf {
     public String[] getSourceFiles(){
 	return get_source_files();
     }
+    
+    /**
+     * Returns a list of compilation units matching
+     * the given name.
+     * If a full path is give only one cu is likely
+     * to be returned.
+     * 
+     * @param name
+     * @return
+     */
+    public LinkedList getCUByName(String name){
+	return this.get_cu_by_name(name);
+    }
+    
     protected native void dwarf_begin_elf(RawData elf, int command, long section);
     protected native void dwarf_begin(String file, int command);
     protected native String[] get_source_files();
+    protected native LinkedList get_cu_by_name(String name);
     protected native int dwarf_end();
     //	protected native long[] dwarf_get_functions();
     //	protected native long dwarf_addrdie(long addr);

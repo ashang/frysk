@@ -1,3 +1,8 @@
+2008-05-09  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
+
+	* Makefile.am: Corred rule for compiling 
+	funit-scopes-multi-file
+
 2008-05-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Remove CDTParser.

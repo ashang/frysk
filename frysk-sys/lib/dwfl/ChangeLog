@@ -1,3 +1,11 @@
+2008-05-09  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
+
+	* cni/Dwarf.cxx (Dwarf::get_cu_by_name): New.
+
+2008-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Dwarf.java (getCUByName): New.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/DwarfDie.cxx: Include jni.hxx.	

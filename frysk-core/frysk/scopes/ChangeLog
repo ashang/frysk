@@ -1,3 +1,8 @@
+2008-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java (getDeclaredObjectByNameRecursive): Added
+	support for recursive search.
+
 2008-04-22  Sami Wagiaalla  <swagiaal@redhat.com> 
 
 	* Scope.java: Now looks at NameScopes as well
