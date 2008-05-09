@@ -1,5 +1,8 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Main.java: Add a header filename parameter; in .cxx file,
+	generate #include of header, instead of header contents.
+
 	* PrintDeclarations.java: Generate a protected constructor; and a
 	static Cast method.
 	* jnixx.hxx (jnixx::array): Add Cast method.

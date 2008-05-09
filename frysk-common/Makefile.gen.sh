@@ -673,7 +673,7 @@ generate_jnixx_class() {
     local j=$(echo $(dirname $dir)/$base)
     if has_java_source $j ; then
 	automake_variable JNIXX_CLASSES += $(echo $j | tr '[/]' '[.]')
-	echo "${dir}/${base}.o: $j.java"
+	echo "${dir}/${base}.o: $j.java | jni.hxx.gch"
     fi
 }
 
@@ -901,15 +901,16 @@ CLEANFILES += jni.hxx jni.cxx jni.hxx.gch
 \$(lib${GEN_MAKENAME}_jni_a_SOURCES): | jni.hxx jni.hxx.gch
 jni.hxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \
-	    \$(JAVA) frysk.jnixx.Main hxx \$(JNIXX_CLASSES) \
+	    \$(JAVA) frysk.jnixx.Main hxx jni.hxx \$(JNIXX_CLASSES) \
 	        > \$@.tmp
 	mv \$@.tmp \$@
 jni.hxx.gch: jni.hxx
 	\$(CXXCOMPILE) -c -x c++-header jni.hxx
-jni.cxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar jni.hxx.gch
+jni.cxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \
-	    \$(JAVA) frysk.jnixx.Main cxx \$(JNIXX_CLASSES) \
+	    \$(JAVA) frysk.jnixx.Main cxx jni.hxx \$(JNIXX_CLASSES) \
 	        > \$@.tmp
 	mv \$@.tmp \$@
+jni.o: jni.hxx | jni.hxx.gch
 EOF
 fi

@@ -79,37 +79,46 @@ class Main {
 	return false;
     }
 
-    private static void printHxxFile(Printer p, Class[] classes) {
+    private static void printHxxFile(Printer p, String headerFile,
+				     Class[] classes) {
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
 	new PrintNamespaces(p).walk(classes);
+	p.println();
+	p.println("\f");
 	new PrintDeclarations(p).walk(classes);
+	p.println();
+	p.println("\f");
 	new PrintHxxDefinitions(p).walk(classes);
     }
 
-    private static void printCxxFile(Printer p, Class[] classes) {
-	printHxxFile(p, classes); // #include
-	p.println();
-	p.println("\f");
+    private static void printCxxFile(Printer p, String headerFile,
+				     Class[] classes) {
+	p.print("#include \"");
+	p.print(headerFile);
+	p.println("\"");
 	p.println();
 	new PrintCxxDefinitions(p).walk(classes);
     }
 
     public static void main(String[] args) throws ClassNotFoundException {
-	if (args.length < 2) {
-	    throw new RuntimeException("Usage: jnixx cxx}hxx <class-name> ...");
+	if (args.length < 3) {
+	    throw new RuntimeException("Usage: jnixx cxx|hxx <header-filename> <class-name> ...");
 	}
 
-	Class[] classes = new Class[args.length - 1];
+	boolean generateHeader = args[0].equals("hxx");
+	String headerFile = args[1];
+	final int firstClass = 2;
+	Class[] classes = new Class[args.length - firstClass];
 	for (int i = 0; i < classes.length; i++) {
-	    classes[i] = Class.forName(args[i + 1], false,
+	    classes[i] = Class.forName(args[i + firstClass], false,
 				       Main.class.getClassLoader());
 	}
 
 	Printer p = new Printer(new PrintWriter(System.out));
-	if (args[0].equals("hxx"))
-	    printHxxFile(p, classes);
+	if (generateHeader)
+	    printHxxFile(p, headerFile, classes);
 	else
-	    printCxxFile(p, classes);
+	    printCxxFile(p, headerFile, classes);
 	p.flush();
     }
 }
