@@ -159,7 +159,6 @@ class JniBindings {
 	.put(String.class, false,
 	     "jsize", "GetStringLength",
 	     new String[] {
-		 "String", "string",
 	     },
 	     new Object[] {
 		 "jsize len = _jni->GetStringLength((jstring)_object);",

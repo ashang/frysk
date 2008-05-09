@@ -1,5 +1,9 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx (jnixx::array): Add templated JNI array method.
+	* chars.cxx: Use tempated array methods.
+	* JniBindings.java: Drop String parameter to GetStringLength.
+
 	* jni/Native.cxx (Native::sizeOfObject): Replace sizeOfJnixxObject.
 	(Native::sizeOfObjectArray, Native::sizeOfClass): New.
 	* cni/Native.cxx (Native::sizeOfObject): Replace sizeOfJnixxObject

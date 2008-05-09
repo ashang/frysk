@@ -1478,6 +1478,10 @@ namespace jnixx {
     bool operator==(jobject o) {
       return _object == o;
     }
+    void DeleteLocalRef(jnixx::env env) {
+      env.DeleteLocalRef(_object);
+      _object = NULL;
+    }
   };
 
   /**
@@ -1487,6 +1491,19 @@ namespace jnixx {
   template <typename Object> class array : public object {
   public:
     array(jobject _object) : object(_object) {
+    }
+    jsize GetArrayLength(::jnixx::env env) {
+      return env.GetArrayLength((jarray)_object);
+    }
+    static array<Object> NewObjectArray(::jnixx::env env, jsize length,
+				 ::jnixx::object init) {
+      return env.NewObjectArray(length, Object::_class_(env), init._object);
+    }
+    Object GetObjectArrayElement(::jnixx::env env, jsize index) {
+      return env.GetObjectArrayElement((jobjectArray)_object, index);
+    }
+    void SetObjectArrayElement(::jnixx::env env, jsize index, Object object) {
+      env.SetObjectArrayElement((jobjectArray)_object, index, object._object);
     }
   };
 }

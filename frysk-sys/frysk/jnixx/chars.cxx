@@ -37,23 +37,25 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "jni.hxx"
 #include <malloc.h>
 
+#include "jni.hxx"
 #include "frysk/jnixx/chars.hxx"
 
+using namespace java::lang;
+
 char**
-strings2chars(jnixx::env env, ::jnixx::array<java::lang::String> strings) {
-  jsize arrayLength = env.GetArrayLength((jobjectArray)strings._object);
+strings2chars(jnixx::env env, ::jnixx::array<String> strings) {
+  jsize arrayLength = strings.GetArrayLength(env);
   // compute the allocated size.
   size_t size = 0;
   size += sizeof(void*); // NULL
   for (int i = 0; i < arrayLength; i++) {
     size += sizeof(void*); // pointer
-    jstring string = (jstring) env.GetObjectArrayElement((jobjectArray)strings._object, i);
-    size += env.GetStringUTFLength(string); // chars
+    String string = strings.GetObjectArrayElement(env, i);
+    size += string.GetStringUTFLength(env); // chars
     size += 1; // NUL
-    env.DeleteLocalRef(string);
+    string.DeleteLocalRef(env);
   }
   // Create the array.
   char **elements = (char**) ::malloc(size);
@@ -63,29 +65,29 @@ strings2chars(jnixx::env env, ::jnixx::array<java::lang::String> strings) {
   // Copy
   for (int i = 0; i < arrayLength; i++) {
     *argv++ = arg;
-    jstring string = (jstring)env.GetObjectArrayElement((jobjectArray)strings._object, i);
-    int utfLength = env.GetStringUTFLength(string);
-    env.GetStringUTFRegion(string, 0, env.GetStringLength(string), arg);
+    String string = strings.GetObjectArrayElement(env, i);
+    int utfLength = string.GetStringUTFLength(env);
+    string.GetStringUTFRegion(env, 0, string.GetStringLength(env), arg);
     arg += utfLength;
-    env.DeleteLocalRef(string);
+    string.DeleteLocalRef(env);
     *arg++ = '\0';
   }
   *argv = NULL;
   return elements;
 }
 
-::jnixx::array<java::lang::String>
+::jnixx::array<String>
 chars2strings(::jnixx::env env, char** argv) {
   int length = 0;
   for (char **p = argv; *p != NULL; p++) {
     length++;
   }
-  jclass stringClass = ::java::lang::String::_class_(env);
-  jobjectArray strings = env.NewObjectArray(length, stringClass, NULL);
+  ::jnixx::array<String> strings
+      = ::jnixx::array<String>::NewObjectArray(env, length, NULL);
   for (int i = 0; i < length; i++) {
-    jstring string = env.NewStringUTF(argv[i]);
-    env.SetObjectArrayElement(strings, i, string);
-    env.DeleteLocalRef(string);
+    String string = String::NewStringUTF(env, argv[i]);
+    strings.SetObjectArrayElement(env, i, string);
+    string.DeleteLocalRef(env);
   }
   return strings;
 }
