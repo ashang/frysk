@@ -43,8 +43,17 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Member;
+import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
+import java.util.Collections;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.io.IOException;
 
 class Main {
+
+    private static HashSet localClasses = new HashSet();
 
     /**
      * Does this method require native bindings?  Methods that are not
@@ -54,13 +63,9 @@ class Main {
     static boolean treatAsNative(Method method) {
 	// FIXME: Should be filtering based on something smarter than
 	// this.
-	if (method.getDeclaringClass().getName().startsWith("java."))
+	if (!localClasses.contains(method.getDeclaringClass()))
 	    return false;
-	if (method.getDeclaringClass().getName().startsWith("gnu."))
-	    return false;
-	if (Modifier.isNative(method.getModifiers()))
-	    return true;
-	return false;
+	return Modifier.isNative(method.getModifiers());
     }
 
     /**
@@ -68,26 +73,24 @@ class Main {
      * methods and fileds and the java package are not visible.
      */
     static boolean treatAsInvisible(Member member) {
-	if (Modifier.isPrivate(member.getModifiers())) {
-	    // FIXME: Should be filtering based on something smarter
-	    // than is.
-	    if (member.getDeclaringClass().getName().startsWith("java."))
-		return true;
-	    if (member.getDeclaringClass().getName().startsWith("gnu."))
-		return true;
-	}
-	return false;
+	// Local or defining classea are always visible.
+	if (localClasses.contains(member.getDeclaringClass()))
+	    return false;
+	return Modifier.isPrivate(member.getModifiers());
     }
 
     private static void printHxxFile(Printer p, String headerFile,
 				     Class[] classes) {
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
+	System.err.println("Generating namespaces");
 	new PrintNamespaces(p).walk(classes);
 	p.println();
 	p.println("\f");
+	System.err.println("Generating declarations");
 	new PrintDeclarations(p).walk(classes);
 	p.println();
 	p.println("\f");
+	System.err.println("Generating definitions");
 	new PrintHxxDefinitions(p).walk(classes);
     }
 
@@ -97,22 +100,38 @@ class Main {
 	p.print(headerFile);
 	p.println("\"");
 	p.println();
+	System.err.println("Generating definitions");
 	new PrintCxxDefinitions(p).walk(classes);
     }
 
-    public static void main(String[] args) throws ClassNotFoundException {
-	if (args.length < 3) {
-	    throw new RuntimeException("Usage: jnixx cxx|hxx <header-filename> <class-name> ...");
+    public static void main(String[] args)
+	throws ClassNotFoundException, IOException
+    {
+	if (args.length != 3) {
+	    throw new RuntimeException("Usage: jnixx cxx|hxx <header-filename> <jar-file>");
 	}
 
 	boolean generateHeader = args[0].equals("hxx");
 	String headerFile = args[1];
-	final int firstClass = 2;
-	Class[] classes = new Class[args.length - firstClass];
-	for (int i = 0; i < classes.length; i++) {
-	    classes[i] = Class.forName(args[i + firstClass], false,
-				       Main.class.getClassLoader());
+	String jarFile = args[2];
+
+	System.err.println("Reading " + jarFile);
+	List entries = Collections.list(new JarFile(jarFile).entries());
+	for (Iterator i = entries.iterator(); i.hasNext(); ) {
+	    JarEntry entry = (JarEntry) i.next();
+	    String name = entry.getName();
+	    if (!name.endsWith(".class"))
+		continue;
+	    String className = name
+		.replaceAll(".class$", "")
+		.replaceAll("/", ".");
+	    Class klass = Class.forName(className, false,
+					Main.class.getClassLoader());
+	    localClasses.add(klass);
 	}
+
+	Class[] classes = new Class[localClasses.size()];
+	localClasses.toArray(classes);
 
 	Printer p = new Printer(new PrintWriter(System.out));
 	if (generateHeader)

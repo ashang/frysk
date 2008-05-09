@@ -1,5 +1,8 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Main.java: Take a class file; dump all classes; print progress.
+	* Printer.java: Break up <: in "array<::Component>"
+
 	* Main.java: Add a header filename parameter; in .cxx file,
 	generate #include of header, instead of header contents.
 

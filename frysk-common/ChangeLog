@@ -1,5 +1,7 @@
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
+	* (jni.hxx, jni.cxx): Pass the entire jar to jnixx.
+
 	* Makefile.gen.sh (jni.cxx, jni.hxx): Pass header name to jnixx.
 	(jni.o): Explicitly specify dependencies.
 

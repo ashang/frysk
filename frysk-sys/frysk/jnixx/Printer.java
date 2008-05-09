@@ -179,10 +179,15 @@ class Printer {
 		if (global) {
 		    print("::");
 		}
-		print("jnixx::array<");
-		printCxxName(klass.getComponentType(), false);
+		print("jnixx::array< ");
+		if (global) {
+		    // Prevents "<:" in "array<::Component>"
+		    print(" ");
+		}
+		printCxxName(klass.getComponentType(), global);
 		if (componentType.isArray()) {
-		    print(" "); // prevent's ">>".
+		    // Prevents ">>" in "array<array<Component>>".
+		    print(" ");
 		}
 		print(">");
 	    }
