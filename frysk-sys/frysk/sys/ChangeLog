@@ -1,3 +1,15 @@
+2008-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java (NO_TRACE, PTRACE, UTRACE): Delete.
+	(daemon(File,String,String,String,String[],String[])): New.
+	(spawn(File,String,String,String,String[],String[])): New.
+	(ptrace(File,String,String,String,String[],String[])): New.
+	(utrace(File,String,String,String,String[],String[])): New.
+	(spawn(File,String,String,String,String[],long,int)): Delete.
+	(spawn(String[],int)): Delete.
+	* cni/Fork.cxx: Update.
+	* cni/Errno.hxx (MALLOC_STRING, MALLOC_ARGV): Define.
+	
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/PseudoTerminal.cxx: Use String's JNI methods.

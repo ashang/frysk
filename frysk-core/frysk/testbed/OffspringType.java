@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import java.io.File;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.sys.Fork;
 import frysk.proc.Manager;
@@ -61,7 +62,9 @@ public abstract class OffspringType {
 						    String stdout,
 						    String stderr,
 						    String[] argv) {
-		return Fork.daemon(stdin, stdout, stderr, argv);
+		return Fork.daemon(new File(argv[0]),
+				   stdin, stdout, stderr,
+				   argv);
 	    }
 	};
     /**

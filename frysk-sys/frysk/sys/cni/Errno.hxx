@@ -74,12 +74,14 @@ extern int tryOpen (const char *file, int flags, int mode);
 extern size_t sizeof_argv (jstringArray argv);
 extern char** fill_argv (void* p, jstringArray argv);
 #define ALLOCA_ARGV(ARGV) (fill_argv (alloca (sizeof_argv (ARGV)), (ARGV)))
+#define MALLOC_ARGV(ARGV) (fill_argv (JvMalloc (sizeof_argv (ARGV)), (ARGV)))
 /**
  * Convert S, a String, into a C char* alocated on the stack.
  */
 extern size_t sizeof_string (jstring s);
 extern char* fill_string (void* p, jstring s);
 #define ALLOCA_STRING(S) (fill_string (alloca (sizeof_string (S)), (S)))
+#define MALLOC_STRING(S) (fill_string (JvMalloc (sizeof_string (S)), (S)))
 
 /**
  * Throw an ArrayIndexOutOfBounds exception if START and LENGTH do not

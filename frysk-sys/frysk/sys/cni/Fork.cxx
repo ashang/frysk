@@ -38,7 +38,6 @@
 // exception.
 
 #include <stdio.h>
-#include <alloca.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/ptrace.h>
@@ -54,46 +53,71 @@
 #include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/ProcessIdentifierFactory.h"
 
+enum tracing {
+  DAEMON,
+  NO_TRACE,
+  PTRACE,
+  UTRACE,
+};
+
 static void
-reopen (jstring file, const char *mode, FILE *stream)
-{
+reopen(const char* file, const char* mode, FILE *stream) {
   if (file == NULL)
     return;
-  int len = JvGetStringUTFLength (file);
-  char *fileName = (char *) alloca (len + 1);
-  JvGetStringUTFRegion (file, 0, file->length (), fileName);
-  fileName[len] = '\0';
   errno = 0;
-  ::freopen (fileName, mode, stream);
+  ::freopen(file, mode, stream);
   if (errno != 0) {
-    ::perror ("freopen");
-    ::_exit (errno);
+    // Should not happen!
+    ::perror("freopen");
+    ::_exit(errno);
   }
 }
 
-int
-spawn(java::io::File* exe, jstring in, jstring out, jstring err,
-      jstringArray args, jlong environ, jint trace)
-{
-  // Convert args into argv, argc, filename.
-  char *filename = ALLOCA_STRING(exe->getPath());
-  int argc = JvGetArrayLength (args);
-  char **argv = (char **) alloca ((argc + 1) * sizeof (void*));
-  for (int i = 0; i < argc; i++) {
-    jstring arg = elements (args)[i];
-    int len = JvGetStringUTFLength (arg);
-    argv[i] = (char *) alloca (len + 1);
-    JvGetStringUTFRegion (arg, 0, arg->length (), argv[i]);
-    argv[i][len] = '\0';
+/**
+ * Spawn a child, return the PID or the -ERROR.
+ */
+static int
+spawn(const char* exePath,
+      const char* inPath, const char* outPath, const char* errPath,
+      int argc, char** argv, char** environ, tracing trace) {
+
+  if (trace == DAEMON) {
+    // Do a vfork(), fork(), exec() which lets the top level process
+    // capture the middle level fork()'s return value in a volatile.
+    volatile int pid = -1;
+    register int v;
+    errno = 0;
+    v = vfork ();
+    switch (v) {
+    case 0:
+      // This is executed by the child with the parent blocked, the
+      // final process id ends up in PID.
+      pid = ::spawn(exePath, inPath, outPath, errPath, argc, argv, 0, NO_TRACE);
+      _exit (0);
+    case -1:
+      // This is executed after a vfork barfs.
+      return -errno;
+    default:
+      // This is executed after the child has set PID with a FORK and
+      // then exited (which helps guarentee that the waitpid, below,
+      // doesn't block.
+      if (pid < 0)
+	return -errno;
+      // Consume the middle players wait.
+      int status;
+      errno = 0;
+      if (waitpid (v, &status, 0) < 0)
+	return -errno;
+      return pid;
+    }
   }
-  argv[argc] = 0;
 
   // Fork/exec
   errno = 0;
   pid_t pid = fork ();
   switch (pid) {
   case -1: // Fork failed.
-    throwErrno (errno, "fork");
+    return -errno;
   default: // Parent
     return pid;
   case 0: // Child
@@ -102,75 +126,94 @@ spawn(java::io::File* exe, jstring in, jstring out, jstring err,
     sigfillset(&mask);
     ::sigprocmask(SIG_UNBLOCK, &mask, NULL);
     // Redirect stdio.
-    reopen (in, "r", stdin);
-    reopen (out, "w", stdout);
-    reopen (err, "w", stderr);
+    reopen(inPath, "r", stdin);
+    reopen(outPath, "w", stdout);
+    reopen(errPath, "w", stderr);
     switch (trace) {
-    case frysk::sys::Fork::PTRACE:
+    case PTRACE:
       errno = 0;
-      ::ptrace ((enum __ptrace_request) PTRACE_TRACEME, 0, 0, 0);
+      ::ptrace((enum __ptrace_request) PTRACE_TRACEME, 0, 0, 0);
       if (errno != 0) {
 	::perror ("ptrace.traceme");
-	::_exit (errno);
+	::_exit(errno);
       }
       break;
-    case frysk::sys::Fork::UTRACE:
+    case UTRACE:
       fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
       break;
-    case frysk::sys::Fork::NO_TRACE:
+    case NO_TRACE:
+      break;
+    case DAEMON:
       break;
     }
-     if (environ != 0) {
-	::execve (filename, argv, (char **)environ);
-       }
-     else
-      ::execv (filename, argv);
+    if (environ != NULL) {
+      ::execve(exePath, argv, environ);
+    } else
+      ::execv(exePath, argv);
     // This should not happen.
-    ::perror ("execvp");
+    ::perror("execvp");
     ::_exit (errno);
   }
 }
 
-frysk::sys::ProcessIdentifier*
-frysk::sys::Fork::spawn(java::io::File* exe,
-			jstring in, jstring out, jstring err,
-			jstringArray args, jlong environ, jint trace) {
-  int pid = ::spawn(exe, in, out, err, args, environ, trace);
-  return frysk::sys::ProcessIdentifierFactory::create(pid);
+/**
+ * Convert convert to native and then spawn.
+ */
+static int
+spawn(java::io::File* exe,
+      jstring in, jstring out, jstring err,
+      jstringArray args, jlong environ, tracing trace) {
+  char* exePath = MALLOC_STRING(exe->getPath());
+  char* inPath = MALLOC_STRING(in);
+  char* outPath = MALLOC_STRING(out);
+  char* errPath = MALLOC_STRING(err);
+  int argc = args->length;
+  char** argv = MALLOC_ARGV(args);
+  int pid = ::spawn(exePath, inPath, outPath, errPath,
+		    argc, argv, (char**)environ, trace);
+  JvFree(exePath);
+  JvFree(inPath);
+  JvFree(outPath);
+  JvFree(errPath);
+  JvFree(argv);
+  if (pid < 0) {
+    switch (trace) {
+    case NO_TRACE:
+      throwErrno(-pid, "fork/exec");
+    case DAEMON:
+      throwErrno(-pid, "vfork/wait");
+    case PTRACE:
+      throwErrno(-pid, "fork/ptrace/exec");
+    case UTRACE:
+      throwErrno(-pid, "utrace");
+    }
+  }
+  return pid;
 }
 
-frysk::sys::ProcessIdentifier*
+jint
+frysk::sys::Fork::spawn(java::io::File* exe,
+			jstring in, jstring out, jstring err,
+			jstringArray args, jlong environ) {
+  return ::spawn(exe, in, out, err, args, environ, NO_TRACE);
+}
+
+jint
+frysk::sys::Fork::ptrace(java::io::File* exe,
+			jstring in, jstring out, jstring err,
+			jstringArray args, jlong environ) {
+  return ::spawn(exe, in, out, err, args, environ, PTRACE);
+}
+
+jint
+frysk::sys::Fork::utrace(java::io::File* exe,
+			jstring in, jstring out, jstring err,
+			jstringArray args, jlong environ) {
+  return ::spawn(exe, in, out, err, args, environ, UTRACE);
+}
+
+jint
 frysk::sys::Fork::daemon (java::io::File* exe, jstring in, jstring out,
-			  jstring err, jstringArray args)
-{
-  volatile int pid = -1;
-  register int v;
-  errno = 0;
-  v = vfork ();
-
-  // This is executed by the child with the parent blocked, the final
-  // process id ends up in PID.
-
-  if (v == 0) {
-    pid = ::spawn(exe, in, out, err, args, 0, frysk::sys::Fork::NO_TRACE);
-    _exit (0);
-  }
-
-  // This is executed after the child has exited (which helps
-  // guarentee that the waitpid, below, doesn't block.
-
-  if (v < 0)
-    throwErrno (errno, "vfork");
-  if (pid < 0)
-    throwErrno (errno, "fork");
-  
-  // Consume the middle players wait.
-  int status;
-  errno = 0;
-  if (waitpid (v, &status, 0) < 0)
-    throwErrno (errno, "waitpid", "process %d", v);
-
-  // printf ("v %d pid %d\n", v, pid);
-
-  return frysk::sys::ProcessIdentifierFactory::create(pid);
+			  jstring err, jstringArray args, jlong environ) {
+  return ::spawn(exe, in, out, err, args, environ, DAEMON);
 }
