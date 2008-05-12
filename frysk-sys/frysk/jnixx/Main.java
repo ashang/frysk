@@ -70,7 +70,8 @@ class Main {
 
     /**
      * Is the member visible to this generated JNI code.  Private
-     * methods and fileds and the java package are not visible.
+     * methods and Fields outside of the package of interest are not
+     * visible.
      */
     static boolean treatAsInvisible(Member member) {
 	// Local or defining classea are always visible.
@@ -82,10 +83,14 @@ class Main {
     private static void printHxxFile(Printer p, String headerFile,
 				     Class[] classes) {
 	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
-	System.err.println("Generating namespaces");
-	new PrintNamespaces(p).walk(classes);
+	p.println();
+	p.println("namespace jnixx {");
+	p.println("  extern JavaVM* vm;");
+	p.println("}");
 	p.println();
 	p.println("\f");
+	System.err.println("Generating namespaces");
+	new PrintNamespaces(p).walk(classes);
 	System.err.println("Generating declarations");
 	new PrintDeclarations(p).walk(classes);
 	p.println();
@@ -100,6 +105,17 @@ class Main {
 	p.print(headerFile);
 	p.println("\"");
 	p.println();
+	p.println("JavaVM* ::jnixx::vm;");
+	p.println();
+	p.println("JNIEXPORT jint");
+	p.println("JNI_OnLoad(JavaVM* javaVM, void* reserved)");
+	while (p.dent(0, "{", "}")) {
+	    p.println("fprintf(stderr, \"vm loaded\\n\");");
+	    p.println("::jnixx::vm = javaVM;");
+	    p.println("return JNI_VERSION_1_2;");
+	}
+	p.println();
+	p.println("\f");
 	System.err.println("Generating definitions");
 	new PrintCxxDefinitions(p).walk(classes);
     }

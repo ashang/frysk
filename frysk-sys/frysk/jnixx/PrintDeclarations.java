@@ -51,22 +51,59 @@ class PrintDeclarations extends ClassWalker {
 	this.p = p;
     }
 
+    private void printWrapperDeclaration(boolean isStatic, Class returnType,
+					 String name, Class[] params) {
+	if (isStatic) {
+	    p.print("static ");
+	}	
+	p.print("inline ");
+	p.printGlobalCxxName(returnType);
+	p.print(" ");
+	p.print(name);
+	p.print("(");
+	for (int i = 0; i < params.length; i++) {
+	    if (i > 0) {
+		p.print(", ");
+	    }
+	    p.printGlobalCxxName(params[i]);
+	}
+	p.println(");");
+    }
+    private void printWrapperDeclaration(Method method) {
+	printWrapperDeclaration(Modifier.isStatic(method.getModifiers()),
+				method.getReturnType(),
+				p.name(method),
+				method.getParameterTypes());
+    }
+    private void printWrapperDeclaration(Constructor constructor) {
+	printWrapperDeclaration(true,
+				constructor.getDeclaringClass(),
+				"New",
+				constructor.getParameterTypes());
+    }
+    private void printWrapperDeclaration(Field field, boolean get) {
+	boolean isStatic = Modifier.isStatic(field.getModifiers());
+	printWrapperDeclaration(isStatic,
+				get ? field.getType() : Void.TYPE,
+				p.name(field, get),
+				get ? new Class[0] : new Class[] { field.getType() });
+    }
+
     private void printCxxFieldAccessorDeclaration(Field field,
 						  boolean get) {
 	p.printlnModifiers(field);
+	printWrapperDeclaration(field, get);
 	if (Modifier.isStatic(field.getModifiers())) {
 	    p.print("static ");
 	}
 	p.print("inline ");
 	if (get) {
 	    p.printGlobalCxxName(field.getType());
-	    p.print(" Get");
 	} else {
-	    p.print("void Set");
+	    p.print("void");
 	}
-	String name = field.getName();
-	p.print(Character.toUpperCase(name.charAt(0)));
-	p.print(name.substring(1));
+	p.print(" ");
+	p.printName(field, get);
 	p.print("(::jnixx::env");
 	if (!get) {
 	    p.print(", ");
@@ -84,6 +121,7 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	    public void acceptConstructor(Constructor constructor) {
 		p.printlnModifiers(constructor);
+		printWrapperDeclaration(constructor);
 		p.print("static inline ");
 		p.printGlobalCxxName(constructor.getDeclaringClass());
 		p.print(" New(");
@@ -102,6 +140,7 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	    public void acceptMethod(Method method) {
 		p.printlnModifiers(method);
+		printWrapperDeclaration(method);
 		if (Modifier.isStatic(method.getModifiers())) {
 		    p.print("static ");
 		}

@@ -51,7 +51,62 @@ class PrintHxxDefinitions extends ClassWalker {
 	this.p = p;
     }
 
+    private void printWrapperDefinition(Class klass, boolean isStatic,
+					Class returnType,
+					String name, Class[] params) {
+	p.printGlobalCxxName(returnType);
+	p.println();
+	p.printQualifiedCxxName(klass);
+	p.print("::");
+	p.print(name);
+	p.print("(");
+	for (int i = 0; i < params.length; i++) {
+	    if (i > 0) {
+		p.print(", ");
+	    }
+	    p.printGlobalCxxName(params[i]);
+	    p.print(" p" + i);
+	}
+	p.print(")");
+	while (p.dent(0, "{", "}")) {
+	    p.println("void* _jni;");
+	    p.println("::jnixx::vm->GetEnv(&_jni, JNI_VERSION_1_2);");
+	    p.println("::jnixx::env _env = ::jnixx::env((JNIEnv*)_jni);");
+	    if (returnType != Void.TYPE) {
+		p.print("return ");
+	    }
+	    p.print(name);
+	    p.print("(_env");
+	    for (int i = 0; i < params.length; i++) {
+		p.print(",  p" + i);
+	    }
+	    p.println(");");
+	}
+    }
+    private void printWrapperDefinition(Method method) {
+	printWrapperDefinition(method.getDeclaringClass(),
+			       Modifier.isStatic(method.getModifiers()),
+			       method.getReturnType(),
+			       p.name(method),
+			       method.getParameterTypes());
+    }
+    private void printWrapperDefinition(Constructor constructor) {
+	printWrapperDefinition(constructor.getDeclaringClass(),
+			       true,
+			       constructor.getDeclaringClass(),
+			       "New",
+			       constructor.getParameterTypes());
+    }
+    private void printWrapperDefinition(Field field, boolean get) {
+	printWrapperDefinition(field.getDeclaringClass(),
+			       Modifier.isStatic(field.getModifiers()),
+			       get ? field.getType() : Void.TYPE,
+			       p.name(field, get),
+			       get ? new Class[0] : new Class[] { field.getType() });
+    }
+
     private void printCxxFieldAccessorDefinition(Field field, boolean get) {
+	printWrapperDefinition(field, get);
 	boolean isStatic = Modifier.isStatic(field.getModifiers());
 	Class type = field.getType();
 	p.println();
@@ -63,14 +118,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	}
 	p.printQualifiedCxxName(field.getDeclaringClass());
 	p.print("::");
-	if (get) {
-	    p.print("Get");
-	} else {
-	    p.print("Set");
-	}
-	String name = field.getName();
-	p.print(Character.toUpperCase(name.charAt(0)));
-	p.print(name.substring(1));
+	p.printName(field, get);
 	p.print("(::jnixx::env _env");
 	if (!get) {
 	    p.print(", ");
@@ -89,7 +137,7 @@ class PrintHxxDefinitions extends ClassWalker {
 		    p.print("Static");
 		}
 		p.print("FieldID(_class_(_env), \"");
-		p.print(name);
+		p.print(field.getName());
 		p.print("\", \"");
 		p.printJniSignature(type);
 		p.print("\"");
@@ -124,6 +172,7 @@ class PrintHxxDefinitions extends ClassWalker {
     }
 
     private void printCxxMethodDefinition(Method method) {
+	printWrapperDefinition(method);
 	boolean isStatic = Modifier.isStatic(method.getModifiers());
 	Class returnType = method.getReturnType();
 	p.println();
@@ -185,6 +234,7 @@ class PrintHxxDefinitions extends ClassWalker {
 	    }
 	    void acceptConstructor(Constructor constructor) {
 		p.println();
+		printWrapperDefinition(constructor);
 		p.printGlobalCxxName(constructor.getDeclaringClass());
 		p.println();
 		p.printQualifiedCxxName(constructor);

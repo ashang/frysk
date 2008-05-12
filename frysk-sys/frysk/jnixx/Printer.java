@@ -40,6 +40,7 @@
 package frysk.jnixx;
 
 import java.lang.reflect.Member;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -228,7 +229,7 @@ class Printer {
      * Print the method's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    void printQualifiedCxxName(Member member) {
+    void printQualifiedCxxName(Method member) {
 	printQualifiedCxxName(member.getDeclaringClass());
 	print("::");
 	printName(member);
@@ -237,7 +238,7 @@ class Printer {
      * Print the method's fully qualified C++ name; that is "."
      * replaced by "::".
      */
-    void printGlobalCxxName(Member member) {
+    void printGlobalCxxName(Method member) {
 	printGlobalCxxName(member.getDeclaringClass());
 	print("::");
 	printName(member);
@@ -289,18 +290,43 @@ class Printer {
     }
 
     /**
-     * Print tne name (possibly with a few extra chars thrown in).
+     * Print the name (possibly with a few extra chars thrown in).
      */
-    void printName(Member member) {
-	print(member.getName());
-	if (member.getName().equals("delete")
-	    || member.getName().equals("and")
-	    || member.getName().equals("or")
-	    || member.getName().equals("xor")
-	    || member.getName().equals("not")
+    void printName(Method method) {
+	print(name(method));
+    }
+    /**
+     * Print the name (possibly with a few extra chars thrown in).
+     */
+    void printName(Field field, boolean get) {
+	print(name(field, get));
+    }
+
+    /**
+     * Return the name (possibly with a few extra chars thrown in).
+     */
+    String name(Method method) {
+	String name = method.getName();
+	if (name.equals("delete")
+	    || name.equals("and")
+	    || name.equals("or")
+	    || name.equals("xor")
+	    || name.equals("not")
 	    ) {
-	    print("$");
+	    return name + "$";
+	} else {
+	    return name;
 	}
+    }
+
+    /**
+     * Return the name (possibly with a few extra chars thrown in).
+     */
+    String name(Field field, boolean get) {
+	String name = field.getName();
+	return (get ? "Get" : "Set")
+	    + Character.toUpperCase(name.charAt(0))
+	    + name.substring(1);
     }
 
     /**
@@ -463,8 +489,7 @@ class Printer {
     /**
      * Print the list actual parameters for FUNC.
      */
-    private Printer printActualCxxParameters(Member func,
-					     Class[] params) {
+    void printActualCxxParameters(Class[] params) {
 	print("_env");
 	for (int i = 0; i < params.length; i++) {
 	    Class param = params[i];
@@ -482,19 +507,18 @@ class Printer {
 		print("(p" + i + ")");
 	    }
 	}
-	return this;
     }
     /**
      * Print the METHOD's list of actual parameters.
      */
-    Printer printActualCxxParameters(Method f) {
-	return printActualCxxParameters(f, f.getParameterTypes());
+    void printActualCxxParameters(Method f) {
+	printActualCxxParameters(f.getParameterTypes());
     }
     /**
      * Print the CONSTRUCOR's list of actual parameters.
      */
-    Printer printActualCxxParameters(Constructor f) {
-	return printActualCxxParameters(f, f.getParameterTypes());
+    void printActualCxxParameters(Constructor f) {
+	printActualCxxParameters(f.getParameterTypes());
     }
 
     /**

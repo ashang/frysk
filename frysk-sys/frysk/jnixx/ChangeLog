@@ -1,3 +1,10 @@
+2008-05-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Main.java: Set the VM during load.
+	* PrintDeclarations.java: Generate non-env parametered wrappers.
+	* PrintHxxDefinitions.java: Ditto.
+	* Printer.java: Ditto.
+
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Main.java: Take a class file; dump all classes; print progress.

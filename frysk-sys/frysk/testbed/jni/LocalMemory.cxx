@@ -76,7 +76,12 @@ frysk::testbed::LocalMemory::getDataBytes(::jnixx::env env) {
  * Function used by getCode*(), must be on a single line for __LINE__
  * to work correctly.
  */
-jint frysk::testbed::LocalMemory::getCodeLine (::jnixx::env) { return __LINE__; }
+static jint codeLine() { return __LINE__; }
+
+jint
+frysk::testbed::LocalMemory::getCodeLine(::jnixx::env) {
+  return codeLine();
+}
 
 String
 frysk::testbed::LocalMemory::getCodeFile(::jnixx::env env) {
@@ -86,9 +91,9 @@ frysk::testbed::LocalMemory::getCodeFile(::jnixx::env env) {
 static void*
 codeAddr() {
 #ifdef __powerpc64__
-  return *((void**) frysk::testbed::LocalMemory::getCodeLine);
+  return *((void**) codeLine);
 #else
-  return (void*)&frysk::testbed::LocalMemory::getCodeLine;
+  return (void*)&codeLine;
 #endif
 }
 jlong
