@@ -69,14 +69,11 @@ class PrintHxxDefinitions extends ClassWalker {
 	}
 	p.print(")");
 	while (p.dent(0, "{", "}")) {
-	    p.println("void* _jni;");
-	    p.println("::jnixx::vm->GetEnv(&_jni, JNI_VERSION_1_2);");
-	    p.println("::jnixx::env _env = ::jnixx::env((JNIEnv*)_jni);");
 	    if (returnType != Void.TYPE) {
 		p.print("return ");
 	    }
 	    p.print(name);
-	    p.print("(_env");
+	    p.print("(_env_()");
 	    for (int i = 0; i < params.length; i++) {
 		p.print(",  p" + i);
 	    }

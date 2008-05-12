@@ -47,6 +47,27 @@ import java.util.LinkedList;
  * Given a class, print any JNI bindings.
  */
 class JniBindings {
+    static private void printCodes(Printer p, int level, Object[] codes) {
+	boolean nl = false;
+	for (int i = 0; i < codes.length; i++) {
+	    if (codes[i] instanceof String) {
+		if (nl) {
+		    p.println();
+		}
+		p.print(codes[i]);
+		nl = true;
+	    } else {
+		while (p.dent(level, "{", "}")) {
+		    printCodes(p, level + 1, (Object[]) codes[i]);
+		}
+		nl = false;
+	    }
+	}
+	if (nl) {
+	    p.println();
+	}
+    }
+
     private static class Method {
 	private final Class klass;
 	private final boolean isStatic;
@@ -81,26 +102,14 @@ class JniBindings {
 	    }
 	    p.print(" ");
 	    p.print(name);
-	    p.print("(::jnixx::env");
+	    p.print("(");
 	    for (int i = 0; i < params.length; i += 2) {
-		p.print(", ");
+		if (i > 0) {
+		    p.print(", ");
+		}
 		p.print(params[i]);
 	    }
 	    p.println(");");
-	}
-	private void printCodes(Printer p, int level, Object[] codes) {
-	    while (p.dent(level, "{", "}")) {
-		if (level == 0) {
-		    p.println("JNIEnv *_jni = env._jni;");
-		}
-		for (int i = 0; i < codes.length; i++) {
-		    if (codes[i] instanceof String) {
-			p.println(codes[i]);
-		    } else {
-			printCodes(p, level+1, (Object[]) codes[i]);
-		    }
-		}
-	    }
 	}
 	void printDefinition(Printer p) {
 	    p.println();
@@ -112,15 +121,19 @@ class JniBindings {
 	    p.printQualifiedCxxName(klass);
 	    p.print("::");
 	    p.print(name);
-	    p.print("(::jnixx::env env");
+	    p.print("(");
 	    for (int i = 0; i < params.length; i += 2) {
-		p.print(", ");
+		if (i > 0) {
+		    p.print(", ");
+		}
 		p.print(params[i]);
 		p.print(" ");
 		p.print(params[i + 1]);
 	    }
 	    p.print(")");
-	    printCodes(p, 0, code);
+	    while (p.dent(0, "{", "}")) {
+		printCodes(p, 1, code);
+	    }
 	}
     }
 
@@ -154,16 +167,49 @@ class JniBindings {
     }
 
     private static JniMap bindings = new JniMap()
+	/**
+	 * java.lang.Object
+	 */
+	.put(Object.class, true,
+	     "::jnixx::env", "_env_",
+	     new String[] {
+	     },
+	     new Object[] {
+		 "void* _jni;",
+		 "::jnixx::vm->GetEnv(&_jni, JNI_VERSION_1_2);",
+		 "return ::jnixx::env((JNIEnv*)_jni);",
+	     })
+	.put(Object.class, false,
+	     "bool", "operator==",
+	     new String[] {
+		 "jobject", "_object",
+	     },
+	     new Object[] {
+		 "return this->_object == _object;",
+	     })
+	// DeleteLocalRef
+	.put(Object.class, false,
+	     null, "DeleteLocalRef",
+	     new String[] {
+		 "::jnixx::env", "env",
+	     },
+	     new Object[] {
+		 "env.DeleteLocalRef(_object);",
+		 "_object = NULL;"
+	     })
+
+	/**
+	 * java.lang.String
+	 */
 	// NewString
 	// GetStringLength
 	.put(String.class, false,
 	     "jsize", "GetStringLength",
 	     new String[] {
+		 "::jnixx::env", "env",
 	     },
 	     new Object[] {
-		 "jsize len = _jni->GetStringLength((jstring)_object);",
-		 "// No exceptions",
-		 "return len;",
+		 "return env.GetStringLength((jstring)_object);",
 	     })
 	// GetStringChars
 	// ReleaseStringChars
@@ -171,61 +217,52 @@ class JniBindings {
 	.put(String.class, true,
 	     "::java::lang::String", "NewStringUTF",
 	     new String[] {
+		 "::jnixx::env", "env",
 		 "const char*", "utf",
 	     },
 	     new Object[] {
-		 "jstring string = _jni->NewStringUTF(utf);",
-		 "if (string == NULL)", new Object[] {
-		     "throw jnixx::exception();",
-		 },
-		 "return String(string);",
+		 "return String(env.NewStringUTF(utf));",
 	     })
 	// GetStringUTFLength
 	.put(String.class, false,
 	     "jsize", "GetStringUTFLength",
 	     new String[] {
+		 "::jnixx::env", "env",
 	     },
 	     new Object[] {
-		 "jsize len = _jni->GetStringUTFLength((jstring) _object);",
-		 "// No exceptions",
-		 "return len;",
+		 "return env.GetStringUTFLength((jstring) _object);",
 	     })
 	// GetStringUTFChars
 	.put(String.class, false,
 	     "const char*", "GetStringUTFChars",
 	     new String[] {
+		 "::jnixx::env", "env",
 	     },
 	     new Object[] {
-		 "const char* utf = _jni->GetStringUTFChars((jstring)_object, NULL);",
-		 "if (utf == NULL)", new Object[] {
-		     "throw jnixx::exception();",
-		 },
-		 "return utf;",
+		 "return env.GetStringUTFChars((jstring)_object, NULL);",
 	     })
 	// ReleaseStringUTFChars
 	.put(String.class, false,
 	     null, "ReleaseStringUTFChars",
 	     new String[] {
+		 "::jnixx::env", "env",
 		 "const char *", "utf",
 	     },
 	     new Object[] {
-		 "_jni->ReleaseStringUTFChars((jstring)_object, utf);",
-		 "// No exceptions",
+		 "env.ReleaseStringUTFChars((jstring)_object, utf);",
 	     })
 	// GetStringRegion
 	// GetStringUTFRegion
 	.put(String.class, false,
 	     null, "GetStringUTFRegion",
 	     new String[] {
+		 "::jnixx::env", "env",
 		 "jsize", "start",
 		 "jsize", "len", 
 		 "char*", "buf",
 	     },
 	     new Object[] {
-		 "_jni->GetStringUTFRegion((jstring)_object, start, len, buf);",
-		 "if (_jni->ExceptionCheck())", new Object[] {
-		     "throw jnixx::exception();",
-		 },
+		 "env.GetStringUTFRegion((jstring)_object, start, len, buf);",
 	     })
 	// GetStringCritical
 	// Release StringCritical
@@ -236,5 +273,61 @@ class JniBindings {
     }
     static void printDefinitions(Printer p, Class klass) {
 	bindings.printDefinitions(klass, p);
+    }
+
+
+    private static void printObjectGlobals(Printer p) {
+	p.println(new Object[] {
+		"",
+		"/**",
+		" * The JNIXX array; all object-array uses this as their template.",
+		" */",
+	    });
+	while (p.dent(0, "namespace jnixx {", "}")) {
+	    while (p.dent(1, "template <typename component> class array : public ::java::lang::Object {", "};")) {
+		printCodes(p, 2, new Object[] {
+			"protected:",
+			"array(jobject _object) : ::java::lang::Object(_object)", new Object[] {
+			},
+			"public:",
+			"static array<component> Cast(jobject object)", new Object[] {
+			    "return array<component>(object);",
+			},
+			"jsize GetLength(::jnixx::env env)", new Object[] {
+			    "return env.GetArrayLength((jarray)_object);",
+			},
+			"static array<component> New(::jnixx::env env, jsize length)", new Object[] {
+			    "return env.NewObjectArray(length, component::_class_(env), NULL);",
+			},
+			"static array<component> New(::jnixx::env env, jsize length, component init)", new Object[] {
+			    "return env.NewObjectArray(length, component::_class_(env), init._object);",
+			},
+			"component GetElement(::jnixx::env env, jsize index)", new Object[] {
+			    "return component::Cast(env.GetObjectArrayElement((jobjectArray)_object, index));",
+			},
+			"void SetElement(::jnixx::env env, jsize index, component object)", new Object[] {
+			    "env.SetObjectArrayElement((jobjectArray)_object, index, object._object);",
+			},
+			"static array<component> New(jsize length)", new Object[] {
+			    "return New(_env_(), length);",
+			},
+			"static array<component> New(jsize length, component init)", new Object[] {
+			    "return New(_env_(), length, init);",
+			},
+			"component GetElement(jsize index)", new Object[] {
+			    "return GetElement(_env_(), index);"
+			},
+			"void SetElement(jsize index, component object)", new Object[] {
+			    "SetElement(_env_(), index, object);"
+			},
+		    });
+	    }
+	}
+    }
+
+    static void printGlobals(Printer p, Class klass) {
+	if (klass == Object.class) {
+	    printObjectGlobals(p);
+	}
     }
 }

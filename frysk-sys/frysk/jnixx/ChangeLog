@@ -1,3 +1,15 @@
+2008-05-12  Andrew Cagney  <cagney@redhat.com>
+
+	Have object array extend ::java::lang::Object.
+	* JniBindings.java (printGlobals(Printer,Class)): New. Generate
+	the array template.
+	* PrintDeclarations.java: Call printGlobals for each class.  Make
+	java's root object the jnixx root.
+	* jnixx.hxx (jnixx::object): Delete.
+	(jnixx::array): Delete.
+	* chars.cxx (jnixx::array): Update.
+	* PrintHxxDefinitions.java: Update.
+
 2008-05-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Main.java: Set the VM during load.

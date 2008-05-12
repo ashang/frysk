@@ -156,38 +156,34 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	};
 
-    void acceptArray(Class klass) {
-    }
-    void acceptPrimitive(Class klass) {
-    }
-    void acceptInterface(Class klass) {
-	acceptClass(klass);
-    }
-    void acceptClass(Class klass) {
+    private void printClass(Class klass, Class parent) {
 	p.println();
 	p.print("// ");
 	p.println(klass);
 	p.print("class ");
 	p.printQualifiedCxxName(klass);
-	Class parent = klass.getSuperclass();
-	p.print(" : public ");
-	if (parent == null) {
-	    p.print("::jnixx::object");
-	} else {
+	if (parent != null) {
+	    p.print(" : public ");
 	    p.printGlobalCxxName(parent);
 	}
 	while(p.dent(0, "{", "};")) {
-	    // Constructor.
-	    p.print("protected: ");
-	    p.printUnqualifiedCxxName(klass);
-	    p.print("(jobject _object)");
-	    p.print(" : ");
 	    if (parent == null) {
-		p.print("::jnixx::object");
+		// A root object.
+		p.println("public: jobject _object;");
+		p.print("protected: ");
+		p.printUnqualifiedCxxName(klass);
+		p.print("(jobject _object)");
+		while (p.dent(1, "{", "}")) {
+		    p.println("this->_object = _object;");
+		}
 	    } else {
+		// Constructor.
+		p.print("protected: ");
+		p.printUnqualifiedCxxName(klass);
+		p.print("(jobject _object) : ");
 		p.printGlobalCxxName(parent);
+		p.println("(_object) { }");
 	    }
-	    p.println("(_object) {}");
 	    // Explicit cast operator.
 	    p.print("public: static ");
 	    p.printUnqualifiedCxxName(klass);
@@ -200,5 +196,22 @@ class PrintDeclarations extends ClassWalker {
 	    JniBindings.printDeclarations(p, klass);
 	    printer.visit(klass);
 	}
+	JniBindings.printGlobals(p, klass);
+    }
+
+    void acceptArray(Class klass) {
+    }
+    void acceptPrimitive(Class klass) {
+    }
+    void acceptInterface(Class klass) {
+	Class parent = klass.getSuperclass();
+	if (parent == null) {
+	    printClass(klass, Object.class);
+	} else {
+	    printClass(klass, parent);
+	}
+    }
+    void acceptClass(Class klass) {
+	printClass(klass, klass.getSuperclass());
     }
 }

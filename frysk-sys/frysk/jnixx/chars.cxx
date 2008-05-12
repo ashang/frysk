@@ -46,13 +46,13 @@ using namespace java::lang;
 
 char**
 strings2chars(jnixx::env env, ::jnixx::array<String> strings) {
-  jsize arrayLength = strings.GetArrayLength(env);
+  jsize arrayLength = strings.GetLength(env);
   // compute the allocated size.
   size_t size = 0;
   size += sizeof(void*); // NULL
   for (int i = 0; i < arrayLength; i++) {
     size += sizeof(void*); // pointer
-    String string = strings.GetObjectArrayElement(env, i);
+    String string = strings.GetElement(env, i);
     size += string.GetStringUTFLength(env); // chars
     size += 1; // NUL
     string.DeleteLocalRef(env);
@@ -65,7 +65,7 @@ strings2chars(jnixx::env env, ::jnixx::array<String> strings) {
   // Copy
   for (int i = 0; i < arrayLength; i++) {
     *argv++ = arg;
-    String string = strings.GetObjectArrayElement(env, i);
+    String string = strings.GetElement(env, i);
     int utfLength = string.GetStringUTFLength(env);
     string.GetStringUTFRegion(env, 0, string.GetStringLength(env), arg);
     arg += utfLength;
@@ -83,10 +83,10 @@ chars2strings(::jnixx::env env, char** argv) {
     length++;
   }
   ::jnixx::array<String> strings
-      = ::jnixx::array<String>::NewObjectArray(env, length, NULL);
+      = ::jnixx::array<String>::New(length);
   for (int i = 0; i < length; i++) {
     String string = String::NewStringUTF(env, argv[i]);
-    strings.SetObjectArrayElement(env, i, string);
+    strings.SetElement(env, i, string);
     string.DeleteLocalRef(env);
   }
   return strings;
