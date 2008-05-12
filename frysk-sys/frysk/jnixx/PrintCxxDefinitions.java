@@ -100,11 +100,14 @@ class PrintCxxDefinitions extends ClassWalker {
 			    } else if (returnType == String.class) {
 				p.print("(jstring) ret._object");
 			    } else if (returnType.isArray()) {
-				if (returnType.getComponentType().isPrimitive()) {
-				    p.print("ret");
+				Class component = returnType.getComponentType();
+				p.print("(j");
+				if (component.isPrimitive()) {
+				    p.print(component.getName());
 				} else {
-				    p.print("(jobjectArray) ret._object");
+				    p.print("object");
 				}
+				p.print("Array) ret._object");
 			    } else {
 				p.print("ret._object");
 			    }

@@ -1,5 +1,12 @@
 2008-05-12  Andrew Cagney  <cagney@redhat.com>
 
+	* JniBindings.java: Generate primitive array methods.
+	* PrintCxxDefinitions.java: Generate primitive array types.
+	* PrintDeclarations.java: Ditto.
+	* PrintHxxDefinitions.java: Ditto.
+	* PrintNamespaces.java: Ditto.
+	* Printer.java: Ditto.
+
 	* Main.java (getJarClasses(String)): New.
 	(getNativeClasses(HashSet)): New.
 	(getReferences(HashSet)): New.

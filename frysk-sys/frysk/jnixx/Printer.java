@@ -173,7 +173,10 @@ class Printer {
 	} else if (klass.isArray()) {
 	    Class componentType = klass.getComponentType();
 	    if (componentType.isPrimitive()) {
-		print("j");
+		if (global) {
+		    print("::");
+		}
+		print("jnixx::");
 		print(componentType.getName());
 		print("Array");
 	    } else {
@@ -498,9 +501,6 @@ class Printer {
 		print("p" + i);
 	    } else if (param == Class.class) {
 		print("p" + i);
-	    } else if (param.isArray()
-		       && param.getComponentType().isPrimitive()) {
-		print("p" + i);
 	    } else {
 		printGlobalCxxName(param);
 		print("::Cast");
@@ -566,9 +566,6 @@ class Printer {
 	    print(", ");
 	    if (param.isPrimitive()) {
 		print("p" + i);
-	    } else if (param.isArray()
-		       && param.getComponentType().isPrimitive()) {
-		print("p" + i);
 	    } else {
 		print("p" + i + "._object");
 	    }
@@ -609,12 +606,6 @@ class Printer {
     void printReturn(boolean isStatic, Class returnType, String variable) {
 	print("return ");
 	if (returnType.isPrimitive()) {
-	    print(variable);
-	} else if (returnType.isArray()
-		   && returnType.getComponentType().isPrimitive()) {
-	    print("(");
-	    printGlobalCxxName(returnType);
-	    print(")");
 	    print(variable);
 	} else {
 	    printGlobalCxxName(returnType);

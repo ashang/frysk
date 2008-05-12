@@ -46,12 +46,10 @@
 
 using namespace java::lang;
 
-static jbyteArray
+static ::jnixx::byteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
-  jbyteArray bytes = env.NewByteArray(length);
-  jbyte* elements = env.GetByteArrayElements(bytes, NULL);
-  memcpy(elements, addr, length);
-  env.ReleaseByteArrayElements(bytes, elements, 0);
+  ::jnixx::byteArray bytes = ::jnixx::byteArray::New(env, length);
+  bytes.SetRegion(env, 0, length, (jbyte*) addr);
   return bytes;
 }
 
@@ -67,7 +65,7 @@ frysk::testbed::LocalMemory::getDataAddr(::jnixx::env) {
   return (jlong) &memory;
 }
 
-jbyteArray
+::jnixx::byteArray
 frysk::testbed::LocalMemory::getDataBytes(::jnixx::env env) {
   return getBytes(env, &memory, sizeof(memory));
 }
@@ -101,7 +99,7 @@ frysk::testbed::LocalMemory::getCodeAddr(::jnixx::env) {
   return (jlong)codeAddr();
 }
 
-jbyteArray
+::jnixx::byteArray
 frysk::testbed::LocalMemory::getCodeBytes(::jnixx::env env) {
   return getBytes(env, codeAddr(), sizeof(memory));
 }
@@ -112,6 +110,6 @@ frysk::testbed::LocalMemory::constructStack(::jnixx::env env,
   // Copy known data onto the stack.
   uint8_t addr[sizeof(memory)];
   memcpy(addr, &memory, sizeof(memory));
-  jbyteArray bytes = getBytes(env, addr, sizeof(memory));
+  ::jnixx::byteArray bytes = getBytes(env, addr, sizeof(memory));
   builder.stack(env, (jlong)addr, bytes);
 }

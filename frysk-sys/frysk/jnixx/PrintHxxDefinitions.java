@@ -277,6 +277,10 @@ class PrintHxxDefinitions extends ClassWalker {
 	};
 
     void acceptArray(Class klass) {
+	Class component = klass.getComponentType();
+	if (component.isPrimitive()) {
+	    JniBindings.printDefinitions(p, klass);
+	}
     }
     void acceptPrimitive(Class klass) {
     }

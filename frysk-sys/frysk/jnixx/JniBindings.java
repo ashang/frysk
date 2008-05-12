@@ -267,6 +267,76 @@ class JniBindings {
 	// GetStringCritical
 	// Release StringCritical
 	;
+
+    static {
+	Class[] types = {
+	    boolean[].class,
+	    byte[].class,
+	    short[].class,
+	    char[].class,
+	    int[].class,
+	    long[].class,
+	    float[].class,
+	    double[].class,
+	};
+	for (int i = 0; i < types.length; i++) {
+	    String type = types[i].getComponentType().getName();
+	    String Type = (Character.toUpperCase(type.charAt(0))
+			   + type.substring(1));
+	    bindings
+		.put(types[i], true,
+		     "::jnixx::" + type + "Array", "New",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jsize", "length",
+		     },
+		     new Object[] {
+			 "return " + type + "Array(env.New" + Type + "Array(length));",
+		     })
+		.put(types[i], false,
+		     "const j" + type + "*", "GetElements",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jboolean*", "isCopy",
+		     },
+		     new Object[] {
+			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
+		     })
+		.put(types[i], false,
+		     null, "ReleaseElements",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "j" + type + "*", "elements",
+			 "jint", "mode"
+		     },
+		     new Object[] {
+			 "env.Release" + Type + "ArrayElements((j" + type + "Array)_object, elements, mode);",
+		     })
+		.put(types[i], false,
+		     "void", "GetRegion",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jsize", "start",
+			 "jsize", "length",
+			 "j" + type + "*", "buf",
+		     },
+		     new Object[] {
+			 "env.Get" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
+		     })
+		.put(types[i], false,
+		     "void", "SetRegion",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jsize", "start",
+			 "jsize", "length",
+			 "j" + type + "*", "buf",
+		     },
+		     new Object[] {
+			 "env.Set" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
+		     })
+		;
+	}
+    }
     
     static void printDeclarations(Printer p, Class klass) {
 	bindings.printDeclarations(klass, p);

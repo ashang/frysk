@@ -46,18 +46,14 @@ class PrintNamespaces extends ClassWalker {
 	this.p = p;
     }
 
-    /**
-     * Print the namespace spec for the klass.
-     */
-    private void printCxxNamespace(Class klass) {
-	String[] names = klass.getName().split("\\.");
+    private void printNamespace(String[] names) {
 	for (int i = 0; i < names.length - 1; i++) {
 	    p.print("namespace ");
 	    p.print(names[i]);
 	    p.println(" { ");
 	    p.indent();
 	}
-	p.print("struct ");
+	p.print("class ");
 	p.print(names[names.length - 1]);
 	p.println(";");
 	for (int i = names.length - 2; i >= 0; i--) {
@@ -66,10 +62,25 @@ class PrintNamespaces extends ClassWalker {
 	}
     }
 
+    /**
+     * Print the namespace spec for the klass.
+     */
+    private void printNamespace(Class klass) {
+	String[] names = klass.getName().split("\\.");
+	printNamespace(names);
+    }
+
     void acceptArray(Class klass) {
 	p.println();
 	p.print("// ");
 	p.println(klass);
+	Class component = klass.getComponentType();
+	if (component.isPrimitive()) {
+	    printNamespace(new String[] {
+		    "jnixx",
+		    component.getName() + "Array",
+		});
+	}
     }
     void acceptPrimitive(Class klass) {
 	p.println();
@@ -80,7 +91,7 @@ class PrintNamespaces extends ClassWalker {
 	p.println();
 	p.print("// ");
 	p.println(klass);
-	printCxxNamespace(klass);
+	printNamespace(klass);
     }
     void acceptInterface(Class klass) {
 	acceptClass(klass);

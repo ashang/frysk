@@ -154,6 +154,36 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	};
 
+    private void printClassTemplate(Class klass, Class parent) {
+	if (parent == null) {
+	    // A root object.
+	    p.println("public: jobject _object;");
+	    p.print("protected: ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("(jobject _object)");
+	    while (p.dent(1, "{", "}")) {
+		p.println("this->_object = _object;");
+	    }
+	} else {
+	    // Constructor.
+	    p.print("protected: ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("(jobject _object) : ");
+	    p.printGlobalCxxName(parent);
+	    p.println("(_object) { }");
+	}
+	// Explicit cast operator.
+	p.print("public: static ");
+	p.printUnqualifiedCxxName(klass);
+	p.print(" Cast(jobject object) { return ");
+	p.printUnqualifiedCxxName(klass);
+	p.println("(object); }");
+	    // Static get-class method - a class knows its own class.
+	p.println("private: static jclass _class;");
+	p.println("public: static inline jclass _class_(::jnixx::env _env);");
+	JniBindings.printDeclarations(p, klass);
+    }
+
     private void printClass(Class klass, Class parent) {
 	p.println();
 	p.print("// ");
@@ -165,39 +195,25 @@ class PrintDeclarations extends ClassWalker {
 	    p.printGlobalCxxName(parent);
 	}
 	while(p.dent(0, "{", "};")) {
-	    if (parent == null) {
-		// A root object.
-		p.println("public: jobject _object;");
-		p.print("protected: ");
-		p.printUnqualifiedCxxName(klass);
-		p.print("(jobject _object)");
-		while (p.dent(1, "{", "}")) {
-		    p.println("this->_object = _object;");
-		}
-	    } else {
-		// Constructor.
-		p.print("protected: ");
-		p.printUnqualifiedCxxName(klass);
-		p.print("(jobject _object) : ");
-		p.printGlobalCxxName(parent);
-		p.println("(_object) { }");
-	    }
-	    // Explicit cast operator.
-	    p.print("public: static ");
-	    p.printUnqualifiedCxxName(klass);
-	    p.print(" Cast(jobject object) { return ");
-	    p.printUnqualifiedCxxName(klass);
-	    p.println("(object); }");
-	    // Static get-class method - a class knows its own class.
-	    p.println("private: static jclass _class;");
-	    p.println("public: static inline jclass _class_(::jnixx::env _env);");
-	    JniBindings.printDeclarations(p, klass);
+	    printClassTemplate(klass, parent);
 	    printer.visit(klass);
 	}
 	JniBindings.printGlobals(p, klass);
     }
 
     void acceptArray(Class klass) {
+	Class component = klass.getComponentType();
+	if (component.isPrimitive()) {
+	    p.println();
+	    p.print("// ");
+	    p.println(klass);
+	    p.print("class ");
+	    p.printQualifiedCxxName(klass);
+	    p.print(" : public ::java::lang::Object");
+	    while (p.dent(1, "{", "};")) {
+		printClassTemplate(klass, Object.class);
+	    }
+	}
     }
     void acceptPrimitive(Class klass) {
     }
