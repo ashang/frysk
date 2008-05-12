@@ -11,6 +11,26 @@ multi-process, and multi-threaded systems while they are running.
 
 --
 
+Release 0.3, 2008-05-09
+
+- Exported a prototype of low level watchpoint api on IA32,X8664 
+   (PPC* will be covered by IBM)
+- Implemented the watch command which exposes the watchpoint api in fhpd.
+- Updated various frysk man pages.
+- Created ProcRunUtil and re-based fcatch,fstep,ferror ontop of it.
+- Added ability to kill procs from fhpd.
+- Solidified passing parameters to start/run commands and reusing history.
+- Added support for elf symbol look-ups.
+- Removed the CDT parser from frysk.
+- Rewritten ftrace to use more frysk infrastructure.
+- Adapted frysk symbol search code so that it can be used by breakpoints, 
+   as well as expression evaluation.
+- Improved and tested stepping, particularly stepping through signal handlers.
+- Imported a newer version of upstream elfutils.
+- Fixed breakpoints to work correctly through forks.
+
+--
+
 Post-Release 0.2 Updates:
 
 -> 2004-04-24 - New support in FHPD: sysroot
