@@ -137,8 +137,6 @@ class PrintCxxDefinitions extends ClassWalker {
 	    }
 	    void acceptField(Field field) {
 	    }
-	    void acceptComponent(Class klass) {
-	    }
 	    void acceptClass(Class klass) {
 	    }
 	};

@@ -113,8 +113,6 @@ class PrintDeclarations extends ClassWalker {
     }
 
     private final ClassVisitor printer = new ClassVisitor() {
-	    public void acceptComponent(Class klass) {
-	    }
 	    public void acceptClass(Class klass) {
 	    }
 	    public void acceptInterface(Class klass) {

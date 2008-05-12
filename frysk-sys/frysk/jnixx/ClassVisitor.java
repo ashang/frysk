@@ -44,13 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
 abstract class ClassVisitor {
-    void visit(Class[] classes) {
-	for (int i = 0; i < classes.length; i++) {
-	    visit(classes[i]);
-	}
-    }
     void visit(Class klass) {
-	acceptComponent(klass.getComponentType());
 	Class[] interfaces = klass.getInterfaces();
 	for (int i = 0; i < interfaces.length; i++) {
 	    acceptInterface(interfaces[i]);
@@ -80,7 +74,7 @@ abstract class ClassVisitor {
 		continue;
 	    acceptMethod(method);
 	}
-	Class[] classes = klass.getClasses();
+	Class[] classes = klass.getDeclaredClasses();
 	for (int i = 0; i < classes.length; i++) {
 	    Class inner = classes[i];
 	    acceptClass(inner);
@@ -91,6 +85,5 @@ abstract class ClassVisitor {
     abstract void acceptConstructor(Constructor constructor);
     abstract void acceptField(Field field);
     abstract void acceptMethod(Method method);
-    abstract void acceptComponent(Class klass);
     abstract void acceptClass(Class klass);
 }

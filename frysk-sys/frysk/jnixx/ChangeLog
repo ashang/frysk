@@ -1,5 +1,14 @@
 2008-05-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Main.java (getJarClasses(String)): New.
+	(getNativeClasses(HashSet)): New.
+	(getReferences(HashSet)): New.
+	(main(String[])): Limit to native classes.
+	* ClassVisitor.java (visit(Class[])): Delete.
+	(acceptComponent(Class)): Delete.
+	* PrintHxxDefinitions.java: Update.
+	* PrintDeclarations.java: Update.
+
 	Have object array extend ::java::lang::Object.
 	* JniBindings.java (printGlobals(Printer,Class)): New. Generate
 	the array template.

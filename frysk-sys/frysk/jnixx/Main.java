@@ -40,6 +40,8 @@
 package frysk.jnixx;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Member;
@@ -52,8 +54,16 @@ import java.util.Iterator;
 import java.io.IOException;
 
 class Main {
+    /**
+     * Collection of classes that need native bindings.
+     */
+    private static final HashSet nativeClasses = new HashSet();
 
-    private static HashSet localClasses = new HashSet();
+    /**
+     * Collection of classes that should be visible (non-visible
+     * classes don't get their bindings generated).
+     */
+    private static final HashSet visibleClasses = new HashSet();
 
     /**
      * Does this method require native bindings?  Methods that are not
@@ -61,9 +71,7 @@ class Main {
      * virtual.
      */
     static boolean treatAsNative(Method method) {
-	// FIXME: Should be filtering based on something smarter than
-	// this.
-	if (!localClasses.contains(method.getDeclaringClass()))
+	if (!nativeClasses.contains(method.getDeclaringClass()))
 	    return false;
 	return Modifier.isNative(method.getModifiers());
     }
@@ -74,10 +82,55 @@ class Main {
      * visible.
      */
     static boolean treatAsInvisible(Member member) {
-	// Local or defining classea are always visible.
-	if (localClasses.contains(member.getDeclaringClass()))
+	// Native and explicitly requested classes are always visible.
+	if (visibleClasses.contains(member.getDeclaringClass()))
 	    return false;
 	return Modifier.isPrivate(member.getModifiers());
+    }
+
+    private static HashSet getJarClasses(String jarFile)
+	throws IOException, ClassNotFoundException {
+	// Generate a list of classes in the jar file.
+	HashSet jarClasses = new HashSet();
+	List entries = Collections.list(new JarFile(jarFile).entries());
+	for (Iterator i = entries.iterator(); i.hasNext(); ) {
+	    JarEntry entry = (JarEntry) i.next();
+	    String name = entry.getName();
+	    if (!name.endsWith(".class"))
+		continue;
+	    String className = name
+		.replaceAll(".class$", "")
+		.replaceAll("/", ".");
+	    Class klass = Class.forName(className, false,
+					Main.class.getClassLoader());
+	    jarClasses.add(klass);
+	}
+	return jarClasses;
+    }
+
+    private static HashSet getNativeClasses(HashSet classes) {
+	final HashSet natives = new HashSet();
+	// Iterate over just these identifying which are native.
+	ClassVisitor findNatives = new ClassVisitor() {
+		void acceptInterface(Class klass) {
+		}
+		void acceptConstructor(Constructor constructor) {
+		}
+		void acceptField(Field field) {
+		}
+		void acceptMethod(Method method) {
+		    if (Modifier.isNative(method.getModifiers())) {
+			natives.add(method.getDeclaringClass());
+		    }
+		}
+		void acceptClass(Class component) {
+		}
+	    };
+	for (Iterator i = classes.iterator(); i.hasNext(); ) {
+	    Class klass = (Class) i.next();
+	    findNatives.visit(klass);
+	}
+	return natives;
     }
 
     private static void printHxxFile(Printer p, String headerFile,
@@ -123,31 +176,34 @@ class Main {
     public static void main(String[] args)
 	throws ClassNotFoundException, IOException
     {
-	if (args.length != 3) {
+	if (args.length < 3) {
 	    throw new RuntimeException("Usage: jnixx cxx|hxx <header-filename> <jar-file>");
 	}
 
 	boolean generateHeader = args[0].equals("hxx");
 	String headerFile = args[1];
 	String jarFile = args[2];
-
-	System.err.println("Reading " + jarFile);
-	List entries = Collections.list(new JarFile(jarFile).entries());
-	for (Iterator i = entries.iterator(); i.hasNext(); ) {
-	    JarEntry entry = (JarEntry) i.next();
-	    String name = entry.getName();
-	    if (!name.endsWith(".class"))
-		continue;
-	    String className = name
-		.replaceAll(".class$", "")
-		.replaceAll("/", ".");
-	    Class klass = Class.forName(className, false,
+	HashSet explicitClasses = new HashSet();
+	for (int i = 3; i < args.length; i++) {
+	    Class klass = Class.forName(args[i], false,
 					Main.class.getClassLoader());
-	    localClasses.add(klass);
+	    explicitClasses.add(klass);
 	}
 
-	Class[] classes = new Class[localClasses.size()];
-	localClasses.toArray(classes);
+	HashSet jarClasses = getJarClasses(jarFile);
+	visibleClasses.addAll(jarClasses);
+	visibleClasses.addAll(explicitClasses);
+
+	nativeClasses.addAll(getNativeClasses(jarClasses));
+
+	HashSet requiredClasses = new HashSet();
+	requiredClasses.addAll(nativeClasses);
+	requiredClasses.addAll(explicitClasses);
+	System.err.print("Required " + requiredClasses.size() + " - ");
+	System.err.println(requiredClasses);
+
+	Class[] classes = new Class[requiredClasses.size()];
+	requiredClasses.toArray(classes);
 
 	Printer p = new Printer(new PrintWriter(System.out));
 	if (generateHeader)

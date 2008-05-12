@@ -53,8 +53,6 @@ abstract class ClassWalker {
 	}
     }
     private final ClassVisitor visitor = new ClassVisitor() {
-	    void acceptComponent(Class klass) {
-	    }
 	    void acceptInterface(Class klass) {
 		walk(klass);
 	    }

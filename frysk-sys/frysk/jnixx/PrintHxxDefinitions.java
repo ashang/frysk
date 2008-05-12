@@ -223,8 +223,6 @@ class PrintHxxDefinitions extends ClassWalker {
 
     private final ClassVisitor printer = new ClassVisitor() {
 
-	    void acceptComponent(Class klass) {
-	    }
 	    void acceptInterface(Class klass) {
 	    }
 	    void acceptClass(Class klass) {
