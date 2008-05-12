@@ -651,8 +651,8 @@ public class LinuxPtraceProc extends LiveProc {
 	}
 
 	public void run() {
-	    if (addition) {
-		boolean mustInstall = watchpoints.addWatchpoint(watch, task, address, length, writeOnly);
+	    if (addition) {		
+		boolean mustInstall = watchpoints.addWatchpoint(watch, task, address, length, writeOnly);		
 		if (mustInstall) {
 		    Watchpoint watchpoint;
 		    watchpoint = Watchpoint.create(address, length, writeOnly, task);
@@ -686,12 +686,21 @@ public class LinuxPtraceProc extends LiveProc {
 	fine.log(this, "requestAddWatchObserver");
 	WatchpointAction wpa = new WatchpointAction(observer, task, address, length, writeOnly, true);
 	TaskObservation to;
-	to = new TaskObservation((LinuxPtraceTask) task, observable, observer, wpa, true) {
+	to = new TaskObservation((LinuxPtraceTask) task, observable, observer, wpa, true) {	    	    
 	    public void execute() {
 		handleAddObservation(this);
 	    }
 	    public boolean needsSuspendedAction() {
 		return watchpoints.getWatchObservers(task, address, length, writeOnly) == null;
+	    }	    
+	    public void add() {
+		try {
+		    super.add();
+		} catch (Exception e) {
+		    // On any exceptions being raised in add(), call
+		    getTaskObserver().addFailed(this,e);
+		}
+		
 	    }
 	};
 	Manager.eventLoop.add(to);

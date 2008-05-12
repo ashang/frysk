@@ -1,3 +1,9 @@
+2008-05-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxPtraceProc.java (requestAddWatchObserver): Call addFailed
+	on any exceptions raised in add().
+	
+
 2008-04-22  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Breakpoint.java (reset): Make package private.

@@ -177,6 +177,54 @@ extends TestLib
 
     }
 
+    // This test case tests whether watchpoints are caught when a task is in a straight
+    // "running" condition. This really tests the basic and advertised functionality of watchpoints:
+    // to be caught by hardware, not software. In this  test:  set up the watchpoint, set up
+    // a terminated observer to guard the watchpoint was caught, and simply set the task to run.
+    // If the watchpoint observer is called, and the test is blocked then the test passes. If the
+    // process terminates and the watchpoint is not caught, then this signified an error condition.
+    public void testAddFailed () {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	
+	DaemonBlockedAtEntry ackProc = new DaemonBlockedAtEntry(
+		Prefix.pkgLibFile("funit-watchpoint"));
+	assertNotNull(ackProc);
+
+	// Get Proc/Task.
+	Proc proc = ackProc.getMainTask().getProc();
+	Task task = proc.getMainTask();
+
+	// Watch for any unexpected terminations of the child process.
+	TerminatedObserver to = new TerminatedObserver();
+	task.requestAddTerminatedObserver(to);
+
+	// Break at main
+	long mainAddress = getGlobalSymbolAddress(task, "main");
+	CodeObserver co = new CodeObserver();
+	task.requestAddCodeObserver(co, mainAddress);
+	ackProc.requestUnblock();
+	assertRunUntilStop("Run to main");
+
+	// Find Variable source for watch
+	long address = getGlobalSymbolAddress(task,"source");
+
+	// Add watch observer
+	AddFailWatchObserver watch = new AddFailWatchObserver();
+	task.requestAddWatchObserver(watch, address, 72, true);
+	task.requestUnblock(co);
+
+	assertRunUntilStop("Run and test watchpoint ");
+
+	// Make sure it triggered.
+	assertTrue("addedFailed", watch.addFailed);
+
+	// Delete both observers.
+	task.requestDeleteCodeObserver(co, mainAddress);
+	runPending();
+
+
+    }
 
     // This test case tests whether 'read or write' watchpoints are caught when a task is in a straight
     // "running" condition.  In this  test:  set up the 'read or write' watchpoint, set up
@@ -376,6 +424,29 @@ extends TestLib
 	}
     }
 
+    static class AddFailWatchObserver implements TaskObserver.Watch {
+
+	boolean addFailed = false;
+
+	public Action updateHit(Task task, long address, int length) {
+	    fail("Failing watchpoint generated a updateHit when observer should not have been added");
+	    return null;
+	}
+
+	public void addFailed(Object observable, Throwable w) {
+	    Manager.eventLoop.requestStop();
+	    addFailed = true;	    
+	}
+
+	public void addedTo(Object observable) {
+	    fail("Failing watchpoint generated a addedTo when observer should not have been added");	
+	}
+
+	public void deletedFrom(Object observable) {
+	    fail("Failing watchpoint generated a deletedFrom when observer should not have been added");	    
+	}
+	
+    }
     // Code observer. Run to a point in the program (normally main)
     // then block
     static class CodeObserver extends TestObserver
