@@ -145,8 +145,7 @@ class WatchCommand extends ParameterizedCommand {
 	}
 
 	public void addFailed(Object observable, Throwable w) {
-	    throw new RuntimeException("TaskObserver.Watch failed " +
-	    		               "to be added to the task");
+	    cli.outWriter.println ("Watchpoint Error:" + w.getMessage());
 	}
 
 	public void addedTo(Object observable) {

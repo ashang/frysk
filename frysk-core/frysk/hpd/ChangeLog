@@ -1,3 +1,8 @@
+2008-05-13  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java (WatchpointObserver.addFailed): 
+	Print exception message if observer add failed.
+
 2008-05-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (interpret): Use
