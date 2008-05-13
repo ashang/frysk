@@ -86,8 +86,7 @@ class PrintCxxDefinitions extends ClassWalker {
 			    p.printGlobalCxxName(method);
 			} else {
 			    p.printGlobalCxxName(method.getDeclaringClass());
-			    p.print("::Cast");
-			    p.print("(object).");
+			    p.print("(_env, object).");
 			    p.print(method.getName());
 			}
 			p.print("(");

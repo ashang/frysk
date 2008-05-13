@@ -1,5 +1,13 @@
 2008-05-13  Andrew Cagney  <cagney@redhat.com>
 
+	* PrintDeclarations.java: Do not generate non-ENV wrappers.
+	Delete Cast.  Add ENV parameter to constructor.
+	* PrintHxxDefinitions.java: Update.
+	* PrintCxxDefinitions.java: Update.
+	* JniBindings.java: Update.
+	* Printer.java: Update.
+	* chars.cxx (jnixx::array): Update.
+
 	* logging.hxx: Move from frysk/rsl/jni/Log.hxx.
 	* logging.cxx: Ditto for Log.cxx.
 

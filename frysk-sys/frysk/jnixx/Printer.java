@@ -503,8 +503,7 @@ class Printer {
 		print("p" + i);
 	    } else {
 		printGlobalCxxName(param);
-		print("::Cast");
-		print("(p" + i + ")");
+		print("(_env, p" + i + ")");
 	    }
 	}
     }
@@ -609,8 +608,7 @@ class Printer {
 	    print(variable);
 	} else {
 	    printGlobalCxxName(returnType);
-	    print("::Cast");
-	    print("(");
+	    print("(_env, ");
 	    print(variable);
 	    print(")");
 	}

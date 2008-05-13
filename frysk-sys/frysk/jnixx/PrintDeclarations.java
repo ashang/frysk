@@ -51,48 +51,9 @@ class PrintDeclarations extends ClassWalker {
 	this.p = p;
     }
 
-    private void printWrapperDeclaration(boolean isStatic, Class returnType,
-					 String name, Class[] params) {
-	if (isStatic) {
-	    p.print("static ");
-	}	
-	p.print("inline ");
-	p.printGlobalCxxName(returnType);
-	p.print(" ");
-	p.print(name);
-	p.print("(");
-	for (int i = 0; i < params.length; i++) {
-	    if (i > 0) {
-		p.print(", ");
-	    }
-	    p.printGlobalCxxName(params[i]);
-	}
-	p.println(");");
-    }
-    private void printWrapperDeclaration(Method method) {
-	printWrapperDeclaration(Modifier.isStatic(method.getModifiers()),
-				method.getReturnType(),
-				p.name(method),
-				method.getParameterTypes());
-    }
-    private void printWrapperDeclaration(Constructor constructor) {
-	printWrapperDeclaration(true,
-				constructor.getDeclaringClass(),
-				"New",
-				constructor.getParameterTypes());
-    }
-    private void printWrapperDeclaration(Field field, boolean get) {
-	boolean isStatic = Modifier.isStatic(field.getModifiers());
-	printWrapperDeclaration(isStatic,
-				get ? field.getType() : Void.TYPE,
-				p.name(field, get),
-				get ? new Class[0] : new Class[] { field.getType() });
-    }
-
     private void printCxxFieldAccessorDeclaration(Field field,
 						  boolean get) {
 	p.printlnModifiers(field);
-	printWrapperDeclaration(field, get);
 	if (Modifier.isStatic(field.getModifiers())) {
 	    p.print("static ");
 	}
@@ -119,7 +80,6 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	    public void acceptConstructor(Constructor constructor) {
 		p.printlnModifiers(constructor);
-		printWrapperDeclaration(constructor);
 		p.print("static inline ");
 		p.printGlobalCxxName(constructor.getDeclaringClass());
 		p.print(" New(");
@@ -138,7 +98,6 @@ class PrintDeclarations extends ClassWalker {
 	    }
 	    public void acceptMethod(Method method) {
 		p.printlnModifiers(method);
-		printWrapperDeclaration(method);
 		if (Modifier.isStatic(method.getModifiers())) {
 		    p.print("static ");
 		}
@@ -158,33 +117,33 @@ class PrintDeclarations extends ClassWalker {
 	if (parent == null) {
 	    // A root object.
 	    p.println("public: jobject _object;");
-	    p.print("protected: ");
+	    p.print("public: ");
 	    p.printUnqualifiedCxxName(klass);
-	    p.print("(jobject _object)");
+	    p.print("(::jnixx::env env, jobject _object)");
 	    while (p.dent(1, "{", "}")) {
 		p.println("this->_object = _object;");
 	    }
+	    p.print("public: ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("()");
+	    while (p.dent(1, "{", "}")) {
+		p.println("this->_object = NULL;");
+	    }
 	} else {
 	    // Constructor.
-	    p.print("protected: ");
+	    p.print("public: ");
 	    p.printUnqualifiedCxxName(klass);
-	    p.print("(jobject _object) : ");
+	    p.print("(::jnixx::env env, jobject _object) : ");
 	    p.printGlobalCxxName(parent);
-	    p.println("(_object) { }");
+	    p.println("(env, _object) { }");
 	    // Empty constructor.
 	    p.print("public: ");
 	    p.printUnqualifiedCxxName(klass);
 	    p.print("() : ");
 	    p.printGlobalCxxName(parent);
-	    p.println("(NULL) { }");
+	    p.println("() { }");
 	}
-	// Explicit cast operator.
-	p.print("public: static ");
-	p.printUnqualifiedCxxName(klass);
-	p.print(" Cast(jobject object) { return ");
-	p.printUnqualifiedCxxName(klass);
-	p.println("(object); }");
-	    // Static get-class method - a class knows its own class.
+	// Static get-class method - a class knows its own class.
 	p.println("private: static jclass _class;");
 	p.println("public: static inline jclass _class_(::jnixx::env _env);");
 	JniBindings.printDeclarations(p, klass);

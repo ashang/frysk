@@ -229,7 +229,7 @@ class JniBindings {
 		 "const char*", "utf",
 	     },
 	     new Object[] {
-		 "return String(env.NewStringUTF(utf));",
+		 "return String(env, env.NewStringUTF(utf));",
 	     })
 	// GetStringUTFLength
 	.put(String.class, false,
@@ -299,7 +299,7 @@ class JniBindings {
 			 "jsize", "length",
 		     },
 		     new Object[] {
-			 "return " + type + "Array(env.New" + Type + "Array(length));",
+			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
 		     })
 		.put(types[i], false,
 		     "const j" + type + "*", "GetElements",
@@ -364,24 +364,22 @@ class JniBindings {
 	while (p.dent(0, "namespace jnixx {", "}")) {
 	    while (p.dent(1, "template <typename component> class array : public ::java::lang::Object {", "};")) {
 		printCodes(p, 2, new Object[] {
-			"protected:",
-			"array(jobject _object) : ::java::lang::Object(_object)", new Object[] {
-			},
 			"public:",
-			"static array<component> Cast(jobject object)", new Object[] {
-			    "return array<component>(object);",
+			"array(::jnixx::env env, jobject _object) : ::java::lang::Object(env, _object)", new Object[] {
+			},
+			"array() : ::java::lang::Object()", new Object[] {
 			},
 			"jsize GetLength(::jnixx::env env)", new Object[] {
 			    "return env.GetArrayLength((jarray)_object);",
 			},
 			"static array<component> New(::jnixx::env env, jsize length)", new Object[] {
-			    "return env.NewObjectArray(length, component::_class_(env), NULL);",
+			    "return array<component>(env, env.NewObjectArray(length, component::_class_(env), NULL));",
 			},
 			"static array<component> New(::jnixx::env env, jsize length, component init)", new Object[] {
-			    "return env.NewObjectArray(length, component::_class_(env), init._object);",
+			    "return array<component>(env, env.NewObjectArray(length, component::_class_(env), init._object));",
 			},
 			"component GetElement(::jnixx::env env, jsize index)", new Object[] {
-			    "return component::Cast(env.GetObjectArrayElement((jobjectArray)_object, index));",
+			    "return component(env, env.GetObjectArrayElement((jobjectArray)_object, index));",
 			},
 			"void SetElement(::jnixx::env env, jsize index, component object)", new Object[] {
 			    "env.SetObjectArrayElement((jobjectArray)_object, index, object._object);",

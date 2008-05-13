@@ -1,5 +1,7 @@
 2008-05-13  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/ProcBuilder.cxx (ProcBuilder::construct): Pass env to build().
+	
 	* jni/ProcBuilder.cxx: Update, Log.hxx renamed to logging.hxx.
 
 	* TestProcBuilder.java: New.

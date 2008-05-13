@@ -83,7 +83,7 @@ chars2strings(::jnixx::env env, char** argv) {
     length++;
   }
   ::jnixx::array<String> strings
-      = ::jnixx::array<String>::New(length);
+      = ::jnixx::array<String>::New(env, length);
   for (int i = 0; i < length; i++) {
     String string = String::NewStringUTF(env, argv[i]);
     strings.SetElement(env, i, string);
