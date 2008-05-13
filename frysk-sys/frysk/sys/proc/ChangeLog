@@ -1,3 +1,10 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcBuilder.java (construct(int,Log)): Replace construct(int),
+	make native.  Throw instead of returning a boolean.  
+	(open(int), scan(RawData,int,Log), close(RawData)): Delete.
+	* cni/ProcBuilder.cxx (ProcBuilder::construct): Update.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AuxvBuilder.cxx: Include jni.hxx.

@@ -44,6 +44,7 @@
 
 #include <gcj/cni.h>
 #include <gnu/gcj/RawData.h>
+#include <java/lang/RuntimeException.h>
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/ProcBuilder.h"
@@ -52,62 +53,56 @@
 #include "frysk/rsl/Log.h"
 #include "frysk/rsl/cni/Log.hxx"
 
-gnu::gcj::RawData*
-frysk::sys::proc::ProcBuilder::open (jint pid)
-{
-  // Get the file name.
-  const char *file;
-  char tmp[FILENAME_MAX];
-  if (pid > 0) {
-    if (::snprintf (tmp, sizeof tmp, "/proc/%d/task", (int) pid)
-	>= FILENAME_MAX)
-      throwRuntimeException ("snprintf: buffer overflow");
-    file = tmp;
-  }
-  else
-    file = "/proc";
-  return (gnu::gcj::RawData*)  opendir (file);
-}
-
 void
-frysk::sys::proc::ProcBuilder::scan(gnu::gcj::RawData* rawData, jint pid,
-				    frysk::rsl::Log* warning)
-{
-  DIR* proc = (DIR*) rawData;
-  int bad = 1; // something non-ve or 0.
-
-  while (true) {
-
-    // Get the dirent.
-    struct dirent *dirent = readdir (proc);
-    if (dirent == NULL)
-      break;
-
-    // Scan the pid, skip if non-numeric.
-    char* end = NULL;
-    int id = strtol (dirent->d_name, &end, 10);
-    if (end == dirent->d_name)
-      continue;
-
-    // Seems some kernels return a dirent containing bad (e.g., 0) or
-    // even random entries; report them and then throw an error.
-    if (bad <= 0) {
-      logf(warning, "/proc/%d/task contained bad pid: %d; skipping %d",
-	   (int)pid, bad, id);
-    } else if (id <= 0) {
-      bad = id;
-      logf(warning, "/proc/%d/task contains bad pid: %d", (int)pid, id);
+frysk::sys::proc::ProcBuilder::construct(jint pid, frysk::rsl::Log* warning) {
+  // Open the directory
+  DIR *proc;
+  {
+    const char *dir;
+    char tmp[FILENAME_MAX];
+    if (pid > 0) {
+      if (::snprintf(tmp, sizeof tmp, "/proc/%d/task", (int) pid)
+	  >= FILENAME_MAX)
+	throwRuntimeException("snprintf: buffer overflow");
+      dir = tmp;
     } else {
-      build(frysk::sys::ProcessIdentifierFactory::create(id));
+      dir = "/proc";
+    }
+    proc = ::opendir(dir);
+    if (proc == NULL) {
+      // If access isn't possible then there are no entries.
+      return;
     }
   }
 
-  if (bad <= 0)
-    throwRuntimeException("/proc/$$/task contains bad pid", "pid", bad);
-}
+  // Scan the directory tree.
+  while (true) {
+    // Get the dirent.
+    struct dirent *dirent = readdir(proc);
+    if (dirent == NULL) {
+      break;
+    }
+    // Scan the pid, skip if non-numeric.
+    char* end = NULL;
+    int id = strtol(dirent->d_name, &end, 10);
+    if (end == dirent->d_name) {
+      continue;
+    }
+    // Seems some kernels return a dirent containing bad (e.g., 0) or
+    // even random entries; report them and then throw an error.
+    if (id <= 0) {
+      logf(warning, "/proc/%d/task contained bad pid: %d", (int)pid, id);
+      break;
+    }
 
-void
-frysk::sys::proc::ProcBuilder::close (gnu::gcj::RawData* rawData)
-{
-  closedir ((DIR*) rawData);
+    try {
+      build(frysk::sys::ProcessIdentifierFactory::create(id));
+    } catch (java::lang::RuntimeException *e) {
+      ::closedir(proc);
+      throw e;
+    }
+  }
+
+  // Open the directory.
+  ::closedir (proc);
 }

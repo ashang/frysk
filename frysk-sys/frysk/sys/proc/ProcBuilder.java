@@ -39,7 +39,6 @@
 
 package frysk.sys.proc;
 
-import gnu.gcj.RawData;
 import frysk.sys.ProcessIdentifier;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
@@ -57,38 +56,25 @@ public abstract class ProcBuilder {
      * notifying ProcBuilder of each "interesting" entry.  Use
      * "finally" to ensure that the directory is always closed.
      */
-    public final boolean construct(ProcessIdentifier pid) {
-	return construct(pid.intValue());
-    }
-    private boolean construct(int pid) {
-	RawData dir = open(pid);
-	if (dir == null)
-	    return false;
-	try {
-	    scan(dir, pid, warning);
-	}
-	finally {
-	    close (dir);
-	}
-	return true;
+    public final void construct(ProcessIdentifier pid) {
+	construct(pid.intValue(), warning);
     }
     /**
      * Iterate over the <tt>/proc</tt> directory notifying TaskBuilder
      * of each "interesting" entry.
      */
-    public final boolean construct() {
-	return construct(0);
+    public final void construct() {
+	construct(0, warning);
     }
     /**
      * Called for each process or task ID in the <tt>/proc</tt>, or
      * <tt>/proc/PID/task</tt> directory.
      */
     abstract public void build(ProcessIdentifier pid);
+
+
     /**
-     * Private native methods for manipulating the <tt>/proc</tt>
-     * directory.  Move to frysk.sys.Dir?
+     * Iterate over /proc/PID/ finding all entries.
      */
-    private native RawData open(int pid);
-    private native void scan(RawData dir, int pid, Log warning);
-    private native void close(RawData dir);
+    private native void construct(int pid, Log warning);
 }
