@@ -187,6 +187,14 @@ class JniBindings {
 	     new Object[] {
 		 "return this->_object == _object;",
 	     })
+	.put(Object.class, false,
+	     "bool", "operator!=",
+	     new String[] {
+		 "jobject", "_object",
+	     },
+	     new Object[] {
+		 "return this->_object != _object;",
+	     })
 	// DeleteLocalRef
 	.put(Object.class, false,
 	     null, "DeleteLocalRef",

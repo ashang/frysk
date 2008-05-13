@@ -40,3 +40,51 @@
 extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
 
 extern ::jnixx::array<java::lang::String> chars2strings(::jnixx::env, char**);
+
+class StringChars {
+private:
+  ::java::lang::String string;
+  ::jnixx::env env;
+public:
+  const char* p;
+  StringChars(::jnixx::env env, ::java::lang::String string) {
+    this->string = string;
+    this->env = env;
+    if (string != NULL) {
+      this->p = string.GetStringUTFChars(env);
+    } else {
+      this->p = NULL;
+    }
+  }
+  void free() {
+    if (p != NULL) {
+      string.ReleaseStringUTFChars(env, p);
+      p = NULL;
+    }
+  }
+  ~StringChars() {
+    free();
+  }
+};
+
+class StringArrayChars {
+public:
+  char** p;
+  StringArrayChars(::jnixx::env env,
+		   ::jnixx::array< ::java::lang::String> strings) {
+    if (strings != NULL) {
+      p = strings2chars(env, strings);
+    } else {
+      p = NULL;
+    }
+  }
+  void free() {
+    if (p != NULL) {
+      delete p;
+      p = NULL;
+    }
+  }
+  ~StringArrayChars() {
+    free();
+  }
+};

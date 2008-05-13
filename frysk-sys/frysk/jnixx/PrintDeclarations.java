@@ -171,6 +171,12 @@ class PrintDeclarations extends ClassWalker {
 	    p.print("(jobject _object) : ");
 	    p.printGlobalCxxName(parent);
 	    p.println("(_object) { }");
+	    // Empty constructor.
+	    p.print("public: ");
+	    p.printUnqualifiedCxxName(klass);
+	    p.print("() : ");
+	    p.printGlobalCxxName(parent);
+	    p.println("(NULL) { }");
 	}
 	// Explicit cast operator.
 	p.print("public: static ");

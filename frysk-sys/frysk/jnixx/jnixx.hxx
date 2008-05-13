@@ -62,6 +62,9 @@ namespace jnixx {
     env(JNIEnv* _jni) {
       this->_jni = _jni;
     }
+    env() {
+      this->_jni = NULL;
+    }
 
     // Version Information
 

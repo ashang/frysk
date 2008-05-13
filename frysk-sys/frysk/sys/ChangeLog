@@ -1,3 +1,7 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Fork.cxx: Implement.
+
 2008-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Fork.java (NO_TRACE, PTRACE, UTRACE): Delete.

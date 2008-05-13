@@ -1,3 +1,11 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* PrintDeclarations.java: Generate a parameterless constructor.
+	* jnixx.hxx (jnixx::env::env()): New.
+	* JniBindings.java: Add Object.!=.
+	* chars.hxx (class StringArrayChars): New.
+	(class StringChars): New.
+
 2008-05-12  Andrew Cagney  <cagney@redhat.com>
 
 	* JniBindings.java: Generate primitive array methods.
