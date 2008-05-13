@@ -1,3 +1,13 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxIA32SyscallTable.java: Add timerfd_gettime, and
+	timerfd_settime.
+	* LinuxX8664SyscallTable.java: Add timerfd_gettime, and
+	timerfd_settime; append "_old" to epoll_ctl and epoll_wait.
+	* LinuxPPC64SyscallTable.java: Add subpage_prot, and
+	timerfd_settime, and timerfd_gettime.
+	* LinuxPPC32SyscallTable.java: Ditto.
+
 2008-02-07  Petr Machata  <pmachata@redhat.com>
 
 	* SyscallTable.java (getNumSyscalls): New function.

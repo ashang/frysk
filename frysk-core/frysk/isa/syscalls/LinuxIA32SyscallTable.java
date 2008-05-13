@@ -414,7 +414,9 @@ class LinuxIA32SyscallTable extends SyscallTable {
 	new Ia32Syscall("signalfd", 321),
 	new Ia32Syscall("timerfd", 322),
 	new Ia32Syscall("eventfd", 323),
-	new Ia32Syscall("fallocate", 324)
+	new Ia32Syscall("fallocate", 324),
+	new Ia32Syscall("timerfd_settime", 325),
+	new Ia32Syscall("timerfd_gettime", 326),
     };
 
 

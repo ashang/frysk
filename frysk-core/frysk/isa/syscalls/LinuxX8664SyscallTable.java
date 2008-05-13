@@ -300,8 +300,8 @@ class LinuxX8664SyscallTable extends SyscallTable {
 	new X8664Syscall("get_thread_area", 211, 1, "i:p "),
 	new X8664Syscall("lookup_dcookie", 212),
 	new X8664Syscall("epoll_create", 213),
-	new X8664Syscall("epoll_ctl", 214),
-	new X8664Syscall("epoll_wait", 215),
+	new X8664Syscall("epoll_ctl_old", 214),
+	new X8664Syscall("epoll_wait_old", 215),
 	new X8664Syscall("remap_file_pages", 216),
 	new X8664Syscall("getdents64", 217, 3, "i:ipi "),
 	new X8664Syscall("set_tid_address", 218),
@@ -371,7 +371,9 @@ class LinuxX8664SyscallTable extends SyscallTable {
 	new X8664Syscall("signalfd", 282),
 	new X8664Syscall("timerfd", 283),
 	new X8664Syscall("eventfd", 284),
-	new X8664Syscall("fallocate", 285)
+	new X8664Syscall("fallocate", 285),
+	new X8664Syscall("timerfd_settime", 286),
+	new X8664Syscall("timerfd_gettime", 287),
     };
 
     public Syscall getSyscall(String name) {

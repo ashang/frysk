@@ -418,7 +418,10 @@ class LinuxPPC64SyscallTable extends SyscallTable {
 	new PowerPCSyscall ("timerfd", 306),
 	new PowerPCSyscall ("eventfd", 307),
 	new PowerPCSyscall ("sync_file_range2", 308),
-	new PowerPCSyscall ("fallocate", 309)
+	new PowerPCSyscall ("fallocate", 309),
+	new PowerPCSyscall("subpage_prot", 310),
+	new PowerPCSyscall("timerfd_settime", 311),
+	new PowerPCSyscall("timerfd_gettime", 312),
     };
 
     private static class SocketSubSyscall extends PowerPCSyscall {
