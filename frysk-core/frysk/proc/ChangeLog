@@ -1,3 +1,7 @@
+2008-05-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestTaskObserverWatchpoint.java (testAddFailed): Add alignment test.
+
 2008-05-12  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestTaskObserverWatchpoint.java (testAddFailed): New.	

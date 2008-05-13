@@ -65,10 +65,14 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
     public void setWatchpoint(Task task, int index, 
 	       long addr, int range,
 	       boolean writeOnly) {
-
+	
 	// turn bit off (b = bit no): l &= ~(1L << b)
 	// turn bit on ( b= bit no):  l |= (1L << b);
 	if ((range == 1) || (range == 2) || (range == 4) || (range == 8)) {
+	    
+	    if ((addr &~ (range -1)) != addr)
+		throw new RuntimeException("Address 0x"+Long.toHexString(addr) + 
+			" is not aligned on a " + range + " byte boundary. Cannot set watchpoint.");
 	    
 	    // Set the Debug register with the linear address.
 	    task.setRegister(X8664Registers.DEBUG_REGS_GROUP.getRegisters()[index],

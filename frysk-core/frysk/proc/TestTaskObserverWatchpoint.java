@@ -177,12 +177,8 @@ extends TestLib
 
     }
 
-    // This test case tests whether watchpoints are caught when a task is in a straight
-    // "running" condition. This really tests the basic and advertised functionality of watchpoints:
-    // to be caught by hardware, not software. In this  test:  set up the watchpoint, set up
-    // a terminated observer to guard the watchpoint was caught, and simply set the task to run.
-    // If the watchpoint observer is called, and the test is blocked then the test passes. If the
-    // process terminates and the watchpoint is not caught, then this signified an error condition.
+    // This test case tests whether watchpoints addFailed is called on
+    // a variety of error conditions.
     public void testAddFailed () {
 	if (unresolvedOnPPC(5991)) 
 	    return;
@@ -209,21 +205,23 @@ extends TestLib
 	// Find Variable source for watch
 	long address = getGlobalSymbolAddress(task,"source");
 
-	// Add watch observer
-	AddFailWatchObserver watch = new AddFailWatchObserver();
-	task.requestAddWatchObserver(watch, address, 72, true);
+	// Add bad  length watch observer
+	AddFailWatchObserver badLength = new AddFailWatchObserver();
+	task.requestAddWatchObserver(badLength, address, 72, true);
+	
+	AddFailWatchObserver badAlignment = new AddFailWatchObserver();
+	task.requestAddWatchObserver(badAlignment, address-1, 4, true);
+
 	task.requestUnblock(co);
-
 	assertRunUntilStop("Run and test watchpoint ");
-
 	// Make sure it triggered.
-	assertTrue("addedFailed", watch.addFailed);
+	assertTrue("addedFailed on length", badLength.addFailed);
+	assertTrue("addedFailed on bad alignment", badAlignment.addFailed);
 
+	
 	// Delete both observers.
 	task.requestDeleteCodeObserver(co, mainAddress);
 	runPending();
-
-
     }
 
     // This test case tests whether 'read or write' watchpoints are caught when a task is in a straight

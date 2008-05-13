@@ -71,6 +71,10 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
 	// turn bit on ( b= bit no):  l |= (1L << b);
 	if ((range == 1) || (range == 2) || (range == 4)) {
 	    
+	    if ((addr &~ (range -1)) != addr)
+		throw new RuntimeException("Address 0x"+Long.toHexString(addr) + 
+			" is not aligned on a " + range + " byte boundary. Cannot set watchpoint.");
+
 	    // Set the Debug register with the linear address.
 	    task.setRegister(IA32Registers.DEBUG_REGS_GROUP.getRegisters()[index],
 			     addr);
