@@ -43,7 +43,7 @@
 #include "jni.hxx"
 
 #include "frysk/jnixx/print.hxx"
-#include "frysk/rsl/jni/Log.hxx"
+#include "frysk/jnixx/logging.hxx"
 
 using namespace java::lang;
 

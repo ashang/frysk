@@ -1,3 +1,8 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Log.hxx: Move to frysk/jnixx.
+	* jni/Log.cxx: Move to frysk/jnixx.
+
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Log.cxx: Use String's JNI methods.

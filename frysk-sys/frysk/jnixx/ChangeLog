@@ -1,5 +1,8 @@
 2008-05-13  Andrew Cagney  <cagney@redhat.com>
 
+	* logging.hxx: Move from frysk/rsl/jni/Log.hxx.
+	* logging.cxx: Ditto for Log.cxx.
+
 	* PrintDeclarations.java: Generate a parameterless constructor.
 	* jnixx.hxx (jnixx::env::env()): New.
 	* JniBindings.java: Add Object.!=.
