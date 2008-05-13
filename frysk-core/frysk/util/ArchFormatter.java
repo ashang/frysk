@@ -54,13 +54,20 @@ public class ArchFormatter {
 	return new String(fill);
     }
 
-    /** Return the value padded with 0s based on the task's word size. */
-    static public String toHexString(Task task, long value) {
-	StringBuilder b = new StringBuilder("0x");
+    static public String toHexString(int digits, long value) {
 	String addr = Long.toHexString(value);
-	int padding = 2 * task.getISA().wordSize() - addr.length();
+	int padding = digits - addr.length();
+	if (padding < 0)
+	    padding = 0;
+
+	StringBuilder b = new StringBuilder("0x");
 	b.append(repeat('0', padding));
 	b.append(addr);
 	return b.toString();
+    }
+
+    /** Return the value padded with 0s based on the task's word size. */
+    static public String toHexString(Task task, long value) {
+	return toHexString(2 * task.getISA().wordSize(), value);
     }
 }
