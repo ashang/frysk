@@ -672,6 +672,7 @@ generate_jnixx_class() {
     local suffix=$4
     local j=$(echo $(dirname $dir)/$base)
     if has_java_source $j ; then
+	echo "jni.hxx jni.cxx: $j.java"
 	echo "${dir}/${base}.o: $j.java | jni.hxx.gch"
     fi
 }
@@ -888,6 +889,7 @@ echo "" 1>&2
 
 if automake_variable_defined lib${GEN_MAKENAME}_jni_a_SOURCES ; then
     cat <<EOF
+JNIXX_CLASSES = 
 noinst_LIBRARIES += lib${GEN_DIRNAME}-jni.a
 lib${GEN_MAKENAME}_jni_so_SOURCES =
 solib_PROGRAMS += lib${GEN_DIRNAME}-jni.so
@@ -902,7 +904,7 @@ jni.hxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \\
 	    \$(JAVA) frysk.jnixx.Main \\
 		hxx \\
-		jni.hxx ${GEN_DIRNAME}.jar \\
+		jni.hxx ${GEN_DIRNAME}.jar \$(JNIXX_CLASSES) \\
 	        > \$@.tmp
 	mv \$@.tmp \$@
 jni.hxx.gch: jni.hxx
@@ -911,7 +913,7 @@ jni.cxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \\
 	    \$(JAVA) frysk.jnixx.Main \\
 		cxx \\
-		jni.hxx ${GEN_DIRNAME}.jar \\
+		jni.hxx ${GEN_DIRNAME}.jar \$(JNIXX_CLASSES) \\
 	        > \$@.tmp
 	mv \$@.tmp \$@
 jni.o: jni.hxx | jni.hxx.gch

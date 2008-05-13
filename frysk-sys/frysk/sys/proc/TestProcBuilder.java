@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,67 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <dirent.h>
-#include <errno.h>
-#include <stdlib.h>
+package frysk.sys.proc;
 
-#include "jni.hxx"
+import frysk.junit.TestCase;
+import frysk.sys.Pid;
+import frysk.sys.Tid;
+import frysk.sys.ProcessIdentifier;
 
-#include "frysk/jnixx/exceptions.hxx"
-#include "frysk/rsl/jni/Log.hxx"
-
-void
-frysk::sys::proc::ProcBuilder::construct(::jnixx::env env, jint pid,
-					 frysk::rsl::Log warning) {
-  // Open the directory
-  DIR *proc;
-  {
-    const char *dir;
-    char tmp[FILENAME_MAX];
-    if (pid > 0) {
-      if (::snprintf(tmp, sizeof tmp, "/proc/%d/task", (int) pid)
-	  >= FILENAME_MAX)
-	runtimeException(env, "snprintf: buffer overflow");
-      dir = tmp;
-    } else {
-      dir = "/proc";
-    }
-    proc = ::opendir(dir);
-    if (proc == NULL) {
-      // If access isn't possible then there are no entries.
-      return;
-    }
-  }
-
-  // Scan the directory tree.
-  while (true) {
-    // Get the dirent.
-    struct dirent *dirent = readdir(proc);
-    if (dirent == NULL) {
-      break;
-    }
-    // Scan the pid, skip if non-numeric.
-    char* end = NULL;
-    int id = strtol(dirent->d_name, &end, 10);
-    if (end == dirent->d_name) {
-      continue;
-    }
-    // Seems some kernels return a dirent containing bad (e.g., 0) or
-    // even random entries; report them and then throw an error.
-    if (id <= 0) {
-      logf(env, warning, "/proc/%d/task contained bad pid: %d", (int)pid, id);
-      break;
+/**
+ * Check that this processes proc and task can be found.
+ */
+public class TestProcBuilder extends TestCase {
+    private static class FindPid extends ProcBuilder {
+	boolean found = false;
+	private final ProcessIdentifier pid;
+	FindPid(ProcessIdentifier pid) {
+	    this.pid = pid;
+	}
+	public void build(ProcessIdentifier pid) {
+	    if (this.pid.equals(pid)) {
+		found = true;
+	    }
+	}
     }
 
-    try {
-      build(frysk::sys::ProcessIdentifierFactory::create(env, id));
-    } catch (java::lang::RuntimeException *e) {
-      ::closedir(proc);
-      throw e;
+    public void testProcFound() {
+	FindPid finder = new FindPid(Pid.get());
+	finder.construct();
+	assertTrue("pid found", finder.found);
     }
-  }
 
-  // Open the directory.
-  ::closedir (proc);
+    public void testTaskFound() {
+	FindPid finder = new FindPid(Tid.get());
+	finder.construct(Pid.get());
+	assertTrue("pid found", finder.found);
+    }
 }

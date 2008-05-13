@@ -1,3 +1,8 @@
+2008-05-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (JNIXX_CLASSES): Define.
+	(jni.hxx, jni.cxx): Use.  Depend on input java files.
+	
 2008-05-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* version.in: Update to version 0.3.

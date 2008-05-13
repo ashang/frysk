@@ -70,6 +70,10 @@ lib/unwind/cni/Unwind%.cxx: lib/unwind/Unwind%.java lib/unwind/cni/UnwindH.hxx
 lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 
 
+# jnixx's auto-detect algorithm misses hidden class references,
+# explicitly add them here.
+JNIXX_CLASSES += frysk.sys.ProcessIdentifierFactory
+
 
 # Quick hack to get a test JNI program up-and-running; as a package is
 # re-implemented in JNI, add it to the below.
