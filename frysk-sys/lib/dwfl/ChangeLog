@@ -44,6 +44,10 @@
 	* jni/DwException.cxx: Ditto.
 	* jni/DwarfDie.cxx: Ditto.
 
+2008-05-14  Petr Machata  <pmachata@redhat.com>
+
+	* DwflDieBias.java (getLowPC, getHighPC): New methods.
+
 2008-05-07  Petr Machata  <pmachata@redhat.com>
 
 	* ElfSymbolType.java (toString): New method.

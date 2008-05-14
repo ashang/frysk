@@ -56,4 +56,12 @@ public class DwflDieBias
 	}
 	return biased;
     }
+
+    public long getLowPC () {
+	return die.getLowPC() + bias;
+    }
+
+    public long getHighPC () {
+	return die.getHighPC() + bias;
+    }
 }
