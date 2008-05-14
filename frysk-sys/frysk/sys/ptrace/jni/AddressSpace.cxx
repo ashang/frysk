@@ -44,8 +44,8 @@
 #include <string.h>
 
 #include "jni.hxx"
-#include "frysk/jnixx/bounds.hxx"
-#include "frysk/jnixx/chars.hxx"
+#include "jnixx/bounds.hxx"
+#include "jnixx/elements.hxx"
 
 #include "frysk/sys/ptrace/jni/Ptrace.hxx"
 

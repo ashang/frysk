@@ -44,8 +44,8 @@
 
 #include "jni.hxx"
 
-#include "frysk/jnixx/exceptions.hxx"
-#include "frysk/jnixx/logging.hxx"
+#include "jnixx/exceptions.hxx"
+#include "jnixx/logging.hxx"
 
 void
 frysk::sys::proc::ProcBuilder::construct(::jnixx::env env, jint pid,

@@ -1,3 +1,8 @@
+2008-05-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (jnixx_sources): Rename frysk.jnixx to jnixx.
+	Only install jni.hxx.gch if the compile worked.
+
 2008-05-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (JNIXX_CLASSES): Define.

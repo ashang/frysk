@@ -49,7 +49,7 @@ cat <<EOF
 
 #include "jni.hxx"
 
-#include "frysk/jnixx/exceptions.hxx"
+#include "jnixx/exceptions.hxx"
 
 void
 frysk::sys::Signal::kill(::jnixx::env env, jint pid, jint sig,

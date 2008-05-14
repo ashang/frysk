@@ -37,42 +37,50 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "jni.hxx"
-#include "frysk/jnixx/print.hxx"
-#include "frysk/jnixx/exceptions.hxx"
 
-using namespace java::lang;
+#include "jnixx/exceptions.hxx"
 
-/**
- * Do printf style printing to a java String.
- */
-
-String
-ajprintf(::jnixx::env& env, const char *fmt, ...) {
-  va_list ap;
-  va_start (ap, fmt);
-  String jmessage = vajprintf(env, fmt, ap);
-  va_end (ap);
-  return jmessage;  
+void
+errnoException(::jnixx::env& env, int error, const char *prefix) {
+  // Hack; for moment just throw something.
+  runtimeException(env, "not implemented: %s#%d#%s",
+		   __FILE__, __LINE__, __func__);
 }
 
-/**
- * Do vprintf style printing to a java String.
- */
-String
-vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
-  char* message = NULL;
-  if (::vasprintf(&message, fmt, ap) < 0) {
-    errnoException(env, errno, "vasprintf");
+void
+errnoException(::jnixx::env& env, int error, const char *prefix,
+	       const char *fmt, ...) {
+  // Hack; for moment just throw something.
+  runtimeException(env, "not implemented: %s#%d#%s",
+		   __FILE__, __LINE__, __func__);
+}
+
+void
+runtimeException(::jnixx::env& env, const char *fmt, ...) {
+  jclass cls = env.FindClass("java/lang/RuntimeException");
+  va_list ap;
+  va_start(ap, fmt);
+  char *msg = NULL;
+  int status = ::vasprintf(&msg, fmt, ap);
+  va_end(ap);
+  if (status < 0) {
+    fprintf(stderr, "runtimeException: vasprintf failed: %s",
+	    ::strerror(errno));
+    env.ThrowNew(cls, "runtimeException: vasprintf failed");
   }
   try {
-    return String::NewStringUTF(env, message);
-  } catch (jnixx::exception) {
-    ::free(message);  
-    throw;
+    env.ThrowNew(cls, msg);
+  } catch (jnixx::exception e) {
+    // XXX: Work around lack of finally by catchching, then
+    // re-throwing, the exception
+    ::free(msg);
+    throw e;
   }
-  ::free(message);
 }

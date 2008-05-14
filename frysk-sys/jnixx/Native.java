@@ -37,42 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <malloc.h>
+package jnixx;
 
-#include "jni.hxx"
-
-#include "frysk/jnixx/chars.hxx"
-
-bool
-frysk::jnixx::Native::isJni(::jnixx::env) {
-  return true;
-}
-
-jint
-frysk::jnixx::Native::sizeOfJnixxEnv(::jnixx::env) {
-  return sizeof(::jnixx::env);
-}
-
-jint
-frysk::jnixx::Native::sizeOfClass(::jnixx::env) {
-  return sizeof(::java::lang::Class);
-}
-
-jint
-frysk::jnixx::Native::sizeOfObject(::jnixx::env) {
-  return sizeof(::java::lang::Object);
-}
-
-jint
-frysk::jnixx::Native::sizeOfObjectArray(::jnixx::env) {
-  return sizeof(::jnixx::array<java::lang::Object>);
-}
-
-::jnixx::array<java::lang::String>
-frysk::jnixx::Native::copy(::jnixx::env env,
-			   ::jnixx::array<java::lang::String> strings) {
-  char** chars = strings2chars(env, strings);
-  ::jnixx::array<java::lang::String> copiedStrings = chars2strings(env, chars);
-  ::free(chars);
-  return copiedStrings;
+class Native {
+    static native boolean isJni();
+    static native int sizeOfJnixxEnv();
+    static native int sizeOfObject();
+    static native int sizeOfClass();
+    static native int sizeOfObjectArray();
+    static native String[] copy(String[] strings);
 }

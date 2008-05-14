@@ -1,5 +1,9 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Fork.cxx: Update #includes for jnixx rename.
+	* jni/Signal.cxx-sh: Ditto.
+	* jni/PseudoTerminal.cxx: Ditto.
+	
 	* jni/Fork.cxx (spawn): Use JNI names.
 
 2008-05-13  Andrew Cagney  <cagney@redhat.com>

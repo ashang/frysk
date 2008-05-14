@@ -46,8 +46,8 @@
 
 #include <jni.hxx>
 
-#include "frysk/jnixx/chars.hxx"
-#include "frysk/jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
+#include "jnixx/exceptions.hxx"
 
 using namespace java::lang;
 

@@ -45,7 +45,7 @@
 
 #include "frysk/sys/ptrace/jni/Ptrace.hxx"
 
-#include "frysk/jnixx/exceptions.hxx"
+#include "jnixx/exceptions.hxx"
 
 static const char*
 op_as_string(int op) {

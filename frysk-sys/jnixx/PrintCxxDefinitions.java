@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+package jnixx;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;

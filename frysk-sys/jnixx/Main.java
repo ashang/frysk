@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+package jnixx;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
@@ -135,7 +135,7 @@ class Main {
 
     private static void printHxxFile(Printer p, String headerFile,
 				     Class[] classes) {
-	p.println("#include \"frysk/jnixx/jnixx.hxx\"");
+	p.println("#include \"jnixx/jnixx.hxx\"");
 	p.println();
 	p.println("namespace jnixx {");
 	p.println("  extern JavaVM* vm;");

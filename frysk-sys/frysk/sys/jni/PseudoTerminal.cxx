@@ -42,7 +42,7 @@
 
 #include "jni.hxx"
 
-#include "frysk/jnixx/exceptions.hxx"
+#include "jnixx/exceptions.hxx"
 
 using namespace java::lang;
 

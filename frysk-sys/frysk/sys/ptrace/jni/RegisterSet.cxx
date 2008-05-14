@@ -46,8 +46,8 @@
 #include "jni.hxx"
 
 #include "frysk/sys/ptrace/jni/Ptrace.hxx"
-#include "frysk/jnixx/chars.hxx"
-#include "frysk/jnixx/bounds.hxx"
+#include "jnixx/elements.hxx"
+#include "jnixx/bounds.hxx"
 
 void
 frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,

@@ -37,34 +37,42 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+#include <malloc.h>
 
-import frysk.config.Host;
-import frysk.junit.TestCase;
+#include "jni.hxx"
 
-public class TestJnixx extends TestCase {
-    public void testSizeOfJnixxEnv() {
-	if (unsupported("CNI", !Native.isJni()))
-	    return;
-	assertEquals("word-size", Host.wordSize(),
-		     Native.sizeOfJnixxEnv() * 8);
-    }
-    public void testSizeOfObject() {
-	assertEquals("word-size", Host.wordSize(),
-		     Native.sizeOfObject() * 8);
-    }
-    public void testSizeOfClass() {
-	assertEquals("word-size", Host.wordSize(),
-		     Native.sizeOfClass() * 8);
-    }
-    public void testSizeOfObjectArray() {
-	assertEquals("word-size", Host.wordSize(),
-		     Native.sizeOfObjectArray() * 8);
-    }
-    public void testCharsConversion() {
-	if (unsupported("CNI", !Native.isJni()))
-	    return;
-	String[] strings = new String[] { "arg1", "arg2", "arg3" };
-	assertEquals("converted", strings, Native.copy(strings));
-    }
+#include "jnixx/elements.hxx"
+
+bool
+jnixx::Native::isJni(::jnixx::env) {
+  return true;
+}
+
+jint
+jnixx::Native::sizeOfJnixxEnv(::jnixx::env) {
+  return sizeof(::jnixx::env);
+}
+
+jint
+jnixx::Native::sizeOfClass(::jnixx::env) {
+  return sizeof(::java::lang::Class);
+}
+
+jint
+jnixx::Native::sizeOfObject(::jnixx::env) {
+  return sizeof(::java::lang::Object);
+}
+
+jint
+jnixx::Native::sizeOfObjectArray(::jnixx::env) {
+  return sizeof(::jnixx::array<java::lang::Object>);
+}
+
+::jnixx::array<java::lang::String>
+jnixx::Native::copy(::jnixx::env env,
+		    ::jnixx::array<java::lang::String> strings) {
+  char** chars = strings2chars(env, strings);
+  ::jnixx::array<java::lang::String> copiedStrings = chars2strings(env, chars);
+  ::free(chars);
+  return copiedStrings;
 }

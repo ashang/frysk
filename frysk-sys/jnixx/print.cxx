@@ -37,36 +37,42 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <gcj/cni.h>
+#include <stdlib.h>
+#include <errno.h>
 
-#include "frysk/jnixx/Native.h"
+#include "jni.hxx"
+#include "jnixx/print.hxx"
+#include "jnixx/exceptions.hxx"
 
-jboolean
-frysk::jnixx::Native::isJni() {
-  return false;
+using namespace java::lang;
+
+/**
+ * Do printf style printing to a java String.
+ */
+
+String
+ajprintf(::jnixx::env& env, const char *fmt, ...) {
+  va_list ap;
+  va_start (ap, fmt);
+  String jmessage = vajprintf(env, fmt, ap);
+  va_end (ap);
+  return jmessage;  
 }
 
-jint
-frysk::jnixx::Native::sizeOfJnixxEnv() {
-  return -1;
-}
-
-jint
-frysk::jnixx::Native::sizeOfClass() {
-  return sizeof(jclass);
-}
-
-jint
-frysk::jnixx::Native::sizeOfObject() {
-  return sizeof(jobject);
-}
-
-jint
-frysk::jnixx::Native::sizeOfObjectArray() {
-  return sizeof(jobjectArray);
-}
-
-JArray<jstring>*
-frysk::jnixx::Native::copy(JArray<jstring>* strings) {
-  return NULL;
+/**
+ * Do vprintf style printing to a java String.
+ */
+String
+vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
+  char* message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    errnoException(env, errno, "vasprintf");
+  }
+  try {
+    return String::NewStringUTF(env, message);
+  } catch (jnixx::exception) {
+    ::free(message);  
+    throw;
+  }
+  ::free(message);
 }

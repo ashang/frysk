@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+package jnixx;
 
 import java.util.HashMap;
 import java.util.Iterator;

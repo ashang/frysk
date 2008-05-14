@@ -37,49 +37,58 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * These methods either return the requested ID; or print a message to
- * stderr and then throws a jnixx_exception.
- */
+#include <stdarg.h>
+#include <stdlib.h>
 
-#ifndef frysk_jni_xx_hxx
-#define frysk_jni_xx_hxx
+#include "jni.hxx"
 
-#include <jni.h>
+#include "jnixx/print.hxx"
+#include "jnixx/logging.hxx"
 
-class jnixx_exception {
-};
+using namespace java::lang;
 
-struct __jstringArray : public __jobjectArray {
-};
-typedef __jstringArray* jstringArray;
+void
+logf(::jnixx::env env, frysk::rsl::Log logger,
+     const char* format, ...) {
+  if (!logger.logging(env))
+    return;
+  va_list ap;
+  va_start(ap, format);
+  String message = vajprintf(env, format, ap);
+  logger.log(env, message);
+  message.DeleteLocalRef(env);
+  va_end(ap);
+}
 
-extern jclass findClass(JNIEnv* env, const char *signature);
+void
+logf(::jnixx::env env, frysk::rsl::Log logger, Object object,
+     const char* format, ...) {
+  if (!logger.logging(env))
+    return;
+  va_list ap;
+  va_start(ap, format);
+  String message = vajprintf(env, format, ap);
+  logger.log(env, message);
+  message.DeleteLocalRef(env);
+  va_end(ap);
+}
 
-extern jstring newStringUTF(JNIEnv* env, const char *string);
+void
+log(::jnixx::env env, frysk::rsl::Log logger,
+    const char* p1, Object p2) {
+  if (!logger.logging(env))
+    return;
+  String message = String::NewStringUTF(env, p1);
+  logger.log(env, message, p2);
+  message.DeleteLocalRef(env);
+}
 
-extern jmethodID getMethodID(JNIEnv* env, jobject object,
-			     const char* name, const char* signature);
-
-extern jmethodID getMethodID(JNIEnv* env, jclass klass,
-			     const char* name, const char* signature);
-
-extern jfieldID getFieldID(JNIEnv* env, jobject object,
-			   const char* name, const char* signature);
-
-extern jfieldID getFieldID(JNIEnv* env, jclass klass,
-			   const char* name, const char* signature);
-
-extern jmethodID getStaticMethodID(JNIEnv* env, jobject object,
-				   const char* name, const char* signature);
-
-extern jmethodID getStaticMethodID(JNIEnv* env, jclass klass,
-				   const char* name, const char* signature);
-
-extern jfieldID getStaticFieldID(JNIEnv* env, jobject object,
-				 const char* name, const char* signature);
-
-extern jfieldID getStaticFieldID(JNIEnv* env, jclass klass,
-				 const char* name, const char* signature);
-
-#endif
+void
+log(::jnixx::env env, frysk::rsl::Log logger, Object self,
+    const char* p1, Object p2) {
+  if (!logger.logging(env))
+    return;
+  String message = String::NewStringUTF(env, p1);
+  logger.log(env, self, message, p2);
+  message.DeleteLocalRef(env);
+}

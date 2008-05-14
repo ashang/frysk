@@ -37,57 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <malloc.h>
+#include <gcj/cni.h>
 
-#include "jni.hxx"
-#include "frysk/jnixx/chars.hxx"
+#include "jnixx/Native.h"
 
-using namespace java::lang;
-
-char**
-strings2chars(jnixx::env env, ::jnixx::array<String> strings) {
-  jsize arrayLength = strings.GetArrayLength(env);
-  // compute the allocated size.
-  size_t size = 0;
-  size += sizeof(void*); // NULL
-  for (int i = 0; i < arrayLength; i++) {
-    size += sizeof(void*); // pointer
-    String string = strings.GetObjectArrayElement(env, i);
-    size += string.GetStringUTFLength(env); // chars
-    size += 1; // NUL
-    string.DeleteLocalRef(env);
-  }
-  // Create the array.
-  char **elements = (char**) ::malloc(size);
-  char **argv = elements;
-  // Store strings after the array
-  char *arg = (char*) (argv + arrayLength + 1);
-  // Copy
-  for (int i = 0; i < arrayLength; i++) {
-    *argv++ = arg;
-    String string = strings.GetObjectArrayElement(env, i);
-    int utfLength = string.GetStringUTFLength(env);
-    string.GetStringUTFRegion(env, 0, string.GetStringLength(env), arg);
-    arg += utfLength;
-    string.DeleteLocalRef(env);
-    *arg++ = '\0';
-  }
-  *argv = NULL;
-  return elements;
+jboolean
+jnixx::Native::isJni() {
+  return false;
 }
 
-::jnixx::array<String>
-chars2strings(::jnixx::env env, char** argv) {
-  int length = 0;
-  for (char **p = argv; *p != NULL; p++) {
-    length++;
-  }
-  ::jnixx::array<String> strings
-      = ::jnixx::array<String>::NewObjectArray(env, length);
-  for (int i = 0; i < length; i++) {
-    String string = String::NewStringUTF(env, argv[i]);
-    strings.SetObjectArrayElement(env, i, string);
-    string.DeleteLocalRef(env);
-  }
-  return strings;
+jint
+jnixx::Native::sizeOfJnixxEnv() {
+  return -1;
+}
+
+jint
+jnixx::Native::sizeOfClass() {
+  return sizeof(jclass);
+}
+
+jint
+jnixx::Native::sizeOfObject() {
+  return sizeof(jobject);
+}
+
+jint
+jnixx::Native::sizeOfObjectArray() {
+  return sizeof(jobjectArray);
+}
+
+JArray<jstring>*
+jnixx::Native::copy(JArray<jstring>* strings) {
+  return NULL;
 }

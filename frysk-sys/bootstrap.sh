@@ -41,6 +41,7 @@
 set -e
 
 FILE_LIST="frysk \
+    jnixx \
     inua \
     lib"
 

@@ -902,16 +902,17 @@ CLEANFILES += jni.hxx jni.cxx jni.hxx.gch
 \$(lib${GEN_MAKENAME}_jni_a_SOURCES): | jni.hxx jni.hxx.gch
 jni.hxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \\
-	    \$(JAVA) frysk.jnixx.Main \\
+	    \$(JAVA) jnixx.Main \\
 		hxx \\
 		jni.hxx ${GEN_DIRNAME}.jar \$(JNIXX_CLASSES) \\
 	        > \$@.tmp
 	mv \$@.tmp \$@
 jni.hxx.gch: jni.hxx
-	\$(CXXCOMPILE) -c -x c++-header jni.hxx
+	\$(CXXCOMPILE) -c -x c++-header jni.hxx -o \$@.tmp
+	mv \$@.tmp \$@
 jni.cxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar
 	CLASSPATH=\$(GEN_DIRNAME).jar:\$(CLASSPATH) \\
-	    \$(JAVA) frysk.jnixx.Main \\
+	    \$(JAVA) jnixx.Main \\
 		cxx \\
 		jni.hxx ${GEN_DIRNAME}.jar \$(JNIXX_CLASSES) \\
 	        > \$@.tmp

@@ -1,5 +1,7 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/LocalMemory.cxx: Update #includes to match jnixx rename.
+	
 	* jni/LocalMemory.cxx (getBytes): Use JNI names.
 
 2008-05-12  Andrew Cagney  <cagney@redhat.com>

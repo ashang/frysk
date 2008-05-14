@@ -37,13 +37,34 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.jnixx;
+package jnixx;
 
-class Native {
-    static native boolean isJni();
-    static native int sizeOfJnixxEnv();
-    static native int sizeOfObject();
-    static native int sizeOfClass();
-    static native int sizeOfObjectArray();
-    static native String[] copy(String[] strings);
+import frysk.config.Host;
+import frysk.junit.TestCase;
+
+public class TestJnixx extends TestCase {
+    public void testSizeOfJnixxEnv() {
+	if (unsupported("CNI", !Native.isJni()))
+	    return;
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfJnixxEnv() * 8);
+    }
+    public void testSizeOfObject() {
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfObject() * 8);
+    }
+    public void testSizeOfClass() {
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfClass() * 8);
+    }
+    public void testSizeOfObjectArray() {
+	assertEquals("word-size", Host.wordSize(),
+		     Native.sizeOfObjectArray() * 8);
+    }
+    public void testCharsConversion() {
+	if (unsupported("CNI", !Native.isJni()))
+	    return;
+	String[] strings = new String[] { "arg1", "arg2", "arg3" };
+	assertEquals("converted", strings, Native.copy(strings));
+    }
 }

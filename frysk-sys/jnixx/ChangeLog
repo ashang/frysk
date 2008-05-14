@@ -1,5 +1,16 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	Rename directory to jnixx/.
+	* Main.java: Generate new include path.
+	* elements.hxx, elements.cxx: rename chars.hxx, and chars.cxx.
+	* cni/Native.cxx: Update.
+	* logging.cxx: Update.
+	* exceptions.cxx: Update.
+	* print.cxx: Update.
+	* jni/Native.cxx: Update.
+	* xx.cxx: Delete.
+	* xx.hxx: Delete.
+	
 	* PrintCxxDefinitions.java: Generate ID variables.
 
 	* JniBindings.java: Generate array method names identical to JNI.

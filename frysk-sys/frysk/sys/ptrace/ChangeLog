@@ -1,7 +1,12 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/AddressSpace.cxx: Update #includes to match jnixx rename.
+	* jni/RegisterSet.cxx: Ditto.
+	* jni/Ptrace.cxx: Ditto.
+	
 	* jni/Ptrace.cxx: Convert to JNI.
 	* jni/AddressSpace.cxx: Convert to JNI.
+
 	* jni/RegisterSet.cxx: Covert to JNI.
 	* jni/Utrace.cxx: Delete.
 
