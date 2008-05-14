@@ -284,10 +284,10 @@ public class Ftrace {
 	if (ftraceController != null || traceMmapUnmap) {
 	    MyMappingObserver o = new MyMappingObserver(ftraceController);
 
-	    // Presumably the user would like to see mappings and
-	    // unmappings as precisely as possible, and all of them.
-	    // Use syscall-based observer in that case.
 	    if (traceMmapUnmap)
+		// Presumably the user would like to see mappings and
+    		// unmappings as precisely as possible, and all of
+    		// them.  Use syscall-based observer in that case.
 		MappingGuard.requestAddSyscallBasedMappingObserver(task, o);
 	    else
 		MappingGuard.requestAddMappingObserver(task, o);

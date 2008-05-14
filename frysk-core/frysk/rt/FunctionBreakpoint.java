@@ -125,8 +125,9 @@ public class FunctionBreakpoint
 	    return addrs;
 	}
 	else {
-            // Filter any null values that have sneaked in.
             LinkedList addrs = SymbolFactory.getAddresses(task, name);
+
+            // Filter any null values that have sneaked in.
             Long nullVal = new Long(0);
             while (addrs.remove(nullVal)) {
             }
