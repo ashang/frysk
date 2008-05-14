@@ -1,3 +1,8 @@
+2008-05-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestObjectDeclarationSearchEngineTopDown.java
+	(testGetObjectHashFileHashSymbolOther): New Test.
+
 2008-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java (getObject): Added support

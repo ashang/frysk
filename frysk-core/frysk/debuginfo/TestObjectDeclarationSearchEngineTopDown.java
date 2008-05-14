@@ -81,6 +81,16 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
 	verifyObjectFound(objectName, objectToken, fileName, srcPath);
     }
     
+    public void testGetObjectHashFileHashSymbolOther() {
+	
+	String objectName = "funit-scopes-multi-file-a.c#first";
+	String objectToken = "*other*";
+	String fileName = "funit-scopes-multi-file";
+	File srcPath = getSrc("funit-scopes-multi-file-a.c");
+
+	verifyObjectFound(objectName, objectToken, fileName, srcPath);
+    }
+    
     
     private void verifyObjectFound(String objectName, String objectToken,
 	    String fileName, File srcPath) {

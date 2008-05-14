@@ -1,15 +1,14 @@
 #include <stdlib.h>
 
-static inline void second(){
-  int* a = 0;
-  a[0] = 0;
+void second();
+
+void first(){ //*other*
+  second();
 }
 
-
-
-
-static void first(){
-  second();
+void second(){
+  int* a = 0;
+  a[0] = 0;
 }
 
 int main(){

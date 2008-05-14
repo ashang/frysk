@@ -1,3 +1,7 @@
+2008-05-14  Sami Wagiaalla  <swagiaal@toner.yyz.redhat.com>
+
+	* funit-scopes-multi-file-a.c: Moved function first().
+
 2008-05-06  Thiago Jung Bauermann  <bauerman@br.ibm.com>
 
 	* funit-regs.S: Use LOAD_REGISTER_IMMED instead of LOAD_IMMED_WORD.
