@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,8 +50,7 @@
 #include "frysk/sys/cni/Errno.hxx"
 
 static speed_t
-toBaud (frysk::sys::termios::Speed* speed)
-{
+toBaud(frysk::sys::termios::Speed* speed) {
   if (speed == frysk::sys::termios::Speed::BAUD_0)
     return B0;
   if (speed == frysk::sys::termios::Speed::BAUD_9600)
@@ -63,8 +62,7 @@ toBaud (frysk::sys::termios::Speed* speed)
 }
 
 static frysk::sys::termios::Speed*
-toSpeed (speed_t baud)
-{
+toSpeed(speed_t baud) {
   switch (baud) {
   case B0: return frysk::sys::termios::Speed::BAUD_0;
   case B9600: return frysk::sys::termios::Speed::BAUD_9600;
@@ -75,25 +73,21 @@ toSpeed (speed_t baud)
   }
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Speed::set (frysk::sys::termios::Termios* termios)
-{
+void
+frysk::sys::termios::Speed::set(jlong termios) {
   speed_t baud = toBaud (this);
-  ::cfsetispeed ((struct termios*)(termios->termios), baud);
-  ::cfsetospeed ((struct termios*)(termios->termios), baud);
-  return termios;
+  ::cfsetispeed((struct termios*)termios, baud);
+  ::cfsetospeed((struct termios*)termios, baud);
 }
 
 frysk::sys::termios::Speed*
-frysk::sys::termios::Speed::getInput (frysk::sys::termios::Termios* termios)
-{
-  speed_t baud = ::cfgetispeed ((struct termios*) (termios->termios));
+frysk::sys::termios::Speed::getInput(jlong termios) {
+  speed_t baud = ::cfgetispeed((struct termios*) termios);
   return toSpeed (baud);
 }
 
 frysk::sys::termios::Speed*
-frysk::sys::termios::Speed::getOutput (frysk::sys::termios::Termios* termios)
-{
-  speed_t baud = ::cfgetospeed ((struct termios*) (termios->termios));
+frysk::sys::termios::Speed::getOutput(jlong termios) {
+  speed_t baud = ::cfgetospeed((struct termios*) termios);
   return toSpeed (baud);
 }

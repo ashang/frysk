@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,30 +53,24 @@
 #include "frysk/sys/cni/Errno.hxx"
 
 static tcflag_t
-toFlag (frysk::sys::termios::Control* mode)
-{
+toFlag(frysk::sys::termios::Control* mode) {
   throwRuntimeException ("untested termios input mode");
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Control::set (frysk::sys::termios::Termios* t,
-				   jboolean on)
-{
-  tcflag_t flag = toFlag (this);
-  struct termios* termios = (struct termios*) (t->termios);
+void
+frysk::sys::termios::Control::set(jlong t, jboolean on) {
+  tcflag_t flag = toFlag(this);
+  struct termios* termios = (struct termios*) t;
   if (on)
     termios->c_cflag |= flag;
   else
     termios->c_cflag &= ~flag;
-  return t;
 }
 
-
 jboolean
-frysk::sys::termios::Control::get (frysk::sys::termios::Termios* t)
-{
-  tcflag_t flag = toFlag (this);
-  struct termios* termios = (struct termios*) (t->termios);
+frysk::sys::termios::Control::get(jlong t) {
+  tcflag_t flag = toFlag(this);
+  struct termios* termios = (struct termios*) t;
   if (termios->c_cflag & flag)
     return true;
   else

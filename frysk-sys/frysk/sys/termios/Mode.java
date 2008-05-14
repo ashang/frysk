@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,36 +48,30 @@ import java.util.Iterator;
 /**
  * Termios modes.
  */
-abstract class Mode
-{
-    protected Mode ()
-    {
+abstract class Mode {
+    protected Mode() {
 	throw new RuntimeException ("should not be creating an empty mode");
     }
     protected final String on;
-    protected Mode (String on)
-    {
+    protected Mode(String on) {
 	this.on = on;
     }
-    public String toString ()
-    {
+    public String toString() {
 	return on;
     }
-    public String toString (Termios termios)
-    {
-	if (get (termios))
+    public String toString(Termios termios) {
+	if (termios.get(this))
 	    return on;
 	else
 	    return "-" + on;
     }
-    abstract Termios set (Termios termios, boolean on);
-    abstract boolean get (Termios termios);
+    abstract void set(long termios, boolean on);
+    abstract boolean get(long termios);
 
     /**
      * Return a linked list of the objects static Fields.
      */
-    static final List getStaticFields (Class c)
-    {
+    static final List getStaticFields(Class c) {
 	List staticFields = new LinkedList ();
 	Field[] fields = c.getFields ();
 	for (int i = 0; i < fields.length; i++) {
@@ -92,8 +86,7 @@ abstract class Mode
     /**
      * Return a linked list of the classes static members.
      */
-    static final List getStaticMembers (Class c)
-    {
+    static final List getStaticMembers(Class c) {
 	List members = new LinkedList ();
 	try {
 	    for (Iterator i = getStaticFields (c).iterator ();
@@ -102,8 +95,7 @@ abstract class Mode
 		Object o = field.get (null);
 		members.add (o);
 	    }
-	}
-	catch (java.lang.IllegalAccessException e) {
+	} catch (java.lang.IllegalAccessException e) {
 	    throw new RuntimeException (e);
 	}
 	return members;

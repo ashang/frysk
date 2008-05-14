@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,31 +43,25 @@ package frysk.sys.termios;
  * Special characters and values.
  */
 
-public abstract class Special
-{
+public abstract class Special {
     protected final String prefix;
-    private Special (String prefix)
-    {
+    private Special(String prefix) {
 	this.prefix = prefix;
     }
-    public String toString ()
-    {
+    public String toString() {
 	return prefix;
     }
-    public abstract String toString (Termios termios);
-    native Termios set (Termios termios, char val);
-    native char get (Termios termios);
-    public static Special[] getSpecials ()
-    {
+    public abstract String toString(Termios termios);
+    native void set(long termios, char val);
+    native char get(long termios);
+    public static Special[] getSpecials() {
 	return (Special[]) (Mode.getStaticMembers (Special.class)
 			    .toArray (new Special[0]));
     }
     public static final Special NON_CANONICAL_READ_MINIMUM
-	= new Special ("min")
-	{
-	    public String toString (Termios termios)
-	    {
-		return prefix + " = " + (int) get (termios);
-	    }
-	};
+	= new Special("min") {
+		public String toString(Termios termios) {
+		    return prefix + " = " + (int) termios.get(this);
+		}
+	    };
 }

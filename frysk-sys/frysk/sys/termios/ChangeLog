@@ -1,3 +1,23 @@
+2008-05-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Termios.java (termios): Change type to "long"; pass value to
+	methods.
+	* Action.java: Update.
+	* Control.java: Update.
+	* Input.java: Update.
+	* Local.java: Update.
+	* Mode.java: Update.
+	* Output.java: Update.
+	* Special.java: Update.
+	* Speed.java: Update.
+	* cni/Output.cxx: Ditto.
+	* cni/Speed.cxx: Update.
+	* cni/Local.cxx: Ditto.
+	* cni/Input.cxx: Update.
+	* cni/Special.cxx: Update.
+	* cni/Control.cxx: Update.
+	* cni/Termios.cxx: Ditto.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Control.cxx: Include jni.hxx.

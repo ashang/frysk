@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,8 +44,6 @@
 
 #include <gcj/cni.h>
 
-#include <gnu/gcj/RawDataManaged.h>
-
 #include "frysk/sys/FileDescriptor.h"
 #include "frysk/sys/PseudoTerminal.h"
 #include "frysk/sys/termios/Termios.h"
@@ -53,26 +51,25 @@
 #include "frysk/sys/termios/Mode.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-gnu::gcj::RawDataManaged*
-frysk::sys::termios::Termios::malloc ()
-{
-  return (gnu::gcj::RawDataManaged*)JvAllocBytes (sizeof (struct termios));
+jlong
+frysk::sys::termios::Termios::malloc() {
+  return (jlong) (long) JvMalloc(sizeof (struct termios));
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Termios::get(frysk::sys::FileDescriptor*file)
-{
-  int fd = file->getFd ();
+void
+frysk::sys::termios::Termios::free(jlong t) {
+  JvFree((void*) (long) t);
+}
+
+void
+frysk::sys::termios::Termios::get(jlong termios, jint fd) {
   if (::tcgetattr (fd, (struct termios*) termios) < 0)
-    throwErrno (errno, "tcsetattr", "fd %d", fd);
-  return this;
+    throwErrno (errno, "tcsetattr", "fd %d", (int)fd);
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Termios::set(frysk::sys::FileDescriptor* file,
-				  frysk::sys::termios::Action* act)
-{
-  int fd = file->getFd ();
+void
+frysk::sys::termios::Termios::set(jlong termios, jint fd,
+				  frysk::sys::termios::Action* act) {
   int action;
   if (act == frysk::sys::termios::Action::NOW)
     action = TCSANOW;
@@ -81,31 +78,25 @@ frysk::sys::termios::Termios::set(frysk::sys::FileDescriptor* file,
   else if (act == frysk::sys::termios::Action::FLUSH)
     action = TCSAFLUSH;
   else
-    throwRuntimeException ("Unknown Termios.Action");
+    throwRuntimeException("Unknown Termios.Action");
   errno = 0;
   if (tcsetattr (fd, action, (struct termios*) termios) < 0)
-    throwErrno (errno, "tcsetattr", "fd %d", fd);
-  return this;
+    throwErrno(errno, "tcsetattr", "fd %d", (int)fd);
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Termios::setRaw ()
-{
-  ::cfmakeraw ((struct termios*)termios);
-  return this;
+void
+frysk::sys::termios::Termios::setRaw(jlong termios) {
+  ::cfmakeraw((struct termios*)termios);
 }
 
 void
-frysk::sys::termios::Termios::sendBreak(frysk::sys::FileDescriptor* fd,
-			       jint duration)
-{
-  if (::tcsendbreak (fd->getFd (), duration) < 0)
-    throwErrno (errno, "tcsendbreak", "fd %d", (int)(fd->getFd ()));
+frysk::sys::termios::Termios::sendBreak(jint fd, jint duration) {
+  if (::tcsendbreak(fd, duration) < 0)
+    throwErrno(errno, "tcsendbreak", "fd %d", (int)fd);
 }
 
 void
-frysk::sys::termios::Termios::drain(frysk::sys::FileDescriptor* fd)
-{
-  if (::tcdrain (fd->getFd ()) < 0)
-    throwErrno (errno, "tcdrain", "fd %d", (int)(fd->getFd ()));
+frysk::sys::termios::Termios::drain(jint fd) {
+  if (::tcdrain(fd) < 0)
+    throwErrno(errno, "tcdrain", "fd %d", (int)fd);
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,8 +53,7 @@
 #include "frysk/sys/cni/Errno.hxx"
 
 static tcflag_t
-toFlag (frysk::sys::termios::Local* mode)
-{
+toFlag(frysk::sys::termios::Local* mode) {
   tcflag_t flag;
   if (mode == frysk::sys::termios::Local::ECHO_INPUT)
     flag = ECHO;
@@ -65,25 +64,21 @@ toFlag (frysk::sys::termios::Local* mode)
   return flag;
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Local::set (frysk::sys::termios::Termios* t,
-				 jboolean on)
-{
+void
+frysk::sys::termios::Local::set(jlong t, jboolean on) {
   tcflag_t flag = toFlag (this);
-  struct termios* termios = (struct termios*) (t->termios);
+  struct termios* termios = (struct termios*) t;
   if (on)
     termios->c_lflag |= flag;
   else
     termios->c_lflag &= ~flag;
-  return t;
 }
 
 
 jboolean
-frysk::sys::termios::Local::get (frysk::sys::termios::Termios* t)
-{
+frysk::sys::termios::Local::get(jlong t) {
   tcflag_t flag = toFlag (this);
-  struct termios* termios = (struct termios*) (t->termios);
+  struct termios* termios = (struct termios*) t;
   if (termios->c_lflag & flag)
     return true;
   else

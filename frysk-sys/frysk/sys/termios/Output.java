@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,17 +42,10 @@ package frysk.sys.termios;
 /**
  * Output modes.
  */
-public final class Output
-    extends Mode
-{
-//     private Output (String on)
-//     {
-// 	super (on);
-//     }
-    native Termios set (Termios termios, boolean on);
-    native boolean get (Termios termios);
-    public static Output[] getModes ()
-    {
+public final class Output extends Mode {
+    native void set(long termios, boolean on);
+    native boolean get(long termios);
+    public static Output[] getModes() {
 	return (Output[]) (getStaticMembers (Output.class)
 			   .toArray (new Output[0]));
     }

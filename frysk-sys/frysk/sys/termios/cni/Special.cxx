@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -60,20 +60,16 @@ toIndex (frysk::sys::termios::Special* special)
     throwRuntimeException ("untested termios special control character");
 }
 
-frysk::sys::termios::Termios*
-frysk::sys::termios::Special::set (frysk::sys::termios::Termios* t,
-				   jchar val)
-{
+void
+frysk::sys::termios::Special::set(jlong t, jchar val) {
   int i = toIndex (this);
-  struct termios* termios = (struct termios*) (t->termios);
+  struct termios* termios = (struct termios*)t;
   termios->c_cc[i] = val;
-  return t;
 }
 
 jchar
-frysk::sys::termios::Special::get (frysk::sys::termios::Termios* t)
-{
+frysk::sys::termios::Special::get(jlong t) {
   int i = toIndex (this);
-  struct termios* termios = (struct termios*) (t->termios);
+  struct termios* termios = (struct termios*) t;
   return (jchar) (termios->c_cc[i]);
 }

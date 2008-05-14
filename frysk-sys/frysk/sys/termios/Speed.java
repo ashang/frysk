@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,37 +45,30 @@ import java.util.List;
 /**
  * Manipulates a terminal bound to FileDescriptor.
  */
-public class Speed
-    implements Comparable
-{
+public class Speed implements Comparable {
     final int b;
-    private Speed (int b)
-    {
+    private Speed(int b) {
 	this.b = b;
     }
-    public String toString ()
-    {
+    public String toString() {
 	return "" + b;
     }
-    public boolean equals (Object o)
-    {
+    public boolean equals(Object o) {
 	return (o instanceof Speed) && ((Speed)o).b == b;
     }
-    public int compareTo (Object rhs)
-    {
+    public int compareTo(Object rhs) {
 	return this.b - ((Speed)rhs).b;
     }
     public static final Speed BAUD_0 = new Speed (0);
     public static final Speed BAUD_9600 = new Speed (9600);
     public static final Speed BAUD_38400 = new Speed (38400);
-    static public final Speed[] getSpeeds ()
-    {
-	List speeds = Mode.getStaticMembers (Speed.class);
+    static public final Speed[] getSpeeds() {
+	List speeds = Mode.getStaticMembers(Speed.class);
 	Collections.sort (speeds);
-	return (Speed[]) speeds.toArray (new Speed[0]);
+	return (Speed[]) speeds.toArray(new Speed[0]);
     }
 
-    native Termios set (Termios termios);
-    static native Speed getInput (Termios termios);
-    static native Speed getOutput (Termios termios);
+    native void set(long termios);
+    static native Speed getInput(long termios);
+    static native Speed getOutput(long termios);
 }

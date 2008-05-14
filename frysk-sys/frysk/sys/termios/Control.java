@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,18 +42,11 @@ package frysk.sys.termios;
 /**
  * Input modes.
  */
-public class Control
-    extends Mode
-{
-//     private Control (String s)
-//     {
-// 	super (s);
-//     }
-    native Termios set (Termios termios, boolean on);
-    native boolean get (Termios termios);
-    public static Control[] getModes ()
-    {
-	return (Control[]) (getStaticMembers (Control.class)
+public class Control extends Mode {
+    native void set(long termios, boolean on);
+    native boolean get(long termios);
+    public static Control[] getModes() {
+	return (Control[]) (getStaticMembers(Control.class)
 			    .toArray (new Control[0]));
     }
 }

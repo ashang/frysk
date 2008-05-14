@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,17 +43,13 @@ package frysk.sys.termios;
  * Local modes.
  */
 
-public final class Local
-    extends Mode
-{
-    private Local (String s)
-    {
+public final class Local extends Mode {
+    private Local(String s) {
 	super (s);
     }
-    native Termios set (Termios termios, boolean on);
-    native boolean get (Termios termios);
-    public static Local[] getModes ()
-    {
+    native void set(long termios, boolean on);
+    native boolean get(long termios);
+    public static Local[] getModes() {
 	return (Local[]) (getStaticMembers (Local.class)
 			  .toArray (new Local[0]));
     }

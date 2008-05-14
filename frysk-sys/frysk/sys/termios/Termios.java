@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,106 +39,122 @@
 
 package frysk.sys.termios;
 
-import gnu.gcj.RawDataManaged;
 import frysk.sys.FileDescriptor;
 
 /**
  * Manipulates a terminal bound to FileDescriptor.
  */
-public final class Termios
-{
-    private native RawDataManaged malloc();
-    final RawDataManaged termios = malloc (); // package readable.
-
-    public Termios ()
-    {
+public final class Termios {
+    private native long malloc();
+    private native void free(long termios);
+    private long termios = malloc();
+    protected void finalize() {
+	if (termios != 0) {
+	    free(termios);
+	    termios = 0;
+	}
     }
 
-    public Termios (FileDescriptor fd)
-    {
-	this ();
-	get (fd);
+    public Termios() {
+    }
+
+    public Termios(FileDescriptor fd) {
+	this();
+	get(fd);
     }
 
     /**
      * Refresh this Termios with the terminal settings from FD.
      */
-    public native Termios get (FileDescriptor fd);
+    public Termios get(FileDescriptor fd) {
+	get(termios, fd.getFd());
+	return this;
+    }
+    private static native void get(long termios, int fd);
     /**
      * Set FD's terminal settings.
      */
-    public native Termios set (FileDescriptor fd, Action action);
+    public Termios set(FileDescriptor fd, Action action) {
+	set(termios, fd.getFd(), action);
+	return this;
+    }
+    private static native void set(long termios, int fd, Action action);
     /**
      * Set FD's terminal settings.
      */
-    public Termios set (FileDescriptor fd)
-    {
-	return set (fd, Action.NOW);
+    public Termios set(FileDescriptor fd) {
+	return set(fd, Action.NOW);
     }
 
     /**
      * Enable or disable a mode.
      */
-    public Termios set (Mode mode, boolean on)
-    {
-	return mode.set (this, on);
+    public Termios set(Mode mode, boolean on) {
+	mode.set(termios, on);
+	return this;
     }
     /**
      * Get a mode.
      */
-    public boolean get (Mode mode)
-    {
-	return mode.get (this);
+    public boolean get(Mode mode) {
+	return mode.get(termios);
     }
 
     /**
      * Set the speed of input and output in baud.
      */
-    public Termios set (Speed speed)
-    {
-	return speed.set (this);
+    public Termios set(Speed speed) {
+	speed.set(termios);
+	return this;
     }
     /**
      * Get the input speed in baud.
      */
-    public Speed getInputSpeed ()
-    {
-	return Speed.getInput (this);
+    public Speed getInputSpeed() {
+	return Speed.getInput(termios);
     }
     /**
      * Get the output speed in baud.
      */
-    public Speed getOutputSpeed ()
-    {
-	return Speed.getOutput (this);
+    public Speed getOutputSpeed() {
+	return Speed.getOutput(termios);
     }
 
     /**
      * Set special character field to val.
      */
-    public Termios set (Special special, char val)
-    {
-	return special.set (this, val);
+    public Termios set(Special special, char val) {
+	special.set(termios, val);
+	return this;
     }
     /**
      * Get special character field.
      */
-    public char get (Special special)
-    {
-	return special.get (this);
+    public char get(Special special) {
+	return special.get(termios);
     }
 
     /**
      * Adjust Termios so that it is "raw".
      */
-    public native Termios setRaw ();
+    public Termios setRaw() {
+	setRaw(termios);
+	return this;
+    }
+    private native void setRaw(long termios);
 
     /**
      * Sends a continuous stream of zero-valued bits - the BREAK.
      */
-    public static native void sendBreak (FileDescriptor fd, int duration);
+    public static void sendBreak(FileDescriptor fd, int duration) {
+	sendBreak(fd.getFd(), duration);
+    }
+    private static native void sendBreak(int fd, int duration);
     /**
      * Waits until all output has been sent.
      */
-    public static native void drain (FileDescriptor fd);
+    public static void drain(FileDescriptor fd) {
+	drain(fd.getFd());
+    }
+    private static native void drain(int fd);
 }
