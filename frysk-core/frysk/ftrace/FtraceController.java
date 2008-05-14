@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lib.dwfl.DwflModule;
+
 import frysk.dwfl.ObjectFile;
 import frysk.isa.signals.SignalTable;
 import frysk.isa.syscalls.SyscallTable;
@@ -55,6 +57,7 @@ import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
+import frysk.symtab.SymbolFactory;
 
 public class FtraceController
     implements Ftrace.Controller,
@@ -186,8 +189,7 @@ public class FtraceController
 	final Set stackTraceSet = new HashSet();
 
 	// Loop through all the rules, and use them to build
-	// workingSet from candidates.  Candidates are initialized
-	// lazily inside the loop.
+	// workingSet from candidates.
 	for (Iterator it = rules.iterator(); it.hasNext(); ) {
 	    final SymbolRule rule = (SymbolRule)it.next();
 	    fine.log("Considering symbol rule " + rule + ".");
@@ -211,8 +213,17 @@ public class FtraceController
     }
 
     public void fileMapped(final Task task, ObjectFile objf,
-			   List symbols, List pltEntries,
+			   DwflModule module,
 			   final Ftrace.Driver driver) {
+
+	Map symbolTable = SymbolFactory.getSymbolTable(module);
+	List pltEntries = SymbolFactory.getPLTEntries(module, symbolTable);
+	List symbols = new ArrayList(symbolTable.values());
+	if (symbols.size() == 0)
+	    // In that case we also know there are no PLT entries,
+	    // because each PLT entry is defined on a symbol.
+	    return;
+
 	try {
 	    applyTracingRules
 		(task, objf, pltEntries, pltRules,

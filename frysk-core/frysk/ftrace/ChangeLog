@@ -1,3 +1,9 @@
+2008-05-14  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java (Controller): The interface now passes only dwfl
+	module, symbol tables are handled at implementation site....
+	* FtraceController.java (fileMapped): ... which is here.
+
 2008-05-07  Petr Machata  <pmachata@redhat.com>
 
 	* TaskTracer.java (traceSymbol): Only allow tracing when symbol is

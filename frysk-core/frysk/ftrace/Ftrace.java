@@ -41,8 +41,6 @@ package frysk.ftrace;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,7 +64,6 @@ import frysk.rsl.LogFactory;
 import frysk.stepping.SteppingEngine;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
-import frysk.symtab.SymbolFactory;
 import frysk.util.ArchFormatter;
 
 import lib.dwfl.Dwfl;
@@ -108,7 +105,7 @@ public class Ftrace {
 	 * ltrace what to do.
 	 */
 	void fileMapped(Task task, ObjectFile objf,
-			List symbols, List pltEntries,
+			DwflModule module,
 			Driver driver);
     }
 
@@ -610,9 +607,7 @@ public class Ftrace {
 	    return null;
 	}
 
-	public Action updateMappedFile(Task task, MemoryMapping mapping)
-	{
-	    String path = mapping.path;
+	public Action updateMappedFile(Task task, MemoryMapping mapping) {
 
 	    if (traceMmapUnmap) {
 		MemoryMapping.Part part0
@@ -628,7 +623,7 @@ public class Ftrace {
 	    if (this.tracingController == null)
 		return Action.CONTINUE;
 
-	    if (path.equals("/SYSV00000000 (deleted)")) {
+	    if (mapping.path.equals("/SYSV00000000 (deleted)")) {
 		// This is most probably artificial name of SYSV
 		// shared memory "file".
 		return Action.CONTINUE;
@@ -637,14 +632,7 @@ public class Ftrace {
 	    if (objf == null)
 		return Action.CONTINUE;
 
-	    DwflModule module = getModuleForFile(task, path);
-	    Map symbolTable = SymbolFactory.getSymbolTable(module);
-	    List pltEntries = SymbolFactory.getPLTEntries(module, symbolTable);
-	    List symbols = new ArrayList(symbolTable.values());
-	    if (symbols.size() == 0)
-		// In that case we also know there are no PLT entries,
-		// because each PLT entry is defined on a symbol.
-		return Action.CONTINUE;
+	    DwflModule module = getModuleForFile(task, mapping.path);
 
 	    Map drivers = (Map)driversForTask.get(task);
 	    if (drivers == null) {
@@ -653,7 +641,7 @@ public class Ftrace {
 	    }
 	    Driver driver = new TaskTracer(Ftrace.this, task);
 	    drivers.put(mapping.path, driver);
-	    this.tracingController.fileMapped(task, objf, symbols, pltEntries, driver);
+	    this.tracingController.fileMapped(task, objf, module, driver);
 
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
