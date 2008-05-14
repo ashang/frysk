@@ -53,6 +53,13 @@ public class WatchpointFunctionFactory {
 	;
 
     public static WatchpointFunctions getWatchpointFunctions(ISA isa) {
-	return (WatchpointFunctions) watchpointTables.get(isa);
+	WatchpointFunctions function;
+	try {
+	    function =  (WatchpointFunctions) watchpointTables.get(isa);
+	} catch  (RuntimeException e) {
+	    return null;
+	}
+	
+	return function;
     }
 }

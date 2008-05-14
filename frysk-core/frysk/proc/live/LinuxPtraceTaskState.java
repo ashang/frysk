@@ -932,6 +932,10 @@ abstract class LinuxPtraceTaskState extends State {
 	    // First test if this is a watchpoint event.
 	    WatchpointFunctions watchpointFunction = WatchpointFunctionFactory.
 	    	getWatchpointFunctions(task.getISA());
+
+	    if (watchpointFunction == null) {
+		return blockers;
+	    }
 	    for (int i=0; i<watchpointFunction.getWatchpointCount();  i++) {
 		// Test if a watchpoint has fired
 		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
