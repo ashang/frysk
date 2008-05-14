@@ -56,6 +56,7 @@ import frysk.rt.SourceBreakpointObserver;
 import frysk.stack.StackFactory;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
+import frysk.util.ArchFormatter;
 
 import lib.dwfl.DwflModule;
 
@@ -305,7 +306,36 @@ class TaskTracer
 	public void deletedFrom (Object observable) {}
     }
 
-    private final Map symbolObserversForTask = new HashMap(); // Map<Task, Map<address, FunctionEnterObserver>>
+    private class AddressObserver implements TaskObserver.Code {
+
+	private final ObjectFile objf;
+	private final Long token;
+
+	public AddressObserver(Long token, ObjectFile objf) {
+	    this.token = token;
+	    this.objf = objf;
+	}
+
+	public Action updateHit(Task task, long address) {
+	    fine.log("Address observer hit at 0x" + Long.toHexString(address));
+	    String addrFmt = ArchFormatter.toHexString(task, token.longValue());
+	    String event = "checkpoint " + addrFmt + "@" + objf.getSoname();
+
+	    ftrace.reporter.eventSingle(task, event);
+
+	    if (ftrace.stackTraceSetProvider.shouldStackTraceOnTracePoint(token))
+		ftrace.reporter.generateStackTrace(task);
+
+	    return Action.CONTINUE;
+	}
+
+	public void addedTo (final Object observable) {}
+	public void deletedFrom (Object observable) {}
+	public void addFailed (final Object observable, final Throwable w) {}
+    }
+
+    // Map<Task, Map<address, FunctionEnterObserver>>
+    private final Map symbolObserversForTask = new HashMap();
 
     private synchronized FunctionEnterObserver getObserver(Task task, DwflSymbol sym, PLTEntry entry) {
 	Map symbolObservers = (Map)symbolObserversForTask.get(task);
@@ -358,5 +388,14 @@ class TaskTracer
 	ob.addSymbol(entry.getSymbol());
 	fine.log("Request for tracing PLT", entry.getSymbol(),
 		 "at", entry.getSymbol().getAddress());
+    }
+
+    public void traceAddress(Task task,
+			     Long addrToken, long bias, ObjectFile objf)
+    {
+	long addr = addrToken.longValue();
+	fine.log("Request for tracing address 0x" + Long.toHexString(addr));
+	task.requestAddCodeObserver(new AddressObserver(addrToken, objf),
+				    addr + bias);
     }
 }

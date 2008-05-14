@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import lib.dwfl.DwflModule;
+import lib.dwfl.ModuleElfBias;
 
 import frysk.dwfl.ObjectFile;
 import frysk.isa.signals.SignalTable;
@@ -71,10 +72,11 @@ public class FtraceController
     // ArrayList<SymbolRule>
     private final List pltRules = new ArrayList();
     private final List symRules = new ArrayList();
+    private final List addrRules = new ArrayList();
     private final List sysRules = new ArrayList();
     private final List sigRules = new ArrayList();
 
-    // Which symbols should yield a stack trace.
+    // Which symbols and addresses should yield a stack trace.
     private HashSet tracePointStackTraceSet = new HashSet();
     private boolean stackTraceEverything = false;
 
@@ -97,6 +99,11 @@ public class FtraceController
     public void gotSymRules(List rules) {
 	fine.log("Got " + rules.size() + " symbol rules.");
 	this.symRules.addAll(rules);
+    }
+
+    public void gotAddrRules(List rules) {
+	fine.log("Got " + rules.size() + " address rules.");
+	this.addrRules.addAll(rules);
     }
 
     public void gotSysRules(List rules) {
@@ -212,6 +219,52 @@ public class FtraceController
 	    handler.applyTracePoint(it.next());
     }
 
+    private void applyAddrRules(final Task task, final ObjectFile objf,
+				long bias,
+				final List rules, final Ftrace.Driver driver)
+    {
+	String path = objf.getFilename().getPath();
+	fine.log("Building checkpoint set for task", task, "and path", path);
+
+	// Skip the set if it's empty...
+	if (rules.isEmpty())
+	    return;
+
+	// Set<Long>, incrementally built working set.
+	final Set workingSet = new HashSet();
+	// Set<Long>, incrementally built set of tracepoints
+	// that should stacktrace.
+	final Set stackTraceSet = new HashSet();
+
+	// Loop through all the rules, and use them to build
+	// workingSet from candidates.
+	for (Iterator it = rules.iterator(); it.hasNext(); ) {
+	    final AddrRule rule = (AddrRule)it.next();
+	    final List candidate = new ArrayList(1);
+	    candidate.add(new Long(rule.addr));
+
+	    fine.log("Considering addr rule " + rule + ".");
+
+	    // MAIN is meta-soname meaning "main executable".
+	    if ((rule.sonamePattern.pattern().equals("MAIN")
+		 && task.getProc().getExeFile().getSysRootedPath().equals(path))
+		|| (rule.sonamePattern.pattern().equals("INTERP")
+		    && isInterpOf(objf, task.getProc().getExeFile().getSysRootedPath()))
+		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
+	    {
+		rule.apply(candidate, workingSet, stackTraceSet);
+	    }
+	}
+
+	// Finally, apply constructed working set.
+	fine.log("Applying checkpoint set for ", path);
+	tracePointStackTraceSet.addAll(stackTraceSet);
+	for (Iterator it = workingSet.iterator(); it.hasNext(); ) {
+	    Long token = (Long)it.next();
+	    driver.traceAddress(task, token, bias, objf);
+	}
+    }
+
     public void fileMapped(final Task task, ObjectFile objf,
 			   DwflModule module,
 			   final Ftrace.Driver driver) {
@@ -242,6 +295,9 @@ public class FtraceController
 			 driver.traceSymbol(task, symbol);
 		     }
 		 });
+
+	    ModuleElfBias eb = module.getElf();
+	    applyAddrRules(task, objf, eb.bias, addrRules, driver);
 	}
 	catch (lib.dwfl.ElfException ee) {
 	    ee.printStackTrace();

@@ -1,5 +1,15 @@
 2008-05-14  Petr Machata  <pmachata@redhat.com>
 
+	* AddrRule.java: New file.
+	* Ftrace.java (Driver.traceAddress): New interface.
+	* FtraceController.java (addrRules): New field.
+	(gotAddrRules, applyAddrRules): New method.
+	(fileMapped): Call applyAddrRules.
+	* TaskTracer.java (AddressObserver): New class.
+	(traceAddress): New method.
+
+2008-05-14  Petr Machata  <pmachata@redhat.com>
+
 	* Ftrace.java (Controller): The interface now passes only dwfl
 	module, symbol tables are handled at implementation site....
 	* FtraceController.java (fileMapped): ... which is here.

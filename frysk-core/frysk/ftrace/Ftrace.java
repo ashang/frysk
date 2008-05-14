@@ -150,6 +150,7 @@ public class Ftrace {
     public static interface Driver {
 	void traceSymbol(Task task, DwflSymbol symbol);
 	void tracePLTEntry(Task task, PLTEntry entry);
+	void traceAddress(Task task, Long addrToken, long bias, ObjectFile objf);
     }
 
     // Non-null if we're using ltrace.
@@ -628,6 +629,7 @@ public class Ftrace {
 		// shared memory "file".
 		return Action.CONTINUE;
 	    }
+
 	    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
 	    if (objf == null)
 		return Action.CONTINUE;
