@@ -73,6 +73,7 @@ lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 # jnixx's auto-detect algorithm misses hidden class references,
 # explicitly add them here.
 JNIXX_CLASSES += frysk.sys.ProcessIdentifierFactory
+JNIXX_CLASSES += java.lang.ArrayIndexOutOfBoundsException
 
 
 # Quick hack to get a test JNI program up-and-running; as a package is

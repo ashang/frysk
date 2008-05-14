@@ -88,3 +88,29 @@ public:
     free();
   }
 };
+
+class ByteArrayElements {
+private:
+  ::jnixx::byteArray bytes;
+  ::jnixx::env env;
+public:
+  jbyte* p;
+  ByteArrayElements(::jnixx::env env, ::jnixx::byteArray bytes) {
+    this->bytes = bytes;
+    this->env = env;
+    if (bytes != NULL) {
+      this->p = bytes.GetElements(env, NULL);
+    } else {
+      this->p = NULL;
+    }
+  }
+  void release() {
+    if (p != NULL) {
+      bytes.ReleaseElements(env, p, 0);
+      p = NULL;
+    }
+  }
+  ~ByteArrayElements() {
+    release();
+  }
+};

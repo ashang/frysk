@@ -207,6 +207,18 @@ class JniBindings {
 	     })
 
 	/**
+	 * java.lang.Throwable
+	 */
+	.put(Throwable.class, false,
+	     null, "Throw",
+	     new String[] {
+		 "::jnixx::env", "env",
+	     },
+	     new Object[] {
+		 "env.Throw((jthrowable) _object);"
+	     })
+
+	/**
 	 * java.lang.String
 	 */
 	// NewString
@@ -302,13 +314,21 @@ class JniBindings {
 			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
 		     })
 		.put(types[i], false,
-		     "const j" + type + "*", "GetElements",
+		     "j" + type + "*", "GetElements",
 		     new String[] {
 			 "::jnixx::env", "env",
 			 "jboolean*", "isCopy",
 		     },
 		     new Object[] {
 			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
+		     })
+		.put(types[i], false,
+		     "jsize", "GetArrayLength",
+		     new String[] {
+			 "::jnixx::env", "env",
+		     },
+		     new Object[] {
+			 "return env.GetArrayLength((j" + type + "Array) _object);"
 		     })
 		.put(types[i], false,
 		     null, "ReleaseElements",

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,57 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdint.h>
-#include <sys/types.h>
-#include <sys/ptrace.h>
-#include "linux.ptrace.h"
-#include <sys/user.h>
-
-#include "jni.hxx"
-
-#include "frysk/sys/ptrace/jni/Ptrace.hxx"
-#include "frysk/jnixx/chars.hxx"
-#include "frysk/jnixx/bounds.hxx"
-
-void
-frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,
-					  jint op, jint pid,
-					  ::jnixx::byteArray data,
-					  jint length) {
-  verifyBounds(env, data, length);
-  ByteArrayElements elements = ByteArrayElements(env, data);
-  ptraceOp(env, op, pid, NULL, (long) elements.p);
-  elements.release();
-}
-
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::regs(::jnixx::env env) {
-#if defined(__i386__)|| defined(__x86_64__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_regs_struct),
-					      PTRACE_GETREGS, PTRACE_SETREGS);
-#else
-  return NULL;
-#endif
-}
-
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::fpregs(::jnixx::env env) {
-#if defined(__i386__)|| defined(__x86_64__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_fpregs_struct),
-					      PTRACE_GETFPREGS,
-					      PTRACE_SETFPREGS);
-#else
-  return NULL;
-#endif
-}
-
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::fpxregs(::jnixx::env env) {
-#if defined(__i386__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_fpxregs_struct),
-					      PTRACE_GETFPXREGS,
-					      PTRACE_SETFPXREGS);
-#else
-  return NULL;
-#endif
-}
+extern long ptraceOp(::jnixx::env, int, int, void*, long);

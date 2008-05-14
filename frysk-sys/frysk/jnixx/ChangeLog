@@ -1,3 +1,9 @@
+2008-05-14  Andrew Cagney  <cagney@redhat.com>
+
+	* chars.hxx (class ByteArrayElements): New.
+	* bounds.hxx: New.
+	* JniBindings.java: Generate GetArrayLength, and Throw.
+
 2008-05-13  Andrew Cagney  <cagney@redhat.com>
 
 	* PrintDeclarations.java: Do not generate non-ENV wrappers.

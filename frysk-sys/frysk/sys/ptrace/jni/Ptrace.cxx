@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,119 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <errno.h>
+#include <sys/ptrace.h>
+#include "linux.ptrace.h"
+
 #include "jni.hxx"
+
+#include "frysk/sys/ptrace/jni/Ptrace.hxx"
+
+#include "frysk/jnixx/exceptions.hxx"
+
+static const char*
+op_as_string(int op) {
+  switch(op) {
+#define OP(NAME) case NAME: return #NAME
+    OP(PTRACE_ATTACH);
+    OP(PTRACE_DETACH);
+    OP(PTRACE_SINGLESTEP);
+    OP(PTRACE_CONT);
+    OP(PTRACE_SYSCALL);
+#if defined(__i386__) || defined(__x86_64__)
+    OP(PTRACE_GETREGS);
+    OP(PTRACE_SETREGS);
+    OP(PTRACE_GETFPREGS);
+    OP(PTRACE_SETFPREGS);
+#endif
+#if defined(__i386__)
+    OP(PTRACE_GETFPXREGS);
+    OP(PTRACE_SETFPXREGS);
+#endif
+    OP(PTRACE_GETEVENTMSG);
+    OP(PTRACE_SETOPTIONS);
+    OP(PTRACE_PEEKDATA);
+    OP(PTRACE_POKEDATA);
+    OP(PTRACE_PEEKTEXT);
+    OP(PTRACE_POKETEXT);
+    OP(PTRACE_PEEKUSR);
+    OP(PTRACE_POKEUSR);
+  default: return "<unknown>";
+#undef OP
+  }
+}
+
+long
+ptraceOp(::jnixx::env env, int op, int pid, void* addr, long data) {
+  errno = 0;
+  long result = ::ptrace ((enum __ptrace_request) op, pid, addr, data);
+  if (errno != 0)
+    errnoException(env, errno, "ptrace",
+		   "op 0x%x (%s), pid %d, addr 0x%lx, data 0x%lx",
+		   op, op_as_string(op), pid, (long)addr, data);
+  return result;
+}
+
+void
+frysk::sys::ptrace::Ptrace::attach(::jnixx::env env, jint pid) {
+  ptraceOp(env, PTRACE_ATTACH, pid, NULL, 0);
+}
+
+void
+frysk::sys::ptrace::Ptrace::detach(::jnixx::env env, jint pid, jint sig) {
+  ptraceOp(env, PTRACE_DETACH, pid, NULL, sig);
+} 
+
+void
+frysk::sys::ptrace::Ptrace::singleStep(::jnixx::env env, jint pid, jint sig) {
+  ptraceOp(env, PTRACE_SINGLESTEP, pid, NULL, sig);
+} 
+
+void
+frysk::sys::ptrace::Ptrace::cont(::jnixx::env env, jint pid, jint sig) {
+  ptraceOp(env, PTRACE_CONT, pid, NULL, sig);
+}
+
+void
+frysk::sys::ptrace::Ptrace::sysCall(::jnixx::env env, jint pid, jint sig) {
+  ptraceOp(env, PTRACE_SYSCALL, pid, NULL, sig);
+}
+
+jlong
+frysk::sys::ptrace::Ptrace::getEventMsg(::jnixx::env env, jint pid) {
+  /* Note: PTRACE_GETEVENTMSG ends up calling the function
+     kernel/ptrace.c: ptrace_ptraceOp(env, ) and that uses put_user to store
+     child->ptrace_message write sizeof(ptrace_message) bytes into the
+     MESSAGE parameter.  include/linux/sched.h declares ptrace_message
+     as a long.  */
+  long msg;
+  ptraceOp(env, PTRACE_GETEVENTMSG, pid, NULL, (long) &msg);
+  return msg;
+}
+
+void
+frysk::sys::ptrace::Ptrace::setOptions(::jnixx::env env,
+				       jint pid, jlong options) {
+  ptraceOp(env, PTRACE_SETOPTIONS, pid, 0, options);
+}
+
+jlong
+frysk::sys::ptrace::Ptrace::optionTraceClone(::jnixx::env env) {
+  return PTRACE_O_TRACECLONE;
+}
+jlong
+frysk::sys::ptrace::Ptrace::optionTraceFork(::jnixx::env env) {
+  return PTRACE_O_TRACEFORK;
+}
+jlong
+frysk::sys::ptrace::Ptrace::optionTraceExit(::jnixx::env env) {
+  return PTRACE_O_TRACEEXIT;
+}
+jlong
+frysk::sys::ptrace::Ptrace::optionTraceSysgood(::jnixx::env env) {
+  return PTRACE_O_TRACESYSGOOD;
+}
+jlong
+frysk::sys::ptrace::Ptrace::optionTraceExec(::jnixx::env env) {
+  return PTRACE_O_TRACEEXEC;
+}

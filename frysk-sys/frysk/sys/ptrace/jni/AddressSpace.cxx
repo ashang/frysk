@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,157 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/ptrace.h>
+#include "linux.ptrace.h"
+#include <string.h>
+
 #include "jni.hxx"
+#include "frysk/jnixx/bounds.hxx"
+#include "frysk/jnixx/chars.hxx"
+
+#include "frysk/sys/ptrace/jni/Ptrace.hxx"
+
+using namespace java::lang;
+
+union word {
+  long l;
+  uint8_t b[sizeof (long)];
+};
+
+jint
+frysk::sys::ptrace::AddressSpace::peek(::jnixx::env env, jint pid, jlong addr) {
+  union word w;
+  long paddr = addr & -sizeof(long);
+#if DEBUG
+  fprintf(stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
+#endif
+  w.l = ptraceOp(env, GetPtPeek(env), pid, (void*)paddr, 0);
+#if DEBUG
+  fprintf(stderr, " word 0x%lx", w.l);
+#endif
+  int index = addr & (sizeof(long) - 1);
+#if DEBUG
+  fprintf(stderr, " index %d", index);
+#endif
+  uint8_t byte = w.b[index];
+#if DEBUG
+  fprintf(stderr, " byte %d/0x%x\n", byte, byte);
+#endif
+  return byte;
+}
+
+void
+frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, jint data) {
+  // Implement read-modify-write
+  union word w;
+#if DEBUG
+  fprintf(stderr, "poke 0x%x", (int)(data & 0xff));
+#endif
+  long paddr = addr & -sizeof(long);
+#if DEBUG
+  fprintf(stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
+#endif
+  w.l = ptraceOp(env, GetPtPeek(env), pid, (void*)paddr, 0);
+#if DEBUG
+  fprintf(stderr, " word 0x%lx", w.l);
+#endif
+  int index = addr & (sizeof(long) - 1);
+#if DEBUG
+  fprintf (stderr, " index %d", index);
+#endif
+  w.b[index] = data;
+#if DEBUG
+  fprintf(stderr, " word 0x%lx\n", w.l);
+#endif
+  ptraceOp(env, GetPtPoke(env), pid, (void*)(addr & -sizeof(long)), w.l);
+}
+
+void
+frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
+					   jint op, jint pid, jlong addr,
+					   ::jnixx::byteArray bytes,
+					   jint offset, jint length) {
+  const int ptPeek = GetPtPeek(env);
+  const int ptPoke = GetPtPoke(env);
+  verifyBounds(env, bytes, offset, length);
+  // Somewhat more clueful implementation
+  for (jlong i = 0; i < length;) {
+#if DEBUG
+    fprintf(stderr,
+	     "transfer pid %d addr 0x%lx length %d offset %d op %d (%s)",
+	     (int)pid, (long)addr, (int)length, (int)offset,
+	     (int)op, op_as_string(op));
+#endif
+
+    union word w;
+    unsigned long waddr = addr & -sizeof(long);
+    unsigned long woff = (addr - waddr);
+    unsigned long remaining = length - i;
+    unsigned long wend;
+    if (remaining > sizeof(long) - woff)
+      wend = sizeof(long);
+    else
+      wend = woff + remaining;
+    long wlen = wend - woff;
+
+#if DEBUG
+    fprintf(stderr,
+	     " i %ld waddr 0x%lx woff %lu wend %lu remaining %lu wlen %lu",
+	     (long)i, waddr, woff, wend, remaining, wlen);
+#endif
+
+    // Either a peek; or a partial write requiring read/modify/write.
+    if (op == ptPeek || woff != 0 || wend != sizeof(long)) {
+	w.l = ptraceOp(env, ptPeek, pid, (void*)waddr, 0);
+#if DEBUG
+	fprintf(stderr, " peek 0x%lx", w.l);
+#endif
+      }
+
+    // extract or modify
+    ByteArrayElements elements = ByteArrayElements(env, bytes);
+    if (op == ptPeek)
+      memcpy(offset + i + elements.p, &w.b[woff], wlen);
+    else {
+      memcpy(&w.b[woff], offset + i + elements.p, wlen);
+#if DEBUG
+      fprintf(stderr, " poke 0x%lx", w.l);
+#endif
+      w.l = ptraceOp(env, ptPoke, pid, (void*)waddr, w.l);
+    }
+    elements.release();
+
+    i += wlen;
+    addr += wlen;
+
+#if DEBUG
+    fprintf(stderr, "\n");
+#endif
+  }
+}
+
+frysk::sys::ptrace::AddressSpace
+frysk::sys::ptrace::AddressSpace::text(::jnixx::env env) {
+  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
+					       String::NewStringUTF(env, "TEXT"),
+					       PTRACE_PEEKTEXT,
+					       PTRACE_POKETEXT);
+}
+
+frysk::sys::ptrace::AddressSpace
+frysk::sys::ptrace::AddressSpace::data(::jnixx::env env) {
+  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
+					       String::NewStringUTF(env, "DATA"),
+					       PTRACE_PEEKDATA,
+					       PTRACE_POKEDATA);
+}
+
+frysk::sys::ptrace::AddressSpace
+frysk::sys::ptrace::AddressSpace::usr(::jnixx::env env) {
+  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
+					       String::NewStringUTF(env, "USR"),
+					       PTRACE_PEEKUSR,
+					       PTRACE_POKEUSR);
+}
