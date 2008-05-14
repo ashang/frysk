@@ -63,31 +63,26 @@ frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,
 frysk::sys::ptrace::RegisterSet
 frysk::sys::ptrace::RegisterSet::regs(::jnixx::env env) {
 #if defined(__i386__)|| defined(__x86_64__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_regs_struct),
-					      PTRACE_GETREGS, PTRACE_SETREGS);
+  return New(env, sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS);
 #else
-  return NULL;
+  return RegisterSet(env, NULL);
 #endif
 }
 
 frysk::sys::ptrace::RegisterSet
 frysk::sys::ptrace::RegisterSet::fpregs(::jnixx::env env) {
 #if defined(__i386__)|| defined(__x86_64__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_fpregs_struct),
-					      PTRACE_GETFPREGS,
-					      PTRACE_SETFPREGS);
+  return New(env, sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS);
 #else
-  return NULL;
+  return RegisterSet(env, NULL);
 #endif
 }
 
 frysk::sys::ptrace::RegisterSet
 frysk::sys::ptrace::RegisterSet::fpxregs(::jnixx::env env) {
 #if defined(__i386__)
-  return frysk::sys::ptrace::RegisterSet::New(env, sizeof(user_fpxregs_struct),
-					      PTRACE_GETFPXREGS,
-					      PTRACE_SETFPXREGS);
+  return New(env, sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS);
 #else
-  return NULL;
+  return RegisterSet(env, NULL);
 #endif
 }

@@ -1,5 +1,7 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/RegisterSet.cxx: Convert NULL to a RegisterSet.
+	
 	* jni/AddressSpace.cxx: Update #includes to match jnixx rename.
 	* jni/RegisterSet.cxx: Ditto.
 	* jni/Ptrace.cxx: Ditto.
