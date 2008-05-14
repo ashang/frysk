@@ -1,5 +1,7 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Match jnixx/*.cxx.
+	
 	* Makefile.gen.sh (jnixx_sources): Rename frysk.jnixx to jnixx.
 	Only install jni.hxx.gch if the compile worked.
 

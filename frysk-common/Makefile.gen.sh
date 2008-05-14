@@ -870,7 +870,7 @@ while read file dir base suffix ; do
 	    generate_cni_header $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix ${sources}
 	    ;;
-	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | */jnixx/*.cxx )
+	*/jni/*.cxx | */jni/*.cxx-in | */jni/*.cxx-sh | jnixx/*.cxx )
 	    generate_jnixx_class $file $dir $base $suffix
 	    generate_compile $file $dir $base $suffix \
 		lib${GEN_MAKENAME}_jni_a_SOURCES

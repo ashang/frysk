@@ -1,5 +1,7 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner): Rename frysk.jnixx to jnixx.
+
 	* bootstrap.sh (FILE_LIST): Add jnixx.
 
 	* Makefile.am (JNIXX_CLASSES): Add
