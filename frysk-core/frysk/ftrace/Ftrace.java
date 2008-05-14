@@ -67,6 +67,7 @@ import frysk.stepping.SteppingEngine;
 import frysk.symtab.DwflSymbol;
 import frysk.symtab.PLTEntry;
 import frysk.symtab.SymbolFactory;
+import frysk.util.ArchFormatter;
 
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
@@ -612,8 +613,17 @@ public class Ftrace {
 	public Action updateMappedFile(Task task, MemoryMapping mapping)
 	{
 	    String path = mapping.path;
-	    if (traceMmapUnmap)
-		reporter.eventSingle(task, "map " + path);
+
+	    if (traceMmapUnmap) {
+		MemoryMapping.Part part0
+		    = (MemoryMapping.Part)mapping.parts.get(0);
+		long addr = part0.addressLow;
+		String event
+		    = "map " + ArchFormatter.toHexString(task, addr)
+		    + " " + mapping.path;
+		reporter.eventSingle(task, event);
+	    }
+
 
 	    if (this.tracingController == null)
 		return Action.CONTINUE;
