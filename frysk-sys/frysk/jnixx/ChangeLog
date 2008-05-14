@@ -1,5 +1,7 @@
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* PrintCxxDefinitions.java: Generate ID variables.
+
 	* JniBindings.java: Generate array method names identical to JNI.
 	* chars.hxx (class ByteArrayElements): Update.
 	* chars.cxx (strings2chars): Update.

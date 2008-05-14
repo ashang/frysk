@@ -138,6 +138,12 @@ class PrintCxxDefinitions extends ClassWalker {
 	    void acceptConstructor(Constructor constructor) {
 	    }
 	    void acceptField(Field field) {
+		p.println();
+		p.print("jfieldID ");
+		p.printGlobalCxxName(field.getDeclaringClass());
+		p.print("::");
+		p.printID(field);
+		p.println(";");
 	    }
 	    void acceptClass(Class klass) {
 	    }
