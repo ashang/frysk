@@ -42,6 +42,7 @@ package frysk.bindir;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -52,6 +53,7 @@ import gnu.classpath.tools.getopt.OptionGroup;
 import inua.util.PrintWriter;
 
 import frysk.debuginfo.PrintStackOptions;
+import frysk.ftrace.AddrRule;
 import frysk.ftrace.Ftrace;
 import frysk.ftrace.FtraceController;
 import frysk.ftrace.PLTRule;
@@ -61,13 +63,15 @@ import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Proc;
 import frysk.rsl.Log;
+import frysk.rsl.LogFactory;
 import frysk.util.CommandlineParser;
 import frysk.util.Glob;
 import frysk.util.StackPrintUtil;
 import frysk.util.Util;
 
 class ftrace {
-    private static final Log fine = Log.fine(ftrace.class);
+    static private final Log fine = LogFactory.fine(ftrace.class);
+    static private final Log warning = LogFactory.warning(ftrace.class);
 
     //Where to send the output.
     private PrintWriter writer;
@@ -82,6 +86,7 @@ class ftrace {
     // reason we need these temporary array lists.
     private final List pltRules = new ArrayList();
     private final List symRules = new ArrayList();
+    private final List addrRules = new ArrayList();
     private final List sysRules = new ArrayList();
     private final List sigRules = new ArrayList();
     private final FtraceController controller = new FtraceController();
@@ -96,37 +101,19 @@ class ftrace {
 			String nameRe, String sonameRe, String versionRe);
     }
 
-    private List parseSymbolRules(String arg, SymbolRuleCreator creator) {
+    private interface RuleMatcher {
+	void rule(String str, boolean addition, boolean stackTrace, Collection c);
+	void check();
+    }
+
+    private List parseGenericRules(String arg, RuleMatcher matcher)
+    {
 	String[] strs = arg.split(",", -1);
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
-	    // 111 single fully qualified symbol:           'symbol@soname@@version'
-	    // 101 symbol of given version in all dsos:     'symbol@@version'
-	    // 100 symbol of given name from any dso:       'symbol'
-	    // 011 all symbols of given version of the dso: '@soname@@version'
-	    // 010 all symbols of given soname:             '@soname'
-	    // 001 all symbols of given version:            '@@version'
-	    // 000 all symbols of all versions in all dsos: ''
-
 	    String str = strs[i];
-	    final String symbolRe, sonameRe, versionRe;
 	    final boolean addition;
 	    final boolean stackTrace;
-	    int pos;
-
-	    if ((pos = str.indexOf("@@")) != -1) {
-		versionRe = str.substring(pos + 2);
-		str = str.substring(0, pos);
-	    }
-	    else
-		versionRe = null;
-
-	    if ((pos = str.indexOf('@')) != -1) {
-		sonameRe = str.substring(pos + 1);
-		str = str.substring(0, pos);
-	    }
-	    else
-		sonameRe = null;
 
 	    if (str.length() > 0 && str.charAt(0) == '-') {
 		addition = false;
@@ -142,18 +129,117 @@ class ftrace {
 	    else
 		stackTrace = false;
 
-	    if (!str.equals(""))
-		symbolRe = str;
-	    else
-		symbolRe = null;
-
-	    fine.log(i + ": " + str + ": symbol=" + symbolRe
-		     + ", soname=" + sonameRe + ", version=" + versionRe);
-	    Rule rule = creator.createRule(addition, stackTrace,
-					   symbolRe, sonameRe, versionRe);
-	    rules.add(rule);
+	    matcher.rule(str, addition, stackTrace, rules);
 	}
+	matcher.check();
 	return rules;
+    }
+
+    private List parseSymbolRules(String arg, final SymbolRuleCreator creator) {
+	return parseGenericRules(arg, new RuleMatcher() {
+		public void rule(String str, boolean addition,
+				 boolean stackTrace, Collection rules) {
+		    // 111 single fully qualified symbol:           'symbol@soname@@version'
+		    // 101 symbol of given version in all dsos:     'symbol@@version'
+		    // 100 symbol of given name from any dso:       'symbol'
+		    // 011 all symbols of given version of the dso: '@soname@@version'
+		    // 010 all symbols of given soname:             '@soname'
+		    // 001 all symbols of given version:            '@@version'
+		    // 000 all symbols of all versions in all dsos: ''
+
+		    final String symbolRe, sonameRe, versionRe;
+		    int pos;
+
+		    if ((pos = str.indexOf("@@")) != -1) {
+			versionRe = str.substring(pos + 2);
+			str = str.substring(0, pos);
+		    }
+		    else
+			versionRe = null;
+
+		    if ((pos = str.indexOf('@')) != -1) {
+			sonameRe = str.substring(pos + 1);
+			str = str.substring(0, pos);
+		    }
+		    else
+			sonameRe = null;
+
+		    if (!str.equals(""))
+			symbolRe = str;
+		    else
+			symbolRe = null;
+
+		    fine.log(str + ": symbol=" + symbolRe
+			     + ", soname=" + sonameRe
+			     + ", version=" + versionRe);
+
+		    rules.add(creator.createRule(addition, stackTrace,
+						 symbolRe, sonameRe,
+						 versionRe));
+		}
+		public void check() {}
+	    });
+    }
+
+    private List parseAddrRules(String arg) {
+	return parseGenericRules(arg, new RuleMatcher() {
+		class Delayed {
+		    private final boolean addition;
+		    private final boolean stackTrace;
+		    private final long addr;
+
+		    public Delayed(boolean addition, boolean stackTrace, long addr) {
+			this.addition = addition;
+			this.stackTrace = stackTrace;
+			this.addr = addr;
+		    }
+
+		    public Rule gotSoname(String sonameRe) {
+			return new AddrRule(this.addition, this.stackTrace,
+					    this.addr, sonameRe);
+		    }
+		}
+
+		List delays = new ArrayList();
+
+		public void rule(String str, boolean addition,
+				 boolean stackTrace, Collection rules) {
+		    // address[@soname].  If soname is omitted, then
+		    // the soname of next soname-full rule is used.
+
+		    String addressS, sonameRe;
+		    int pos;
+		    if ((pos = str.indexOf('@')) >= 0) {
+			sonameRe = str.substring(pos + 1);
+			addressS = str.substring(0, pos);
+		    } else {
+			sonameRe = null;
+			addressS = str;
+		    }
+
+		    if (addressS.startsWith("0x"))
+			addressS = addressS.substring(2);
+		    long addr = Long.parseLong(addressS, 16);
+
+		    fine.log(str + ": address=" + Long.toHexString(addr)
+			     + ", soname=" + sonameRe);
+		    if (sonameRe != null) {
+			for (Iterator it = delays.iterator(); it.hasNext(); )
+			    rules.add(((Delayed)it.next()).gotSoname(sonameRe));
+			delays.clear();
+			rules.add(new AddrRule(addition, stackTrace,
+					       addr, sonameRe));
+		    }
+		    else
+			delays.add(new Delayed(addition, stackTrace, addr));
+		}
+
+		public void check() {
+		    if (!delays.isEmpty())
+			warning.log("Ignoring", delays.size(),
+				    "rules that miss soname qualificator");
+		}
+	    });
     }
 
     private static interface TraceableExaminer {
@@ -303,6 +389,11 @@ class ftrace {
 		    symRules.add(arg);
 		}
 	    });
+	group.add(new Option("addr", "trace address inside the binary", "RULE[,RULE]...") {
+		public void parsed(String arg) {
+		    addrRules.add(arg);
+		}
+	    });
 	group.add(new Option("stack", "stack trace on every traced entity") {
 		public void parsed(String arg) {
 		    controller.stackTraceEverything();
@@ -340,7 +431,7 @@ class ftrace {
             writer = new PrintWriter(System.out);
         tracer.setWriter(writer);
 
-	if (!pltRules.isEmpty() || !symRules.isEmpty()) {
+	if (!pltRules.isEmpty() || !symRules.isEmpty() || !addrRules.isEmpty()) {
 	    // If tracing dynamic linker disabled, generate implicit
 	    // -@INTERP rule at the end of the chain.
 	    if (!allowInterpTracing) {
@@ -348,6 +439,7 @@ class ftrace {
 		symRules.add("-@INTERP");
 	    }
 
+	    // Symbol tracing
 	    class SymbolCreator implements SymbolRuleCreator {
 		public Rule createRule(boolean addition, boolean stackTrace,
 				       String nameRe, String sonameRe,
@@ -362,6 +454,7 @@ class ftrace {
 		controller.gotSymRules(rules);
 	    }
 
+	    // PLT tracing
 	    class PLTCreator implements SymbolRuleCreator {
 		public Rule createRule(boolean addition, boolean stackTrace,
 				       String nameRe, String sonameRe,
@@ -375,6 +468,10 @@ class ftrace {
 		List rules = parseSymbolRules((String)it.next(), pltCreator);
 		controller.gotPltRules(rules);
 	    }
+
+	    // Address tracing
+	    for (Iterator it = addrRules.iterator(); it.hasNext(); )
+		controller.gotAddrRules(parseAddrRules((String)it.next()));
 
 	    tracer.setTraceFunctions(controller, controller);
 	}

@@ -1,3 +1,8 @@
+2008-05-14  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java: Support address tracing.
+	* ftrace.xml-in: Describe it.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFauxv.java: Use frysk.config.Prefix.

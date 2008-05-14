@@ -87,6 +87,7 @@
       <arg choice="opt">-sig=<replaceable>SIG</replaceable>[,<replaceable>SIG</replaceable>...]</arg>
       <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
+      <arg choice="opt">-addr=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-stack</arg>
       <arg choice="opt">--</arg>
       <arg choice="plain"><replaceable>command</replaceable> <arg choice="opt"><replaceable>arguments</replaceable>...</arg></arg>
@@ -125,32 +126,6 @@
 		</listitem>
 	    </varlistentry>
     	</variablelist>
-    </refsect2>
-
-    <refsect2>
-	<title>System Call and Signal Tracing</title>
-
-	<variablelist>
-	  <varlistentry>
-	    <term>-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
-	    <listitem>
-	      <para>Trace system calls that match given
-	      <replaceable>SYSCALL</replaceable> ruleset.  See
-	      below for description of
-	      <replaceable>SYSCALL</replaceable> syntax.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry>
-	    <term>-sig=<replaceable>SIGNAL</replaceable>[,<replaceable>SIGNAL</replaceable>...]</term>
-	    <listitem>
-	      <para>Trace signals that match given
-	      <replaceable>SIGNAL</replaceable> ruleset.  See
-	      below for description of
-	      <replaceable>SIGNAL</replaceable> syntax.</para>
-	    </listitem>
-	  </varlistentry>
-	</variablelist>
     </refsect2>
 
     <refsect2>
@@ -198,6 +173,42 @@
 	    </listitem>
 	  </varlistentry>
 
+	</variablelist>
+    </refsect2>
+
+    <refsect2>
+	<title>Other Traceable Events</title>
+
+	<variablelist>
+	  <varlistentry>
+	    <term>-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace system calls that match given
+	      <replaceable>SYSCALL</replaceable> ruleset.  See
+	      below for description of
+	      <replaceable>SYSCALL</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-sig=<replaceable>SIGNAL</replaceable>[,<replaceable>SIGNAL</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace signals that match given
+	      <replaceable>SIGNAL</replaceable> ruleset.  See
+	      below for description of
+	      <replaceable>SIGNAL</replaceable> syntax.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>-addr=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</term>
+	    <listitem>
+	      <para>Trace addresses given by
+	      <replaceable>RULE</replaceable>s.  See below for
+	      description of address <replaceable>RULE</replaceable>
+	      syntax. </para>
+	    </listitem>
+	  </varlistentry>
 	</variablelist>
     </refsect2>
 
@@ -321,6 +332,50 @@
     <para>Signal can be given both with and without leading
     &quot;sig&quot; (e.g. &quot;sigkill&quot; as well as
     &quot;kill&quot;).</para>
+  </refsect1>
+
+  <refsect1>
+    <title>ADDRESS RULE SYNTAX</title>
+
+    <para>The process of establishing a working set of addresses that
+    should be traced is the same as for symbol rules, and the general
+    syntax reflects that.  Each rule looks like this:</para>
+
+    <para>[-][#]<replaceable>pattern</replaceable></para>
+
+    <para>Each pattern however looks like this:</para>
+
+    <para><optional>0x</optional><replaceable>address</replaceable><optional>@<replaceable>soname</replaceable></optional></para>
+
+    <para>Addresses are given in hexadecimal, even if initial 0x is
+    missing.</para>
+
+    <para><replaceable>soname</replaceable> component is the same as
+    in symbol tracing, i.e. it's a glob that's matched against a
+    soname of a library in which we wish to trace the address.  Same
+    rules apply regarding INTERP and MAIN meta-sonames.  Refer there
+    for detailed description.</para>
+
+    <para>Even though <replaceable>soname</replaceable> is optional,
+    at least one soname has to be specified at the end of the
+    <option>-addr</option> command.  That's because in general it
+    makes no sense to want to trace the same address in ALL object
+    files at once.  The components that are soname-less are assumed to
+    have a soname of the next soname-full component.</para>
+
+    <informalexample>
+      <para>For example, this will trace two addresses from the main
+      binary, and stack trace one of them:</para>
+      <cmdsynopsis><command>ftrace -addr=#0x08052780,08049314@MAIN -- ls</command></cmdsynopsis>
+    </informalexample>
+
+    <para>If you need to trace the same address in several files, you
+    can use the fact that the soname pattern is a glob.</para>
+
+    <para>The addresses are assumed to be copied from readelf or
+    objdump.  ftrace biases the value accordingly depending on where
+    the module is actually mapped.</para>
+
   </refsect1>
 
   <refsect1>
