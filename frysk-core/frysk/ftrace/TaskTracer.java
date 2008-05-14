@@ -153,14 +153,16 @@ class TaskTracer
 	implements TaskObserver.Code
     {
 	private final LinkedList symbolList = new LinkedList();
+	final long address;
 
 	public FunctionReturnObserver(Task task, long address) {
 	    fine.log("New FunctionReturnObserver", address);
 	    task.requestAddCodeObserver(this, address);
+	    this.address = address;
 	}
 
 	public void add(TracePoint tracePoint) {
-	    fine.log("Adding to FunctionReturnObserver", tracePoint.getSymbol());
+	    fine.log("Adding to FunctionReturnObserver", tracePoint.getSymbol(), "at", this.address);
 	    if (!symbolList.isEmpty()) {
 		TracePoint previous = (TracePoint)symbolList.getLast();
 		if (!previous.isFrozen()
@@ -337,7 +339,10 @@ class TaskTracer
     // Map<Task, Map<address, FunctionEnterObserver>>
     private final Map symbolObserversForTask = new HashMap();
 
-    private synchronized FunctionEnterObserver getObserver(Task task, DwflSymbol sym, PLTEntry entry) {
+    private synchronized FunctionEnterObserver getObserver(Task task,
+							   DwflSymbol sym,
+							   PLTEntry entry) {
+
 	Map symbolObservers = (Map)symbolObserversForTask.get(task);
 	if (symbolObservers == null) {
 	    symbolObservers = new HashMap();
@@ -346,7 +351,8 @@ class TaskTracer
 
 	long addr = entry != null ? entry.getAddress() : sym.getAddress();
 	Long addrL = new Long(addr);
-	FunctionEnterObserver ob = (FunctionEnterObserver)symbolObservers.get(addrL);
+	FunctionEnterObserver ob
+	    = (FunctionEnterObserver)symbolObservers.get(addrL);
 	if (ob == null) {
 	    finest.log("New function observer at", sym.getAddress());
 
@@ -357,7 +363,8 @@ class TaskTracer
 
 	    symbolObservers.put(addrL, ob);
 
-	    BreakpointManager bpManager = Ftrace.steppingEngine.getBreakpointManager();
+	    BreakpointManager bpManager
+		= Ftrace.steppingEngine.getBreakpointManager();
 	    final SourceBreakpoint bp;
 	    if (entry != null)
 		bp = bpManager.addPLTBreakpoint(entry);
@@ -373,7 +380,8 @@ class TaskTracer
     {
 	long addr = sym.getAddress();
 	if (!sym.isFunctionSymbol() || !sym.isDefined() || addr == 0) {
-	    finest.log("Ignoring request for tracing undefined or non-functional symbol", sym);
+	    finest.log("Ignoring request for tracing undefined "
+		       + "or non-functional symbol", sym);
 	    return;
 	}
 

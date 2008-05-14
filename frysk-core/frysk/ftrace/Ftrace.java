@@ -649,20 +649,20 @@ public class Ftrace {
 	    return Action.BLOCK;
 	}
 
-	public Action updateUnmappedFile(frysk.proc.Task task, MemoryMapping mapping)
-	{
+	public Action updateUnmappedFile(frysk.proc.Task task,
+					 MemoryMapping mapping)	{
 	    if (traceMmapUnmap)
 		reporter.eventSingle(task, "unmap " + mapping.path);
 	    return Action.CONTINUE;
 	}
 
-	public Action updateMappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-	{
+	public Action updateMappedPart(Task task, MemoryMapping mapping,
+				       MemoryMapping.Part part) {
 	    return Action.CONTINUE;
     	}
 
-	public Action updateUnmappedPart(Task task, MemoryMapping mapping, MemoryMapping.Part part)
-	{
+	public Action updateUnmappedPart(Task task, MemoryMapping mapping,
+					 MemoryMapping.Part part) {
 	    return Action.CONTINUE;
     	}
 
