@@ -304,24 +304,6 @@ class JniBindings {
 	    String Type = (Character.toUpperCase(type.charAt(0))
 			   + type.substring(1));
 	    bindings
-		.put(types[i], true,
-		     "::jnixx::" + type + "Array", "New",
-		     new String[] {
-			 "::jnixx::env", "env",
-			 "jsize", "length",
-		     },
-		     new Object[] {
-			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
-		     })
-		.put(types[i], false,
-		     "j" + type + "*", "GetElements",
-		     new String[] {
-			 "::jnixx::env", "env",
-			 "jboolean*", "isCopy",
-		     },
-		     new Object[] {
-			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
-		     })
 		.put(types[i], false,
 		     "jsize", "GetArrayLength",
 		     new String[] {
@@ -330,8 +312,26 @@ class JniBindings {
 		     new Object[] {
 			 "return env.GetArrayLength((j" + type + "Array) _object);"
 		     })
+		.put(types[i], true,
+		     "::jnixx::" + type + "Array", "New" + Type + "Array",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jsize", "length",
+		     },
+		     new Object[] {
+			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
+		     })
 		.put(types[i], false,
-		     null, "ReleaseElements",
+		     "j" + type + "*", "Get" + Type + "ArrayElements",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jboolean*", "isCopy",
+		     },
+		     new Object[] {
+			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
+		     })
+		.put(types[i], false,
+		     null, "Release" + Type +"ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
 			 "j" + type + "*", "elements",
@@ -341,7 +341,7 @@ class JniBindings {
 			 "env.Release" + Type + "ArrayElements((j" + type + "Array)_object, elements, mode);",
 		     })
 		.put(types[i], false,
-		     "void", "GetRegion",
+		     "void", "Get" + Type + "ArrayRegion",
 		     new String[] {
 			 "::jnixx::env", "env",
 			 "jsize", "start",
@@ -352,7 +352,7 @@ class JniBindings {
 			 "env.Get" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
 		     })
 		.put(types[i], false,
-		     "void", "SetRegion",
+		     "void", "Set" + Type + "ArrayRegion",
 		     new String[] {
 			 "::jnixx::env", "env",
 			 "jsize", "start",
@@ -389,32 +389,20 @@ class JniBindings {
 			},
 			"array() : ::java::lang::Object()", new Object[] {
 			},
-			"jsize GetLength(::jnixx::env env)", new Object[] {
+			"jsize GetArrayLength(::jnixx::env env)", new Object[] {
 			    "return env.GetArrayLength((jarray)_object);",
 			},
-			"static array<component> New(::jnixx::env env, jsize length)", new Object[] {
+			"static array<component> NewObjectArray(::jnixx::env env, jsize length)", new Object[] {
 			    "return array<component>(env, env.NewObjectArray(length, component::_class_(env), NULL));",
 			},
-			"static array<component> New(::jnixx::env env, jsize length, component init)", new Object[] {
+			"static array<component> NewObjectArray(::jnixx::env env, jsize length, component init)", new Object[] {
 			    "return array<component>(env, env.NewObjectArray(length, component::_class_(env), init._object));",
 			},
-			"component GetElement(::jnixx::env env, jsize index)", new Object[] {
+			"component GetObjectArrayElement(::jnixx::env env, jsize index)", new Object[] {
 			    "return component(env, env.GetObjectArrayElement((jobjectArray)_object, index));",
 			},
-			"void SetElement(::jnixx::env env, jsize index, component object)", new Object[] {
+			"void SetObjectArrayElement(::jnixx::env env, jsize index, component object)", new Object[] {
 			    "env.SetObjectArrayElement((jobjectArray)_object, index, object._object);",
-			},
-			"static array<component> New(jsize length)", new Object[] {
-			    "return New(_env_(), length);",
-			},
-			"static array<component> New(jsize length, component init)", new Object[] {
-			    "return New(_env_(), length, init);",
-			},
-			"component GetElement(jsize index)", new Object[] {
-			    "return GetElement(_env_(), index);"
-			},
-			"void SetElement(jsize index, component object)", new Object[] {
-			    "SetElement(_env_(), index, object);"
 			},
 		    });
 	    }

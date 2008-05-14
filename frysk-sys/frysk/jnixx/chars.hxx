@@ -99,14 +99,14 @@ public:
     this->bytes = bytes;
     this->env = env;
     if (bytes != NULL) {
-      this->p = bytes.GetElements(env, NULL);
+      this->p = bytes.GetByteArrayElements(env, NULL);
     } else {
       this->p = NULL;
     }
   }
   void release() {
     if (p != NULL) {
-      bytes.ReleaseElements(env, p, 0);
+      bytes.ReleaseByteArrayElements(env, p, 0);
       p = NULL;
     }
   }

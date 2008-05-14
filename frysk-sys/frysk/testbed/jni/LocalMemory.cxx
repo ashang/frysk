@@ -48,8 +48,8 @@ using namespace java::lang;
 
 static ::jnixx::byteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
-  ::jnixx::byteArray bytes = ::jnixx::byteArray::New(env, length);
-  bytes.SetRegion(env, 0, length, (jbyte*) addr);
+  ::jnixx::byteArray bytes = ::jnixx::byteArray::NewByteArray(env, length);
+  bytes.SetByteArrayRegion(env, 0, length, (jbyte*) addr);
   return bytes;
 }
 

@@ -166,7 +166,7 @@ spawn(jnixx::env env, java::io::File exe,
   StringChars inPath = StringChars(env, in);
   StringChars outPath = StringChars(env, out);
   StringChars errPath = StringChars(env, err);
-  int argc = args.GetLength(env);
+  int argc = args.GetArrayLength(env);
   StringArrayChars argv = StringArrayChars(env, args);
   int pid = ::spawn(exePath.p, inPath.p, outPath.p, errPath.p,
 		    argc, argv.p, (char**)environ, trace);
