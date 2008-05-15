@@ -48,6 +48,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
     // Address-Breakpoint Registers (DR0-DR3)
     public IA32WatchpointFunctions () {
 	noOfWatchpoints = 4;
+	watchpointMaxLength = 4;
     }
 
     /**

@@ -50,6 +50,10 @@ public abstract class WatchpointFunctions  {
     // Address-Breakpoint Registers 
     protected int noOfWatchpoints = 0;
 
+    // Maximum length of a single watchpoint,
+    // in a single hardware register
+    protected int watchpointMaxLength = 0;
+
    /**
     * Builds and sets a hardware watchpoint on a task.
     *
@@ -148,5 +152,15 @@ public abstract class WatchpointFunctions  {
      */
     public final int getWatchpointCount() {
 	return noOfWatchpoints;
+    }
+
+    /**
+     * Returns maximum length of a single watchpoint
+     * in a single hardware register
+     *
+     * @return int maximum length
+     */
+    public final int getWatchpointMaxLength() {
+	return watchpointMaxLength;
     }
 }

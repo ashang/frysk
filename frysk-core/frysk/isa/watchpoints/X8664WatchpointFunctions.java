@@ -48,6 +48,7 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
     // Address-Breakpoint Registers (DR0-DR3)
     public X8664WatchpointFunctions () {
 	noOfWatchpoints = 4;
+	watchpointMaxLength = 8;
     }
    
     /**
