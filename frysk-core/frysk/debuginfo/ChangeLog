@@ -1,5 +1,11 @@
 2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestObjectDeclarationSearchEngine.java 
+	(verifyVariableByValue): now checks that the value
+	string is present not matched. 
+
+2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* ObjectDeclarationSearchEngine.java (getObject): 
 	Now returns a list.
 	* TestObjectDeclarationSearchEngineTopDown.java: Updated.

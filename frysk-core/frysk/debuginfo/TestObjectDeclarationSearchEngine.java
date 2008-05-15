@@ -152,7 +152,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     public void testFindFirstElfSymbols(){
 	String variableName = "first"; 
 	String fileName = "funit-elf-symbols";
-	String valueString = "{12,34,56,78}";
+	String valueString = "12,34,56,78";
 	
 	verifyVariableByValue(variableName, valueString, fileName);
 	
@@ -236,7 +236,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 
 	assertNotNull("Variable found", objectDeclaration);
 	assertEquals("Correct name", variableName, objectDeclaration.getName() );
-	assertEquals("Variable value", valueString, objectDeclaration.getValue(frame).toPrint());
+	assertTrue("Variable value", objectDeclaration.getValue(frame).toPrint().contains(valueString));
 	
 	//Negative test:
 	try {
