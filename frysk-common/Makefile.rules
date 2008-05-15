@@ -163,6 +163,8 @@ AM_CXXFLAGS = \
 	-I$(srcdir) \
 	-I$(srcdir)/../frysk-imports/include \
 	-I$(top_builddir) \
+        -I$(srcdir)/../frysk-imports/elfutils/libasm \
+        -I$(srcdir)/../frysk-imports/elfutils/libebl \
 	-I$(srcdir)/../frysk-imports/elfutils/libelf \
 	-I$(srcdir)/../frysk-imports/elfutils/libdw \
 	-I$(srcdir)/../frysk-imports/elfutils/libdwfl \

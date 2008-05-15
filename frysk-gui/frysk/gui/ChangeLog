@@ -1,3 +1,10 @@
+2008-05-15  Tim Moore  <timoore@redhat.com>
+
+	* disassembler/DisassemblyWindow.java (setTask, resetTask): Use
+	lib.dwfl.Disassembler.
+	* memory/MemoryWindow.java (setTask, resetTask, refreshList):
+	Ditto.
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* disassembler/DisassemblyWindowFactory.java: Use

@@ -46,7 +46,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import lib.opcodes.Disassembler;
+import lib.dwfl.Disassembler;
+import lib.dwfl.Dwfl;
+import frysk.dwfl.DwflCache;
 import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Auxv;
@@ -167,12 +169,11 @@ public class fstep implements ProcRunObserver,
    */
   static class DummyDisassembler extends Disassembler
   {
-    private final ByteBuffer memory;
-    DummyDisassembler(ByteBuffer memory)
-    {
-      super(memory);
-      this.memory = memory;
-    }
+      private final ByteBuffer memory;
+      DummyDisassembler(Dwfl dwfl, ByteBuffer memory) {
+          super(dwfl, memory);
+          this.memory = memory;
+      }
 
     public List disassembleInstructions(long address, long count)
     {
@@ -223,10 +224,13 @@ public class fstep implements ProcRunObserver,
 	  // We only need one disassembler since all Tasks share their memory.
 	  if (disassembler == null)
 	  {
-	      if (Disassembler.available())
-		  disassembler = new Disassembler(task.getMemory());
-	      else
-		  disassembler = new DummyDisassembler(task.getMemory());
+              Dwfl dwfl = DwflCache.getDwfl(task);
+              try {
+                  disassembler = new Disassembler(dwfl, task.getMemory());
+              }
+              catch (RuntimeException ex) {
+                  disassembler = new DummyDisassembler(dwfl, task.getMemory());
+              }
 	  }
 	    task.requestAddInstructionObserver(this);
 	    task.requestAddTerminatedObserver(this);

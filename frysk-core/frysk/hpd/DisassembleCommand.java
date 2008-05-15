@@ -42,14 +42,25 @@ package frysk.hpd;
 import java.util.Iterator;
 import java.util.List;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
-import lib.opcodes.Disassembler;
-import lib.opcodes.Instruction;
+import lib.dwfl.Disassembler;
+import lib.dwfl.Instruction;
 
 public class DisassembleCommand extends ParameterizedCommand {
 
+    static private class Options {
+        boolean allInstructions = true;
+        boolean full = false;
+        boolean symbol = true;
+    }
+
+    Object options() {
+        return new Options();
+    }
+    
     public DisassembleCommand() {
 	super("disassemble a section of memory",
 	      "disassemble  [startAddress] [--] [OPTIONS]||\n"
@@ -62,38 +73,26 @@ public class DisassembleCommand extends ParameterizedCommand {
 		"only print the instruction portion not the parameters",
 		"<Yes|no>") {
 		void parse(String argument, Object options) {
-		    allInstructions = parseBoolean(argument);
+		    ((Options)options).allInstructions = parseBoolean(argument);
 		}
 	    });
 	add(new CommandOption("full-function", 'f',
 			      "disassemble the entire function",
 			      "<yes/No>") {
 		void parse(String argument, Object options) {
-		    full = parseBoolean(argument);
+		    ((Options)options).full = parseBoolean(argument);
 		}
 	    });
 	add(new CommandOption("symbol", 's', "print the symbol name",
 			      "<Yes|no>") {
 		void parse(String argument, Object options) {
-		    symbol = parseBoolean(argument);
+		    ((Options)options).symbol = parseBoolean(argument);
 		}
 	    });
     }
 
-    private boolean allInstructions = true;
-
-    private boolean full = false;
-
-    private boolean symbol = true;
-
-    private void reset() {
-	allInstructions = true;
-	full = false;
-	symbol = true;
-    }
-
-    void interpret(CLI cli, Input cmd, Object options) {
-	reset();
+    void interpret(CLI cli, Input cmd, Object opts) {
+        Options options = (Options)opts;
 	PTSet ptset = cli.getCommandPTSet(cmd);
 	Iterator taskDataIter = ptset.getTaskData();
 	if (cmd.size() > 2)
@@ -110,7 +109,8 @@ public class DisassembleCommand extends ParameterizedCommand {
 	    long currentInstruction = frame.getAddress();
 	    Symbol symbol = frame.getSymbol();
 
-	    Disassembler disassembler = new Disassembler(task.getMemory());
+	    Disassembler disassembler
+                = new Disassembler(DwflCache.getDwfl(task), task.getMemory());
 	    cli.outWriter.println("[" + data.getParentID() + "." + data.getID()
 		    + "]");
 	    if (cmd.size() == 1) {
@@ -143,8 +143,9 @@ public class DisassembleCommand extends ParameterizedCommand {
 			+ Long.toHexString(endInstruction) + ":");
 		List instructions = disassembler
 			.disassembleInstructionsStartEnd(startInstruction,
-				endInstruction);
-		printInstructions(cli, task, -1, instructions, true);
+                                                         endInstruction);
+                options.full = true;
+		printInstructions(cli, task, -1, instructions, options);
 		continue;
 	    }
 	    cli.outWriter.println("Dump of assembler code for function: "
@@ -153,14 +154,18 @@ public class DisassembleCommand extends ParameterizedCommand {
 	    // XXX: Need a better way of handling symbol size = 0
 	    long padding = 100;
 	    if (symbol.getSize() == 0) {
-		instructions = disassembler.disassembleInstructionsStartEnd(
-			symbol.getAddress(), (currentInstruction + padding));
+		instructions = disassembler
+                    .disassembleInstructionsStartEnd(symbol.getAddress(),
+                                                     (currentInstruction
+                                                      + padding));
 	    } else {
-		instructions = disassembler.disassembleInstructionsStartEnd(
-			symbol.getAddress(), (symbol.getAddress() + symbol
-				.getSize()));
+		instructions = disassembler
+                    .disassembleInstructionsStartEnd(symbol.getAddress(),
+                                                     (symbol.getAddress()
+                                                      + symbol.getSize()));
 	    }
-	    printInstructions(cli, task, currentInstruction, instructions, full);
+	    printInstructions(cli, task, currentInstruction, instructions,
+                              options);
 	}
     }
 
@@ -171,22 +176,21 @@ public class DisassembleCommand extends ParameterizedCommand {
          * @param instructions
          */
     private void printInstructions(CLI cli, Task task, long currentAddress,
-				   List instructions, boolean full) {
-
+				   List instructions, Options options) {
 	InstructionPrinter printer;
 	printer = new AddressPrinter();
 
-	if (symbol)
+	if (options.symbol)
 	    printer = new SymbolPrinter(task, printer);
 
-	if (allInstructions)
+	if (options.allInstructions)
 	    printer = new InstructionParamsPrinter(printer);
 	else
 	    printer = new InstructionOnlyPrinter(printer);
 	int wrapLines = 10;
 
 	HardList cache = null;
-	if (!full)
+	if (!options.full)
 	    cache = new HardList(wrapLines * 2);
 
 	Iterator iter = instructions.iterator();
@@ -198,12 +202,12 @@ public class DisassembleCommand extends ParameterizedCommand {
 	    else
 		printInstruction(cli, currentAddress, instruction, printer);
 
-	    if (instruction.address == currentAddress && !full) {
+	    if (instruction.address == currentAddress && !options.full) {
 		break;
 	    }
 	}
 
-	if (full) {
+	if (options.full) {
 	    cli.outWriter.println("End of assembly dump");
 	    return;
 	}

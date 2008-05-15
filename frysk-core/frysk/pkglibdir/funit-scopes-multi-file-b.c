@@ -10,4 +10,6 @@ static void first(){// *this* one should be found
   first();
 }
 
+// Avoid a warning about first not being  used.
+void (*foo)() = first;
 

@@ -76,6 +76,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
+import frysk.dwfl.DwflCache;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.prefs.PreferenceManager;
@@ -90,8 +91,8 @@ import frysk.proc.MemoryMap;
 import frysk.symtab.Symbol;
 import frysk.symtab.SymbolFactory;
 
-import lib.opcodes.Disassembler;
-import lib.opcodes.Instruction;
+import lib.dwfl.Disassembler;
+import lib.dwfl.Instruction;
 
 public class DisassemblyWindow
     extends Window
@@ -271,7 +272,7 @@ public class DisassemblyWindow
     long pc_inc;
     final double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
 
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
 
     pc_inc = myTask.getPC();
     this.pc = pc_inc;
@@ -300,7 +301,7 @@ public class DisassemblyWindow
     this.segmentCombo.setActive(segmentIndex + 1);
     this.segmentCombo.showAll();
     
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
     this.fromBox.setText("0x" + Long.toHexString(pc_inc));
@@ -570,7 +571,7 @@ public class DisassemblyWindow
     long pc_inc;
     double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
 
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
     pc_inc = myTask.getPC();
     this.pc = pc_inc;
     // long end = pc_inc + 20;

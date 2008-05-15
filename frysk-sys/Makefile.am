@@ -53,6 +53,7 @@ GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-junit.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-getopt.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/libfrysk-jdom.a
+GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libasm/libasm.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD_LIST += ../frysk-imports/elfutils/libebl/libebl.a

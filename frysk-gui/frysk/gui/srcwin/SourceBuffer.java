@@ -48,8 +48,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import lib.opcodes.Disassembler;
-import lib.opcodes.Instruction;
+import lib.dwfl.Disassembler;
+import lib.dwfl.Instruction;
 
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
@@ -69,6 +69,7 @@ import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
+import frysk.dwfl.DwflCache;
 import frysk.gui.prefs.ColorPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
@@ -845,7 +846,8 @@ public class SourceBuffer extends TextBuffer {
 	this.firstLoad = false;
 
 	StringBuilder buf = new StringBuilder();
-	Disassembler diss = new Disassembler(task.getMemory());
+	Disassembler diss = new Disassembler(DwflCache.getDwfl(task),
+                                             task.getMemory());
 
 	long address = frame.getAddress();
 

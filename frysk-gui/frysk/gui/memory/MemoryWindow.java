@@ -82,6 +82,7 @@ import org.gnu.gtk.event.SpinListener;
 import org.gnu.gtk.event.ContainerListener;
 import org.gnu.gtk.event.ContainerEvent;
 
+import frysk.dwfl.DwflCache;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.prefs.PreferenceManager;
@@ -95,8 +96,8 @@ import frysk.stepping.TaskStepEngine;
 import frysk.symtab.SymbolFactory;
 import frysk.proc.MemoryMap;
 
-import lib.opcodes.Disassembler;
-import lib.opcodes.Instruction;
+import lib.dwfl.Disassembler;
+import lib.dwfl.Instruction;
 
 public class MemoryWindow
     extends Window
@@ -286,7 +287,7 @@ public class MemoryWindow
     
     this.mmaps = this.myTask.getProc().getMaps();
     
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
     pc_inc = myTask.getPC();
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -316,7 +317,7 @@ public class MemoryWindow
 	
 
     this.segmentCombo.showAll();
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
     this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
     this.fromBox.setText("0x" + Long.toHexString(pc_inc));
@@ -554,7 +555,7 @@ public class MemoryWindow
     long pc_inc;
     double highestAddress = Math.pow(2.0, (double)(8 * myTask.getISA().wordSize())) - 1.0;
     
-    this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(DwflCache.getDwfl(myTask), myTask.getMemory());
 
     pc_inc = myTask.getPC();
 
@@ -624,8 +625,8 @@ public class MemoryWindow
 
     List instructionsList
 	= diss.disassembleInstructions((long) this.lastKnownFrom,
-				       (long) (this.lastKnownTo
-					       - this.lastKnownFrom + 1));
+                                       (int)(this.lastKnownTo
+                                             - this.lastKnownFrom + 1));
     Iterator li = instructionsList.listIterator(0);
     Instruction ins = (Instruction) li.next();
 

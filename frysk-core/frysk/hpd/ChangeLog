@@ -1,3 +1,13 @@
+2008-05-15  Tim Moore  <timoore@redhat.com>
+
+	* DisassembleCommand.java (Options): New options class. Remove
+	options variables from the DisassembleCommand object.
+	(DisassembleCommand constructor): Change options parsers to use
+	Options object.
+	(reset): Delete.
+	(interpret): Use Options object and lib.dwfl.Disassembler.
+	(printInstructions): Use Options object.
+
 2008-05-13  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (WatchpointObserver.addFailed): 

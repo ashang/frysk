@@ -1,3 +1,8 @@
+2008-05-15  Tim Moore  <timoore@redhat.com>
+
+	* fstep.java (DummyDisassembler, startTracingTask): Use new
+	disassembler from lib.dwfl.
+
 2008-05-14  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.java: Support address tracing.

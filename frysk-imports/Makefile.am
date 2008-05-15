@@ -86,6 +86,7 @@ GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
 GEN_GCJ_LDADD_LIST += libfrysk-getopt.a
 GEN_GCJ_LDADD_LIST += libfrysk-junit.a
+GEN_GCJ_LDADD_LIST += ./elfutils/libasm/libasm.a
 GEN_GCJ_LDADD_LIST += ./elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD_LIST += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD_LIST += ./elfutils/libebl/libebl.a

@@ -1,3 +1,7 @@
+2008-05-15  Tim Moore  <timoore@redhat.com>
+
+	* Makefile.am (frysk4796_dwfltest_LDADD): Add elfutils/libasm/libasm.a.
+
 2008-05-02  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Remove CDTParser.
