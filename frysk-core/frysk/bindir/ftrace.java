@@ -181,6 +181,9 @@ class ftrace {
 	    });
     }
 
+    private final static Pattern addressPat = Pattern.compile("(0x)?[0-9a-fA-F]+");
+    private final static Pattern sysnumPat = Pattern.compile("[0-9]+");
+
     private List parseAddrRules(String arg) {
 	return parseGenericRules(arg, new RuleMatcher() {
 		class Delayed {
@@ -217,6 +220,11 @@ class ftrace {
 			addressS = str;
 		    }
 
+		    if (!addressPat.matcher(addressS).matches()) {
+			warning.log("Ignoring rule `" + str + "' with mangled or missing address component.");
+			return;
+		    }
+
 		    if (addressS.startsWith("0x"))
 			addressS = addressS.substring(2);
 		    long addr = Long.parseLong(addressS, 16);
@@ -237,7 +245,7 @@ class ftrace {
 		public void check() {
 		    if (!delays.isEmpty())
 			warning.log("Ignoring", delays.size(),
-				    "rules that miss soname qualificator");
+				    "address rules that miss soname qualificator");
 		}
 	    });
     }
@@ -251,7 +259,6 @@ class ftrace {
 				  String optionalPrefix)
     {
 	String[] strs = arg.split(",", -1);
-	Pattern sysnumPat = Pattern.compile("[0-9]+");
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
 	    // "14": traceable number 14
