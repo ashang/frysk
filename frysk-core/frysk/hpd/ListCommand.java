@@ -44,11 +44,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.ObjectDeclarationNotFoundException;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
@@ -212,15 +212,13 @@ class ListCommand extends ParameterizedCommand {
 
 	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 
-	try {
-	    function = (Function) declarationSearchEngine.getObject(cmdParm);
-	} catch (ObjectDeclarationNotFoundException e) {
-	    function  = null;
-	}catch (ClassCastException e) {
-	    function  = null;
-	}
+	LinkedList functions = declarationSearchEngine.getObject(cmdParm);
+	//XXX: should this use declarationSearchEngine.getObjectInScope(cmdParm)
 	
-	if (function != null ) {
+	if (functions.size() > 0) {
+	    try {
+		function = (Function) functions.getFirst();		
+	    
 	    DwflLine dwflLine = DwflCache.getDwfl(frame.getTask())
 		    .getSourceLine(frame.getAdjustedAddress());
 	    if (dwflLine != null) {
@@ -234,12 +232,13 @@ class ListCommand extends ParameterizedCommand {
 		file = function.getSourceLocation().getFile();
 	    }
 	    return (int) function.getSourceLocation().getLine();
-
-	} else {
-	    cli.addMessage("function " + cmdParm + " not found.",
-		    Message.TYPE_ERROR);
-	    return line;
-
-	}
+	    
+	    } catch (ClassCastException e) {
+		
+	    }
+	} 
+	
+	cli.addMessage("function " + cmdParm + " not found.", Message.TYPE_ERROR);
+	return line;
     }
 }

@@ -1,3 +1,9 @@
+2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	ObjectDeclarationSearchEngine.getObject() now returns a list.
+	* BreakpointCommand.java: Updated.
+	* ListCommand.java: Updated.
+
 2008-05-15  Tim Moore  <timoore@redhat.com>
 
 	* DisassembleCommand.java (Options): New options class. Remove

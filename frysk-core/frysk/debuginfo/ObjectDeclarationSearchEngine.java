@@ -97,9 +97,9 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * [file#]name
      *    
      */
-    public ObjectDeclaration getObject(String name) {
+    public LinkedList getObject(String name) {
 	
-	ObjectDeclaration result = null;
+	LinkedList results = new LinkedList();
 	
 	DwarfDie cu;
 	String symbol;
@@ -113,42 +113,38 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	if(names.length == 2){
 	    LinkedList cuDies = dwarf.getCUByName(names[0]);
 
-	    if(cuDies.size() == 0){
-		throw new ObjectDeclarationNotFoundException(names[0]);
-	    }else{
-		//XXX: modify this to use the entire list.
-		cu = (DwarfDie) cuDies.getFirst();
+	    Iterator iterator = cuDies.iterator();
+	    while (iterator.hasNext()) {
+		
+		cu = (DwarfDie) iterator.next();
+		    
+		symbol = names[1];
+		
+		Scope scope = ScopeFactory.theFactory.getScope(cu, typeFactory);
+		results.add(scope.getDeclaredObjectByNameRecursive(symbol));
 	    }
 	    
-	    symbol = names[1];
-	    
-	    Scope scope = ScopeFactory.theFactory.getScope(cu, typeFactory);
-	    result =  scope.getDeclaredObjectByNameRecursive(symbol);
 	}
 	
 	if (names.length == 1) {
 	    DwarfDie resultDie = DwarfDie.getDecl(dwarf, name);
 
-	    if (resultDie == null)
-		throw new ObjectDeclarationNotFoundException(name);
-
-	    try {
-		result = (ObjectDeclaration) ScopeFactory.theFactory.getScope(
-			resultDie, typeFactory);
-	    } catch (IllegalArgumentException e) {
+	    if (resultDie != null){
+		
 		try {
-		    result = new Variable(resultDie);
-		} catch (Exception e2) {
-		    throw new ObjectDeclarationNotFoundException(name);
+		    results.add((ObjectDeclaration) ScopeFactory.theFactory.getScope(
+			    resultDie, typeFactory));
+		} catch (IllegalArgumentException e) {
+		    try {
+			results.add(new Variable(resultDie));
+		    } catch (Exception e2) {
+			
+		    }
 		}
 	    }
 	}
 	
-	if (result == null) {
-	    throw new ObjectDeclarationNotFoundException(name);
-	}
-	
-	return result;
+	return results;
     }
  
     /**

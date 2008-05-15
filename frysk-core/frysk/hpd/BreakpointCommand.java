@@ -42,6 +42,7 @@ package frysk.hpd;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,7 @@ class BreakpointCommand extends ParameterizedCommand {
 
 	public void deletedFrom(Object observable) {
 	}
-
+ 
 	public abstract void updateHit(SourceBreakpoint bpt, Task task,
                                        long address);
     }
@@ -145,33 +146,57 @@ class BreakpointCommand extends ParameterizedCommand {
 		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 		
 		if (declarationSearchEngine != null) {
-		    ObjectDeclaration die;
-		    try {
-			die = declarationSearchEngine.getObject(breakpt);
-		    } catch (RuntimeException e) {
-			// Symbol not yet visible.
-			die = null;
+		    
+		    LinkedList objects = declarationSearchEngine.getObject(breakpt);
+		    
+		    if(objects.size() > 0){
+		    Iterator iterator = objects.iterator();
+		    
+		    while (iterator.hasNext()) {			
+			ObjectDeclaration function = (ObjectDeclaration) iterator.next();
+			actionpoint = bpManager.addFunctionBreakpoint(breakpt, function);
+			actionpoint.addObserver(new CLIBreakpointObserver() {
+			    public void updateHit(final SourceBreakpoint bpt,
+				    Task task, final long address) {
+				// See comment in case above.
+				Manager.eventLoop.add(new Event() {
+				    public void execute() {
+					FunctionBreakpoint fbpt
+                                        = (FunctionBreakpoint) bpt;
+                                    outWriter.print("Breakpoint ");
+                                    outWriter.print(fbpt.getId());
+                                    outWriter.print(" ");
+                                    outWriter.print(fbpt.getName());
+                                    outWriter.print(" 0x");
+                                    outWriter.println(Long.toHexString(address));
+				    }
+				});
+			    }
+			});
+			bptMap.put(task, actionpoint);
 		    }
-		    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
-		    actionpoint.addObserver(new CLIBreakpointObserver() {
-			public void updateHit(final SourceBreakpoint bpt,
-                                              Task task, final long address) {
-                            // See comment in case above.
-                            Manager.eventLoop.add(new Event() {
-                                    public void execute() {
-                                        FunctionBreakpoint fbpt
-                                            = (FunctionBreakpoint) bpt;
-                                        outWriter.print("Breakpoint ");
-                                        outWriter.print(fbpt.getId());
-                                        outWriter.print(" ");
-                                        outWriter.print(fbpt.getName());
-                                        outWriter.print(" 0x");
-                                        outWriter.println(Long.toHexString(address));
-                                    }
-                                });
-			}
-		    });
-		    bptMap.put(task, actionpoint);
+		    }else{
+		    actionpoint = bpManager.addFunctionBreakpoint(breakpt, null);
+			actionpoint.addObserver(new CLIBreakpointObserver() {
+			    public void updateHit(final SourceBreakpoint bpt,
+				    Task task, final long address) {
+				// See comment in case above.
+				Manager.eventLoop.add(new Event() {
+				    public void execute() {
+					FunctionBreakpoint fbpt
+                                        = (FunctionBreakpoint) bpt;
+                                    outWriter.print("Breakpoint ");
+                                    outWriter.print(fbpt.getId());
+                                    outWriter.print(" ");
+                                    outWriter.print(fbpt.getName());
+                                    outWriter.print(" 0x");
+                                    outWriter.println(Long.toHexString(address));
+				    }
+				});
+			    }
+			});
+			bptMap.put(task, actionpoint);
+		}
 		}
 	    }
 	}

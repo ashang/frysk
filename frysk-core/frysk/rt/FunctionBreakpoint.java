@@ -103,6 +103,8 @@ public class FunctionBreakpoint
 
 	}
 
+	//XXX: this code should be removed
+	// die is not used any more
 	if (die != null) {
 	    ArrayList entryAddrs = die.getEntryBreakpoints();
 	    ArrayList inlineDies = null;

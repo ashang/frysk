@@ -1,3 +1,9 @@
+2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (getObject): 
+	Now returns a list.
+	* TestObjectDeclarationSearchEngineTopDown.java: Updated.
+
 2008-05-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngineTopDown.java

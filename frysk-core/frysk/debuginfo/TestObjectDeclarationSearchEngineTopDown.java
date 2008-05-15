@@ -43,7 +43,6 @@ import java.io.File;
 
 import frysk.config.Prefix;
 import frysk.proc.Task;
-import frysk.scopes.Variable;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
 import frysk.testbed.TestfileTokenScanner;
@@ -103,7 +102,7 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
 		.createVirtualStackTrace(task);
 	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine
-		.getObject(objectName);
+		.getObject(objectName).getFirst();
 
 	assertNotNull("Variable found", objectDeclaration);
 	assertTrue("Correct name", objectName.endsWith(objectDeclaration.getName()));
@@ -111,13 +110,8 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
 		objectLine, objectDeclaration.getSourceLocation().getLine());
 
 	// Negative test:
-	try {
-	    objectDeclaration = (Variable) objectDeclarationSearchEngine
-		    .getObject("NOT" + objectName);
-	    assertTrue("Exception was not thrown", false);
-	} catch (ObjectDeclarationNotFoundException e) {
-	    // exception was thrown
-	}
+	assertTrue("Object was not found ", objectDeclarationSearchEngine.getObject("NOT" + objectName).size() == 0);
+	
     }
 
 }
