@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,562 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <alloca.h>
+#include <errno.h>
+#include <linux/unistd.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
+#include "linux.ptrace.h"
+
 #include "jni.hxx"
+
+#include "jnixx/logging.hxx"
+#include "jnixx/exceptions.hxx"
+#include "frysk/sys/jni/SignalSet.hxx"
+
+using namespace frysk::sys;
+
+/* Unpack the WSTOPEVENT status field.
+
+   With one exception (WIFSTOPPED), the STATUS can be decoded using
+   the standard WIFxxx macros described in wait(2).
+
+   For WIFSTOPPED, there is an additional undocumented STOPEVENT field
+   that when non-zero contains an event sub-category.  The kernel uses
+   a call to ptrace_notify() to pack the status, and the packed format
+   is ((STOPEVENT << 16) | ((STOPSIG & 0xff) << 8) | (IFSTOPPED)).  */
+
+#define WSTOPEVENT(STATUS) (((STATUS) & 0xff0000) >> 16)
+
+/* Decode and log a waitpid result, but only when logging.  */
+
+static void
+logWait(jnixx::env env, frysk::rsl::Log logger,
+	pid_t pid, int status, int err) {
+  if (!logger.logging(env))
+    return;
+  if (pid > 0) {
+    const char *wif_name = "<unknown>";
+    int sig = -1;
+    const char *sig_name = "<unknown>";
+    if (WIFEXITED (status)) {
+      wif_name = "WIFEXITED";
+      sig = WEXITSTATUS (status);
+      sig_name = "exit status";
+    }
+    if (WIFSTOPPED (status)) {
+      switch WSTOPEVENT (status) {
+      case PTRACE_EVENT_CLONE:
+	wif_name = "WIFSTOPPED/CLONE";
+	break;
+      case PTRACE_EVENT_FORK:
+	wif_name = "WIFSTOPPED/FORK";
+	break;
+      case PTRACE_EVENT_EXIT:
+	wif_name = "WIFSTOPPED/EXIT";
+	break;
+      case PTRACE_EVENT_EXEC:
+	wif_name = "WIFSTOPPED/EXEC";
+	break;
+      case 0:
+	wif_name = "WIFSTOPPED";
+	break;
+      }
+      sig = WSTOPSIG (status);
+      sig_name = strsignal (sig);
+    }
+    if (WIFSIGNALED (status)) {
+      wif_name = "WIFSIGNALED";
+      sig = WTERMSIG (status);
+      sig_name = strsignal (sig);
+    }
+    logf(env, logger, "waitpid %d -> status 0x%x %s %d (%s)",
+	 pid, status, wif_name, sig, sig_name);
+  }
+  else
+    logf(env, logger, "waitpid %d -> errno %d (%s)",
+	 pid, err, strerror (err));
+}
+
+/* Decode a wait status notification using the WIFxxx macros,
+   forwarding the decoded event, and its corresponding parameters, to
+   the applicable observer.
+
+   For certain of the WIFSTOPPED sub-events, the kernel will save an
+   additional undocumented auxilary value (exit code, ...) in the
+   per-thread current->ptrace_message field, and the value can be
+   fetched using PTRACE_GETEVENTMSG.  The details of the auxilary
+   values are described below.  */
+
+static void
+processStatus(jnixx::env env, ProcessIdentifier pid, int status,
+	      WaitBuilder builder) {
+  if (0)
+    ;
+  else if (WIFEXITED(status))
+    builder.terminated(env, pid, Signal(env, NULL),
+		       WEXITSTATUS(status), false);
+  else if (WIFSIGNALED(status)) {
+    int termSig = WTERMSIG (status);
+    Signal signal = Signal::valueOf(env, termSig);
+    builder.terminated(env, pid, signal, -termSig, WCOREDUMP(status) != 0);
+  } else if (WIFSTOPPED(status)) {
+    switch (WSTOPEVENT(status)) {
+    case PTRACE_EVENT_CLONE:
+      try {
+	// The event message contains the thread-ID of the new clone.
+	ProcessIdentifier clone
+	  = ProcessIdentifierFactory::create
+	  (env, ptrace::Ptrace::getEventMsg(env, pid));
+	builder.cloneEvent(env, pid, clone);
+      } catch (jnixx::exception e) {
+	jthrowable err = env.ExceptionOccurred();
+	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
+	    env.ExceptionClear();
+	    // The PID disappeared after the WAIT message was created
+	    // but before the getEventMsg could be extracted (most
+	    // likely due to a KILL -9).  Notify builder.
+	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	} else {
+	  throw;
+	}
+      }
+      break;
+    case PTRACE_EVENT_FORK:
+      try {
+	// The event message contains the process-ID of the new
+	// process.
+	ProcessIdentifier fork
+	  = ProcessIdentifierFactory::create
+	  (env, ptrace::Ptrace::getEventMsg(env, pid));
+	builder.forkEvent(env, pid, fork);
+      } catch (jnixx::exception e) {
+	jthrowable err = env.ExceptionOccurred();
+	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
+	    env.ExceptionClear();
+	    // The PID disappeared after the WAIT message was created
+	    // but before the getEventMsg could be extracted (most
+	    // likely due to a KILL -9).  Notify builder.
+	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	} else {
+	  throw;
+	}
+      }
+      break;
+    case PTRACE_EVENT_EXIT:
+      try {
+	// The event message contains the pending wait(2) status; need
+	// to decode that.
+	int exitStatus = ptrace::Ptrace::getEventMsg(env, pid);
+	if (WIFEXITED (exitStatus)) {
+	  builder.exitEvent(env, pid, Signal(env, NULL),
+			    WEXITSTATUS(exitStatus), false);
+	} else if (WIFSIGNALED (exitStatus)) {
+	  int termSig = WTERMSIG (exitStatus);
+	  Signal signal = Signal::valueOf(env, termSig);
+	  builder.exitEvent(env, pid, signal, -termSig,
+			    WCOREDUMP(exitStatus) != 0);
+	} else {
+	  runtimeException(env, "unknown exit event (status %d)", exitStatus);
+	}
+      } catch (jnixx::exception e) {
+	jthrowable err = env.ExceptionOccurred();
+	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
+	    env.ExceptionClear();
+	    // The PID disappeared after the WAIT message was created but
+	    // before the getEventMsg could be extracted (most likely due
+	    // to a KILL -9).  Notify builder.
+	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	} else {
+	  throw;
+	}
+      }
+      break;
+    case PTRACE_EVENT_EXEC:
+      builder.execEvent(env, pid);
+      break;
+    case 0:
+      {
+	int signum = WSTOPSIG (status);
+	if (signum >= 0x80)
+	  builder.syscallEvent(env, pid);
+	else {
+	  builder.stopped(env, pid, Signal::valueOf(env, signum));
+        }
+      }
+      break;
+    default:
+      runtimeException(env, "Unknown waitpid stopped event (process %d)",
+		       pid.intValue(env));
+    }
+  }
+  else
+    runtimeException(env, "Unknown status (process %d)", pid.intValue(env));
+}
+
+/* Keep polling the waitpid queue moving everything to the eventqueue
+   until there's nothing left.  */
+
+void
+Wait::waitAllNoHang(jnixx::env env, WaitBuilder builder) {
+  struct WaitResult {
+    pid_t pid;
+    int status;
+    WaitResult* next;
+  };
+  WaitResult* head = (WaitResult* ) alloca (sizeof (WaitResult));
+  WaitResult* tail = head;
+
+  // Drain the waitpid queue of all its events storing each in a list
+  // on the stack.  The queue is fully drained _before_ it is
+  // processed, that way there is no possibility of a continued thread
+  // getting its next event back on the queue resulting in live lock.
+
+  int myErrno = 0;
+  int i = 0;
+  while (true) {
+    // Keep fetching the wait status until there are none left.  If
+    // there are no children ECHILD is returned which is ok.
+    errno = 0;
+    tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
+    myErrno = errno;
+    logWait(env, logFine(env), tail->pid, tail->status, errno);
+    if (tail->pid <= 0)
+      break;
+    tail->next = (WaitResult*) alloca (sizeof (WaitResult));
+    tail = tail->next;
+    i++;
+  }
+  if (i > 2001)
+    printf ("\tYo! There were %d simultaneous pending waitpid's!\n", i);
+  // Check the reason for exiting.
+  switch (myErrno) {
+  case 0:
+  case ECHILD:
+    break;
+  default:
+    errnoException(env, myErrno, "waitpid", "process %d", -1);
+  }
+
+  // Now unpack each, notifying the builder.
+  /* We need to keep track of the status of the previous item in this queue
+   * since some items are duplicated when waitpit() is called from a 
+   * multithreaded parent - see #2774 */
+  pid_t old_pid = -2;
+  int old_status = 0;
+  while (head != tail) {
+    // Process the result - check for a duplicate entry
+    if (old_pid != head->pid || old_status != head->status)
+      processStatus(env, ProcessIdentifierFactory::create(env, head->pid),
+		    head->status, builder);
+    old_pid = head->pid; old_status = head->status;
+    head = head->next;
+  }
+}
+
+/* Do a blocking wait.  */
+
+void
+Wait::waitOnce(jnixx::env env, jint wpid, WaitBuilder builder) {
+  int status;
+  errno = 0;
+  pid_t pid = ::waitpid (wpid, &status, __WALL);
+  int myErrno = errno;
+  logWait(env, logFine(env), pid, status, errno);
+  if (pid <= 0)
+    errnoException(env, myErrno, "waitpid", "process %d", (int)wpid);
+  // Process the result.
+  processStatus(env, ProcessIdentifierFactory::create(env, pid),
+		status, builder);
+}
+
+/** Drain wait events.  */
+
+void Wait::drain(jnixx::env env, jint wpid) {
+  while (1) {
+    int status;
+    errno = 0;
+    pid_t pid = ::waitpid (wpid, &status, __WALL);
+    int err = errno;
+    logWait(env, logFine(env), pid, status, err);
+    if (err == ESRCH || err == ECHILD)
+      break;
+    if (pid <= 0)
+      errnoException(env, err, "waitpid", "process %d", (int)wpid);
+  }
+}
+
+void Wait::drainNoHang(jnixx::env env, jint wpid) {
+  while (1) {
+    int status;
+    errno = 0;
+    pid_t pid = ::waitpid (wpid, &status, __WALL| WNOHANG);
+    int err = errno;
+    logWait(env, logFine(env), pid, status, err);
+    if (err == ESRCH || err == ECHILD)
+      break;
+    if (pid <= 0)
+      errnoException(env, err, "waitpid", "process %d", (int)wpid);
+  }
+}
+
+// A linked list of received events.  This is stored on the stack
+// using alloca.
+struct event {
+  pid_t pid;
+  int status;
+  event* next;
+};
+
+// If there's a signal abort the wait() function using a longjmp
+// (return the signal).  Store which signal was received in SIGNALS.
+// Only bail when STATUS == -1 implying that the waitpid call hasn't
+// yet run.
+
+struct wait_jmpbuf {
+  pid_t tid;
+  int status;
+  sigset_t signals;
+  sigjmp_buf buf;
+};
+static struct wait_jmpbuf wait_jmpbuf;
+
+static void
+waitInterrupt(int signum) {
+  // For what ever reason, the signal can come in on the wrong thread.
+  // When that occures, re-direct it (explicitly) to the thread that
+  // can handle the signal.
+  pid_t me = ::syscall (__NR_gettid);
+  if (wait_jmpbuf.tid == me) {
+    sigaddset (&wait_jmpbuf.signals, signum);
+    if (wait_jmpbuf.status == -1) {
+      // waitpid hasn't returned a meaningful result, abort call.
+      siglongjmp (wait_jmpbuf.buf, signum);
+    }
+  }
+  else {
+    // XXX: Want to edit this thread's mask so that from now on it
+    // blocks this signal, don't know a way to do it though.
+    ::syscall (__NR_tkill, wait_jmpbuf.tid, signum);
+  }
+}
+
+void
+Wait::signalEmpty(jnixx::env env) {
+  // Static CNI methods do not trigger a class to be initialized, work
+  // around it.
+  if (GetSignalSet(env) == NULL)
+    SetSignalSet(env, SignalSet::New(env));
+  // Note that this doesn't restore any signal handlers.
+  GetSignalSet(env).empty(env);
+  // Disable and mask SIGALRM
+  signal (SIGALRM, SIG_IGN);
+  sigset_t mask;
+  sigemptyset (&mask);
+  sigaddset (&mask, SIGALRM);
+  sigprocmask (SIG_BLOCK, &mask, NULL);
+}
+
+
+void
+Wait::signalAdd(jnixx::env env, Signal sig) {
+  // Get the hash code.
+  int signum = sig.intValue(env);
+  logf(env, logFine(env), "adding %d (%s)", signum, strsignal (signum));
+  // Add it to the signal set.
+  GetSignalSet(env).add(env, sig);
+  // Make certain that the signal is masked (this is ment to be
+  // process wide).  XXX: In a multi-threaded environment this call is
+  // not well defined (although it does help reduce the number of
+  // signals directed to the wrong thread).
+  sigset_t mask;
+  sigemptyset (&mask);
+  sigaddset (&mask, signum);
+  sigprocmask (SIG_BLOCK, &mask, NULL);
+  // Install the above signal handler (it long jumps back to the code
+  // that enabled the signal).  The handler's mask is set to F..F to
+  // ensure that the handler can't be pre-empted with another signal.
+  struct sigaction sa;
+  memset (&sa, 0, sizeof (sa));
+  sa.sa_handler = waitInterrupt;
+  sigfillset (&sa.sa_mask);
+  sigaction (signum, &sa, NULL);
+}
+
+bool
+Wait::wait(jnixx::env env, jint waitPid,
+	   WaitBuilder waitBuilder,
+	   SignalBuilder signalBuilder,
+	   jlong millisecondTimeout,
+	   bool ignoreECHILD) {
+  // Zero the existing timeout, and drain any pending SIGALRM
+  logf(env, logFinest(env), "zero current timeout & and flush pending SIGALRM");
+  struct itimerval timeout;
+  memset (&timeout, 0, sizeof (timeout));
+  setitimer (ITIMER_REAL, &timeout, NULL);
+  signal (SIGALRM, SIG_IGN);
+
+  // Set up a new timeout and it's handler.
+  if (millisecondTimeout > 0) {
+    logf(env, logFinest(env), "install new timeout of %ld  & SIGALRM",
+	 (long) millisecondTimeout);
+    struct sigaction alarm_action;
+    memset (&alarm_action, 0, sizeof (alarm_action));
+    alarm_action.sa_handler = waitInterrupt;
+    sigfillset (&alarm_action.sa_mask);
+    sigaction (SIGALRM, &alarm_action, NULL);
+    timeout.it_value.tv_sec = millisecondTimeout / 1000;
+    timeout.it_value.tv_usec = (millisecondTimeout % 1000) * 1000;
+    setitimer (ITIMER_REAL, &timeout, NULL);
+  }
+
+  // Get the signal mask of all allowed signals; clear the set of
+  // received signals.  Need to include SIGALRM.  Since native calls
+  // don't guarentee that a class is initialized, explictly check that
+  // the set is initialized.
+  if (GetSignalSet(env) == NULL)
+    SetSignalSet(env, SignalSet::New(env));
+  sigset_t mask = *getRawSet(GetSignalSet(env));
+  sigaddset (&mask, SIGALRM);
+
+  // Set the STATUS to something that waitpid() will not return.  When
+  // a waitpid() system call completes successfully STATUS gets
+  // changed, and waitInterrupt() can use that to detect the success.
+  wait_jmpbuf.status = -1;
+  sigemptyset (&wait_jmpbuf.signals);
+ 
+  // Establish a jump buf so that, when a signal is delivered while
+  // entering the blocking waitpid call, the waitpid call sequence can
+  // be interrupted and control be returned to here.
+  bool block = (millisecondTimeout != 0);
+  wait_jmpbuf.tid = ::syscall (__NR_gettid);
+  int signum = sigsetjmp (wait_jmpbuf.buf, 1);
+  if (signum > 0) {
+    // Interrupted by SIGNUM, disable further blocking.  When multiple
+    // signals are pending, each will cause a longjmp back to here.
+    logf(env, logFinest(env), "interrupted by signal %d", signum);
+    sigdelset (&mask, signum);
+    block = false;
+  }
+
+  // Unmask signals; from this point on, things can be interrupted.
+  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
+  if (errno != 0)
+    errnoException(env, errno, "pthread_sigmask.UNBLOCK");
+
+  // A signal delivered here will see that STATUS==-1, indicating that
+  // the waitpid() call has not completed successfully, will long-jump
+  // back to the above sigsetjmp causing the waitpid() call to be
+  // aborted.
+
+  int pid = 0;
+  if (waitBuilder != NULL) {
+    pid = ::waitpid (waitPid, &wait_jmpbuf.status,
+		     __WALL | (block ? 0 : WNOHANG));
+    if (ignoreECHILD && pid < 0 && errno == ECHILD && block)
+      // No children; block anyway.
+      pid = ::select (0, NULL, NULL, NULL, NULL);
+  }
+  else if (block) {
+    pid = ::select (0, NULL, NULL, NULL, NULL);
+  }
+  if (pid < 0)
+    pid = -errno;
+
+  // A signal delivered here that sees STATUS!=-1, indicating that
+  // waitpid() has completed and is in the process of returning the
+  // PID, will return normally allowing this code to resume and ensure
+  // that the waitpid event is not lost.
+
+  // A signal delivered here that sees STATUS==-1, indicating that
+  // either the waitpid() call failed (no result) or select() was
+  // called, will long-jump back to the above sigsetjmp and cause any
+  // error status to be abandoned.
+
+  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  if (errno != 0)
+    errnoException(env, errno, "pthread_sigmask.BLOCK");
+
+  // Made it all the way through a [blocking] waitpid call without
+  // being restarted.
+  logWait(env, logFine(env), pid, wait_jmpbuf.status, -pid);
+
+  // Create a linked list of the waitpid events that are received;
+  // keep it on the stack to avoid malloc() overhead.
+  struct event* firstEvent = NULL;
+  if (pid > 0) {
+    // Save the first waitpid status.
+    firstEvent = (struct event*) alloca (sizeof (struct event));
+    firstEvent->pid = pid;
+    firstEvent->status = wait_jmpbuf.status;
+    firstEvent->next = NULL;
+    struct event* lastEvent = firstEvent;
+    // Do more waitpid calls with blocking disabled so that all
+    // pending waitpid events are collected.
+    while (true) {
+      int status;
+      pid = ::waitpid (waitPid, &status, __WALL|WNOHANG);
+      logWait(env, logFine(env), pid, status, errno);
+      if (pid <= 0)
+	break;
+      if (pid == lastEvent->pid && status == lastEvent->status) {
+	// When an attached child process terminats, it generates two
+	// identical waitpid events: one for the parent thread; and one
+	// for the attached thread.  When the parent and attached
+	// threads are different but in the same process, both events
+	// are seen.  Discard the duplicate.
+	continue;
+	logf(env, logFinest(env),
+	     "discarding duplicate terminated event for pid %d", pid);
+      }
+      // Append the event.
+      lastEvent->next = (struct event*) alloca (sizeof (struct event));
+      lastEvent = lastEvent->next;
+      lastEvent->pid = pid;
+      lastEvent->status = status;
+      lastEvent->next = NULL;
+    }
+  }
+
+  // Deliver any signals received during the waitpid; XXX: Is there a
+  // more efficient way of doing this?
+  bool timedOut = false;
+  bool interrupted = false;
+  for (int i = 1; i < 32; i++)
+    {
+      if (sigismember (&wait_jmpbuf.signals, i))
+	{
+	  interrupted = true;
+	  if (i == SIGALRM)
+	    {
+	      timedOut = true;
+	    }
+	  else
+	    {
+	      // Find the signal object.
+	      Signal sig = Signal::valueOf(env, i);
+	      // Notify the client of the signal.
+	      signalBuilder.signal(env, sig);
+	    }
+	}
+    }
+  
+  // Deliver all pending waitpid() events.
+  for (struct event *curr = firstEvent; curr != NULL; curr = curr->next) {
+    processStatus(env, ProcessIdentifierFactory::create(env, curr->pid),
+		  curr->status, waitBuilder);
+  }
+
+  if (!ignoreECHILD && firstEvent == NULL && !interrupted && -pid == ECHILD)
+    // There's no obvious reason (waitpid, signal such as alarm) for
+    // the event-loop to be returning; return the ECHILD.
+    errnoException(env, ECHILD, "waitpid");
+
+  return timedOut;
+}

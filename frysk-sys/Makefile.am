@@ -75,6 +75,7 @@ lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 # explicitly add them here.
 JNIXX_CLASSES += frysk.sys.ProcessIdentifierFactory
 JNIXX_CLASSES += java.lang.ArrayIndexOutOfBoundsException
+JNIXX_CLASSES += frysk.sys.Errno$$Esrch
 
 
 # Quick hack to get a test JNI program up-and-running; as a package is
