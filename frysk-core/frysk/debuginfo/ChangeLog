@@ -1,3 +1,12 @@
+2008-05-16  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java (getObjectInScope): Added
+	frame requirement.
+	* TestGccClass.java: Updated.
+	* TestAddress.java: Updated.
+	* TestGccInterface.java: Updated.
+	* TestObjectDeclarationSearchEngine.java: Updated.
+
 2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestObjectDeclarationSearchEngine.java 

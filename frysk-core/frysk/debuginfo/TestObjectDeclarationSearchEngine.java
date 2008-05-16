@@ -125,7 +125,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
     	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
     	
-    	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.getObjectInScope(variableName);
+    	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
  
     	assertEquals("Object has the correct name", declaredObject.getName(), variableName);
 
@@ -188,7 +188,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
-	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(variableName);
+	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
 
 	assertNotNull("Variable found", objectDeclaration);
 	assertEquals("Correct name", variableName, objectDeclaration.getName() );
@@ -196,7 +196,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	
 	//Negative test:
 	try {
-	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getObjectInScope("NOT"+variableName);
+	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getObjectInScope(frame, "NOT"+variableName);
 	    assertTrue("Exception was not thrown", false);
 	} catch (ObjectDeclarationNotFoundException e) {
 	    // exception was thrown
@@ -232,7 +232,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	assertNotNull("frame object created",  frame);
 	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
-	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(variableName);
+	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
 
 	assertNotNull("Variable found", objectDeclaration);
 	assertEquals("Correct name", variableName, objectDeclaration.getName() );
@@ -240,7 +240,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	
 	//Negative test:
 	try {
-	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getObjectInScope("NOT"+variableName);
+	    objectDeclaration = (Variable) objectDeclarationSearchEngine.getObjectInScope(frame, "NOT"+variableName);
 	    assertTrue("Exception was not thrown", false);
 	} catch (ObjectDeclarationNotFoundException e) {
 	    // exception was thrown

@@ -59,7 +59,7 @@ public class TestGccInterface extends TestLib {
 		frame);
 
 	Variable variable = (Variable) objectDeclarationSearchEngine
-		.getObjectInScope(variableName);
+		.getObjectInScope(frame, variableName);
 
 	assertNotNull("Variable found", variable);
 

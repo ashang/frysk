@@ -44,6 +44,7 @@ import inua.eio.ByteOrder;
 
 import java.util.List;
 
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Value;
 
@@ -56,7 +57,7 @@ public interface ExprSymTab
     /**
      * Lookup S, assuming S is a variable.
      */
-    ObjectDeclaration getObjectInScope(String s);
+    ObjectDeclaration getObjectInScope(DebugInfoFrame frame, String s);
     /**
      * The byte order to use when creating new values.
      */

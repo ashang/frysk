@@ -152,7 +152,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
      * in scope. The scope is decided by the current frame
      * object.
      */
-    public ObjectDeclaration getObjectInScope(String name){
+    public ObjectDeclaration getObjectInScope(DebugInfoFrame frame, String name){
 	ObjectDeclaration declaredObject = null;
 	
 	Scope scope = frame.getScopes();
@@ -223,7 +223,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	    return new Value(reg.getType(), new PieceLocation(pieces));
 	}
 	
-	ObjectDeclaration objectDeclaration = this.getObjectInScope(s);
+	ObjectDeclaration objectDeclaration = this.getObjectInScope(frame, s);
 	return objectDeclaration.getValue(frame);
     }
 

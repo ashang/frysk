@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import frysk.config.Host;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.scopes.SourceLocation;
 import frysk.value.ClassType;
 import frysk.value.ObjectDeclaration;
@@ -94,7 +95,7 @@ class TestbedSymTab implements ExprSymTab {
     /**
      * Lookup S, assuming S is a variable.
      */
-    public ObjectDeclaration getObjectInScope(String s) {
+    public ObjectDeclaration getObjectInScope(DebugInfoFrame frame, String s) {
 	throw new RuntimeException("no variables");
     }
     /**

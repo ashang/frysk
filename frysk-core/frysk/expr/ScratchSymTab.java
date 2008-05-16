@@ -43,6 +43,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.List;
 import frysk.config.Host;
+import frysk.debuginfo.DebugInfoFrame;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -58,7 +59,7 @@ public class ScratchSymTab implements ExprSymTab {
     /**
      * Lookup S, assuming S is a variable.
      */
-    public ObjectDeclaration getObjectInScope(String s) {
+    public ObjectDeclaration getObjectInScope(DebugInfoFrame frame, String s) {
 	throw new RuntimeException("no variables");
     }
     /**

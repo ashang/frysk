@@ -70,7 +70,7 @@ public class TestDie
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
 	
-	Variable variable = (Variable) objectDeclarationSearchEngine.getObjectInScope("first");
+	Variable variable = (Variable) objectDeclarationSearchEngine.getObjectInScope(frame, "first");
 	
 	assertNotNull("Variable found", variable);
 	
