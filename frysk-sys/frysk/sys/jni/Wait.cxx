@@ -452,7 +452,7 @@ Wait::wait(jnixx::env env, jint waitPid,
   // the set is initialized.
   if (GetSignalSet(env) == NULL)
     SetSignalSet(env, SignalSet::New(env));
-  sigset_t mask = *getRawSet(GetSignalSet(env));
+  sigset_t mask = *getRawSet(env, GetSignalSet(env));
   sigaddset (&mask, SIGALRM);
 
   // Set the STATUS to something that waitpid() will not return.  When
