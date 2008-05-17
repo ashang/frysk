@@ -1,5 +1,9 @@
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFork.java: Use SignalSet.setProcMask().
+	* SignalSet.java: Eliminate RawDataManaged
+	* cni/SignalSet.cxx: Update.
+
 	* jni/SignalSet.hxx: New.
 	* jni/Wait.cxx (processStatus): Catch java::lang::Throwable.
 	

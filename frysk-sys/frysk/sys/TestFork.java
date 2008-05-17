@@ -56,10 +56,9 @@ public class TestFork extends TestCase {
     /**
      * Rip down everything related to PID.
      */
-    public void tearDown ()
-    {
+    public void tearDown() {
 	TearDownProcess.tearDown ();
-	defaultSignalSet.setProcMask(null);
+	defaultSignalSet.setProcMask();
     }
  
     /**

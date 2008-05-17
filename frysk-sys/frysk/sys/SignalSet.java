@@ -39,30 +39,26 @@
 
 package frysk.sys;
 
-import gnu.gcj.RawDataManaged;
-
 /**
  * A Signal Set, corresponds to <tt>sigset_t</tt>.
  */
 
-public final class SignalSet
-{
-    private RawDataManaged rawSet;
-    private native RawDataManaged newRawSet ();
+public final class SignalSet {
+    private long rawSet;
+    private native static long malloc();
+    private native static void free(long rawSet);
 
     /**
      * Return a pointer to the underlying sigset_t buffer.
      */
-    RawDataManaged getRawSet ()
-    {
+    long getRawSet() {
 	return rawSet;
     }
     /**
      * Create an empty signal set.
      */
-    public SignalSet ()
-    {
-	rawSet = newRawSet ();
+    public SignalSet() {
+	rawSet = malloc();
     }
     /**
      * Create a SigSet containing the signals in the array.
@@ -79,11 +75,17 @@ public final class SignalSet
 	add(sig);
     }
 
+    protected void finalize() {
+	if (rawSet != 0) {
+	    free(rawSet);
+	    rawSet = 0;
+	}
+    }
+
     /**
      * As a string.
      */
-    public String toString()
-    {
+    public String toString() {
 	Signal[] sigs = toArray();
 	StringBuffer s = new StringBuffer("{");
 	for (int i = 0; i < sigs.length; i++) {
@@ -115,90 +117,136 @@ public final class SignalSet
     /**
      * Empty the signal set; return this.
      */
-    public native SignalSet empty ();
+    public SignalSet empty() {
+	empty(rawSet);
+	return this;
+    }
+    private static native void empty(long rawSet);
     /**
      * Fill the signal set; return this.
      */
-    public native SignalSet fill ();
+    public SignalSet fill() {
+	fill(rawSet);
+	return this;
+    }
+    private static native void fill(long rawSet);
     /**
      * Add sigNum to the SignalSet; return this.
      */
-    public native SignalSet add(Signal sig);
+    public SignalSet add(Signal sig) {
+	add(rawSet, sig.intValue());
+	return this;
+    }
+    private static native void add(long rawSet, int sig);
     /**
      * Add the array of signals to the SignalSet; return this.
      */
     public SignalSet add(Signal[] sigs) {
 	for (int i = 0; i < sigs.length; i++) {
             if (sigs[i] != null)
-		add(sigs[i]);
+		add(rawSet, sigs[i].intValue());
 	}
 	return this;
     }
     /**
      * The number of elements in the set.
      */
-    public native int size();
+    public int size() {
+	return size(rawSet);
+    }
+    private static native int size(long rawSet);
     /**
      * Remove Signal from the SignalSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
      * java); return this.
      */
-    public native SignalSet remove (Signal sig);
+    public SignalSet remove(Signal sig) {
+	remove(rawSet, sig.intValue());
+	return this;
+    }
+    private static native void remove(long rawSet, int sig);
     /** 
      * Does this SignalSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
      * java.
      */
-    public native boolean contains (Signal sig);
+    public boolean contains(Signal sig) {
+	return contains(rawSet, sig.intValue());
+    }
+    private static native boolean contains(long rawSet, int sig);
 
     /**
-     * Get the pending set of signals; return this
+     * Set to the set of pending signals; return this
      */
-    public native SignalSet getPending ();
+    public SignalSet getPending() {
+	getPending(rawSet);
+	return this;
+    }
+    private static native void getPending(long rawSet);
     /**
      * Suspend the thread, unblocking signals in SignalSet; return this.
      */
-    public native SignalSet suspend ();
+    public SignalSet suspend() {
+	suspend(rawSet);
+	return this;
+    }
+    private static native void suspend(long rawSet);
 
     /**
-     * Block this SignalSet's signals; if oldSet is non-null, return the
-     * previous signal set; return this.
+     * Block this SignalSet's signals; return the previous signal set
+     * in oldSet; return this.
      */
-    public native SignalSet blockProcMask (SignalSet oldSet);
+    public SignalSet blockProcMask(SignalSet oldSet) {
+	blockProcMask(rawSet, oldSet.rawSet);
+	return this;
+    }
+    private static native void blockProcMask(long rawSet, long oldSet);
     /**
      * Block this SignalSet's signals; return this.
      */
-    public SignalSet blockProcMask ()
-    {
-	return blockProcMask (null);
+    public SignalSet blockProcMask() {
+	blockProcMask(rawSet, 0);
+	return this;
     }
     /**
-     * Unblock this SignalSet's signals; if oldSet is non-null, return
-     * the previous signal set; return this.
+     * Unblock this SignalSet's signals; return the previous signal
+     * set in oldSet; return this.
      */
-    public native SignalSet unblockProcMask (SignalSet oldSet);
+    public SignalSet unblockProcMask(SignalSet oldSet) {
+	unblockProcMask(rawSet, oldSet.rawSet);
+	return this;
+    }
+    private static native void unblockProcMask(long rawSet, long oldSet);
     /**
      * Unblock this SignalSet's signals; return this.
      */
-    public SignalSet unblockProcMask ()
-    {
-	return unblockProcMask (null);
+    public SignalSet unblockProcMask() {
+	unblockProcMask(rawSet, 0);
+	return this;
     }
     /**
-     * Set the signal mask to this SignalSet's signals; if oldSet is
-     * non-null, return the previous signal set; return this.
+     * Set the thread's signal mask to this SignalSet's signals;
+     * return the previous signal set in oldSet.
      */
-    public native SignalSet setProcMask (SignalSet oldSet);
+    public SignalSet setProcMask(SignalSet oldSet) {
+	setProcMask(rawSet, oldSet.rawSet);
+	return this;
+    }
+    private static native void setProcMask(long rawSet, long oldSet);
     /**
      * Set the process signal mask to this SignalSet's signals; return
      * this.
      */
-    public SignalSet setProcMask ()
-    {
-	return setProcMask (null);
+    public SignalSet setProcMask() {
+	setProcMask(rawSet, 0);
+	return this;
     }
     /**
      * Get the current process signal mask; return this.
      */
-    public native SignalSet getProcMask ();
+    public SignalSet getProcMask() {
+	getProcMask(rawSet);
+	return this;
+    }
+    private static native void getProcMask(long rawSet);
 }
