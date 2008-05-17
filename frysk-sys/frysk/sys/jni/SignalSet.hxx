@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,52 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <gcj/cni.h>
-#include <java/lang/RuntimeException.h>
-
-#include "jnixx/Native.h"
-
-jboolean
-jnixx::Native::isJni() {
-  return false;
-}
-
-jint
-jnixx::Native::sizeOfJnixxEnv() {
-  return -1;
-}
-
-jint
-jnixx::Native::sizeOfClass() {
-  return sizeof(jclass);
-}
-
-jint
-jnixx::Native::sizeOfObject() {
-  return sizeof(jobject);
-}
-
-jint
-jnixx::Native::sizeOfObjectArray() {
-  return sizeof(jobjectArray);
-}
-
-JArray<jstring>*
-jnixx::Native::copy(JArray<jstring>* strings) {
-  return NULL;
-}
-
-void
-jnixx::Native::throwRuntimeException() {
-  throw new java::lang::RuntimeException();
-}
-
-jboolean
-jnixx::Native::catchRuntimeException(jnixx::Native* e) {
-  try {
-    e->execute();
-    return false;
-  } catch (java::lang::RuntimeException* r) {
-    return true;
-  }
-}
+extern sigset_t *getRawSet (frysk::sys::SignalSet signalSet);

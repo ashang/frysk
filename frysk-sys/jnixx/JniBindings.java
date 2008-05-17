@@ -47,7 +47,13 @@ import java.util.LinkedList;
  * Given a class, print any JNI bindings.
  */
 class JniBindings {
-    static private void printCodes(Printer p, int level, Object[] codes) {
+    private static class Binding {
+	static final Binding STATIC = new Binding();
+	static final Binding DYNAMIC = new Binding();
+	static final Binding CHILDREN = new Binding();
+    }
+
+    private static void printCodes(Printer p, int level, Object[] codes) {
 	boolean nl = false;
 	for (int i = 0; i < codes.length; i++) {
 	    if (codes[i] instanceof String) {
@@ -70,14 +76,15 @@ class JniBindings {
 
     private static class Method {
 	private final Class klass;
-	private final boolean isStatic;
+	private final Binding binding;
 	private final String returnType;
 	private final String name;
 	private final String[] params;
 	private final Object[] code;
-	Method(Class klass, boolean isStatic, String returnType, String name, String[] params, Object[] code) {
+	Method(Class klass, Binding binding, String returnType, String name,
+	       String[] params, Object[] code) {
 	    this.klass = klass;
-	    this.isStatic = isStatic;
+	    this.binding = binding;
 	    this.returnType = returnType;
 	    this.name = name;
 	    this.params = params;
@@ -90,8 +97,14 @@ class JniBindings {
 	    Method rhs = (Method)o;
 	    return klass.equals(rhs.klass) && name.equals(rhs.name);
 	}
-	void printDeclaration(Printer p) {
-	    if (isStatic) {
+	void printDeclaration(Class klass, Printer p) {
+	    if (binding == Binding.STATIC && klass != this.klass) {
+		return;
+	    }
+	    if (binding == Binding.DYNAMIC && klass != this.klass) {
+		return;
+	    }
+	    if (binding == Binding.STATIC || binding == Binding.CHILDREN) {
 		p.print("static ");
 	    }
 	    p.print("inline ");
@@ -111,7 +124,13 @@ class JniBindings {
 	    }
 	    p.println(");");
 	}
-	void printDefinition(Printer p) {
+	void printDefinition(Class klass, Printer p) {
+	    if (binding == Binding.STATIC && klass != this.klass) {
+		return;
+	    }
+	    if (binding == Binding.DYNAMIC && klass != this.klass) {
+		return;
+	    }
 	    p.println();
 	    if (returnType == null) {
 		p.println("void");
@@ -147,21 +166,29 @@ class JniBindings {
 	    }
 	    return methods;
 	}
-	JniMap put(Class klass, boolean isStatic, String returnType, String name, String[] params,
+	JniMap put(Class klass, Binding binding, String returnType,
+		   String name, String[] params,
 		   Object[] code) {
-	    get(klass).add(new Method(klass, isStatic, returnType, name, params, code));
+	    get(klass).add(new Method(klass, binding, returnType, name,
+				      params, code));
 	    return this;
 	}
 	void printDeclarations(Class klass, Printer p) {
-	    for (Iterator i = get(klass).iterator(); i.hasNext(); ) {
-		Method method = (Method)i.next();
-		method.printDeclaration(p);
+	    for (Class parent = klass; parent != null;
+		 parent = parent.getSuperclass()) {
+		for (Iterator i = get(parent).iterator(); i.hasNext(); ) {
+		    Method method = (Method)i.next();
+		    method.printDeclaration(klass, p);
+		}
 	    }
 	}
 	void printDefinitions(Class klass, Printer p) {
-	    for (Iterator i = get(klass).iterator(); i.hasNext(); ) {
-		Method method = (Method)i.next();
-		method.printDefinition(p);
+	    for (Class parent = klass; parent != null;
+		 parent = parent.getSuperclass()) {
+		for (Iterator i = get(parent).iterator(); i.hasNext(); ) {
+		    Method method = (Method)i.next();
+		    method.printDefinition(klass, p);
+		}
 	    }
 	}
     }
@@ -170,7 +197,7 @@ class JniBindings {
 	/**
 	 * java.lang.Object
 	 */
-	.put(Object.class, true,
+	.put(Object.class, Binding.STATIC,
 	     "::jnixx::env", "_env_",
 	     new String[] {
 	     },
@@ -179,7 +206,7 @@ class JniBindings {
 		 "::jnixx::vm->GetEnv(&_jni, JNI_VERSION_1_2);",
 		 "return ::jnixx::env((JNIEnv*)_jni);",
 	     })
-	.put(Object.class, false,
+	.put(Object.class, Binding.DYNAMIC,
 	     "bool", "operator==",
 	     new String[] {
 		 "jobject", "_object",
@@ -187,7 +214,7 @@ class JniBindings {
 	     new Object[] {
 		 "return this->_object == _object;",
 	     })
-	.put(Object.class, false,
+	.put(Object.class, Binding.DYNAMIC,
 	     "bool", "operator!=",
 	     new String[] {
 		 "jobject", "_object",
@@ -196,7 +223,7 @@ class JniBindings {
 		 "return this->_object != _object;",
 	     })
 	// DeleteLocalRef
-	.put(Object.class, false,
+	.put(Object.class, Binding.DYNAMIC,
 	     null, "DeleteLocalRef",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -205,17 +232,37 @@ class JniBindings {
 		 "env.DeleteLocalRef(_object);",
 		 "_object = NULL;"
 	     })
+	// IsInstanceOf
+	.put(Object.class, Binding.DYNAMIC,
+	     "bool", "IsInstanceOf",
+	     new String[] {
+		 "::jnixx::env", "env",
+		 "jclass", "klass",
+	     },
+	     new Object[] {
+		 "return env.IsInstanceOf(_object, klass);",
+	     })
 
 	/**
 	 * java.lang.Throwable
 	 */
-	.put(Throwable.class, false,
+	.put(Throwable.class, Binding.DYNAMIC,
 	     null, "Throw",
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
 	     new Object[] {
-		 "env.Throw((jthrowable) _object);"
+		 "env.Throw((jthrowable)_object);",
+	     })
+	.put(Throwable.class, Binding.CHILDREN,
+	     null, "ThrowNew",
+	     new String[] {
+		 "::jnixx::env", "env",
+		 "const char*", "message",
+	     },
+	     new Object[] {
+		 "env.ThrowNew(_class_(env), message);",
+		 "env.throwPendingException();",
 	     })
 
 	/**
@@ -223,7 +270,7 @@ class JniBindings {
 	 */
 	// NewString
 	// GetStringLength
-	.put(String.class, false,
+	.put(String.class, Binding.DYNAMIC,
 	     "jsize", "GetStringLength",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -234,7 +281,7 @@ class JniBindings {
 	// GetStringChars
 	// ReleaseStringChars
 	// NewStringUTF
-	.put(String.class, true,
+	.put(String.class, Binding.STATIC,
 	     "::java::lang::String", "NewStringUTF",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -244,7 +291,7 @@ class JniBindings {
 		 "return String(env, env.NewStringUTF(utf));",
 	     })
 	// GetStringUTFLength
-	.put(String.class, false,
+	.put(String.class, Binding.DYNAMIC,
 	     "jsize", "GetStringUTFLength",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -253,7 +300,7 @@ class JniBindings {
 		 "return env.GetStringUTFLength((jstring) _object);",
 	     })
 	// GetStringUTFChars
-	.put(String.class, false,
+	.put(String.class, Binding.DYNAMIC,
 	     "const char*", "GetStringUTFChars",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -262,7 +309,7 @@ class JniBindings {
 		 "return env.GetStringUTFChars((jstring)_object, NULL);",
 	     })
 	// ReleaseStringUTFChars
-	.put(String.class, false,
+	.put(String.class, Binding.DYNAMIC,
 	     null, "ReleaseStringUTFChars",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -273,7 +320,7 @@ class JniBindings {
 	     })
 	// GetStringRegion
 	// GetStringUTFRegion
-	.put(String.class, false,
+	.put(String.class, Binding.DYNAMIC,
 	     null, "GetStringUTFRegion",
 	     new String[] {
 		 "::jnixx::env", "env",
@@ -304,7 +351,7 @@ class JniBindings {
 	    String Type = (Character.toUpperCase(type.charAt(0))
 			   + type.substring(1));
 	    bindings
-		.put(types[i], false,
+		.put(types[i], Binding.DYNAMIC,
 		     "jsize", "GetArrayLength",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -312,7 +359,7 @@ class JniBindings {
 		     new Object[] {
 			 "return env.GetArrayLength((j" + type + "Array) _object);"
 		     })
-		.put(types[i], true,
+		.put(types[i], Binding.STATIC,
 		     "::jnixx::" + type + "Array", "New" + Type + "Array",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -321,7 +368,7 @@ class JniBindings {
 		     new Object[] {
 			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
 		     })
-		.put(types[i], false,
+		.put(types[i], Binding.DYNAMIC,
 		     "j" + type + "*", "Get" + Type + "ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -330,7 +377,7 @@ class JniBindings {
 		     new Object[] {
 			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
 		     })
-		.put(types[i], false,
+		.put(types[i], Binding.DYNAMIC,
 		     null, "Release" + Type +"ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -340,7 +387,7 @@ class JniBindings {
 		     new Object[] {
 			 "env.Release" + Type + "ArrayElements((j" + type + "Array)_object, elements, mode);",
 		     })
-		.put(types[i], false,
+		.put(types[i], Binding.DYNAMIC,
 		     "void", "Get" + Type + "ArrayRegion",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -351,7 +398,7 @@ class JniBindings {
 		     new Object[] {
 			 "env.Get" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
 		     })
-		.put(types[i], false,
+		.put(types[i], Binding.DYNAMIC,
 		     "void", "Set" + Type + "ArrayRegion",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -409,9 +456,20 @@ class JniBindings {
 	}
     }
 
+    private static void printRuntimeGlobals(Printer p) {
+	p.print("void jnixx::env::throwPendingException()");
+	while (p.dent(0, "{", "}")) {
+	    p.println("jthrowable exception = _jni->ExceptionOccurred();");
+	    p.println("_jni->ExceptionClear();");
+	    p.println("throw java::lang::Throwable(*this, exception);");
+	}
+    }
+
     static void printGlobals(Printer p, Class klass) {
 	if (klass == Object.class) {
 	    printObjectGlobals(p);
+	} else if (klass == Throwable.class) {
+	    printRuntimeGlobals(p);
 	}
     }
 }

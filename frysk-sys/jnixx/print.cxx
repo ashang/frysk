@@ -70,7 +70,7 @@ vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
   }
   try {
     return String::NewStringUTF(env, message);
-  } catch (jnixx::exception) {
+  } catch (java::lang::Throwable) {
     ::free(message);  
     throw;
   }

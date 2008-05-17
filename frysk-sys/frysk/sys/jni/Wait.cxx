@@ -151,14 +151,12 @@ processStatus(jnixx::env env, ProcessIdentifier pid, int status,
 	  = ProcessIdentifierFactory::create
 	  (env, ptrace::Ptrace::getEventMsg(env, pid));
 	builder.cloneEvent(env, pid, clone);
-      } catch (jnixx::exception e) {
-	jthrowable err = env.ExceptionOccurred();
-	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
-	    env.ExceptionClear();
+      } catch (java::lang::Throwable err) {
+	if (err.IsInstanceOf(env, Errno$Esrch::_class_(env))) {
 	    // The PID disappeared after the WAIT message was created
 	    // but before the getEventMsg could be extracted (most
 	    // likely due to a KILL -9).  Notify builder.
-	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	    builder.disappeared(env, pid, err);
 	} else {
 	  throw;
 	}
@@ -172,14 +170,12 @@ processStatus(jnixx::env env, ProcessIdentifier pid, int status,
 	  = ProcessIdentifierFactory::create
 	  (env, ptrace::Ptrace::getEventMsg(env, pid));
 	builder.forkEvent(env, pid, fork);
-      } catch (jnixx::exception e) {
-	jthrowable err = env.ExceptionOccurred();
-	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
-	    env.ExceptionClear();
+      } catch (java::lang::Throwable err) {
+	if (err.IsInstanceOf(env, Errno$Esrch::_class_(env))) {
 	    // The PID disappeared after the WAIT message was created
 	    // but before the getEventMsg could be extracted (most
 	    // likely due to a KILL -9).  Notify builder.
-	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	    builder.disappeared(env, pid, err);
 	} else {
 	  throw;
 	}
@@ -201,14 +197,12 @@ processStatus(jnixx::env env, ProcessIdentifier pid, int status,
 	} else {
 	  runtimeException(env, "unknown exit event (status %d)", exitStatus);
 	}
-      } catch (jnixx::exception e) {
-	jthrowable err = env.ExceptionOccurred();
-	if (env.IsInstanceOf(err, Errno$Esrch::_class_(env))) {
-	    env.ExceptionClear();
+      } catch (java::lang::Throwable err) {
+	if (err.IsInstanceOf(env, Errno$Esrch::_class_(env))) {
 	    // The PID disappeared after the WAIT message was created but
 	    // before the getEventMsg could be extracted (most likely due
 	    // to a KILL -9).  Notify builder.
-	    builder.disappeared(env, pid, java::lang::Throwable(env, err));
+	    builder.disappeared(env, pid, err);
 	} else {
 	  throw;
 	}

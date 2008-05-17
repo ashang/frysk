@@ -77,7 +77,7 @@ runtimeException(::jnixx::env& env, const char *fmt, ...) {
   }
   try {
     env.ThrowNew(cls, msg);
-  } catch (jnixx::exception e) {
+  } catch (java::lang::Throwable e) {
     // XXX: Work around lack of finally by catchching, then
     // re-throwing, the exception
     ::free(msg);

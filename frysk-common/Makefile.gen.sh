@@ -897,7 +897,7 @@ lib${GEN_DIRNAME}-jni.so: lib${GEN_DIRNAME}-jni.a
 .PHONY: jni
 jni: lib${GEN_DIRNAME}-jni.so ${GEN_DIRNAME}.jar
 lib${GEN_MAKENAME}_jni_a_SOURCES += jni.cxx
-jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/frysk/jnixx/*.java)
+jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/jnixx/*.java)
 CLEANFILES += jni.hxx jni.cxx jni.hxx.gch
 \$(lib${GEN_MAKENAME}_jni_a_SOURCES): | jni.hxx jni.hxx.gch
 jni.hxx: \$(jnixx_sources) | ${GEN_DIRNAME}.jar

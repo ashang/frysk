@@ -1,3 +1,16 @@
+2008-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestJnixx.java (testThrowCatch()): New.
+	(testRethrowCatch()): New.
+	* JniBindings.java: Add IsInstanceOf.  Generate
+	throwPendingException.
+	* jnixx.hxx (jnixx::exception): Delete.
+	(jnixx::env::throwPendingException()): New.
+	* PrintHxxDefinitions.java: Don't check for NULL objects.
+	* PrintCxxDefinitions.java: Generate catch java::lang::Throwable.
+	* exceptions.cxx (runtimeException): Catch java::lang::Throwable.
+	* print.cxx (vajprintf): Ditto.
+
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
 	Rename directory to jnixx/.

@@ -1,3 +1,8 @@
+2008-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/SignalSet.hxx: New.
+	* jni/Wait.cxx (processStatus): Catch java::lang::Throwable.
+	
 2008-05-16  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Wait.cxx: Convert to JNI.

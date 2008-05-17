@@ -1,3 +1,7 @@
+2008-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (jnixx_sources): Fix path to sources.
+
 2008-05-15  Tim Moore  <timoore@redhat.com>
 
 	* Makefile.rules (AM_CXXFLAGS): Add elfutils/{libasm,libebl}.

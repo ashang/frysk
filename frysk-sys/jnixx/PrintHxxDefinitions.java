@@ -198,9 +198,6 @@ class PrintHxxDefinitions extends ClassWalker {
 		    p.print("jobject object = _env.NewObject(");
 		    p.printActualJniParameters(constructor);
 		    p.println(");");
-		    while (p.dent(1, "if (object == NULL) {", "}")) {
-			p.println("throw ::jnixx::exception();");
-		    }
 		    p.printReturn(true, constructor.getDeclaringClass(),
 				  "object");
 		    p.println(";");

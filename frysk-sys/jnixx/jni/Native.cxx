@@ -76,3 +76,22 @@ jnixx::Native::copy(::jnixx::env env,
   ::free(chars);
   return copiedStrings;
 }
+
+void
+jnixx::Native::throwRuntimeException(jnixx::env env) {
+  java::lang::RuntimeException::New(env).Throw(env);
+}
+
+bool
+jnixx::Native::catchRuntimeException(jnixx::env env, jnixx::Native e) {
+  try {
+    e.execute(env);
+    return false;
+  } catch (java::lang::Throwable r) {
+    if (r.IsInstanceOf(env, java::lang::RuntimeException::_class_(env))) {
+      return true;
+    } else {
+      throw;
+    }
+  }
+}

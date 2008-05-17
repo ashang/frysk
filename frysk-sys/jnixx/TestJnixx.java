@@ -67,4 +67,22 @@ public class TestJnixx extends TestCase {
 	String[] strings = new String[] { "arg1", "arg2", "arg3" };
 	assertEquals("converted", strings, Native.copy(strings));
     }
+
+    public void testNativeThrow() {
+	boolean thrown = false;
+	try {
+	    Native.throwRuntimeException();
+	} catch (RuntimeException e) {
+	    thrown = true;
+	}
+	assertTrue("thrown", thrown);
+    }
+
+    public void testNativeCatch() {
+	assertTrue("thrown", Native.catchRuntimeException(new Native() {
+		void execute() {
+		    throw new RuntimeException();
+		}
+	    }));
+    }
 }

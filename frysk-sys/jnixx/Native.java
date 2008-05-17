@@ -39,11 +39,23 @@
 
 package jnixx;
 
-class Native {
+abstract class Native {
+    /**
+     * A call back.
+     */
+    abstract void execute();
+
     static native boolean isJni();
     static native int sizeOfJnixxEnv();
     static native int sizeOfObject();
     static native int sizeOfClass();
     static native int sizeOfObjectArray();
     static native String[] copy(String[] strings);
+
+    /**
+     * Something to throw an exception.
+     */
+    static native void throwRuntimeException();
+
+    static native boolean catchRuntimeException(Native e);
 }

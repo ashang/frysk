@@ -113,10 +113,9 @@ class PrintCxxDefinitions extends ClassWalker {
 			    p.println(";");
 			}
 			p.outdent();
-		    }
-		    p.println("} catch (jnixx::exception) {");
-		    {
+		    } p.println("} catch (java::lang::Throwable t) {"); {
 			p.indent();
+			p.println("_jni->Throw((jthrowable) t._object);");
 			if (method.getReturnType() != Void.TYPE) {
 			    p.println("return 0;");
 			} else {
