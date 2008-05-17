@@ -1,5 +1,8 @@
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Native.cxx: Use new/delete.  Don't #include <malloc.h>.
+	* elements.cxx: Ditto.
+
 	* TestJnixx.java (testThrowCatch()): New.
 	(testRethrowCatch()): New.
 	* JniBindings.java: Add IsInstanceOf.  Generate

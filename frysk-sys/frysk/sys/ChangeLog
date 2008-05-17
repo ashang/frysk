@@ -1,5 +1,7 @@
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/SignalSet.cxx: Implement in jni.
+
 	* TestFork.java: Use SignalSet.setProcMask().
 	* SignalSet.java: Eliminate RawDataManaged
 	* cni/SignalSet.cxx: Update.

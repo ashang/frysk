@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <malloc.h>
-
 #include "jni.hxx"
 
 #include "jnixx/elements.hxx"
@@ -59,7 +57,7 @@ strings2chars(jnixx::env env, ::jnixx::array<String> strings) {
     string.DeleteLocalRef(env);
   }
   // Create the array.
-  char **elements = (char**) ::malloc(size);
+  char **elements = (char**) new char[size];
   char **argv = elements;
   // Store strings after the array
   char *arg = (char*) (argv + arrayLength + 1);

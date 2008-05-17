@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <malloc.h>
-
 #include "jni.hxx"
 
 #include "jnixx/elements.hxx"
@@ -73,7 +71,7 @@ jnixx::Native::copy(::jnixx::env env,
 		    ::jnixx::array<java::lang::String> strings) {
   char** chars = strings2chars(env, strings);
   ::jnixx::array<java::lang::String> copiedStrings = chars2strings(env, chars);
-  ::free(chars);
+  delete chars;
   return copiedStrings;
 }
 

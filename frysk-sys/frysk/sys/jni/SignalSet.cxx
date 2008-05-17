@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,129 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <signal.h>
+#include <errno.h>
+#include <stdio.h>
+
 #include "jni.hxx"
+
+#include "frysk/sys/jni/SignalSet.hxx"
+#include "jnixx/exceptions.hxx"
+
+sigset_t *
+getRawSet(jnixx::env env, frysk::sys::SignalSet set) {
+  return (sigset_t*) set.getRawSet(env);
+}
+
+void
+frysk::sys::SignalSet::fill(jnixx::env env, jlong rawSet) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  ::sigfillset(sigset);
+}
+
+void
+frysk::sys::SignalSet::remove(jnixx::env env, jlong rawSet, jint sig) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  ::sigdelset(sigset, sig);
+}
+
+void
+frysk::sys::SignalSet::add(jnixx::env env, jlong rawSet, jint sig) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  ::sigaddset(sigset, sig);
+}
+
+bool
+frysk::sys::SignalSet::contains(jnixx::env env, jlong rawSet, jint sig) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  return ::sigismember(sigset, sig);
+}
+
+jlong
+frysk::sys::SignalSet::malloc(jnixx::env env) {
+  sigset_t* sigset = new sigset_t();
+  if (sigset == NULL) {
+    errnoException(env, errno, "malloc");
+  }
+  ::sigemptyset(sigset);
+  return (long)(void*)sigset;
+}
+
+void
+frysk::sys::SignalSet::free(jnixx::env env, jlong rawSet) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  delete sigset;
+}
+
+void
+frysk::sys::SignalSet::empty(jnixx::env env, jlong rawSet) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  ::sigemptyset(sigset);
+}
+
+void
+frysk::sys::SignalSet::getPending(jnixx::env env, jlong rawSet) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  errno = 0;
+  if (::sigpending(sigset) < 0)
+    errnoException(env, errno, "sigpending");
+}
+
+void
+frysk::sys::SignalSet::suspend(jnixx::env env, jlong rawSet) {
+  sigset_t *sigset = (sigset_t*) rawSet;
+  errno = 0;
+  ::sigsuspend(sigset); // always fails with EINTR.
+  if (errno != EINTR)
+    errnoException(env, errno, "sigsuspend");
+}
+
+
+
+void
+frysk::sys::SignalSet::blockProcMask(jnixx::env env, jlong rawSet, jlong oset) {
+  sigset_t *set = (sigset_t*) rawSet;
+  sigset_t* old = (sigset_t*) oset;
+  errno = 0;
+  if (::sigprocmask(SIG_BLOCK, set, old) < 0)
+    errnoException(env, errno, "sigprocmask.SIG_BLOCK");
+}
+
+void
+frysk::sys::SignalSet::unblockProcMask(jnixx::env env, jlong rawSet,
+				       jlong oset) {
+  sigset_t *set = (sigset_t*) rawSet;
+  sigset_t* old = (sigset_t*) oset;
+  errno = 0;
+  if (::sigprocmask (SIG_UNBLOCK, set, old) < 0)
+    errnoException(env, errno, "sigprocmask.SIG_UNBLOCK");
+}
+
+void
+frysk::sys::SignalSet::setProcMask(jnixx::env env, jlong rawSet, jlong oset) {
+  sigset_t *set = (sigset_t*) rawSet;
+  sigset_t* old = (sigset_t*) oset;
+  errno = 0;
+  if (::sigprocmask (SIG_SETMASK, set, old) < 0)
+    errnoException(env, errno, "sigprocmask.SIG_SETMASK");
+}
+
+void
+frysk::sys::SignalSet::getProcMask(jnixx::env env, jlong rawSet) {
+  sigset_t *set = (sigset_t*) rawSet;
+  errno = 0;
+  if (::sigprocmask (SIG_SETMASK, NULL, set) < 0)
+    errnoException(env, errno, "sigprocmask.SIG_SETMASK");
+}
+
+jint
+frysk::sys::SignalSet::size(jnixx::env env, jlong rawSet) {
+  sigset_t *set = (sigset_t*) rawSet;
+  int numSigs = 0;
+  // Count the number of signals
+  for (int i = 1; i < NSIG; i++) {
+    if (sigismember (set, i))
+      numSigs++;
+  }
+  return numSigs;
+}
