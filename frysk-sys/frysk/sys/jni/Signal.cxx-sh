@@ -50,6 +50,7 @@ cat <<EOF
 #include "jni.hxx"
 
 #include "jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
 
 void
 frysk::sys::Signal::kill(::jnixx::env env, jint pid, jint sig,
@@ -70,12 +71,10 @@ frysk::sys::Signal::tkill(::jnixx::env env, jint tid, jint sig,
                           ::java::lang::String name) {
   errno = 0;
   if (::syscall(__NR_tkill, tid, sig) < 0) {
-    const char *sname = name.GetStringUTFChars(env);
-    if (sname == NULL)
-      return; // exception pending
+    StringChars sname = StringChars(env, name);
     errnoException(env, errno, "tkill", "task %d, signal %s (%d)",
-    		   tid, sname, sig);
-    name.ReleaseStringUTFChars(env, sname);
+    		   tid, sname.p, sig);
+    sname.free(); // happens during unwind
   }
 }
 

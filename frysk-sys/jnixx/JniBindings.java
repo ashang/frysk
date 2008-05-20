@@ -80,14 +80,16 @@ class JniBindings {
 	private final String returnType;
 	private final String name;
 	private final String[] params;
+	private final String attributes;
 	private final Object[] code;
 	Method(Class klass, Binding binding, String returnType, String name,
-	       String[] params, Object[] code) {
+	       String[] params, String attributes, Object[] code) {
 	    this.klass = klass;
 	    this.binding = binding;
 	    this.returnType = returnType;
 	    this.name = name;
 	    this.params = params;
+	    this.attributes = attributes;
 	    this.code = code;
 	}
 	public int hashCode() {
@@ -122,7 +124,13 @@ class JniBindings {
 		}
 		p.print(params[i]);
 	    }
-	    p.println(");");
+	    p.print(")");
+	    if (attributes != null) {
+		p.print(" ");
+		p.print(attributes);
+	    }
+	    p.println(";");
+	    
 	}
 	void printDefinition(Class klass, Printer p) {
 	    if (binding == Binding.STATIC && klass != this.klass) {
@@ -167,10 +175,10 @@ class JniBindings {
 	    return methods;
 	}
 	JniMap put(Class klass, Binding binding, String returnType,
-		   String name, String[] params,
+		   String name, String[] params, String attributes,
 		   Object[] code) {
 	    get(klass).add(new Method(klass, binding, returnType, name,
-				      params, code));
+				      params, attributes, code));
 	    return this;
 	}
 	void printDeclarations(Class klass, Printer p) {
@@ -201,6 +209,7 @@ class JniBindings {
 	     "::jnixx::env", "_env_",
 	     new String[] {
 	     },
+	     null,
 	     new Object[] {
 		 "void* _jni;",
 		 "::jnixx::vm->GetEnv(&_jni, JNI_VERSION_1_2);",
@@ -211,6 +220,7 @@ class JniBindings {
 	     new String[] {
 		 "jobject", "_object",
 	     },
+	     null,
 	     new Object[] {
 		 "return this->_object == _object;",
 	     })
@@ -219,6 +229,7 @@ class JniBindings {
 	     new String[] {
 		 "jobject", "_object",
 	     },
+	     null,
 	     new Object[] {
 		 "return this->_object != _object;",
 	     })
@@ -228,6 +239,7 @@ class JniBindings {
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
+	     null,
 	     new Object[] {
 		 "env.DeleteLocalRef(_object);",
 		 "_object = NULL;"
@@ -239,6 +251,7 @@ class JniBindings {
 		 "::jnixx::env", "env",
 		 "jclass", "klass",
 	     },
+	     null,
 	     new Object[] {
 		 "return env.IsInstanceOf(_object, klass);",
 	     })
@@ -251,6 +264,7 @@ class JniBindings {
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
+	     "__attribute__((noreturn))",
 	     new Object[] {
 		 "env.Throw((jthrowable)_object);",
 	     })
@@ -260,6 +274,7 @@ class JniBindings {
 		 "::jnixx::env", "env",
 		 "const char*", "message",
 	     },
+	     "__attribute__((noreturn))",
 	     new Object[] {
 		 "env.ThrowNew(_class_(env), message);",
 		 "env.throwPendingException();",
@@ -275,6 +290,7 @@ class JniBindings {
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
+	     null,
 	     new Object[] {
 		 "return env.GetStringLength((jstring)_object);",
 	     })
@@ -287,6 +303,7 @@ class JniBindings {
 		 "::jnixx::env", "env",
 		 "const char*", "utf",
 	     },
+	     null,
 	     new Object[] {
 		 "return String(env, env.NewStringUTF(utf));",
 	     })
@@ -296,6 +313,7 @@ class JniBindings {
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
+	     null,
 	     new Object[] {
 		 "return env.GetStringUTFLength((jstring) _object);",
 	     })
@@ -305,6 +323,7 @@ class JniBindings {
 	     new String[] {
 		 "::jnixx::env", "env",
 	     },
+	     null,
 	     new Object[] {
 		 "return env.GetStringUTFChars((jstring)_object, NULL);",
 	     })
@@ -315,6 +334,7 @@ class JniBindings {
 		 "::jnixx::env", "env",
 		 "const char *", "utf",
 	     },
+	     null,
 	     new Object[] {
 		 "env.ReleaseStringUTFChars((jstring)_object, utf);",
 	     })
@@ -328,6 +348,7 @@ class JniBindings {
 		 "jsize", "len", 
 		 "char*", "buf",
 	     },
+	     null,
 	     new Object[] {
 		 "env.GetStringUTFRegion((jstring)_object, start, len, buf);",
 	     })
@@ -356,6 +377,7 @@ class JniBindings {
 		     new String[] {
 			 "::jnixx::env", "env",
 		     },
+		     null,
 		     new Object[] {
 			 "return env.GetArrayLength((j" + type + "Array) _object);"
 		     })
@@ -365,6 +387,7 @@ class JniBindings {
 			 "::jnixx::env", "env",
 			 "jsize", "length",
 		     },
+		     null,
 		     new Object[] {
 			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
 		     })
@@ -374,6 +397,7 @@ class JniBindings {
 			 "::jnixx::env", "env",
 			 "jboolean*", "isCopy",
 		     },
+		     null,
 		     new Object[] {
 			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
 		     })
@@ -384,6 +408,7 @@ class JniBindings {
 			 "j" + type + "*", "elements",
 			 "jint", "mode"
 		     },
+		     null,
 		     new Object[] {
 			 "env.Release" + Type + "ArrayElements((j" + type + "Array)_object, elements, mode);",
 		     })
@@ -395,6 +420,7 @@ class JniBindings {
 			 "jsize", "length",
 			 "j" + type + "*", "buf",
 		     },
+		     null,
 		     new Object[] {
 			 "env.Get" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
 		     })
@@ -406,6 +432,7 @@ class JniBindings {
 			 "jsize", "length",
 			 "j" + type + "*", "buf",
 		     },
+		     null,
 		     new Object[] {
 			 "env.Set" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
 		     })

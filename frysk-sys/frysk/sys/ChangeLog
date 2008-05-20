@@ -1,5 +1,7 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Signal.cxx-sh: Don't leak JNI string pointers.
+
 	* jni/DaemonFactory.cxx: Implement.
 
 2008-05-17  Andrew Cagney  <cagney@redhat.com>

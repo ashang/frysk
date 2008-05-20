@@ -46,20 +46,75 @@
 #include "jni.hxx"
 
 #include "jnixx/exceptions.hxx"
+#include "jnixx/print.hxx"
+
+static void throwErrno(::jnixx::env& env, int error, const char *fmt, ...)
+  __attribute__((noreturn));
+void
+throwErrno(::jnixx::env& env, int error, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  java::lang::String message = vajprintf(env, fmt, ap);
+  switch (error) {
+#ifdef EBADF
+  case EBADF:
+    frysk::sys::Errno$Ebadf::New(env, message).Throw(env);
+#endif
+#ifdef ENOMEM
+  case ENOMEM:
+    frysk::sys::Errno$Enomem::New(env, message).Throw(env);
+#endif
+#ifdef EFAULT
+  case EFAULT:
+    frysk::sys::Errno$Efault::New(env, message).Throw(env);
+#endif
+#ifdef EINVAL
+  case EINVAL:
+    frysk::sys::Errno$Einval::New(env, message).Throw(env);
+#endif
+#ifdef ESRCH
+  case ESRCH:
+    frysk::sys::Errno$Esrch::New(env, message).Throw(env);
+#endif
+#ifdef ECHILD
+  case ECHILD:
+    frysk::sys::Errno$Echild::New(env, message).Throw(env);
+#endif
+#ifdef EPERM
+  case EPERM:
+    frysk::sys::Errno$Eperm::New(env, message).Throw(env);
+#endif
+#ifdef EIO
+  case EIO:
+    frysk::sys::Errno$Eio::New(env, message).Throw(env);
+#endif
+#ifdef ENOENT
+  case ENOENT:
+    frysk::sys::Errno$Enoent::New(env, message).Throw(env);
+#endif
+  default:
+    frysk::sys::Errno::New(env, error, message).Throw(env);
+  }
+  va_end(ap);
+}
 
 void
 errnoException(::jnixx::env& env, int error, const char *prefix) {
   // Hack; for moment just throw something.
-  runtimeException(env, "not implemented: %s#%d#%s",
-		   __FILE__, __LINE__, __func__);
+  throwErrno(env, errno, "%s: %s", prefix, strerror(error));
 }
 
 void
 errnoException(::jnixx::env& env, int error, const char *prefix,
 	       const char *fmt, ...) {
-  // Hack; for moment just throw something.
-  runtimeException(env, "not implemented: %s#%d#%s",
-		   __FILE__, __LINE__, __func__);
+  va_list ap;
+  va_start(ap, fmt);
+  char message[256];
+  if (::snprintf(message, sizeof(message), fmt, ap) < 0) {
+    errnoException(env, errno, "malloc");
+  }
+  throwErrno(env, errno, "%s: %s (%s)", prefix, strerror(error), message);
+  va_end(ap);
 }
 
 void

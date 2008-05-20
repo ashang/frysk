@@ -1,5 +1,8 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* JniBindings.java: Generate attributes such as no-return.
+	* exceptions.cxx (errnoException): Implement.
+
 	* elements.hxx (class FileBytes): Add pid/tid method.
 	* elements.cxx (FileBytes::FileBytes): Implement.
 	(slurp): Refactor out of FileBytes constructor; include NUL in
