@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,96 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+#include "jnixx/logging.hxx"
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::proc;
+
+static bool
+scan(const char** p, jint* val, const char* prefix) {
+  (*p) = strstr((*p), prefix);
+  if ((*p) == NULL)
+    return false;
+  (*p) += strlen(prefix);
+  char *endp;
+  (*val) = strtol((*p), &endp, 10);
+  if ((*p) == endp)
+    return false;
+  return true;
+}
+
+static Status
+scan(jnixx::env env, const char *p, Status status, frysk::rsl::Log fine) {
+  // Clear everything
+  status.SetState(env, '\0');
+  status.SetStoppedState(env, false);
+  status.SetUid(env, -1);
+  status.SetGid(env, -1);
+
+  // STATE (SUBSTATE)
+  const char *state = "\nState:";
+  p = strstr(p, state);
+  if (p == NULL)
+    return Status(env, NULL);
+  p += strlen(state);
+  for (; (*p) != '\r' && (*p) != '\0'; p++) {
+    char c = (*p);
+    if (isspace(c))
+      continue;
+    if (strchr("RSDZTW", c) != NULL) {
+      logf(env, fine, "state '%c'", c);
+      status.SetState(env, c);
+      const char *stopped = " (stopped)";
+      bool isStopped = (strncmp(p + 1, stopped, strlen(stopped)) == 0);
+      logf(env, fine, "stopped %s", isStopped ? "true" : "false");
+      status.SetStoppedState(env, isStopped);
+      break;
+    }
+  }
+  if (state == '\0')
+    return Status(env, NULL);
+
+  // UID
+  int uid;
+  if (!scan(&p, &uid, "\nUid:"))
+    return Status(env, NULL);
+  logf(env, fine, "uid %d", uid);
+  status.SetUid(env, uid);
+
+  // GID
+  int gid;
+  if (!scan(&p, &gid, "\nGid:"))
+    return Status(env, NULL);
+  logf(env, fine, "gid %d", gid);
+  status.SetGid(env, gid);
+
+  return status;
+}
+
+Status
+Status::scan(jnixx::env env, jint pid) {
+  FileBytes bytes = FileBytes(env, pid, "status");
+  if (bytes.elements == NULL)
+    return Status(env, NULL);
+  Status s = ::scan(env, (const char*)bytes.elements, *this, GetFine(env));
+  bytes.release();
+  return s;
+}
+
+Status
+Status::scan(jnixx::env env, jnixx::byteArray buf) {
+  ArrayBytes bytes = ArrayBytes(env, buf);
+  Status s = ::scan(env, (const char*)bytes.elements, *this, GetFine(env));
+  bytes.release();
+  return s;
+}
+
