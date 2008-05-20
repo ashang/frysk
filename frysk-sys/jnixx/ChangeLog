@@ -1,5 +1,8 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* scan.hxx: New.
+	* scan.cxx: New.
+
 	* elements.hxx (class ArrayBytes): Rename ByteArrayElements.  Add
 	length field, extend ByteArray, rename "p" to elements.
 	(class Bytes): New.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,91 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "jni.hxx"
+
+#include "jnixx/elements.hxx"
+#include "jnixx/exceptions.hxx"
+#include "jnixx/scan.hxx"
+
+bool
+construct(jnixx::env env, frysk::sys::proc::MapsBuilder* builder, Bytes& buf) {
+  const char *start = (const char *) buf.elements;
+  const char *end = start + buf.length;
+  const char *p = start;
+  while (p < end) {
+    if (isspace (*p))
+      p++;
+    else if (*p == '\0')
+      return true;
+    else {
+      // <address>-<address>
+      jlong addressLow = scanJlong(env, &p, 16);
+      if (*p++ != '-')
+	runtimeException(env, "missing dash");
+      jlong addressHigh = scanJlong(env, &p, 16);
+      // <RWXSP>
+      if (*p++ != ' ')
+	runtimeException(env, "missing space");
+      jboolean permRead = *p++ == 'r';
+      jboolean permWrite = *p++ == 'w';
+      jboolean permExecute = *p++ == 'x';
+      jboolean shared = *p++ == 's';
+      // <offset>
+      jlong offset = scanJlong(env, &p, 16);
+      // <major>:<minor>
+      jint devMajor = scanJint(env, &p, 16);
+      if (*p++ != ':')
+	runtimeException(env, "missing colon");
+      jint devMinor = scanJint(env, &p, 16);
+      // <inode>
+      jint inode = scanJint(env, &p, 10);
+      // <filename-string>?
+      while (isblank (*p))
+	p++;
+      jint pathnameOffset = p - start;
+      while (*p != '\0' && *p != '\n') {
+	p++;
+      }
+      int pathnameLength = p - start - pathnameOffset;
+      builder->buildMap(env, addressLow, addressHigh,
+			permRead, permWrite, permExecute, shared, 
+			offset,
+			devMajor, devMinor,
+			inode,
+			pathnameOffset, pathnameLength);
+    }
+  }
+  runtimeException(env, "missing NUL");
+  return false;
+}
+
+bool
+frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jnixx::byteArray buf) {
+  ArrayBytes bytes = ArrayBytes(env, buf);
+  bool ok = ::construct(env, this, bytes);
+  bytes.release();
+  return ok;
+}
+
+bool
+frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jint pid) {
+  FileBytes bytes = FileBytes(env, pid, "maps");
+  if (bytes.elements == NULL)
+    return false;
+  {
+    jnixx::byteArray array = jnixx::byteArray::NewByteArray(env, bytes.length);
+    ArrayBytes b = ArrayBytes(env, array);
+    memcpy(b.elements, bytes.elements, bytes.length);
+    b.release();
+    buildBuffer(env, array);
+    array.DeleteLocalRef(env);
+  }
+  bool ok = ::construct(env, this, bytes);
+  bytes.release();
+  return ok;
+}
