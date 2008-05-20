@@ -197,8 +197,6 @@ public class LinuxPtraceProc extends LiveProc {
 	if (cmdLine == null) {
 	    class BuildCmdLine extends CmdLineBuilder {
 		String[] argv;
-		public void buildBuffer (byte[] buf) {
-		}
 		public void buildArgv (String[] argv) {
 		    this.argv = argv;
 		}

@@ -72,12 +72,6 @@ public abstract class CmdLineBuilder {
     public final native boolean construct (byte[] cmdline);
 
     /**
-     * Called with the raw byte buffer slurped by {@link
-     * #construct(int)}.
-     */
-    abstract public void buildBuffer (byte[] cmdline);
-
-    /**
      * Build the argument vector corresponding to <tt>cmdline</tt>.
      */
     abstract public void buildArgv (String[] argv);

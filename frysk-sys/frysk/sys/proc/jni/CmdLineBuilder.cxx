@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,3 +38,55 @@
 // exception.
 
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+static bool
+construct(jnixx::env env, frysk::sys::proc::CmdLineBuilder* builder,
+	  Bytes& bytes) {
+  // Count the number of parameters.
+  int argc = 0;
+  for (int i = 0; i < bytes.length; i++) {
+    if (bytes.elements[i] == '\0')
+      argc++;
+  }
+
+  // Create the array.
+  jnixx::array<String> argv
+    = jnixx::array<String>::NewObjectArray(env, argc);
+
+  // Copy over the strings.
+  int start = 0;
+  argc = 0;
+  for (int i = 0; i < bytes.length; i++) {
+    if (bytes.elements[i] == '\0') {
+      argv.SetObjectArrayElement(env, argc, String::NewStringUTF(env, (const char*)bytes.elements + start));
+      start = i + 1;
+      argc++;
+    }
+  }
+  builder->buildArgv(env, argv);
+  return true;
+}
+
+bool
+frysk::sys::proc::CmdLineBuilder::construct(jnixx::env env, jint pid) {
+  FileBytes bytes = FileBytes(env, pid, "cmdline");
+  if (bytes.elements == NULL)
+    return false;
+  bool ok = ::construct(env, this, bytes);
+  bytes.release();
+  return ok;
+}
+
+bool
+frysk::sys::proc::CmdLineBuilder::construct(jnixx::env env,
+					    jnixx::byteArray buf) {
+  ArrayBytes bytes = ArrayBytes(env, buf);
+  bool ok = ::construct(env, this, bytes);
+  bytes.release();
+  return ok;
+}

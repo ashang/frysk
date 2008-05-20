@@ -60,9 +60,6 @@ public class TestCmdLine
 	    extends CmdLineBuilder
 	{
 	    String[] argv;
-	    public void buildBuffer (byte[] auxv)
-	    {
-	    }
 	    public void buildArgv (String[] argv)
 	    {
 		this.argv = argv;

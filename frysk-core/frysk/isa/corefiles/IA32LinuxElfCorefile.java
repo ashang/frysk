@@ -129,10 +129,6 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	class BuildCmdLine extends CmdLineBuilder {
 	    String prettyArgs = "";
 
-	    public void buildBuffer(byte[] buf) {
-
-	    }
-
 	    public void buildArgv(String[] argv) {
 
 		for (int i = 0; i < argv.length; i++)
