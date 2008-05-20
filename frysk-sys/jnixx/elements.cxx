@@ -37,9 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <malloc.h> // for realloc
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "jni.hxx"
 
 #include "jnixx/elements.hxx"
+#include "jnixx/exceptions.hxx"
 
 using namespace java::lang;
 
@@ -89,4 +99,80 @@ chars2strings(::jnixx::env env, char** argv) {
     string.DeleteLocalRef(env);
   }
   return strings;
+}
+
+FileBytes::FileBytes(jnixx::env env, const char* fmt, ...) {
+  // Convert the string into a file.
+  char file[FILENAME_MAX];
+  va_list ap;
+  va_start(ap, fmt);
+  if (::vsnprintf(file, sizeof file, fmt, ap) >= FILENAME_MAX) {
+    errnoException(env, errno, "snprintf");
+  }
+  va_end(ap);
+
+  // Attempt to open the file.
+  int fd = ::open(file, O_RDONLY);
+  if (fd < 0) {
+    errnoException(env, errno, "open", "file %s", file);
+  }
+
+  // Initially allocate space for two BUFSIZE reads (and an extra
+  // char).  It appears that when reading /proc/<pid>/maps, and the
+  // like, the reads are limited to at most a transfer of BUFSIZE
+  // bytes (i.e., a short read does not indicate EOF).  Hence two
+  // reads are needed to confirm EOF.  Allocating 2&BUFSIZE ensures
+  // that there's always space for at least two reads.  Ref SW #3370
+  jsize allocated = BUFSIZ * 2 + 1;
+  elements = (jbyte*) ::malloc(allocated);
+  if (elements == NULL) {
+    errnoException(env, errno, "malloc");
+  }
+
+  length = 0;
+  while (true) {
+    // Attempt to fill the remaining buffer; less space for a
+    // terminating NUL character.
+    int size = ::read(fd, elements + length, allocated - length - 1);
+    if (size < 0) {
+      ::close(fd);
+      release();
+      return;
+    } else if (size == 0) {
+      break;
+    }
+    length += size;
+
+    if (length + BUFSIZ >= allocated) {
+      // Not enough space for the next ~BUFSIZ'd read; expand the
+      // buffer.  Don't trust realloc with the pointer; will need to
+      // free the old buffer if something goes wrong.
+      allocated += BUFSIZ;
+      jbyte *tmp = (jbyte*)::realloc(elements, allocated);
+      if (tmp == NULL) {
+	int err = errno;
+	::close(fd);
+	release();
+	errnoException(env, err, "realloc");
+      }
+      elements = tmp;
+    }
+  }
+
+  ::close(fd);
+
+  // Null terminate the buffer.
+  elements[length] = '\0';
+}
+
+FileBytes::FileBytes(jnixx::env env, jint pid, const char* name) {
+  FileBytes(env, "/proc/%d/%s", (int) pid, name);
+}
+
+void
+FileBytes::release() {
+  if (elements != NULL) {
+    ::free(elements);
+    elements = NULL;
+  }
 }

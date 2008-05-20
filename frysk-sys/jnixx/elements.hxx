@@ -89,28 +89,46 @@ public:
   }
 };
 
-class ByteArrayElements {
+class Bytes {
+public:
+  jbyte* elements;
+  jsize length;
+};
+
+class FileBytes : public Bytes {
+public:
+  FileBytes(jnixx::env, const char* fmt, ...)
+  __attribute__((format(printf, 3, 4)));
+  FileBytes(jnixx::env, int pid, const char* name);
+  void release();
+  ~FileBytes() {
+    release();
+  }
+};
+
+class ArrayBytes : public Bytes {
 private:
   ::jnixx::byteArray bytes;
   ::jnixx::env env;
 public:
-  jbyte* p;
-  ByteArrayElements(::jnixx::env env, ::jnixx::byteArray bytes) {
+  ArrayBytes(::jnixx::env env, ::jnixx::byteArray bytes) {
     this->bytes = bytes;
     this->env = env;
     if (bytes != NULL) {
-      this->p = bytes.GetByteArrayElements(env, NULL);
+      this->elements = bytes.GetByteArrayElements(env, NULL);
+      this->length = bytes.GetArrayLength(env);
     } else {
-      this->p = NULL;
+      this->elements = NULL;
+      this->length = 0;
     }
   }
   void release() {
-    if (p != NULL) {
-      bytes.ReleaseByteArrayElements(env, p, 0);
-      p = NULL;
+    if (elements != NULL) {
+      bytes.ReleaseByteArrayElements(env, elements, 0);
+      elements = NULL;
     }
   }
-  ~ByteArrayElements() {
+  ~ArrayBytes() {
     release();
   }
 };

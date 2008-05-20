@@ -55,9 +55,9 @@ frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,
 					  ::jnixx::byteArray data,
 					  jint length) {
   verifyBounds(env, data, length);
-  ByteArrayElements elements = ByteArrayElements(env, data);
-  ptraceOp(env, op, pid, NULL, (long) elements.p);
-  elements.release();
+  ArrayBytes bytes = ArrayBytes(env, data);
+  ptraceOp(env, op, pid, NULL, (long) bytes.elements);
+  bytes.release();
 }
 
 frysk::sys::ptrace::RegisterSet

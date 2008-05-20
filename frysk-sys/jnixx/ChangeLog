@@ -1,3 +1,11 @@
+2008-05-20  Andrew Cagney  <cagney@redhat.com>
+
+	* elements.hxx (class ArrayBytes): Rename ByteArrayElements.  Add
+	length field, extend ByteArray, rename "p" to elements.
+	(class Bytes): New.
+	(class FileBytes): New.
+	* elements.cxx (class FileBytes): Implement.
+
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Native.cxx: Use new/delete.  Don't #include <malloc.h>.

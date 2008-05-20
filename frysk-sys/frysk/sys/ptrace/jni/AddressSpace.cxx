@@ -107,11 +107,11 @@ frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, j
 void
 frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
 					   jint op, jint pid, jlong addr,
-					   ::jnixx::byteArray bytes,
+					   ::jnixx::byteArray byteArray,
 					   jint offset, jint length) {
   const int ptPeek = GetPtPeek(env);
   const int ptPoke = GetPtPoke(env);
-  verifyBounds(env, bytes, offset, length);
+  verifyBounds(env, byteArray, offset, length);
   // Somewhat more clueful implementation
   for (jlong i = 0; i < length;) {
 #if DEBUG
@@ -147,17 +147,17 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
       }
 
     // extract or modify
-    ByteArrayElements elements = ByteArrayElements(env, bytes);
+    ArrayBytes bytes = ArrayBytes(env, byteArray);
     if (op == ptPeek)
-      memcpy(offset + i + elements.p, &w.b[woff], wlen);
+      memcpy(offset + i + bytes.elements, &w.b[woff], wlen);
     else {
-      memcpy(&w.b[woff], offset + i + elements.p, wlen);
+      memcpy(&w.b[woff], offset + i + bytes.elements, wlen);
 #if DEBUG
       fprintf(stderr, " poke 0x%lx", w.l);
 #endif
       w.l = ptraceOp(env, ptPoke, pid, (void*)waddr, w.l);
     }
-    elements.release();
+    bytes.release();
 
     i += wlen;
     addr += wlen;
