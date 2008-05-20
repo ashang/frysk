@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+String
+frysk::sys::proc::Exe::get(jnixx::env env, jint pid) {
+  // Get the name of the EXE in /proc.
+  char file[FILENAME_MAX];
+  if (::snprintf(file, sizeof file, "/proc/%d/exe", (int) pid)
+      >= FILENAME_MAX)
+    errnoException(env, errno, "snprintf: buffer overflow");
+
+  // /proc/$$/exe contains a soft-link specifying the name of the
+  // executable, possibly with "(deleted)" appended.  That link's
+  // upper bound is determined by FILENAME_MAX since that is the
+  // longest possible allowable file name.
+  const int maxLen = FILENAME_MAX + sizeof (" (deleted)") + 1;
+  char link[maxLen];
+  int len = ::readlink (file, link, sizeof (link) - 1);
+  if (len < 0 || len >= maxLen)
+    errnoException(env, errno, "readlink");
+  link[len] = '\0';
+
+  // Note that some kernels have a "feature" where the link can become
+  // corrupted.  Just retun that, the caller needs to decide if the
+  // extracted link is valid.
+  return String::NewStringUTF(env, link);
+}

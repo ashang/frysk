@@ -1,5 +1,7 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Exe.cxx: implement.
+
 	* jni/CmdLineBuilder.cxx: Implement.
 	* CmdLineBuilder.java (buildBuffer(byte[])): Delete.
 	* TestCmdLine.java: Update.
