@@ -118,6 +118,7 @@ public class LinuxExeFactory {
     }
 
     public static DeadProc createProc(File exeFile, String[] args) {
+	fine.log("createProc exe", exeFile, "args", args);
 	DeadProc proc;
 	proc = createElfProc(exeFile, args);
 	if (proc != null)
@@ -129,16 +130,16 @@ public class LinuxExeFactory {
     }
 
     public static DeadProc createProc(String[] args) {
+	fine.log("createProc args", args);
 	SysRoot sysRoot = new SysRoot(SysRootCache.getSysRoot(args[0]));
 	File exe = sysRoot.getPathViaSysRoot(args[0]).getFile();
-	fine.log("createProc exe", exe);
 	return createProc(exe, args);
     }
     
     public static DeadProc createProc(String[] args, String sysroot) {
+	fine.log("createProc args", args, "sysroot", sysroot);
 	SysRoot sysRoot = new SysRoot(sysroot);
 	File exe = sysRoot.getPathViaSysRoot(args[0]).getFile();
-	fine.log("createProc exe", exe);
 	return createProc(exe, args);
     }
 }

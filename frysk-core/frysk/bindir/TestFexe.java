@@ -76,4 +76,15 @@ public class TestFexe extends TestLib {
 	    });
 	e.expect("/bin/ls" + "\r\n");
     }
+
+    public void testExeOfScript() {
+	TearDownExpect e = new TearDownExpect(new String[] {
+		"/bin/bash", "-c",
+		Prefix.binFile("fexe").getPath()
+		+ " "
+		+ Prefix.binFile("fdebugrpm")
+	    });
+	e.expect("/bin/bash" + "\r\n");
+    }
+
 }

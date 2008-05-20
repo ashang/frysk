@@ -43,6 +43,7 @@ import frysk.config.FryskVersion;
 import java.io.File;
 import java.util.LinkedList;
 import lib.dwfl.Elf;
+import lib.dwfl.ElfException;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.ElfEHeader;
 import gnu.classpath.tools.getopt.Option;
@@ -180,6 +181,7 @@ public abstract class CommandlineParser {
 	    return result;
 
 	// Check if arguments are all pids.
+	fine.log("checking for pid");
 	try {
 	    Proc[] procs = new Proc[result.length];
 	    procs[0] = Util.getProcFromPid(Integer.parseInt(result[0]));
@@ -198,6 +200,7 @@ public abstract class CommandlineParser {
 	}
 
 	// Check if arguments are all core file/ exe file pairs..
+	fine.log("checking for corefiles");
 	if (isCoreFile(result[0])) {
 	    LinkedList coreList = new LinkedList();
 	    for (int file = 0; file < result.length; /*see below*/) {
@@ -232,6 +235,7 @@ public abstract class CommandlineParser {
 	}
 
 	// If not above, then this is an executable command.
+	fine.log("checking for executable");
 	Proc command;
 	if (explicitExe != null)
 	    command = LinuxExeFactory.createProc(new File(explicitExe), result);
@@ -249,29 +253,35 @@ public abstract class CommandlineParser {
      * @return if fileName is a corefile returns true, otherwise false.
      */
     private boolean isCoreFile(String fileName) {
-	Elf elf;
+	fine.log("isCoreFile file", fileName);
+	Elf elf = null;
 	try {
 	    elf = new Elf(new File(fileName), ElfCommand.ELF_C_READ);
-	} catch (Exception e) {
+	    boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
+	    elf.close();
+	    return ret;
+	} catch (ElfException e) {
+	    if (elf != null) {
+		elf.close();
+	    }
 	    return false;
 	}
-
-	boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
-	elf.close();
-	return ret;
     }
 
     private boolean isExeFile(String fileName) {
-	Elf elf;
+	Elf elf = null;
 	try {
 	    elf = new Elf(new File(fileName), ElfCommand.ELF_C_READ);
-	} catch (Exception e) {
+	    boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_EXEC;
+	    elf.close();
+	    return ret;
+	} catch (ElfException e) {
+	    if (elf != null) {
+		elf.close();
+	    }
 	    return false;
 	}
 
-	boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_EXEC;
-	elf.close();
-	return ret;
 
     }
 

@@ -1,3 +1,8 @@
+2008-05-20  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java (isCoreFile(String))
+	(isExeFile(String)): Catch exceptions from Elf.getEHeader.
+
 2008-05-13  Petr Machata  <pmachata@redhat.com>
 
 	* ArchFormatter.java (toHexString(int, long)): New method.
