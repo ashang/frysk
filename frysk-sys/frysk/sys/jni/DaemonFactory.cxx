@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,65 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <alloca.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys;
+
+ProcessIdentifier
+DaemonFactory::daemon(jnixx::env env, Redirect redirect, Execute exec) {
+  volatile int pid = -1;
+
+  // This is executed by the child with the parent blocked, the final
+  // process id ends up in PID.
+  errno = 0;
+  register int v = vfork ();
+  switch (v) {
+  case -1:
+    errnoException(env, errno, "vfork");
+  case 0:
+    // vforked child
+    // ::fprintf (stderr, "%d is vfork child\n", getpid ());
+    pid = fork ();
+    switch (pid) {
+    case -1:
+      // error handled by parent; look for pid<0.
+      _exit (0);
+    case 0:
+      // ::fprintf (stderr, "%d child calls redirect\n", getpid ());
+      redirect.reopen(env);
+      // ::fprintf (stderr, "%d child calls execute\n", getpid ());
+      exec.execute(env);
+      _exit (0);
+    default:
+      _exit (0);
+    }
+  default:
+    // Reach here after the vfork child - or middle player - exits.
+    // Save the fork's error status.
+    int fork_errno = errno;
+    // Consume the middle players wait.
+    errno = 0;
+    pid_t wpid = ::waitpid (v, NULL, 0);
+    int wait_errno = errno;
+    // Did the fork succeed?  If not throw its status.
+    if (pid < 0)
+      errnoException(env, fork_errno, "fork");
+    // Did the wait succeed?  If not throw its status.
+    if (wpid < 0)
+      errnoException(env, wait_errno, "waitpid", "process %d", v);
+    // printf ("v %d pid %d\n", v, pid);
+    redirect.close(env);
+    return ProcessIdentifierFactory::create(env, pid);
+  }
+}

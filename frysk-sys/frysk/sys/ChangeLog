@@ -1,3 +1,7 @@
+2008-05-20  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/DaemonFactory.cxx: Implement.
+
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/SignalSet.hxx (getRawSet): Add env parameter.
