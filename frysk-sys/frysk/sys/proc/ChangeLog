@@ -1,5 +1,7 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Stat.cxx: Implement.
+
 	* jni/MapsBuilder.cxx: Implement.
 
 	* jni/Exe.cxx: implement.

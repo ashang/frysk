@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2006, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,113 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
+#include "jnixx/scan.hxx"
+#include "jnixx/logging.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::proc;
+
+static void
+scan(jnixx::env env, const char*p, Stat& stat, frysk::rsl::Log fine) {
+  // The "comm" needs special treatment, need to scan backwards for
+  // ')' as the command itself could contain ')'.
+  char* commStart = ::strchr(p, '(');
+  char* commEnd = ::strrchr(p, ')');
+  if (commStart == NULL || commEnd == NULL)
+    runtimeException(env, "botched comm field");
+  int commLength = commEnd - (commStart + 1);
+  char comm[commLength + 1];
+  strncpy(comm, commStart+1, commLength);
+  comm[commLength] = '\0';
+  logf(env, fine, "comm %s", comm);
+  stat.SetComm(env, String::NewStringUTF(env, comm));
+
+  jint pid = scanJint(env, &p);
+  logf(env, fine, "pid %d", pid);
+  stat.SetPid(env, frysk::sys::ProcessIdentifierFactory::create(env, pid));
+
+  // Messy, its a character, need to first skip any white space.
+  p = commEnd + 1;
+  p += ::strspn (p, " ");
+  char state = *p++;
+  logf(env, fine, "state %c", state);
+  stat.SetState(env, state);
+
+  jint ppid = scanJint(env, &p);
+  logf(env, fine, "ppid %d", ppid);
+  stat.SetPpid(env, frysk::sys::ProcessIdentifierFactory::create(env, ppid));
+
+  stat.SetPgrp(env, scanJint(env, &p));
+  stat.SetSession(env, scanJint(env, &p));
+  stat.SetTtyNr(env, scanJint(env, &p));
+  stat.SetTpgid(env, scanJint(env, &p));
+  stat.SetFlags(env, scanJlong(env, &p));
+  stat.SetMinflt(env, scanJlong(env, &p));
+  stat.SetCminflt(env, scanJlong(env, &p));
+  stat.SetMajflt(env, scanJlong(env, &p));
+  stat.SetCmajflt(env, scanJlong(env, &p));
+  stat.SetUtime(env, scanJlong(env, &p));
+  stat.SetStime(env, scanJlong(env, &p));
+  stat.SetCutime(env, scanJlong(env, &p));
+  stat.SetCstime(env, scanJlong(env, &p));
+  stat.SetPriority(env, scanJlong(env, &p));
+  stat.SetNice(env, scanJint(env, &p));
+  stat.SetNumThreads(env, scanJint(env, &p));
+  stat.SetIrealvalue(env, scanJlong(env, &p));
+  stat.SetStarttime(env, scanJlong(env, &p));
+  stat.SetVsize(env, scanJlong(env, &p));
+  stat.SetRss(env, scanJlong(env, &p));
+  stat.SetRlim(env, scanJlong(env, &p));
+  stat.SetStartcode(env, scanJlong(env, &p));
+  stat.SetEndcode(env, scanJlong(env, &p));
+  stat.SetStartstack(env, scanJlong(env, &p));
+  stat.SetKstkesp(env, scanJlong(env, &p));
+  stat.SetKstkeip(env, scanJlong(env, &p));
+  stat.SetSignal(env, scanJlong(env, &p));
+  stat.SetBlocked(env, scanJlong(env, &p));
+  stat.SetSigignore(env, scanJlong(env, &p));
+  stat.SetSigcatch(env, scanJlong(env, &p));
+  stat.SetWchan(env, scanJlong(env, &p));
+  stat.SetNswap(env, scanJlong(env, &p));
+  stat.SetCnswap(env, scanJlong(env, &p));
+  stat.SetExitSignal(env, scanJint(env, &p));
+  stat.SetProcessor(env, scanJint(env, &p));
+}
+
+frysk::sys::proc::Stat
+frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid, jint threadTid) {
+  return scan(env, threadTid);
+}
+
+frysk::sys::proc::Stat
+frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid) {
+  fprintf(stderr, "opening %d\n", procPid);
+  FileBytes bytes = FileBytes(env, procPid, "stat");
+  fprintf(stderr, "elements %s\n", bytes.elements);
+  if (bytes.elements == NULL)
+    return Stat(env, NULL);
+  ::scan(env, (const char*) bytes.elements, *this, GetFine(env));
+  bytes.release();
+  return *this;
+}
+
+frysk::sys::proc::Stat
+frysk::sys::proc::Stat::scan(jnixx::env env, jnixx::byteArray buf) {
+  ArrayBytes bytes = ArrayBytes(env, buf);
+  ::scan(env, (const char*) bytes.elements, *this, GetFine(env));
+  bytes.release();
+  return *this;
+}
