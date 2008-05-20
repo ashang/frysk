@@ -165,10 +165,10 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	    scope = scope.getOuter();
 	}
 
-	return getObjectUsingBinaryInfo(name);
+	return getObjectUsingBinaryInfo(frame, name);
     }
 
-    public ObjectDeclaration getObjectUsingBinaryInfo(String name){
+    public ObjectDeclaration getObjectUsingBinaryInfo(DebugInfoFrame frame, String name){
 	Dwfl dwfl = DwflCache.getDwfl(task);
 
 	DwflModule module = dwfl.getModule(this.frame.getAdjustedAddress());

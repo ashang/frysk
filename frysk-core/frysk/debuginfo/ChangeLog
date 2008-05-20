@@ -1,3 +1,8 @@
+2008-05-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java 
+	(getObjectUsingBinaryInfo): Now takes a frame argument. 
+
 2008-05-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java (getObjectInScope): Added
