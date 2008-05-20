@@ -101,16 +101,8 @@ chars2strings(::jnixx::env env, char** argv) {
   return strings;
 }
 
-FileBytes::FileBytes(jnixx::env env, const char* fmt, ...) {
-  // Convert the string into a file.
-  char file[FILENAME_MAX];
-  va_list ap;
-  va_start(ap, fmt);
-  if (::vsnprintf(file, sizeof file, fmt, ap) >= FILENAME_MAX) {
-    errnoException(env, errno, "snprintf");
-  }
-  va_end(ap);
-
+void
+slurp(jnixx::env env, FileBytes& bytes, const char* file) {
   // Attempt to open the file.
   int fd = ::open(file, O_RDONLY);
   if (fd < 0) {
@@ -124,49 +116,79 @@ FileBytes::FileBytes(jnixx::env env, const char* fmt, ...) {
   // reads are needed to confirm EOF.  Allocating 2&BUFSIZE ensures
   // that there's always space for at least two reads.  Ref SW #3370
   jsize allocated = BUFSIZ * 2 + 1;
-  elements = (jbyte*) ::malloc(allocated);
-  if (elements == NULL) {
+  bytes.elements = (jbyte*) ::malloc(allocated);
+  if (bytes.elements == NULL) {
     errnoException(env, errno, "malloc");
   }
 
-  length = 0;
+  bytes.length = 0;
   while (true) {
     // Attempt to fill the remaining buffer; less space for a
     // terminating NUL character.
-    int size = ::read(fd, elements + length, allocated - length - 1);
+    int size = ::read(fd, bytes.elements + bytes.length,
+		      allocated - bytes.length - 1);
     if (size < 0) {
       ::close(fd);
-      release();
+      bytes.release();
+      // Abandon the read with elements == NULL.
       return;
     } else if (size == 0) {
       break;
     }
-    length += size;
+    bytes.length += size;
 
-    if (length + BUFSIZ >= allocated) {
+    if (bytes.length + BUFSIZ >= allocated) {
       // Not enough space for the next ~BUFSIZ'd read; expand the
       // buffer.  Don't trust realloc with the pointer; will need to
       // free the old buffer if something goes wrong.
       allocated += BUFSIZ;
-      jbyte *tmp = (jbyte*)::realloc(elements, allocated);
+      jbyte *tmp = (jbyte*)::realloc(bytes.elements, allocated);
       if (tmp == NULL) {
 	int err = errno;
 	::close(fd);
-	release();
+	bytes.release();
 	errnoException(env, err, "realloc");
       }
-      elements = tmp;
+      bytes.elements = tmp;
     }
   }
 
   ::close(fd);
 
   // Null terminate the buffer.
-  elements[length] = '\0';
+  bytes.elements[bytes.length] = '\0';
+  bytes.length++; // count the trailing NUL
 }
 
-FileBytes::FileBytes(jnixx::env env, jint pid, const char* name) {
-  FileBytes(env, "/proc/%d/%s", (int) pid, name);
+FileBytes::FileBytes(jnixx::env env, const char* fmt, ...) {
+  // Convert the string into a file.
+  char file[FILENAME_MAX];
+  va_list ap;
+  va_start(ap, fmt);
+  if (::vsnprintf(file, sizeof file, fmt, ap) >= FILENAME_MAX) {
+    errnoException(env, errno, "vsnprintf");
+  }
+  va_end(ap);
+  slurp(env, *this, file);
+}
+
+FileBytes::FileBytes(jnixx::env env, int pid, const char* name) {
+  // Convert the string into a file.
+  char file[FILENAME_MAX];
+  if (::snprintf(file, sizeof file, "/proc/%d/%s", pid, name) >= FILENAME_MAX) {
+    errnoException(env, errno, "snprintf");
+  }
+  slurp(env, *this, file);
+}
+
+FileBytes::FileBytes(jnixx::env env, int pid, int tid, const char* name) {
+  // Convert the string into a file.
+  char file[FILENAME_MAX];
+  if (::snprintf(file, sizeof file, "/proc/%d/task/%d/%s", pid, tid, name)
+      >= FILENAME_MAX) {
+    errnoException(env, errno, "snprintf");
+  }
+  slurp(env, *this, file);
 }
 
 void

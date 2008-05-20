@@ -130,9 +130,7 @@ frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid, jint threadTid) {
 
 frysk::sys::proc::Stat
 frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid) {
-  fprintf(stderr, "opening %d\n", procPid);
   FileBytes bytes = FileBytes(env, procPid, "stat");
-  fprintf(stderr, "elements %s\n", bytes.elements);
   if (bytes.elements == NULL)
     return Stat(env, NULL);
   ::scan(env, (const char*) bytes.elements, *this, GetFine(env));

@@ -100,6 +100,7 @@ public:
   FileBytes(jnixx::env, const char* fmt, ...)
   __attribute__((format(printf, 3, 4)));
   FileBytes(jnixx::env, int pid, const char* name);
+  FileBytes(jnixx::env, int pid, int tid, const char* name);
   void release();
   ~FileBytes() {
     release();

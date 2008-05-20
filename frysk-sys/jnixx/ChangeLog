@@ -1,5 +1,10 @@
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* elements.hxx (class FileBytes): Add pid/tid method.
+	* elements.cxx (FileBytes::FileBytes): Implement.
+	(slurp): Refactor out of FileBytes constructor; include NUL in
+	length.
+
 	* scan.hxx: New.
 	* scan.cxx: New.
 
