@@ -48,13 +48,13 @@
 
 #include <gcj/cni.h>
 
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/cni/Fork.hxx"
 #include "frysk/sys/PseudoTerminal.h"
 #include "frysk/sys/PseudoTerminal$RedirectStdio.h"
-#include "frysk/sys/cni/Errno.hxx"
 
 jint
-frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
-{
+frysk::sys::PseudoTerminal::open(jboolean controllingTerminal) {
   int master;
 
   int flags = O_RDWR | (controllingTerminal ? O_NOCTTY : 0);
@@ -80,73 +80,99 @@ frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
 }
 
 jstring
-frysk::sys::PseudoTerminal::getName(jint fd)
-{
+frysk::sys::PseudoTerminal::getName(jint fd) {
   char* pts_name = ::ptsname(fd);
   if (pts_name == NULL)
     throwErrno (errno, "ptsname");
   return JvNewStringUTF (pts_name);
 }
 
-void
-frysk::sys::PseudoTerminal$RedirectStdio::reopen ()
-{
-  // Detach from the existing controlling terminal.  NOTE: Do not use
-  // tryOpen() here, this is running in a child process.
-  int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
-  if (fd >= 0) {
-    if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
-      ::perror ("ioctl (/dev/tty, TIOCNOTTY)");
-    ::close (fd);
-
-    // Verify that the detach worked, this open should fail.  NOTE: Do
-    // not use tryOpen() here, this is running in a child process.
-    fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
+class redirect_tty : public redirect {
+  char* pty;
+public:
+  redirect_tty(jstring name) {
+    pty = MALLOC_STRING(name);
+  }
+  ~redirect_tty() {
+    JvFree(pty);
+  }
+  void reopen() {
+    // Detach from the existing controlling terminal.  NOTE: Do not
+    // use tryOpen() here, this is running in a child process.
+    int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
     if (fd >= 0) {
-      ::perror ("open (re-open old controlling terminal)");
-      ::exit (1);
+      if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
+	::perror ("ioctl (/dev/tty, TIOCNOTTY)");
+      ::close (fd);
+
+      // Verify that the detach worked, this open should fail.  NOTE:
+      // Do not use tryOpen() here, this is running in a child
+      // process.
+      fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
+      if (fd >= 0) {
+	::perror ("open (re-open old controlling terminal)");
+	::exit (1);
+      }
+    }
+  
+    // Make this process the session leader.
+    if (::setsid () < 0) {
+      ::perror ("setsid");
+    }
+
+    if (::getpgrp () != ::getpid ()) {
+      perror ("grp and pid differ");
+      exit (1);
+    }
+
+    //   // Move this to the session's process group.
+    //   if (::setpgid (0, getpid ()) < 0) {
+    //     perror ("setpgrp");
+    //   }
+
+    // Open the new pty.
+    int tty = ::open(pty, O_RDWR|O_NOCTTY);
+    if (tty < 0) {
+      perror ("open.pty");
+      exit (1);
+    }
+    
+    // Make the pty's tty the new controlling terminal.
+    if (::ioctl (tty, TIOCSCTTY, NULL) < 0) {
+      ::perror ("ioctl.TIOSCTTY");
+      exit (1);
+    }
+    
+    if (::dup2 (tty, STDIN_FILENO) < 0) {
+      perror ("dup2.STDIN");
+      exit (1);
+    }
+    if (::dup2 (tty, STDOUT_FILENO) < 0) {
+      perror ("dup2.STDOUT");
+      exit (1);
+    }
+    if (::dup2 (tty, STDERR_FILENO) < 0) {
+      perror ("dup2.STDERR");
+      exit (1);
     }
   }
-  
-  // Make this process the session leader.
-  if (::setsid () < 0) {
-    ::perror ("setsid");
-  }
 
-  if (::getpgrp () != ::getpid ()) {
-    perror ("grp and pid differ");
-    exit (1);
+  void close() {
   }
+};
 
-//   // Move this to the session's process group.
-//   if (::setpgid (0, getpid ()) < 0) {
-//     perror ("setpgrp");
-//   }
+jint
+frysk::sys::PseudoTerminal::child(jstring exe, jstringArray args,
+				  jstring name) {
+  redirect_tty tty = redirect_tty(name);
+  exec_program program = exec_program(exe, args, 0);
+  return ::spawn(CHILD, tty, program);
+}
 
-  // Open the new pty.
-  char *pty = ALLOCA_STRING (name);
-  int tty = open (pty, O_RDWR|O_NOCTTY);
-  if (tty < 0) {
-    perror ("open.pty");
-    exit (1);
-  }
-
-  // Make the pty's tty the new controlling terminal.
-  if (::ioctl (tty, TIOCSCTTY, NULL) < 0) {
-    ::perror ("ioctl.TIOSCTTY");
-    exit (1);
-  }
-
-  if (::dup2 (tty, STDIN_FILENO) < 0) {
-    perror ("dup2.STDIN");
-    exit (1);
-  }
-  if (::dup2 (tty, STDOUT_FILENO) < 0) {
-    perror ("dup2.STDOUT");
-    exit (1);
-  }
-  if (::dup2 (tty, STDERR_FILENO) < 0) {
-    perror ("dup2.STDERR");
-    exit (1);
-  }
+jint
+frysk::sys::PseudoTerminal::daemon(jstring exe, jstringArray args,
+				   jstring name) {
+  redirect_tty tty = redirect_tty(name);
+  exec_program program = exec_program(exe, args, 0);
+  return ::spawn(DAEMON, tty, program);
 }

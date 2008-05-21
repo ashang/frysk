@@ -5,6 +5,13 @@
 
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/PseudoTerminal.cxx (PseudoTerminal::child): Implement.
+	(PseudoTerminal::daemon): Implement.
+	* cni/Fork.hxx: New.
+	* PseudoTerminal.java (RedirectStdio): Delete.
+	(addChild, addDaemon): Implement as natives.
+	* cni/Fork.cxx (spawn): New.
+
 	* jni/Signal.cxx-sh: Don't leak JNI string pointers.
 
 	* jni/DaemonFactory.cxx: Implement.

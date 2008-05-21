@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,65 +37,60 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
-
-import java.io.File;
+enum tracing {
+  CHILD,
+  DAEMON,
+  PTRACE,
+  UTRACE,
+};
 
 /**
- * Open a pty
+ * Class to redirect a child's stdio; the destructor should clean up
+ * the parent resources.
  */
+class redirect {
+public:
+  virtual void reopen() = 0;
+  virtual ~redirect() {
+    // where the close code goes.
+  }
+};
 
-public class PseudoTerminal extends FileDescriptor {
-    /**
-     * Returns the pathname of corrsponding to the fd
-     */
-    private static native String getName(int fd);
-    /**
-     * Returns an open master fd for a pseudo-terminal.
-     */
-    private static native int open (boolean controllingTerminal);
+class exec {
+public:
+  virtual void execute() = 0;
+  virtual ~exec() {
+    // where the close code goes.
+  }
+};
 
-    private final String name;
-    private final File file;
-
-    /**
-     * Open a pseudo-terminal, a.k.a. pty, not wired to anything.
-     */
-    public PseudoTerminal(boolean controllingTerminal) {
-	super(open(controllingTerminal));
-	name = getName(getFd());
-	file = new File (name);
+class exec_program : public exec {
+  char* exePath;
+  char** argv;
+  char** environ;
+public:
+  exec_program(jstring exe, jstringArray args, jlong environ) {
+    this->exePath = MALLOC_STRING(exe);
+    this->argv = MALLOC_ARGV(args);
+    this->environ = (char**)(long)environ;
+  }
+  void execute() {
+    if (environ != NULL) {
+      ::execve(exePath, argv, environ);
+      ::perror("execve");
+    } else {
+      ::execv(exePath, argv);
+      ::perror("execv");
     }
-    public PseudoTerminal() {
-	this(false);
-    }
+    ::_exit(errno);
+  }
+  ~exec_program() {
+    JvFree(exePath);
+    JvFree(argv);
+  }
+};
 
-    public String toString() {
-	return name;
-    }
-
-    /**
-     * Return the path of the pseudo-terminal's slave.
-     */
-    public File getFile() {
-	return file;
-    }
-
-    /**
-     * Convenience method, adds a child process bound to this
-     * pseudo-terminal.
-     */
-    public ProcessIdentifier addChild(String[] args) {
-	return ProcessIdentifierFactory.create(child(args[0], args, name));
-    }
-    private static native int child(String exe, String[] args, String name);
-
-    /**
-     * Convenience method, adds a daemon process bound to this
-     * pseudo-terminal.
-     */
-    public ProcessIdentifier addDaemon(String[] args) {
-	return ProcessIdentifierFactory.create(daemon(args[0], args, name));
-    }
-    private static native int daemon(String exe, String[] args, String name);
-}
+/**
+ * Spawn a child, return the PID, or throw an error.
+ */
+extern int spawn(tracing trace, redirect& redirection, exec& execute);
