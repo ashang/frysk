@@ -37,46 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <gcj/cni.h>
+#include "jni.hxx"
 
-#include "frysk/sys/Environ.h"
+#include "jnixx/elements.hxx"
 
+using namespace java::lang;
+using namespace frysk::sys;
 
 void
-frysk::sys::Environ::getEnvironment()
-{
+Environ::getEnvironment(jnixx::env env) {
   extern char **environ;
   int env_idx;
-
   for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
+    addEnviron(env, String::NewStringUTF(env, environ[env_idx]));
 }
 
 void
-frysk::sys::Environ::getEnvironment(jlong environ_p)
-{
+Environ::getEnvironment(jnixx::env env, jlong environ_p) {
   int env_idx;
   char ** environ = (char **) environ_p;
-
   for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
+    addEnviron(env, String::NewStringUTF(env, environ[env_idx]));
 }
 
-char **new_environ;
-
 jlong
-frysk::sys::Environ::putEnvironment(jstringArray envs) {
-  jstring* env_member = elements(envs);
-  int envs_length = JvGetArrayLength(envs);
-  new_environ = (char**)JvMalloc(sizeof(void*) * (envs_length + 1));
-  for (int i = 0; i < envs_length; i++) 
-    {
-      int sym_len = env_member[i]->length ();
-      char *sym = (char*)JvMalloc(sym_len + 1);
-      JvGetStringUTFRegion (env_member[i], 0, sym_len, sym);
-      sym[sym_len] = '\0';
-      new_environ[i] = sym;
-    }
-  new_environ[envs_length] = NULL;
-  return (jlong)new_environ;
+Environ::putEnvironment(jnixx::env env, jnixx::array<String> envs) {
+  // FIXME: This clearly leaks memory!
+  return (jlong)strings2chars(env, envs);
 }

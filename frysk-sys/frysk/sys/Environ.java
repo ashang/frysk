@@ -113,7 +113,7 @@ public class Environ
         Iterator valueIter = values.iterator();
         Iterator keyIter= keys.iterator();
         int idx = 0;
-        Object[] envs = new String[values.size()];
+        String[] envs = new String[values.size()];
 
         while (keyIter.hasNext()) {
             envs[idx] = (String)keyIter.next() + "=" + valueIter.next();
@@ -124,5 +124,5 @@ public class Environ
 
     native void getEnvironment();
     native void getEnvironment(long environ);
-    native long putEnvironment(Object[] envs);
+    native long putEnvironment(String[] envs);
 }

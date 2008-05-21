@@ -1,5 +1,10 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Environ.java (putEnvironment(String[])): Change parameter from
+	Object[] to String[].
+	* jni/Environ.cxx: Implement.
+	* cni/Environ.cxx: Update.
+
 	* jni/Itimer.cxx: Implement.
 
 	* cni/PseudoTerminal.cxx: Delete stray include.
