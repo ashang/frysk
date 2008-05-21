@@ -63,7 +63,7 @@ public class TestGccClass extends TestCase {
 	log.log(this, "Got debug frame: ", frame);
 
 	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(
-		frame);
+		task);
 	
 	log.log(this, "Got search engine: ", objectDeclarationSearchEngine);
 

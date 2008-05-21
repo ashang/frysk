@@ -1,3 +1,13 @@
+2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	ObjectDeclarationSearchEngine: Constructor now 
+	requires Task instead Frame.
+	* TestBreakpoints.java: Updated.
+	* BreakpointCommand.java: Updated.
+	* CLI.java: Updated.
+	* CompletionFactory.java: Updated.
+	* ListCommand.java: Updated.
+
 2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	ObjectDeclarationSearchEngine.getObject() now returns a list.

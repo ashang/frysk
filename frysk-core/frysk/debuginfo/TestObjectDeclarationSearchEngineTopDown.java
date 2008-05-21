@@ -98,9 +98,8 @@ public class TestObjectDeclarationSearchEngineTopDown extends TestLib {
 	int objectLine = scanner.findTokenLine(objectToken);
 	
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
-	DebugInfoFrame frame = DebugInfoStackFactory
-		.createVirtualStackTrace(task);
-	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	
+	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine
 		.getObject(objectName).getFirst();
 

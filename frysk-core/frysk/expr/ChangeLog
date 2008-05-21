@@ -1,3 +1,7 @@
+2008-05-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ExprSearchEngine.java: New.
+
 2008-05-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	Added frame requirement to 

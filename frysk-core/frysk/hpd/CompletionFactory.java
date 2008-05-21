@@ -44,8 +44,8 @@ import java.util.Iterator;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.proc.Task;
 import jline.FileNameCompletor;
+import frysk.expr.ExprSearchEngine;
 import frysk.expr.ExpressionFactory;
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
 
 /**
  * A collection of completers.
@@ -77,7 +77,7 @@ class CompletionFactory {
 		Task task = (Task)i.next();
 		DebugInfoFrame frame = cli.getTaskFrame(task);
 		int tmp = ExpressionFactory.complete
-		    (new ObjectDeclarationSearchEngine(frame),
+		    (new ExprSearchEngine(frame),
 		     incomplete, cursor - start, candidates);
 		if (tmp >= 0)
 		    newOffset = tmp;

@@ -68,7 +68,7 @@ public class TestDie
 	String fileName = "funit-cpp-scopes-namespace";
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 	
 	Variable variable = (Variable) objectDeclarationSearchEngine.getObjectInScope(frame, "first");
 	

@@ -39,14 +39,14 @@
 
 package frysk.debuginfo;
 
-import frysk.testbed.TestLib;
-import frysk.proc.Task;
-import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.config.BuildCompiler;
-import frysk.value.Type;
+import frysk.proc.Task;
 import frysk.scopes.Variable;
+import frysk.testbed.DaemonBlockedAtSignal;
+import frysk.testbed.TestLib;
 import frysk.value.CompositeType;
 import frysk.value.PointerType;
+import frysk.value.Type;
 
 public class TestGccInterface extends TestLib {
 
@@ -55,8 +55,7 @@ public class TestGccInterface extends TestLib {
 	DebugInfoFrame frame = DebugInfoStackFactory
 		.createDebugInfoStackTrace(task);
 
-	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(
-		frame);
+	ObjectDeclarationSearchEngine objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 
 	Variable variable = (Variable) objectDeclarationSearchEngine
 		.getObjectInScope(frame, variableName);

@@ -1,3 +1,9 @@
+2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	ObjectDeclarationSearchEngine constructor now
+	requires Task instead Frame.
+	* Breakpoint.java: Updated.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProc.java (buildBuffer(byte[])): Delete.

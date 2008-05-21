@@ -39,7 +39,6 @@
 
 package frysk.hpd;
 
-import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -65,6 +64,7 @@ import frysk.sys.Signal;
 import frysk.util.CountDownLatch;
 import frysk.util.WordWrapWriter;
 import frysk.event.SignalEvent;
+import frysk.expr.ExprSearchEngine;
 import frysk.expr.Expression;
 import frysk.expr.ScratchSymTab;
 import frysk.expr.ExprSymTab;
@@ -220,7 +220,7 @@ public class CLI {
 	    symTab = new ScratchSymTab();
 	} else {
 	    DebugInfoFrame frame = getTaskFrame(task);
-	    symTab = new ObjectDeclarationSearchEngine(frame);
+	    symTab = new ExprSearchEngine(frame);
 	}
 	return ExpressionFactory.parse(symTab, expression);
     }

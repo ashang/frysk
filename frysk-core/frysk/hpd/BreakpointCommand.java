@@ -46,8 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import frysk.debuginfo.DebugInfoFrame;
-import frysk.debuginfo.DebugInfoStackFactory;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
 import frysk.event.Event;
 import frysk.proc.Manager;
@@ -142,8 +140,7 @@ class BreakpointCommand extends ParameterizedCommand {
 	} else {
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-		DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 		
 		if (declarationSearchEngine != null) {
 		    

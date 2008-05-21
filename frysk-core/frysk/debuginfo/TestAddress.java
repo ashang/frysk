@@ -79,7 +79,7 @@ public class TestAddress
     {
 	DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace
 	                       (getStoppedTask());
-	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(getStoppedTask());
 	
 	/* Evaluate the location of the variable.
 	 */ 

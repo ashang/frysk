@@ -123,7 +123,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
     	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-    	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+    	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
     	
     	ObjectDeclaration declaredObject = objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
  
@@ -187,7 +187,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	int variableLine = scanner.findTokenLine(variableToken);
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
-	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
 
 	assertNotNull("Variable found", objectDeclaration);
@@ -231,7 +231,7 @@ public class TestObjectDeclarationSearchEngine extends TestLib{
 	Task task = (new DaemonBlockedAtSignal(fileName)).getMainTask();
 	DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
 	assertNotNull("frame object created",  frame);
-	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	objectDeclarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 	ObjectDeclaration objectDeclaration = (ObjectDeclaration) objectDeclarationSearchEngine.getObjectInScope(frame, variableName);
 
 	assertNotNull("Variable found", objectDeclaration);

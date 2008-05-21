@@ -39,6 +39,7 @@
 
 package frysk.debuginfo;
 
+import frysk.expr.ExprSearchEngine;
 import frysk.expr.ExpressionFactory;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Proc;
@@ -138,8 +139,8 @@ public class DebugInfo {
      * Implement the cli print request.
      */
     public Value print(String expression, DebugInfoFrame frame) {
-	ObjectDeclarationSearchEngine symTab
-	    = new ObjectDeclarationSearchEngine(frame);
+	ExprSearchEngine symTab
+	    = new ExprSearchEngine(frame);
 	return ExpressionFactory.parse(symTab, expression).getValue();
     }
    

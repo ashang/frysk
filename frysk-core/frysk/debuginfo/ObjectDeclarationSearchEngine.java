@@ -39,35 +39,25 @@
 
 package frysk.debuginfo;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import lib.dwfl.Dwarf;
 import lib.dwfl.DwarfCommand;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
 import lib.dwfl.DwflModule;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import lib.dwfl.SymbolBuilder;
 import frysk.dwfl.DwflCache;
-import frysk.expr.ExprSymTab;
-import frysk.isa.registers.Register;
-import frysk.isa.registers.Registers;
-import frysk.isa.registers.RegistersFactory;
 import frysk.proc.Task;
 import frysk.scopes.Scope;
 import frysk.scopes.ScopeFactory;
 import frysk.scopes.Variable;
 import frysk.symtab.SymbolObjectDeclaration;
 import frysk.value.ObjectDeclaration;
-import frysk.value.Value;
 
 /**
  * This engine implements the c++ scoping rules and uses when searching for
@@ -76,14 +66,12 @@ import frysk.value.Value;
  * given frame, and return the first encounter. 
  *
  */
-public class ObjectDeclarationSearchEngine implements ExprSymTab{
+public class ObjectDeclarationSearchEngine{
 
-    private final DebugInfoFrame frame;
     private final Task task;
 
-    public ObjectDeclarationSearchEngine(DebugInfoFrame frame) {
-	this.frame = frame;
-	this.task = frame.getTask();
+    public ObjectDeclarationSearchEngine(Task task) {
+	this.task = task;
     }
 
     /**
@@ -171,7 +159,7 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
     public ObjectDeclaration getObjectUsingBinaryInfo(DebugInfoFrame frame, String name){
 	Dwfl dwfl = DwflCache.getDwfl(task);
 
-	DwflModule module = dwfl.getModule(this.frame.getAdjustedAddress());
+	DwflModule module = dwfl.getModule(frame.getAdjustedAddress());
 	
 	if(module == null){
 	    throw new RuntimeException("Module could not be found for this process");
@@ -208,57 +196,5 @@ public class ObjectDeclarationSearchEngine implements ExprSymTab{
 	
 	throw new ObjectDeclarationNotFoundException(name);
     }
-    
-    public Value getValue(String s) {
-	if (s.charAt(0) == '$') {
-	    Registers regs = RegistersFactory.getRegisters(frame.getTask()
-							   .getISA());
-	    String regName = s.substring(1).trim();
-	    Register reg = regs.getRegister(regName);
-	    if (reg == null) {
-		throw new RuntimeException("unknown register: " + regName);
-	    }
-	    List pieces = new LinkedList();
-	    pieces.add(new RegisterPiece(reg, reg.getType().getSize(), frame));
-	    return new Value(reg.getType(), new PieceLocation(pieces));
-	}
-	
-	ObjectDeclaration objectDeclaration = this.getObjectInScope(frame, s);
-	return objectDeclaration.getValue(frame);
-    }
-
-    /**
-     * XXX: Who knows if this works; it is certainly not implemented
-     * correctly as it should use the ObjectDeclaration.
-     */
-    public void complete(String incomplete, List candidates) {
-	long pc = frame.getAdjustedAddress();
-	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	DwarfDie die = bias.die;
-	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
-	List candidates_p = die.getScopeVarNames(allDies, incomplete);
-	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
-            String sNext = (String) i.next();
-            candidates.add(sNext);
-        }
-    }
-    
-    
-    public ByteOrder order()
-    {
-	return task.getISA().order();
-    }
-    
-    public ByteBuffer taskMemory()
-    {
-	return task.getMemory();
-    }
-    
-    public int getWordSize()
-    {
-	return task.getISA().wordSize();
-    }
-    
     
 }

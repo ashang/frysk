@@ -210,7 +210,7 @@ class ListCommand extends ParameterizedCommand {
 
 	Function function = null;
 
-	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(frame);
+	ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(task);
 
 	LinkedList functions = declarationSearchEngine.getObject(cmdParm);
 	//XXX: should this use declarationSearchEngine.getObjectInScope(cmdParm)

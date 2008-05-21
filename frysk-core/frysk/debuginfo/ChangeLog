@@ -1,8 +1,26 @@
+2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObjectDeclarationSearchEngine.java
+	(ObjectDeclarationSearchEngine): Constructor 
+	now requires Task instead Frame.
+	* TestObjectDeclarationSearchEngineTopDown.java 
+	(verifyObjectFound): Updated.
+	* TestAddress.java (testAddress): Updated.
+	* TestGccInterface.java (getType): Updated.
+	* TestGccClass.java: Updated.
+	* TestObjectDeclarationSearchEngine.java: Updated.
+
+2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com> 
+
+	* DebugInfo.java: Updated.
+	* ObjectDeclarationSearchEngine.java: Moved
+	Non search methods to frysk.symtab.ExpressionSearchEnigne.
+	 
 2008-05-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java 
 	(getObjectUsingBinaryInfo): Now takes a frame argument. 
-
+	
 2008-05-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java (getObjectInScope): Added
