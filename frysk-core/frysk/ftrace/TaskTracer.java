@@ -402,7 +402,8 @@ class TaskTracer
 			     Long addrToken, long bias, ObjectFile objf)
     {
 	long addr = addrToken.longValue();
-	fine.log("Request for tracing address 0x" + Long.toHexString(addr));
+	fine.log("Request for tracing address", addr,
+		 "at", addr+bias);
 	task.requestAddCodeObserver(new AddressObserver(addrToken, objf),
 				    addr + bias);
     }

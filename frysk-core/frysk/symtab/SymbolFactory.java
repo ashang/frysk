@@ -144,7 +144,8 @@ public class SymbolFactory
 		    DwflSymbol sym
 			= new DwflSymbol(value, size, name, type,
 					 dieBias, module, defined);
-		    finest.log("Symbol", name, "value", value, "type", type);
+		    finest.log("Symbol", name, "value", value,
+			       "type", type, "die", dieBias);
 		    table.put(name, sym);
 		}
 	};
