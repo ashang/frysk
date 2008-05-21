@@ -69,7 +69,7 @@ frysk::sys::FileDescriptor::close (jint fd)
 }
 
 void
-frysk::sys::FileDescriptor::write (jint b)
+frysk::sys::FileDescriptor::write (jint fd, jint b)
 {
   char c = b;
   errno = 0;
@@ -81,7 +81,7 @@ frysk::sys::FileDescriptor::write (jint b)
 }
 
 jint
-frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
+frysk::sys::FileDescriptor::write (jint fd, jbyteArray bytes, jint off, jint len)
 {
   verifyBounds (bytes, off, len);
   errno = 0;
@@ -94,7 +94,7 @@ frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
 }
 
 jboolean
-frysk::sys::FileDescriptor::ready (jlong timeout)
+frysk::sys::FileDescriptor::ready (jint fd, jlong timeout)
 {
   // ::fprintf (stderr, "%d %d ready %ld?\n", getpid (), (int)fd, (long) timeout);
   struct pollfd pollfd = { fd, POLLIN, 0 };
@@ -136,7 +136,7 @@ doRead (jint fd, void *bytes, jint len)
 }
 
 jint
-frysk::sys::FileDescriptor::read (void)
+frysk::sys::FileDescriptor::read (jint fd)
 {
   jbyte b = 0;
   errno = 0;
@@ -148,36 +148,45 @@ frysk::sys::FileDescriptor::read (void)
 }
 
 jint
-frysk::sys::FileDescriptor::read (jbyteArray bytes, jint off, jint len)
+frysk::sys::FileDescriptor::read(jint fd, jbyteArray bytes, jint off, jint len)
 {
   verifyBounds (bytes, off, len);
   return doRead (fd, elements(bytes) + off, len);
 }
 
+
 jint
-frysk::sys::FileDescriptor::open (jstring file, jint f, jint mode)
-{
+frysk::sys::FileDescriptor::rdonly() {
+  return O_RDONLY;
+}
+
+jint
+frysk::sys::FileDescriptor::wronly() {
+  return O_WRONLY;
+}
+
+jint
+frysk::sys::FileDescriptor::rdwr() {
+  return O_RDWR;
+}
+
+jint
+frysk::sys::FileDescriptor::creat() {
+  return O_CREAT;
+}
+
+jint
+frysk::sys::FileDescriptor::open(jstring file, jint flags, jint mode) {
   const char* pathname = ALLOCA_STRING (file);
   // ::fprintf ("opening <<%s>>\n", pathname);
-  int flags = 0;
-  if (f & frysk::sys::FileDescriptor::RDONLY)
-    flags |= O_RDONLY;
-  if (f & frysk::sys::FileDescriptor::WRONLY)
-    flags |= O_WRONLY;
-  if (f & frysk::sys::FileDescriptor::RDWR)
-    flags |= O_RDWR;
-  if (f & frysk::sys::FileDescriptor::CREAT)
-    flags |= O_CREAT;
-
   return tryOpen(pathname, flags, mode);
 }
 
 void
-frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
-{
+frysk::sys::FileDescriptor::dup(jint fd, jint old) {
   errno = 0;
-  // ::fprintf (stderr, "%d dup (%d, %d)\n", getpid (), (int)old->fd, (int)fd);
-  while (::dup2 (old->fd, fd) < 0) {
+  // ::fprintf (stderr, "%d dup (%d, %d)\n", getpid (), (int)old, (int)fd);
+  while (::dup2 (old, fd) < 0) {
     int err = errno;
     // ::fprintf (stderr, "err = %d %s\n", err, strerror (err));
     switch (err) {
@@ -192,37 +201,32 @@ frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
   // ::fprintf (stderr, "%d dup done\n", getpid ());
 }
 
-frysk::sys::Size *
-frysk::sys::FileDescriptor::getSize()
-{
-    struct winsize size;
-
-    errno = 0;
-    if (::ioctl(fd, TIOCGWINSZ, (char *)&size) < 0)
-    {
-	throwErrno(errno, "ioctl");
-    }
-    return new frysk::sys::Size(size.ws_row, size.ws_col);
+frysk::sys::Size*
+frysk::sys::FileDescriptor::getSize(jint fd) {
+  struct winsize size;
+  
+  errno = 0;
+  if (::ioctl(fd, TIOCGWINSZ, (char *)&size) < 0) {
+    throwErrno(errno, "ioctl");
+  }
+  return new frysk::sys::Size(size.ws_row, size.ws_col);
 }
 
 void
-frysk::sys::FileDescriptor::setSize(frysk::sys::Size *jsize)
-{
-    struct winsize size;
-
-    errno = 0;
-    ::memset(&size, 0, sizeof(size));
-    size.ws_row = jsize->getRows();
-    size.ws_col = jsize->getColumns();
-    if (::ioctl(fd, TIOCSWINSZ, (char *)&size) < 0)
-    {
-	throwErrno(errno, "ioctl");
-    }
+frysk::sys::FileDescriptor::setSize(jint fd, frysk::sys::Size *jsize) {
+  struct winsize size;
+  
+  errno = 0;
+  ::memset(&size, 0, sizeof(size));
+  size.ws_row = jsize->getRows();
+  size.ws_col = jsize->getColumns();
+  if (::ioctl(fd, TIOCSWINSZ, (char *)&size) < 0) {
+    throwErrno(errno, "ioctl");
+  }
 }
 
 static jlong
-seek (int fd, jlong off, int where)
-{
+seek(int fd, jlong off, int where) {
   errno = 0;
   jlong pos = ::lseek64 (fd, off, where);
   int err = errno;
@@ -232,19 +236,16 @@ seek (int fd, jlong off, int where)
 }
 
 jlong
-frysk::sys::FileDescriptor::seekSet (jlong off)
-{
+frysk::sys::FileDescriptor::seekSet(jint fd, jlong off) {
   return seek (fd, off, SEEK_SET);
 }
 
 jlong
-frysk::sys::FileDescriptor::seekCurrent (jlong off)
-{
+frysk::sys::FileDescriptor::seekCurrent(jint fd, jlong off) {
   return seek (fd, off, SEEK_CUR);
 }
 
 jlong
-frysk::sys::FileDescriptor::seekEnd (jlong off)
-{
+frysk::sys::FileDescriptor::seekEnd(jint fd, jlong off) {
   return seek (fd, off, SEEK_END);
 }

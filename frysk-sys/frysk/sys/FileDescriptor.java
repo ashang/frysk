@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,14 +50,13 @@ import java.io.IOException;
  * This object is loosely based on the Unix file-descriptor.
  */
 
-public class FileDescriptor
-{
+public class FileDescriptor {
     private int fd = -1;
     /**
      * Package local file descriptor used by various classes when
      * returning a file descriptor.
      */
-    FileDescriptor (int fd) {
+    FileDescriptor(int fd) {
 	if (fd < 0) {
 	    throw new RuntimeException("FileDescriptor " + fd + " invalid");
 	}
@@ -67,48 +66,54 @@ public class FileDescriptor
      * Create a file descriptor for the specified FILE, open in mode
      * specified by flags.
      */
-    public FileDescriptor (String file, int accessMode) {
-	this (open (file, accessMode, 0));
+    public FileDescriptor(String file, int accessMode) {
+	this(open(file, accessMode, 0));
     }
     /**
      * Create a file descriptor for the specified FILE, open with MODE.
      */
-    public FileDescriptor (File file, int accessMode) {
-	this (open (file.getAbsolutePath (), accessMode, 0));
+    public FileDescriptor(File file, int accessMode) {
+	this(open(file.getAbsolutePath (), accessMode, 0));
     }
     /**
      * Create a new file tied to FileDescriptor with accessMode and
      * protection.
      */
     public FileDescriptor (String file, int accessMode, int prot) {
-	this (open (file, accessMode | CREAT, prot));
+	this(open(file, accessMode | CREAT, prot));
     }
     /**
      * Create a new file tied to FileDescriptor with accessMode and
      * protection.
      */
     public FileDescriptor (File file, int accessMode, int prot) {
-	this (open (file.getAbsolutePath(), accessMode | CREAT, prot));
+	this(open(file.getAbsolutePath(), accessMode | CREAT, prot));
     }
     /**
      * Open file read-only.
      */
-    public static final int RDONLY = 1;
+    public static final int RDONLY = rdonly();
+    private static native int rdonly();
+
     /**
      * Open file write-only
      */
-    public static final int WRONLY = 2;
+    public static final int WRONLY = wronly();
+    private static native int wronly();
+
     /**
      * Open file read-write
      */
-    public static final int RDWR = 4;
+    public static final int RDWR = rdwr();
+    private static native int rdwr();
+
     /**
      * Create a new file.  Implied by the three-param constructor.
      */
-    private static final int CREAT = 8;
+    private static final int CREAT = creat();
+    private static native int creat();
 
-    public int getFd ()
-    {
+    public int getFd() {
 	return fd;
     }
 
@@ -129,7 +134,10 @@ public class FileDescriptor
      * Make this FileDescriptor a dup (point at the same system
      * object) as OLD.  See dup2(2).
      */
-    public native void dup (FileDescriptor old);
+    public void dup(FileDescriptor old) {
+	dup(fd, old.fd);
+    }
+    private static native void dup(int fd, int old);
 
     /**
      * Open the specified FILE in FLAGS; returning a file descriptor.
@@ -146,40 +154,57 @@ public class FileDescriptor
      * one character, the end-of-file, or hangup indication available
      * for reading?
      */
-    public boolean ready ()
-    {
-	return ready (0);
+    public boolean ready() {
+	return ready(fd, 0);
     }
+
     /**
      * Wait on the file descriptor for upto millesecond timeout,
      * checking for at least one character, an eof indication, or
      * hangup available for reading?
      */
-    public native boolean ready (long millisecondTimeout);
+    public boolean ready(long millisecondTimeout) {
+	return ready(fd, millisecondTimeout);
+    }
+    private static native boolean ready(int fd, long millisecondTimeout);
 
     /**
      * Read a single byte from the file descriptor.  Return -1 if
      * end-of-file.
      */
-    public native int read ();
+    public int read() {
+	return read(fd);
+    }
+    private static native int read(int fd);
+
     /**
      * Read bytes from the file descriptor.  Return number of bytes
      * read, or -1 of end-of-file.
      *
      * XXX: Since read is capped by byte[].length, int is returned.
      */
-    public native int read(byte[] bytes, int start, int length);
+    public int read(byte[] bytes, int start, int length) {
+	return read(fd, bytes, start, length);
+    }
+    private static native int read(int fd, byte[] bytes, int start, int length);
 
     /**
      * Write a single byte to the file descriptor.
      */
-    public native void write (int b);
+    public void write(int b) {
+	write(fd, b);
+    }
+    private static native void write(int fd, int b);
+
     /**
      * Write elements of BUF to the file descriptor.
      *
      * XXX: Since write is capped by byte[].lenght, int is returned.
      */
-    public native int write(byte[] bytes, int start, int length);
+    public int write(byte[] bytes, int start, int length) {
+	return write(fd, bytes, start, length);
+    }
+    private static native int write(int fd, byte[] bytes, int start, int length);
 
     /**
      * Close the file descriptor.
@@ -295,32 +320,48 @@ public class FileDescriptor
 	    };
     }
 
-    public String toString ()
-    {
+    public String toString() {
 	return "{fd=" + fd + "}";
     }
 
-  /**
-   * Return the size of a terminal window. Can throw an exception if
-   * the file descriptor is not a terminal.
-   */
-  public native Size getSize();
+    /**
+     * Return the size of a terminal window. Can throw an exception if
+     * the file descriptor is not a terminal.
+     */
+    public Size getSize() {
+	return getSize(fd);
+    }
+    private static native Size getSize(int fd);
 
-  /**
-   * Set the size of a terminal window.
-   */
-  public native void setSize(Size size);
+    /**
+     * Set the size of a terminal window.
+     */
+    public void setSize(Size size) {
+	setSize(fd, size);
+    }
+    private static native void setSize(int fd, Size size);
 
     /**
      * Seek to OFFSET from start of file.
      */
-    public native long seekSet(long offset);
+    public long seekSet(long offset) {
+	return seekSet(fd, offset);
+    }
+    private static native long seekSet(int fd, long offset);
+
     /**
      * Seek to OFFSET from end of file.
      */
-    public native long seekEnd(long offset);
+    public long seekEnd(long offset) {
+	return seekEnd(fd, offset);
+    }
+    private static native long seekEnd(int fd, long offset);
+
     /**
      * Seek to OFFSET from current position.
      */
-    public native long seekCurrent(long offset);
+    public long seekCurrent(long offset) {
+	return seekCurrent(fd, offset);
+    }
+    private static native long seekCurrent(int fd, long offset);
 }
