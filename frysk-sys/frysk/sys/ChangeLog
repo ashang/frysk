@@ -1,8 +1,12 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/PseudoTerminal.cxx: Delete stray include.
+
 	* FileDescriptor.java: Make native methods private.
 	* cni/FileDescriptor.cxx: Update.
 	* jni/FileDescriptor.cxx: Implement.
+	
+2008-05-21  Andrew Cagney  <cagney@redhat.com>:frysk-sys/frysk/sys/ChangeLog
 
 	* cni/Fork.cxx (class redirect_stdio): Fix typo out->err.
 	* jni/PseudoTerminal.cxx: Implement.

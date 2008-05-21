@@ -51,7 +51,6 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/cni/Fork.hxx"
 #include "frysk/sys/PseudoTerminal.h"
-#include "frysk/sys/PseudoTerminal$RedirectStdio.h"
 
 jint
 frysk::sys::PseudoTerminal::open(jboolean controllingTerminal) {
