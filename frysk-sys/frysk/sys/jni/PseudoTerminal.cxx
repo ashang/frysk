@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2007 Oracle Corporation.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,24 +38,145 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _XOPEN_SOURCE
+#include <sys/ioctl.h>
+#include <fcntl.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "jni.hxx"
 
+#include "jnixx/elements.hxx"
 #include "jnixx/exceptions.hxx"
+#include "frysk/sys/jni/Fork.hxx"
 
 using namespace java::lang;
 
-::String
-frysk::sys::PseudoTerminal::getName(::jnixx::env env, jint pty) {
-  const char *name = ::ptsname(pty);
-  if (name == NULL)
+jint
+frysk::sys::PseudoTerminal::open(jnixx::env env, bool controllingTerminal) {
+  int master;
+
+  int flags = O_RDWR | (controllingTerminal ? O_NOCTTY : 0);
+  master = ::posix_openpt (flags);
+  if (master < 0) {
+    int err = errno;
+    errnoException(env, err, "posix_openpt");
+  }
+
+  if (::grantpt (master) < 0) {
+    int err = errno;
+    ::close (master);
+    errnoException(env, err, "grantpt", "fd %d", (int)master);
+  }
+
+  if (::unlockpt (master) < 0) {
+    int err = errno;
+    ::close (master);
+    errnoException(env, err, "unlockpt", "fd %d", (int)master);
+  }
+
+  return master;
+}
+
+String
+frysk::sys::PseudoTerminal::getName(jnixx::env env, jint fd) {
+  char* pts_name = ::ptsname(fd);
+  if (pts_name == NULL)
     errnoException(env, errno, "ptsname");
-  return String::NewStringUTF(env, name);
+  return String::NewStringUTF(env, pts_name);
+}
+
+class redirect_tty : public redirect {
+  StringChars pty;
+  const char* ptyElements;
+public:
+  redirect_tty(jnixx::env env, String name) {
+    pty = StringChars(env, name);
+    ptyElements = pty.elements();
+  }
+  ~redirect_tty() {
+    pty.release();
+  }
+  void reopen() {
+    // Detach from the existing controlling terminal.  NOTE: Do not
+    // use tryOpen() here, this is running in a child process.
+    int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
+    if (fd >= 0) {
+      if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
+	::perror ("ioctl (/dev/tty, TIOCNOTTY)");
+      ::close (fd);
+
+      // Verify that the detach worked, this open should fail.  NOTE:
+      // Do not use tryOpen() here, this is running in a child
+      // process.
+      fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY); // ::open ok
+      if (fd >= 0) {
+	::perror ("open (re-open old controlling terminal)");
+	::exit (1);
+      }
+    }
+  
+    // Make this process the session leader.
+    if (::setsid () < 0) {
+      ::perror ("setsid");
+    }
+
+    if (::getpgrp () != ::getpid ()) {
+      perror ("grp and pid differ");
+      exit (1);
+    }
+
+    //   // Move this to the session's process group.
+    //   if (::setpgid (0, getpid ()) < 0) {
+    //     perror ("setpgrp");
+    //   }
+
+    // Open the new pty.
+    int tty = ::open(ptyElements, O_RDWR|O_NOCTTY);
+    if (tty < 0) {
+      ::perror("open.pty");
+      exit (1);
+    }
+    
+    // Make the pty's tty the new controlling terminal.
+    if (::ioctl (tty, TIOCSCTTY, NULL) < 0) {
+      ::perror ("ioctl.TIOSCTTY");
+      exit (1);
+    }
+    
+    if (::dup2 (tty, STDIN_FILENO) < 0) {
+      perror ("dup2.STDIN");
+      exit (1);
+    }
+    if (::dup2 (tty, STDOUT_FILENO) < 0) {
+      perror ("dup2.STDOUT");
+      exit (1);
+    }
+    if (::dup2 (tty, STDERR_FILENO) < 0) {
+      perror ("dup2.STDERR");
+      exit (1);
+    }
+  }
+
+  void close() {
+  }
+};
+
+jint
+frysk::sys::PseudoTerminal::child(jnixx::env env, String exe,
+				  jnixx::array<String> args,
+				  String name) {
+  redirect_tty tty = redirect_tty(env, name);
+  exec_program program = exec_program(env, exe, args, 0);
+  return ::spawn(env, CHILD, tty, program);
 }
 
 jint
-frysk::sys::PseudoTerminal::open(::jnixx::env env, bool) {
-  return -1;
+frysk::sys::PseudoTerminal::daemon(jnixx::env env, String exe,
+				   jnixx::array<String> args, String name) {
+  redirect_tty tty = redirect_tty(env, name);
+  exec_program program = exec_program(env, exe, args, 0);
+  return ::spawn(env, DAEMON, tty, program);
 }

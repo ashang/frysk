@@ -148,7 +148,7 @@ public:
   redirect_stdio(jstring in, jstring out, jstring err) {
     this->in = MALLOC_STRING(in);
     this->out = MALLOC_STRING(out);
-    this->err = MALLOC_STRING(out);
+    this->err = MALLOC_STRING(err);
   }
   void reopen() {
     reopen(in, "r", stdin);

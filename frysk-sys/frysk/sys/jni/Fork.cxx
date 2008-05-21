@@ -44,41 +44,20 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <jni.hxx>
+#include "jni.hxx"
 
 #include "jnixx/elements.hxx"
 #include "jnixx/exceptions.hxx"
 
+#include "frysk/sys/jni/Fork.hxx"
+
 using namespace java::lang;
 
-enum tracing {
-  DAEMON,
-  NO_TRACE,
-  PTRACE,
-  UTRACE,
-};
-
-static void
-reopen(const char* file, const char* mode, FILE *stream) {
-  if (file == NULL)
-    return;
-  errno = 0;
-  ::freopen(file, mode, stream);
-  if (errno != 0) {
-    // Should not happen!
-    ::perror("freopen");
-    ::_exit(errno);
-  }
-}
-
 /**
- * Spawn a child, return the PID or the -ERROR.
+ * Spawn a child, return the PID or throw the error.
  */
-static int
-spawn(const char* exePath,
-      const char* inPath, const char* outPath, const char* errPath,
-      int argc, char** argv, char** environ, tracing trace) {
-
+int
+spawn(jnixx::env env, tracing trace, redirect& redirection, exec& execute) {
   if (trace == DAEMON) {
     // Do a vfork(), fork(), exec() which lets the top level process
     // capture the middle level fork()'s return value in a volatile.
@@ -90,22 +69,24 @@ spawn(const char* exePath,
     case 0:
       // This is executed by the child with the parent blocked, the
       // final process id ends up in PID.
-      pid = ::spawn(exePath, inPath, outPath, errPath, argc, argv, 0, NO_TRACE);
+      pid = ::spawn(env, CHILD, redirection, execute);
       _exit (0);
     case -1:
       // This is executed after a vfork barfs.
-      return -errno;
+      errnoException(env, errno, "vfork");
     default:
       // This is executed after the child has set PID with a FORK and
       // then exited (which helps guarentee that the waitpid, below,
       // doesn't block.
-      if (pid < 0)
-	return -errno;
+      if (pid < 0) {
+	errnoException(env, errno, "vfork/fork");
+      }
       // Consume the middle players wait.
       int status;
       errno = 0;
-      if (waitpid (v, &status, 0) < 0)
-	return -errno;
+      if (waitpid(v, &status, 0) < 0) {
+	errnoException(env, errno, "waitpid");
+      }
       return pid;
     }
   }
@@ -115,7 +96,7 @@ spawn(const char* exePath,
   pid_t pid = fork ();
   switch (pid) {
   case -1: // Fork failed.
-    return -errno;
+    errnoException(env, errno, "fork");
   default: // Parent
     return pid;
   case 0: // Child
@@ -124,9 +105,7 @@ spawn(const char* exePath,
     sigfillset(&mask);
     ::sigprocmask(SIG_UNBLOCK, &mask, NULL);
     // Redirect stdio.
-    reopen(inPath, "r", stdin);
-    reopen(outPath, "w", stdout);
-    reopen(errPath, "w", stderr);
+    redirection.reopen();
     switch (trace) {
     case PTRACE:
       errno = 0;
@@ -139,20 +118,56 @@ spawn(const char* exePath,
     case UTRACE:
       fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
       break;
-    case NO_TRACE:
+    case CHILD:
       break;
     case DAEMON:
       break;
     }
-    if (environ != NULL) {
-      ::execve(exePath, argv, environ);
-    } else
-      ::execv(exePath, argv);
-    // This should not happen.
-    ::perror("execvp");
-    ::_exit (errno);
+    execute.execute();
+    ::_exit(errno);
   }
 }
+
+class redirect_stdio : public redirect {
+private:
+  void reopen(const char* file, const char* mode, FILE *stream) {
+    if (file == NULL)
+      return;
+    errno = 0;
+    ::freopen(file, mode, stream);
+    if (errno != 0) {
+      // Should not happen!
+      ::perror("freopen");
+      ::_exit(errno);
+    }
+  }
+  StringChars in;
+  StringChars out;
+  StringChars err;
+  const char* inElements;
+  const char* outElements;
+  const char* errElements;
+public:
+  redirect_stdio(jnixx::env env, String in, String out, String err) {
+    this->in = StringChars(env, in);
+    this->out = StringChars(env, out);
+    this->err = StringChars(env, err);
+    // allocate memory for the arrays before the fork.
+    inElements = this->in.elements();
+    outElements = this->out.elements();
+    errElements = this->err.elements();
+  }
+  void reopen() {
+    reopen(inElements, "r", stdin);
+    reopen(outElements, "w", stdout);
+    reopen(errElements, "w", stderr);
+  }
+  ~redirect_stdio() {
+    in.release();
+    out.release();
+    err.release();
+  }
+};
 
 /**
  * Convert convert to native and then spawn.
@@ -160,62 +175,36 @@ spawn(const char* exePath,
 static int
 spawn(jnixx::env env, java::io::File exe,
       String in, String out, String err,
-      ::jnixx::array<String> args, jlong environ, tracing trace) {
-  String exeFile = exe.getPath(env);
-  StringChars exePath = StringChars(env, exeFile);
-  StringChars inPath = StringChars(env, in);
-  StringChars outPath = StringChars(env, out);
-  StringChars errPath = StringChars(env, err);
-  int argc = args.GetArrayLength(env);
-  StringArrayChars argv = StringArrayChars(env, args);
-  int pid = ::spawn(exePath.elements(),
-		    inPath.elements(), outPath.elements(), errPath.elements(),
-		    argc, argv.elements(), (char**)environ, trace);
-  argv.release();
-  exePath.release();
-  inPath.release();
-  outPath.release();
-  errPath.release();
-  if (pid < 0) {
-    switch (trace) {
-    case NO_TRACE:
-      errnoException(env, -pid, "fork/exec");
-    case DAEMON:
-      errnoException(env, -pid, "vfork/wait");
-    case PTRACE:
-      errnoException(env, -pid, "fork/ptrace/exec");
-    case UTRACE:
-      errnoException(env, -pid, "utrace");
-    }
-  }
-  return pid;
+      jnixx::array<String> args, jlong environ, tracing trace) {
+  redirect_stdio io = redirect_stdio(env, in, out, err);
+  exec_program program = exec_program(env, exe.getPath(env), args, environ);
+  return ::spawn(env, trace, io, program);
 }
 
 jint
-frysk::sys::Fork::spawn(::jnixx::env env, java::io::File exe,
+frysk::sys::Fork::spawn(jnixx::env env, java::io::File exe,
 			String in, String out, String err,
-			::jnixx::array<String> args, jlong environ) {
-  return ::spawn(env, exe, in, out, err, args, environ, NO_TRACE);
+			jnixx::array<String> args, jlong environ) {
+  return ::spawn(env, exe, in, out, err, args, environ, CHILD);
 }
 
 jint
-frysk::sys::Fork::ptrace(::jnixx::env env, java::io::File exe,
+frysk::sys::Fork::ptrace(jnixx::env env, java::io::File exe,
 			 String in, String out, String err,
-			 ::jnixx::array<String> args, jlong environ) {
+			 jnixx::array<String> args, jlong environ) {
   return ::spawn(env, exe, in, out, err, args, environ, PTRACE);
 }
 
 jint
-frysk::sys::Fork::utrace(::jnixx::env env, java::io::File exe,
+frysk::sys::Fork::utrace(jnixx::env env, java::io::File exe,
 			 String in, String out, String err,
-			 ::jnixx::array<String> args, jlong environ) {
+			 jnixx::array<String> args, jlong environ) {
   return ::spawn(env, exe, in, out, err, args, environ, UTRACE);
 }
 
 jint
-frysk::sys::Fork::daemon (::jnixx::env env, java::io::File exe,
-			  String in, String out, String err,
-			  ::jnixx::array<String> args,
-			  jlong environ) {
+frysk::sys::Fork::daemon(jnixx::env env, java::io::File exe,
+			 String in, String out, String err,
+			 jnixx::array<String> args, jlong environ) {
   return ::spawn(env, exe, in, out, err, args, environ, DAEMON);
 }

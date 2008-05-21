@@ -1,5 +1,10 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Fork.cxx (class redirect_stdio): Fix typo out->err.
+	* jni/PseudoTerminal.cxx: Implement.
+	* jni/Fork.hxx: New.
+	* jni/Fork.cxx: Merge in cni/Fork.cxx changes.
+
 	* jni/Fork.cxx (spawn): Use elements(), not .p.
 	* jni/Signal.cxx-sh (frysk): Ditto.
 
