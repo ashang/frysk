@@ -115,9 +115,9 @@ scan(jnixx::env env, const char *p, Status status, frysk::rsl::Log fine) {
 Status
 Status::scan(jnixx::env env, jint pid) {
   FileBytes bytes = FileBytes(env, pid, "status");
-  if (bytes.elements == NULL)
+  if (bytes.elements() == NULL)
     return Status(env, NULL);
-  Status s = ::scan(env, (const char*)bytes.elements, *this, GetFine(env));
+  Status s = ::scan(env, (const char*)bytes.elements(), *this, GetFine(env));
   bytes.release();
   return s;
 }
@@ -125,7 +125,7 @@ Status::scan(jnixx::env env, jint pid) {
 Status
 Status::scan(jnixx::env env, jnixx::byteArray buf) {
   ArrayBytes bytes = ArrayBytes(env, buf);
-  Status s = ::scan(env, (const char*)bytes.elements, *this, GetFine(env));
+  Status s = ::scan(env, (const char*)bytes.elements(), *this, GetFine(env));
   bytes.release();
   return s;
 }

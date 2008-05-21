@@ -73,8 +73,8 @@ frysk::sys::Signal::tkill(::jnixx::env env, jint tid, jint sig,
   if (::syscall(__NR_tkill, tid, sig) < 0) {
     StringChars sname = StringChars(env, name);
     errnoException(env, errno, "tkill", "task %d, signal %s (%d)",
-    		   tid, sname.p, sig);
-    sname.free(); // happens during unwind
+    		   tid, sname.elements(), sig);
+    sname.release(); // happens during unwind
   }
 }
 

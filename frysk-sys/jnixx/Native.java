@@ -58,4 +58,7 @@ abstract class Native {
     static native void throwRuntimeException();
 
     static native boolean catchRuntimeException(Native e);
+
+    static native void throwElements(String string, String[] stringArray,
+				     byte[] bytes);
 }

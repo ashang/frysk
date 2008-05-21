@@ -98,10 +98,10 @@ static bool
 verify(Bytes& buf, get_t *get) {
   int wordSize = abs (get (NULL));
   // Buffer holds an exact multiple of entry-size (2*word)?
-  if (buf.length % (wordSize * 2) != 0)
+  if (buf.length() % (wordSize * 2) != 0)
     return false;
-  for (int i = 0; i < buf.length; i += 2 * wordSize) {
-    jbyte *p = buf.elements + i;
+  for (int i = 0; i < buf.length(); i += 2 * wordSize) {
+    jbyte *p = buf.elements() + i;
     int64_t type = get (p);
     // Reasonable value?
     if (type > 1024 || type < 0)
@@ -112,9 +112,9 @@ verify(Bytes& buf, get_t *get) {
     // on 64-bit arch, there's one AT_NULL at the end of auxv vector.
     // However, there's 3 AT_NULL for 32-bit application on 64-bit arch.
     if (type == 0) {
-        if ((i + 2 * wordSize) == buf.length)
+        if ((i + 2 * wordSize) == buf.length())
           return true;
-        else if ((i + (2 * wordSize) * 3)  == buf.length)
+        else if ((i + (2 * wordSize) * 3)  == buf.length())
           return true;
         else
           return false;
@@ -167,12 +167,12 @@ construct(jnixx::env env, AuxvBuilder builder, Bytes& buf) {
 
   int wordSize = abs(get (NULL));
   bool bigEndian = get(NULL) > 0;
-  int numberEntries = buf.length / wordSize / 2;
+  int numberEntries = buf.length() / wordSize / 2;
   builder.buildDimensions(env, wordSize, bigEndian, numberEntries);
   
   // Unpack the corresponding entries.
   for (int i = 0; i < numberEntries; i++) {
-    jbyte *p = buf.elements + wordSize * i * 2;
+    jbyte *p = buf.elements() + wordSize * i * 2;
     jint type = get(p + wordSize * 0);
     jlong value = get(p + wordSize * 1);
     builder.buildAuxiliary(env, i, type, value);
@@ -184,7 +184,7 @@ construct(jnixx::env env, AuxvBuilder builder, Bytes& buf) {
 bool
 AuxvBuilder::construct(jnixx::env env, jint pid) {
   FileBytes bytes = FileBytes(env, "/proc/%d/auxv", pid);
-  if (bytes.elements == NULL)
+  if (bytes.elements() == NULL)
     return false;
   bool ok = ::construct(env, *this, bytes);
   bytes.release();

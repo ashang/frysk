@@ -86,3 +86,10 @@ jnixx::Native::catchRuntimeException(jnixx::Native* e) {
     return true;
   }
 }
+
+void
+jnixx::Native::throwElements(jstring string,
+			     jstringArray stringArray,
+			     jbyteArray bytes) {
+  throw new java::lang::RuntimeException(JvNewStringUTF("oops!"));
+}

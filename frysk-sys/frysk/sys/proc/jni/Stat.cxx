@@ -131,9 +131,9 @@ frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid, jint threadTid) {
 frysk::sys::proc::Stat
 frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid) {
   FileBytes bytes = FileBytes(env, procPid, "stat");
-  if (bytes.elements == NULL)
+  if (bytes.elements() == NULL)
     return Stat(env, NULL);
-  ::scan(env, (const char*) bytes.elements, *this, GetFine(env));
+  ::scan(env, (const char*) bytes.elements(), *this, GetFine(env));
   bytes.release();
   return *this;
 }
@@ -141,7 +141,7 @@ frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid) {
 frysk::sys::proc::Stat
 frysk::sys::proc::Stat::scan(jnixx::env env, jnixx::byteArray buf) {
   ArrayBytes bytes = ArrayBytes(env, buf);
-  ::scan(env, (const char*) bytes.elements, *this, GetFine(env));
+  ::scan(env, (const char*) bytes.elements(), *this, GetFine(env));
   bytes.release();
   return *this;
 }

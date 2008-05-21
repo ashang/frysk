@@ -85,4 +85,17 @@ public class TestJnixx extends TestCase {
 		}
 	    }));
     }
+
+    public void testElementsRelease() {
+	boolean thrown = false;
+	try {
+	    Native.throwElements("a string", new String[] {
+		    "a", "string", "array",
+		},
+		new byte[] { 1, 2, 3, 4, 5, 6 });
+	} catch (RuntimeException e) {
+	    thrown = true;
+	}
+	assertTrue("thrown", thrown);
+    }
 }

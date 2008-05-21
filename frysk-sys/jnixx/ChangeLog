@@ -1,3 +1,19 @@
+2008-05-21  Andrew Cagney  <cagney@redhat.com>
+
+	* elements.hxx (class StringChars): Implement operator=, copy
+	constructor, add elements(), rename free() to release().
+	(class StringArrayChars): Ditto.
+	(class Bytes): Add virtual elements() and length(), operator= and
+	copy constructor.
+	(class FileBytes): Implement.
+	(class ArrayBytes): Implement.
+	* elements.cxx (FileBytes::FileBytes): Update.
+	* Native.java (throwElements): New.
+	* TestJnixx.java (testElementRelease()): New.
+	* jni/Native.cxx (Native::throwElements): New.
+	* cni/Native.cxx (Native::throwElements): New.
+	* jni/Native.cxx (Native::throwElements): New.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* JniBindings.java: Generate attributes such as no-return.

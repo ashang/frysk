@@ -149,9 +149,9 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
     // extract or modify
     ArrayBytes bytes = ArrayBytes(env, byteArray);
     if (op == ptPeek)
-      memcpy(offset + i + bytes.elements, &w.b[woff], wlen);
+      memcpy(offset + i + bytes.elements(), &w.b[woff], wlen);
     else {
-      memcpy(&w.b[woff], offset + i + bytes.elements, wlen);
+      memcpy(&w.b[woff], offset + i + bytes.elements(), wlen);
 #if DEBUG
       fprintf(stderr, " poke 0x%lx", w.l);
 #endif

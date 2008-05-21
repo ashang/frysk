@@ -45,62 +45,117 @@ class StringChars {
 private:
   ::java::lang::String string;
   ::jnixx::env env;
-public:
   const char* p;
-  StringChars(::jnixx::env env, ::java::lang::String string) {
-    this->string = string;
-    this->env = env;
-    if (string != NULL) {
-      this->p = string.GetStringUTFChars(env);
-    } else {
-      this->p = NULL;
-    }
+public:
+  void operator=(const StringChars& src) {
+    this->env = src.env;
+    this->string = src.string;
+    // Avoid double references by not copying P.
+    this->p = NULL;
   }
-  void free() {
+  StringChars() {
+    this->p = NULL;
+  }
+  StringChars(const StringChars& old) {
+    this->operator=(old);
+  }
+  StringChars(::jnixx::env env, ::java::lang::String string) {
+    this->env = env;
+    this->string = string;
+    this->p = NULL;
+  }
+  const char* elements() {
+    if (p == NULL) {
+      if (string != NULL) {
+	this->p = string.GetStringUTFChars(env);
+      }
+    }
+    return p;
+  }
+  void release() {
     if (p != NULL) {
       string.ReleaseStringUTFChars(env, p);
       p = NULL;
     }
   }
   ~StringChars() {
-    free();
+    release();
   }
 };
 
 class StringArrayChars {
-public:
+private:
+  ::jnixx::env env;
+  ::jnixx::array< ::java::lang::String> strings;
   char** p;
+public:
+  void operator=(const StringArrayChars& src) {
+    this->env = src.env;
+    this->strings = src.strings;
+    // Avoid double references by no copying p.
+    this->p = NULL;
+  }
+  StringArrayChars() {
+    this->p = NULL;
+  }
+  StringArrayChars(const StringArrayChars& old) {
+    this->operator=(old);
+  }
   StringArrayChars(::jnixx::env env,
 		   ::jnixx::array< ::java::lang::String> strings) {
-    if (strings != NULL) {
-      p = strings2chars(env, strings);
-    } else {
-      p = NULL;
-    }
+    this->env = env;
+    this->strings = strings;
+    this->p = NULL;
   }
-  void free() {
+  char** elements() {
+    if (p == NULL) {
+      if (strings != NULL) {
+	p = strings2chars(env, strings);
+      }
+    }
+    return p;
+  }
+  void release() {
     if (p != NULL) {
       delete p;
       p = NULL;
     }
   }
   ~StringArrayChars() {
-    free();
+    release();
   }
 };
 
 class Bytes {
+protected:
+  jnixx::env env;
+  jbyte* p;
+  jsize l;
+  Bytes() {
+    p = NULL;
+    l = -1;
+  }
+  virtual ~Bytes() {
+  }
 public:
-  jbyte* elements;
-  jsize length;
+  virtual jbyte* elements() = 0;
+  virtual jsize length() = 0;
 };
 
 class FileBytes : public Bytes {
+private:
+  char file[FILENAME_MAX];
 public:
-  FileBytes(jnixx::env, const char* fmt, ...)
+  void operator=(const FileBytes& src);
+  FileBytes(const FileBytes& old) {
+    this->operator=(old);
+  }
+  FileBytes(jnixx::env env, const char* fmt, ...)
   __attribute__((format(printf, 3, 4)));
-  FileBytes(jnixx::env, int pid, const char* name);
-  FileBytes(jnixx::env, int pid, int tid, const char* name);
+  FileBytes(jnixx::env env, int pid, const char* name);
+  FileBytes(jnixx::env env, int pid, int tid, const char* name);
+  jbyte* elements();
+  jsize length();
   void release();
   ~FileBytes() {
     release();
@@ -110,24 +165,44 @@ public:
 class ArrayBytes : public Bytes {
 private:
   ::jnixx::byteArray bytes;
-  ::jnixx::env env;
 public:
+  void operator=(const ArrayBytes& src) {
+    release();
+    this->env = src.env;
+    this->bytes = src.bytes;
+    // don't copy the pointer.
+  }
+  ArrayBytes() {
+  }
+  ArrayBytes(const ArrayBytes& old) {
+    this->operator=(old);
+  }
   ArrayBytes(::jnixx::env env, ::jnixx::byteArray bytes) {
     this->bytes = bytes;
     this->env = env;
-    if (bytes != NULL) {
-      this->elements = bytes.GetByteArrayElements(env, NULL);
-      this->length = bytes.GetArrayLength(env);
-    } else {
-      this->elements = NULL;
-      this->length = 0;
+  }
+  jbyte* elements() {
+    length();
+    return p;
+  }
+  jsize length() {
+    if (l < 0) {
+      if (bytes != NULL) {
+	this->l = bytes.GetArrayLength(env);
+	this->p = bytes.GetByteArrayElements(env, NULL);
+      } else {
+	this->l = 0;
+	this->p = NULL;
+      }
     }
+    return l;
   }
   void release() {
-    if (elements != NULL) {
-      bytes.ReleaseByteArrayElements(env, elements, 0);
-      elements = NULL;
+    if (p != NULL) {
+      bytes.ReleaseByteArrayElements(env, p, 0);
+      p = NULL;
     }
+    l = -1;
   }
   ~ArrayBytes() {
     release();

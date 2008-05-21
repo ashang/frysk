@@ -1,3 +1,11 @@
+2008-05-21  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AuxvBuilder.cxx (verify): Use length() and elements().
+	* jni/Stat.cxx (Stat::scan): Ditto.
+	* jni/MapsBuilder.cxx (construct): Ditto.
+	* jni/CmdLineBuilder.cxx (construct): Ditto.
+	* jni/Status.cxx (Status::scan): Ditto.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Status.cxx: Implement.

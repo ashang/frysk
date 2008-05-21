@@ -1,3 +1,8 @@
+2008-05-21  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx (AddressSpace::transfer): Use elements().
+	* jni/RegisterSet.cxx (RegisterSet::transfer): Ditto.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AddressSpace.cxx: Update; ByteArrayElements renamed to

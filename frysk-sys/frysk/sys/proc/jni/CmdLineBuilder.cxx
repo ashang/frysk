@@ -49,8 +49,8 @@ construct(jnixx::env env, frysk::sys::proc::CmdLineBuilder* builder,
 	  Bytes& bytes) {
   // Count the number of parameters.
   int argc = 0;
-  for (int i = 0; i < bytes.length; i++) {
-    if (bytes.elements[i] == '\0')
+  for (int i = 0; i < bytes.length(); i++) {
+    if (bytes.elements()[i] == '\0')
       argc++;
   }
 
@@ -61,9 +61,9 @@ construct(jnixx::env env, frysk::sys::proc::CmdLineBuilder* builder,
   // Copy over the strings.
   int start = 0;
   argc = 0;
-  for (int i = 0; i < bytes.length; i++) {
-    if (bytes.elements[i] == '\0') {
-      argv.SetObjectArrayElement(env, argc, String::NewStringUTF(env, (const char*)bytes.elements + start));
+  for (int i = 0; i < bytes.length(); i++) {
+    if (bytes.elements()[i] == '\0') {
+      argv.SetObjectArrayElement(env, argc, String::NewStringUTF(env, (const char*)bytes.elements() + start));
       start = i + 1;
       argc++;
     }
@@ -75,7 +75,7 @@ construct(jnixx::env env, frysk::sys::proc::CmdLineBuilder* builder,
 bool
 frysk::sys::proc::CmdLineBuilder::construct(jnixx::env env, jint pid) {
   FileBytes bytes = FileBytes(env, pid, "cmdline");
-  if (bytes.elements == NULL)
+  if (bytes.elements() == NULL)
     return false;
   bool ok = ::construct(env, this, bytes);
   bytes.release();

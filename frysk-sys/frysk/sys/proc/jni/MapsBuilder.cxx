@@ -50,8 +50,8 @@
 
 bool
 construct(jnixx::env env, frysk::sys::proc::MapsBuilder* builder, Bytes& buf) {
-  const char *start = (const char *) buf.elements;
-  const char *end = start + buf.length;
+  const char *start = (const char *) buf.elements();
+  const char *end = start + buf.length();
   const char *p = start;
   while (p < end) {
     if (isspace (*p))
@@ -111,12 +111,12 @@ frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jnixx::byteArray buf) {
 bool
 frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jint pid) {
   FileBytes bytes = FileBytes(env, pid, "maps");
-  if (bytes.elements == NULL)
+  if (bytes.elements() == NULL)
     return false;
   {
-    jnixx::byteArray array = jnixx::byteArray::NewByteArray(env, bytes.length);
+    jnixx::byteArray array = jnixx::byteArray::NewByteArray(env, bytes.length());
     ArrayBytes b = ArrayBytes(env, array);
-    memcpy(b.elements, bytes.elements, bytes.length);
+    memcpy(b.elements(), bytes.elements(), bytes.length());
     b.release();
     buildBuffer(env, array);
     array.DeleteLocalRef(env);

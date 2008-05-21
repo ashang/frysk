@@ -168,13 +168,14 @@ spawn(jnixx::env env, java::io::File exe,
   StringChars errPath = StringChars(env, err);
   int argc = args.GetArrayLength(env);
   StringArrayChars argv = StringArrayChars(env, args);
-  int pid = ::spawn(exePath.p, inPath.p, outPath.p, errPath.p,
-		    argc, argv.p, (char**)environ, trace);
-  argv.free();
-  exePath.free();
-  inPath.free();
-  outPath.free();
-  errPath.free();
+  int pid = ::spawn(exePath.elements(),
+		    inPath.elements(), outPath.elements(), errPath.elements(),
+		    argc, argv.elements(), (char**)environ, trace);
+  argv.release();
+  exePath.release();
+  inPath.release();
+  outPath.release();
+  errPath.release();
   if (pid < 0) {
     switch (trace) {
     case NO_TRACE:

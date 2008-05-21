@@ -41,6 +41,8 @@
 
 #include "jnixx/elements.hxx"
 
+using namespace java::lang;
+
 bool
 jnixx::Native::isJni(::jnixx::env) {
   return true;
@@ -92,4 +94,28 @@ jnixx::Native::catchRuntimeException(jnixx::env env, jnixx::Native e) {
       throw;
     }
   }
+}
+
+static void
+throwCopy(jnixx::env env, int n, StringChars stringChars,
+	  StringArrayChars stringArrayChars,
+	  ArrayBytes arrayBytes) {
+  if (n <= 0) {
+    java::lang::RuntimeException::ThrowNew(env, "oops!");
+  } else {
+    stringChars.elements();
+    stringArrayChars.elements();
+    arrayBytes.elements();
+    throwCopy(env, n-1, stringChars, stringArrayChars, arrayBytes);
+  }
+}
+
+void
+jnixx::Native::throwElements(jnixx::env env, String string,
+			     jnixx::array<String> stringArray,
+			     jnixx::byteArray bytes) {
+  StringChars stringChars = StringChars(env, string);
+  StringArrayChars stringArrayChars = StringArrayChars(env, stringArray);
+  ArrayBytes arrayBytes = ArrayBytes(env, bytes);
+  throwCopy(env, 4, stringChars, stringArrayChars, arrayBytes);
 }
