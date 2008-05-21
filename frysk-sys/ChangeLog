@@ -1,3 +1,9 @@
+2008-05-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JniRunner): Test frysk.expunit, frysk.sys.proc,
+	frysk.sys.TestProcessIdentifier, frysk.sys.TestSignal,
+	frysk.sys.TestSignalSet.
+
 2008-05-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (JNIXX_CLASSES): Add Errno$Esrch.

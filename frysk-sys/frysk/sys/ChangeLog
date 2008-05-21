@@ -1,5 +1,7 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Itimer.cxx: Implement.
+
 	* cni/PseudoTerminal.cxx: Delete stray include.
 
 	* FileDescriptor.java: Make native methods private.

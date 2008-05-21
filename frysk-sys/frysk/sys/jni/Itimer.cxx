@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,43 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <signal.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <unistd.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys;
+
+struct timeval
+timeval(jlong milliseconds) {
+  struct timeval val;
+  val.tv_sec = milliseconds / 1000;
+  val.tv_usec = (milliseconds % 1000) * 1000;
+  return val;
+}
+
+void
+setItimer(jnixx::env env, int which, jlong interval, jlong value) {
+  struct itimerval itimer;
+  itimer.it_interval = timeval (interval);
+  itimer.it_value = timeval (value);
+  errno = 0;
+  if (::setitimer (which, &itimer, NULL) < 0)
+    errnoException(env, errno, "setitimer");
+}
+
+Signal
+Itimer::real(jnixx::env env, jlong interval, jlong value) {
+  ::setItimer(env, ITIMER_REAL, interval, value);
+  return Signal::GetALRM(env);
+}
+
+jint
+Itimer::sleep(jnixx::env env, jint seconds) {
+  return ::sleep(seconds);
+}

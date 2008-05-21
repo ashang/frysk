@@ -93,12 +93,17 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "$(CLASSPATH):frysk-sys.jar:JniRunner.jar"		>> $@.tmp
 	echo "if test \$$# -eq 0 ; then"			>> $@.tmp
 	echo "  $(JAVA) JniRunner \\"				>> $@.tmp
-	echo "    lib.stdcpp \\"				>> $@.tmp
-	echo "    frysk.rsl \\"					>> $@.tmp
-	echo "    frysk.junit \\"				>> $@.tmp
 	echo "    frysk.config \\"				>> $@.tmp
-	echo "    jnixx \\"					>> $@.tmp
+	echo "    frysk.expunit \\"				>> $@.tmp
+	echo "    frysk.junit \\"				>> $@.tmp
+	echo "    frysk.rsl \\"					>> $@.tmp
+	echo "    frysk.sys.proc \\"				>> $@.tmp
+	echo "    frysk.sys.TestProcessIdentifier \\"		>> $@.tmp
+	echo "    frysk.sys.TestSignal \\"			>> $@.tmp
+	echo "    frysk.sys.TestSignalSet \\"			>> $@.tmp
 	echo "    inua \\"					>> $@.tmp
+	echo "    jnixx \\"					>> $@.tmp
+	echo "    lib.stdcpp \\"				>> $@.tmp
 	echo "    ;"						>> $@.tmp
 	echo "else"						>> $@.tmp
 	echo "  $(JAVA) JniRunner \"\$$@\""			>> $@.tmp
