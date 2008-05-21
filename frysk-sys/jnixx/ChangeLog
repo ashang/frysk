@@ -1,5 +1,7 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* JniBindings.java: Add == for Object.
+
 	* elements.hxx (class StringChars): Implement operator=, copy
 	constructor, add elements(), rename free() to release().
 	(class StringArrayChars): Ditto.

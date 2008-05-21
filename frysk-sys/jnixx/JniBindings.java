@@ -225,6 +225,15 @@ class JniBindings {
 		 "return this->_object == _object;",
 	     })
 	.put(Object.class, Binding.DYNAMIC,
+	     "bool", "operator==",
+	     new String[] {
+		 "const Object&", "other",
+	     },
+	     null,
+	     new Object[] {
+		 "return this->_object == other._object;",
+	     })
+	.put(Object.class, Binding.DYNAMIC,
 	     "bool", "operator!=",
 	     new String[] {
 		 "jobject", "_object",

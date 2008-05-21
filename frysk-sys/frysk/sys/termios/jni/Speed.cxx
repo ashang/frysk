@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,55 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+static speed_t
+toBaud(jnixx::env env, Speed speed) {
+  if (speed == Speed::GetBAUD_0(env))
+    return B0;
+  if (speed == Speed::GetBAUD_9600(env))
+    return B9600;
+  if (speed == Speed::GetBAUD_38400(env))
+    return B38400;
+  runtimeException(env, "Unknown speed; missing testcase (speed %d)",
+		   speed.GetB(env));
+}
+
+static Speed
+toSpeed(jnixx::env env, speed_t baud) {
+  switch (baud) {
+  case B0: return Speed::GetBAUD_0(env);
+  case B9600: return Speed::GetBAUD_9600(env);
+  case B38400: return Speed::GetBAUD_38400(env);
+  default:
+    runtimeException(env, "Unknown baud; missing testcase (baud %d)", baud);
+  }
+}
+
+void
+Speed::set(jnixx::env env, jlong termios) {
+  speed_t baud = toBaud(env, *this);
+  ::cfsetispeed((struct termios*)termios, baud);
+  ::cfsetospeed((struct termios*)termios, baud);
+}
+
+Speed
+Speed::getInput(jnixx::env env, jlong termios) {
+  speed_t baud = ::cfgetispeed((struct termios*) termios);
+  return toSpeed(env, baud);
+}
+
+Speed
+Speed::getOutput(jnixx::env env, jlong termios) {
+  speed_t baud = ::cfgetospeed((struct termios*) termios);
+  return toSpeed(env, baud);
+}

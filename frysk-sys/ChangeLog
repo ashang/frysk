@@ -1,5 +1,7 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner): Add frysk.sys.termios.	
+
 	* Makefile.am (JniRunner): Test frysk.expunit, frysk.sys.proc,
 	frysk.sys.TestProcessIdentifier, frysk.sys.TestSignal,
 	frysk.sys.TestSignalSet.

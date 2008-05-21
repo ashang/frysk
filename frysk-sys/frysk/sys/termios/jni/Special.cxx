@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+static int
+toIndex(jnixx::env env, Special special)
+{
+  if (special == Special::GetNON_CANONICAL_READ_MINIMUM(env))
+    return VMIN;
+  else
+    runtimeException(env, "untested termios special control character");
+}
+
+void
+Special::set(jnixx::env env, jlong t, jchar val) {
+  int i = toIndex(env, *this);
+  struct termios* termios = (struct termios*)t;
+  termios->c_cc[i] = val;
+}
+
+jchar
+Special::get(jnixx::env env, jlong t) {
+  int i = toIndex(env, *this);
+  struct termios* termios = (struct termios*) t;
+  return (jchar) (termios->c_cc[i]);
+}

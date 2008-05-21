@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+static tcflag_t
+toFlag(jnixx::env env, Control mode) {
+  runtimeException(env, "untested termios input mode");
+}
+
+void
+Control::set(jnixx::env env, jlong t, bool on) {
+  tcflag_t flag = toFlag(env, *this);
+  struct termios* termios = (struct termios*) t;
+  if (on)
+    termios->c_cflag |= flag;
+  else
+    termios->c_cflag &= ~flag;
+}
+
+bool
+Control::get(jnixx::env env, jlong t) {
+  tcflag_t flag = toFlag(env, *this);
+  struct termios* termios = (struct termios*) t;
+  if (termios->c_cflag & flag)
+    return true;
+  else
+    return false;
+}

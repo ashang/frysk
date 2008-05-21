@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+void
+Flush::flush(jnixx::env env, frysk::sys::FileDescriptor fd, Flush q)
+{
+  int queue;
+  if (q == Flush::GetINPUT(env))
+    queue = TCIFLUSH;
+  else if (q == Flush::GetOUTPUT(env))
+    queue = TCOFLUSH;
+  else if (q == Flush::GetINPUT_OUTPUT(env))
+    queue = TCIOFLUSH;
+  else
+    runtimeException(env, "Unrecognized flush queue; untested");
+  if (::tcflush(fd.getFd(env), queue) < 0)
+    errnoException(env, errno, "tcflush", "fd %d", (int)(fd.getFd(env)));
+}

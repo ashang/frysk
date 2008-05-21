@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+jlong
+Termios::malloc(jnixx::env env) {
+  return (jlong) (long) new struct termios();
+}
+
+void
+Termios::free(jnixx::env env, jlong t) {
+  delete (struct termios*)(void*)(long) t;
+}
+
+void
+Termios::get(jnixx::env env, jlong termios, jint fd) {
+  if (::tcgetattr (fd, (struct termios*) termios) < 0)
+    errnoException(env, errno, "tcsetattr", "fd %d", (int)fd);
+}
+
+void
+Termios::set(jnixx::env env, jlong termios, jint fd, Action act) {
+  int action;
+  if (act == Action::GetNOW(env))
+    action = TCSANOW;
+  else if (act == Action::GetDRAIN(env))
+    action = TCSADRAIN;
+  else if (act == Action::GetFLUSH(env))
+    action = TCSAFLUSH;
+  else
+    runtimeException(env, "Unknown Termios.Action");
+  errno = 0;
+  if (::tcsetattr (fd, action, (struct termios*) termios) < 0)
+    errnoException(env, errno, "tcsetattr", "fd %d", (int)fd);
+}
+
+void
+Termios::setRaw(jnixx::env env, jlong termios) {
+  ::cfmakeraw((struct termios*)termios);
+}
+
+void
+Termios::sendBreak(jnixx::env env, jint fd, jint duration) {
+  if (::tcsendbreak(fd, duration) < 0)
+    errnoException(env, errno, "tcsendbreak", "fd %d", (int)fd);
+}
+
+void
+Termios::drain(jnixx::env env, jint fd) {
+  if (::tcdrain(fd) < 0)
+    errnoException(env, errno, "tcdrain", "fd %d", (int)fd);
+}

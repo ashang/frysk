@@ -98,6 +98,7 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "    frysk.junit \\"				>> $@.tmp
 	echo "    frysk.rsl \\"					>> $@.tmp
 	echo "    frysk.sys.proc \\"				>> $@.tmp
+	echo "    frysk.sys.termios \\"				>> $@.tmp
 	echo "    frysk.sys.TestProcessIdentifier \\"		>> $@.tmp
 	echo "    frysk.sys.TestSignal \\"			>> $@.tmp
 	echo "    frysk.sys.TestSignalSet \\"			>> $@.tmp

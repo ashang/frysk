@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <unistd.h>
+#include <termios.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::termios;
+
+void
+Flow::flow(jnixx::env env, frysk::sys::FileDescriptor fd, Flow f) {
+  int flow;
+  if (f == Flow::GetOUTPUT_OFF(env))
+    flow = TCOOFF;
+  else if (f == Flow::GetOUTPUT_ON(env))
+    flow = TCOON;
+  else if (f == Flow::GetINPUT_OFF(env))
+    flow = TCIOFF;
+  else if (f == Flow::GetINPUT_ON(env))
+    flow = TCION;
+  else
+    runtimeException(env, "Unknown flow control");
+  if (::tcflow(fd.getFd(env), flow) < 0)
+    errnoException(env, errno, "tcflow", "fd %d", (int)(fd.getFd(env)));
+}

@@ -1,3 +1,16 @@
+2008-05-21  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Mode.cxx: Delete.
+	* jni/Termios.cxx: Implement.
+	* jni/Speed.cxx: Implement.
+	* jni/Special.cxx: Implement.
+	* jni/Output.cxx: Implement.
+	* jni/Local.cxx: Implement.
+	* jni/Input.cxx: Implement.
+	* jni/Flush.cxx: Implement.
+	* jni/Flow.cxx: Implement.
+	* jni/Control.cxx: Implement.
+
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Termios.java (termios): Change type to "long"; pass value to
