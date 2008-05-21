@@ -44,8 +44,13 @@ import java.util.Iterator;
 
 public class DwflDieBias
 {
-    public DwarfDie die;
-    public long bias;
+    public final DwarfDie die;
+    public final long bias;
+
+    public DwflDieBias(DwarfDie die, long bias) {
+	this.die = die;
+	this.bias = bias;
+    }
 
     public ArrayList getEntryBreakpoints() {
 	ArrayList bps = die.getEntryBreakpoints();

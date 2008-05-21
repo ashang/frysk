@@ -410,12 +410,11 @@ namespace {
 
     if (dwarf_offdie (dwarf, gl->die_offset, die) == NULL)
       throw new lib::dwfl::DwarfException(JvNewStringUTF("failed to get object die"));
-    else {
-      lib::dwfl::DwflDieBias* dwflDieBias = new lib::dwfl::DwflDieBias();
-      dwflDieBias->die = dwfl->factory->makeDie((jlong)die, context->dwflModule);
-      dwflDieBias->bias = context->bias;
-      context->dwflModule->pubNames->add(dwflDieBias);
-    }
+    else
+      {
+	lib::dwfl::DwarfDie *dwdie = dwfl->factory->makeDie((jlong)die, context->dwflModule);
+	context->dwflModule->pubNames->add(new lib::dwfl::DwflDieBias(dwdie, context->bias));
+      }
 
     return DWARF_CB_OK;
   }
