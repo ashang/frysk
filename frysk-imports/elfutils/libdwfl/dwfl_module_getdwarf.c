@@ -82,19 +82,25 @@ open_elf (Dwfl_Module *mod, struct dwfl_file *file)
     }
 
   file->bias = 0;
-  for (uint_fast16_t i = 0; i < ehdr->e_phnum; ++i)
-    {
-      GElf_Phdr ph_mem;
-      GElf_Phdr *ph = gelf_getphdr (file->elf, i, &ph_mem);
-      if (ph == NULL)
-	goto elf_error;
-      if (ph->p_type == PT_LOAD)
-	{
-	  file->bias = ((mod->low_addr & -ph->p_align)
-			- (ph->p_vaddr & -ph->p_align));
-	  break;
-	}
-    }
+  if (mod->e_type == ET_EXEC && file == &mod->debug)
+    /* Prelink can change ET_EXEC's first loadable address, but it
+       will not touch .text or any section where symbol information is
+       relevant.  Assume debugbias is the same as the main file.  */
+    file->bias = mod->main.bias;
+  else
+    for (uint_fast16_t i = 0; i < ehdr->e_phnum; ++i)
+      {
+	GElf_Phdr ph_mem;
+	GElf_Phdr *ph = gelf_getphdr (file->elf, i, &ph_mem);
+	if (ph == NULL)
+	  goto elf_error;
+	if (ph->p_type == PT_LOAD)
+	  {
+	    file->bias = ((mod->low_addr & -ph->p_align)
+			  - (ph->p_vaddr & -ph->p_align));
+	    break;
+	  }
+      }
 
   mod->e_type = ehdr->e_type;
 
