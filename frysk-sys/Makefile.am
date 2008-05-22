@@ -103,7 +103,7 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "    frysk.sys.TestPseudoTerminal \\"		>> $@.tmp
 	echo "    frysk.sys.TestSignal \\"			>> $@.tmp
 	echo "    frysk.sys.TestSignalSet \\"			>> $@.tmp
-	echo "    frysk.sys.TestStatelessFile \\"		>> $@.tmp
+	echo "    frysk.testbed \\"				>> $@.tmp
 	echo "    inua \\"					>> $@.tmp
 	echo "    jnixx \\"					>> $@.tmp
 	echo "    lib.stdcpp \\"				>> $@.tmp

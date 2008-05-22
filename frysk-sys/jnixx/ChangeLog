@@ -1,5 +1,8 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* exceptions.cxx (errnoException): Pass up error, not errno.
+	(errnoException): Ditto.
+
 	* exceptions.cxx (errnoException): Use vasprintf, not snprintf.
 	(runtimeException): Simplify exception checks; throw RuntimeException.
 	* print.cxx (vajprintf): Ditto.

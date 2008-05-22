@@ -102,7 +102,7 @@ throwErrno(::jnixx::env& env, int error, const char *fmt, ...) {
 
 void
 errnoException(::jnixx::env& env, int error, const char *prefix) {
-  throwErrno(env, errno, "%s: %s", prefix, strerror(error));
+  throwErrno(env, error, "%s: %s", prefix, strerror(error));
 }
 
 void
@@ -121,7 +121,7 @@ errnoException(::jnixx::env& env, int error, const char *prefix,
   }
   va_end(ap);
   try {
-    throwErrno(env, errno, "%s: %s (%s)", prefix, strerror(error), message);
+    throwErrno(env, error, "%s: %s (%s)", prefix, strerror(error), message);
   } catch (java::lang::Throwable e) {
     // always executed.
     ::free(message);
