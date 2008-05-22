@@ -1,5 +1,9 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Exec.cxx: Delete.
+	* cni/Exec.cxx: Delete.
+	* Exec.java: Delete.
+
 	* jni/ChildFactory.cxx: Delete.
 	* cni/ChildFactory.cxx: Delete.
 	* ChildFactory.java: Delete.
