@@ -47,8 +47,7 @@ package frysk.sys;
  * The child process is created using the method spawn.
  */
 
-public abstract class PipePair
-{
+public abstract class PipePair {
     /**
      * Write to this file descriptor.
      */
@@ -64,67 +63,61 @@ public abstract class PipePair
     /**
      * Create a pipe-pair and then wire it up.
      *
-     * this > out.out|out.in > child > in.out|in.in > this
+     * this.out > [ out.out | out.in > child > in.out | in.in ] > this.in
      *
      * Spawn is parameterized with the Object o, allowing custom
      * behavior.  The child must close to.out and from.in.
      */
-    protected PipePair (Execute execute)
-    {
-	final Pipe out = new Pipe ();
-	final Pipe in = new Pipe ();
-	// Wire: this.out > to.out
+    protected PipePair(String[] args) {
+	Pipe out = new Pipe ();
+	Pipe in = new Pipe ();
+	// Wire: this.out > out.out
 	this.out = out.out;
-	// Wire: from.in > this.in
+	// Wire: in.in > this.in
 	this.in = in.in;
 	// Wire: out.in > child > to.out
-	pid = spawn (new RedirectPipes (out, in), execute);
-    }
-
-    private static class RedirectPipes
-	extends Redirect
-    {
-	private Pipe out;
-	private Pipe in;
-	RedirectPipes (Pipe out, Pipe in)
-	{
-	    this.out = out;
-	    this.in = in;
-	}
-	/**
-	 * Executed by the child process - re-direct child's end of
-	 * pipes to STDIN and STDOUT.
-	 */
-	protected void reopen ()
-	{
-	    FileDescriptor.in.dup (out.in);
-	    FileDescriptor.out.dup (in.out);
-	    in.close ();
-	    out.close ();
-	}
-	/**
-	 * Executed by the parent process (this) - close child's ends
-	 * of pipes.
-	 */
-	protected void close ()
-	{
-	    out.in.close ();
-	    in.out.close ();
-	}
+	pid = ProcessIdentifierFactory.create(spawn(args, in, out));
+	// Close the child's end of the FDs.
+	out.in.close();
+	in.out.close();
     }
 
     /**
      * Called from the context of the child process.
      */
-    protected abstract ProcessIdentifier spawn (Redirect redirect,
-						Execute exec);
+    abstract int spawn(String[] args, Pipe in, Pipe out);
 
     /**
      * Shut down the pipes.
      */
-    public void close ()
-    {
+    public void close() {
 	in.close ();
 	out.close ();
     }
+
+    public static PipePair daemon(String[] args) {
+	return new PipePair(args) {
+	    int spawn(String[] args, Pipe in, Pipe out) {
+		return PipePair.daemon(args[0], args,
+				       in.in.getFd(), in.out.getFd(),
+				       out.in.getFd(), out.out.getFd());
+	    }
+	};
+    }
+    private static native int daemon(String exe, String[] args,
+				     int in_in, int in_out,
+				     int out_in, int out_out);
+
+    public static PipePair child(String[] args) {
+	return new PipePair(args) {
+	    int spawn(String[] args, Pipe in, Pipe out) {
+		return PipePair.child(args[0], args,
+				      in.in.getFd(), in.out.getFd(),
+				      out.in.getFd(), out.out.getFd());
+	    }
+	};
+    }
+    private static native int child(String exe, String[] args,
+				     int in_in, int in_out,
+				     int out_in, int out_out);
 }

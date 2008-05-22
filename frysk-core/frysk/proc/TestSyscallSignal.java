@@ -45,7 +45,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import frysk.sys.Signal;
-import frysk.sys.DaemonPipePair;
+import frysk.sys.PipePair;
 import frysk.testbed.TestLib;
 import frysk.isa.syscalls.Syscall;
 import frysk.isa.syscalls.SyscallTable;
@@ -82,11 +82,9 @@ public class TestSyscallSignal
 	super.setUp();
 	
 	// Create a process that we will communicate with through stdin/out.
-	DaemonPipePair process
-	    = new DaemonPipePair(new String[] {
-		    Prefix.pkgLibFile("funit-syscall-signal")
-		    .getPath()
-		});
+	PipePair process = PipePair.daemon(new String[] {
+		Prefix.pkgLibFile("funit-syscall-signal").getPath()
+	    });
 	pid = process.pid;
 	TearDownProcess.add(pid);
 	in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));

@@ -1,3 +1,9 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java: Update, use PipePair.daemon.
+	* TestSyscallRunning.java: Ditto.
+	* TestSyscallSignal.java: Ditto.
+
 2008-05-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestTaskObserverWatchpoint.java (testAddFailed): Add alignment test.

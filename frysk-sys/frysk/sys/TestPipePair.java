@@ -97,14 +97,12 @@ public class TestPipePair extends TestCase {
     /**
      * Test a daemon Pipe pair.
      */
-    public void testDaemonTee ()
-    {
-	pipe = new DaemonPipePair (tee);
+    public void testDaemonTee() {
+	pipe = PipePair.daemon(tee);
 	verifyIO ();
     }
-    public void testChildTee ()
-    {
-	pipe = new ChildPipePair (tee);
+    public void testChildTee() {
+	pipe = PipePair.child(tee);
 	verifyIO ();
     }
 
@@ -124,7 +122,7 @@ public class TestPipePair extends TestCase {
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
 	fine.log("Creating funit-procmask to check the mask");
-	pipe = new DaemonPipePair(funitProcMask);
+	pipe = PipePair.daemon(funitProcMask);
 	// For a daemon, it isn't possible to capture the processes
 	// exit status; instead read the output and check for the word
 	// "absent".
@@ -143,7 +141,7 @@ public class TestPipePair extends TestCase {
 	assertTrue("SIGHUP masked",
 		   new SignalSet().getProcMask().contains(Signal.HUP));
 	fine.log("Creating funit-procmask to check the mask");
-	pipe = new ChildPipePair(funitProcMask);
+	pipe = PipePair.child(funitProcMask);
 	// Capture the child's output (look for 
 	class ExitStatus extends UnhandledWaitBuilder {
 	    ProcessIdentifier pid;

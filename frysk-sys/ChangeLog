@@ -1,5 +1,7 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JniRunner): Add frysk.sys.TestPipePair.
+
 	* Makefile.am (JniRunner): Add frysk.testbed.
 	
 	* Makefile.am (JniRunner): Add TestStatelessFile and

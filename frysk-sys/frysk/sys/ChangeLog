@@ -1,5 +1,12 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* PipePair.java (daemon, child): New factory methods.
+	* cni/PipePair.cxx: New.
+	* jni/PipePair.cxx: New.
+	* DaemonPipePair.java: Delete.
+	* ChildPipePair.java: Delete.
+	* TestPipePair.java: Update.
+
 	* jni/Fork.hxx (class redirect_nostdin): New.
 	* cni/Fork.hxx (class redirect_nostdin): New.
 

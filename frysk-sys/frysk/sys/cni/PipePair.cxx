@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,22 +37,65 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 
-/**
- * A pair of pipes wired to a daemon process.
- */
+#include <gcj/cni.h>
 
-public class DaemonPipePair extends PipePair {
-    protected ProcessIdentifier spawn(Redirect redirect,
-				      Execute exec) {
-	return DaemonFactory.create(redirect, exec);
-    }
-    public DaemonPipePair(String[] argv) {
-	super(new Exec (argv));
-    }
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/cni/Fork.hxx"
+#include "frysk/sys/PipePair.h"
 
-    public DaemonPipePair(Execute exec) {
-	super(exec);
-    }
+class redirect_inout : public redirect {
+private:
+  int in_in;
+  int in_out;
+  int out_in;
+  int out_out;
+public:
+  redirect_inout(int in_in, int in_out, int out_in, int out_out) {
+    this->in_in = in_in;
+    this->in_out = in_out;
+    this->out_in = out_in;
+    this->out_out = out_out;
+  }
+  // this.out > [ out.out | out.in > child > in.out | in.in ] > this.in
+  void reopen() {
+    // Rewire: out.in > child's in
+    ::dup2(out_in, 0);
+    // Rewire: in.out > child's out
+    ::dup2(in_out, 1);
+    // Close the pipes.
+    ::close(in_in);
+    ::close(in_out);
+    ::close(out_in);
+    ::close(out_out);
+  }
+};
+
+static jint
+spawn(enum tracing trace, jstring exe,
+      jstringArray args,
+      jint in_in, jint in_out,
+      jint out_in, jint out_out) {
+  redirect_inout inout = redirect_inout(in_in, in_out, out_in, out_out);
+  exec_program program = exec_program(exe, args, 0);
+  return ::spawn(trace, inout, program);
+}
+
+jint
+frysk::sys::PipePair::child(jstring exe,
+			    jstringArray args,
+			    jint in_in, jint in_out,
+			    jint out_in, jint out_out) {
+  return ::spawn(CHILD, exe, args, in_in, in_out, out_in, out_out);
+}
+
+jint
+frysk::sys::PipePair::daemon(jstring exe,
+			     jstringArray args,
+			     jint in_in, jint in_out,
+			     jint out_in, jint out_out) {
+  return ::spawn(DAEMON, exe, args, in_in, in_out, out_in, out_out);
 }

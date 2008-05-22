@@ -50,7 +50,7 @@ import frysk.event.Event;
 import frysk.testbed.TestLib;
 import frysk.testbed.TearDownProcess;
 import frysk.config.Prefix;
-import frysk.sys.DaemonPipePair;
+import frysk.sys.PipePair;
 import frysk.isa.syscalls.SyscallTable;
 import frysk.isa.syscalls.SyscallTableFactory;
 import frysk.testbed.IsaTestbed;
@@ -81,10 +81,9 @@ public class TestSyscallRunning
 	super.setUp();
 
 	// Create a process that we will communicate with through stdin/out.
-	DaemonPipePair process
-	    = new DaemonPipePair(new String[] {
-		    Prefix.pkgLibFile("funit-syscall-running").getPath()
-		});
+	PipePair process = PipePair.daemon(new String[] {
+		Prefix.pkgLibFile("funit-syscall-running").getPath()
+	    });
 	TearDownProcess.add(process.pid);
 
 	in = new BufferedReader(new InputStreamReader(process.in.getInputStream()));
