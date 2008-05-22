@@ -1,3 +1,10 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Poll.cxx: Implement.
+	* jni/AuditLibs.cxx: Implement.
+	* jni/StatelessFile.cxx: Implement.
+	* jni/Uname.cxx: Implement.
+
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Pipe.cxx: Implement.

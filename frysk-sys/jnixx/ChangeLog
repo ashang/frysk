@@ -1,3 +1,9 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* exceptions.cxx (errnoException): Use vasprintf, not snprintf.
+	(runtimeException): Simplify exception checks; throw RuntimeException.
+	* print.cxx (vajprintf): Ditto.
+
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
 	* JniBindings.java: Add == for Object.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <libaudit.h>
+#include <malloc.h>
+
 #include "jni.hxx"
+
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+String
+frysk::sys::AuditLibs::syscallToName(jnixx::env env, jint syscall,
+				     jint machine) {
+  const char* syscall_name = audit_syscall_to_name(syscall, machine);
+  if(syscall_name == NULL){
+    return String(env, NULL);
+  }
+  return String::NewStringUTF(env, syscall_name);
+}
+
+jint
+frysk::sys::AuditLibs::nameToSyscall(jnixx::env env, String name,
+				     jint machine) {
+  StringChars syscall_name = StringChars(env, name);
+  return audit_name_to_syscall(syscall_name.elements(), machine);
+}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -37,4 +37,73 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/bounds.hxx"
+#include "jnixx/exceptions.hxx"
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+jint
+frysk::sys::StatelessFile::pread(jnixx::env env, jlong fileOffset,
+				 jnixx::byteArray bytes,
+				 jint start, jint length) {
+  verifyBounds(env, bytes, start, length);
+  
+  ArrayBytes unixPath = ArrayBytes(env, GetUnixPath(env));
+  int fd = ::open((const char *)unixPath.elements(), O_RDONLY);
+  if (fd < 0)
+    errnoException(env, errno, "open", "filename %s",
+		   (const char *)unixPath.elements());
+  unixPath.release();
+
+  // XXX: 64-bit?
+  ArrayBytes buffer = ArrayBytes(env, bytes);
+  ssize_t rc = ::pread64 (fd, start + buffer.elements(), length, fileOffset);
+  if (rc < 0) {
+    int savedErrno = errno;
+    ::close (fd);
+    errnoException(env, savedErrno, "pread", "fd %d, count %d, offset %ld",
+    		fd, (int) length, (long)fileOffset);
+  }
+  buffer.release();
+
+  ::close (fd);
+  return rc;
+}
+
+jint
+frysk::sys::StatelessFile::pwrite(jnixx::env env, jlong fileOffset,
+				  jnixx::byteArray bytes,
+				  jint start, jint length) {
+  verifyBounds (env, bytes, start, length);
+  
+  ArrayBytes unixPath = ArrayBytes(env, GetUnixPath(env));
+  int fd = ::open((const char *)unixPath.elements(), O_WRONLY);
+  if (fd < 0)
+    errnoException(env, errno, "open", "filename %s",
+		   (const char *)unixPath.elements());
+  unixPath.release();
+
+  // XXX: 64-bit?
+  ArrayBytes buffer = ArrayBytes(env, bytes);
+  ssize_t rc = ::pwrite64 (fd, start + buffer.elements(), length, fileOffset);
+  if (rc < 0) {
+    int savedErrno = errno;
+    ::close (fd);
+    errnoException(env, savedErrno, "pwrite", "fd %d, count %d, offset %ld",
+		   fd, (int) length, (long)fileOffset);
+  }
+  buffer.release();
+  
+  ::close (fd);
+  return rc;
+}

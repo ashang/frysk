@@ -48,6 +48,8 @@
 #include "jnixx/exceptions.hxx"
 #include "jnixx/print.hxx"
 
+using namespace java::lang;
+
 static void throwErrno(::jnixx::env& env, int error, const char *fmt, ...)
   __attribute__((noreturn));
 void
@@ -55,6 +57,7 @@ throwErrno(::jnixx::env& env, int error, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   java::lang::String message = vajprintf(env, fmt, ap);
+  va_end(ap);
   switch (error) {
 #ifdef EBADF
   case EBADF:
@@ -95,47 +98,55 @@ throwErrno(::jnixx::env& env, int error, const char *fmt, ...) {
   default:
     frysk::sys::Errno::New(env, error, message).Throw(env);
   }
-  va_end(ap);
 }
 
 void
 errnoException(::jnixx::env& env, int error, const char *prefix) {
-  // Hack; for moment just throw something.
   throwErrno(env, errno, "%s: %s", prefix, strerror(error));
 }
 
 void
 errnoException(::jnixx::env& env, int error, const char *prefix,
 	       const char *fmt, ...) {
+  // Allocate a copy of the message.
   va_list ap;
   va_start(ap, fmt);
-  char message[256];
-  if (::snprintf(message, sizeof(message), fmt, ap) < 0) {
-    errnoException(env, errno, "malloc");
+  char *message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    // If this fails things are pretty much stuffed.
+    int err = errno;
+    fprintf(stderr, "warning: vasprintf in errnoException failed (%s)\n",
+	    ::strerror(err));
+    RuntimeException::ThrowNew(env, "vasprintf in errnoException failed");
   }
-  throwErrno(env, errno, "%s: %s (%s)", prefix, strerror(error), message);
   va_end(ap);
+  try {
+    throwErrno(env, errno, "%s: %s (%s)", prefix, strerror(error), message);
+  } catch (java::lang::Throwable e) {
+    // always executed.
+    ::free(message);
+    throw e;
+  }
 }
 
 void
 runtimeException(::jnixx::env& env, const char *fmt, ...) {
-  jclass cls = env.FindClass("java/lang/RuntimeException");
   va_list ap;
   va_start(ap, fmt);
-  char *msg = NULL;
-  int status = ::vasprintf(&msg, fmt, ap);
-  va_end(ap);
-  if (status < 0) {
-    fprintf(stderr, "runtimeException: vasprintf failed: %s",
-	    ::strerror(errno));
-    env.ThrowNew(cls, "runtimeException: vasprintf failed");
+  char *message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    // If this fails things are pretty much stuffed.
+    int err = errno;
+    fprintf(stderr, "warning: vasprintf in runtimeException failed: %s",
+	    ::strerror(err));
+    RuntimeException::ThrowNew(env, "vasprintf in runtimeException failed");
   }
+  va_end(ap);
   try {
-    env.ThrowNew(cls, msg);
+    RuntimeException::ThrowNew(env, message);
   } catch (java::lang::Throwable e) {
-    // XXX: Work around lack of finally by catchching, then
-    // re-throwing, the exception
-    ::free(msg);
+    // Always executed.
+    ::free(message);
     throw e;
   }
 }

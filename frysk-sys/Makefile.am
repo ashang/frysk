@@ -100,8 +100,10 @@ JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	echo "    frysk.sys.proc \\"				>> $@.tmp
 	echo "    frysk.sys.termios \\"				>> $@.tmp
 	echo "    frysk.sys.TestProcessIdentifier \\"		>> $@.tmp
+	echo "    frysk.sys.TestPseudoTerminal \\"		>> $@.tmp
 	echo "    frysk.sys.TestSignal \\"			>> $@.tmp
 	echo "    frysk.sys.TestSignalSet \\"			>> $@.tmp
+	echo "    frysk.sys.TestStatelessFile \\"		>> $@.tmp
 	echo "    inua \\"					>> $@.tmp
 	echo "    jnixx \\"					>> $@.tmp
 	echo "    lib.stdcpp \\"				>> $@.tmp

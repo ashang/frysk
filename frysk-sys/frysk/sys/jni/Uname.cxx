@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2006, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <string.h>
+#include <sys/utsname.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+frysk::sys::Uname
+frysk::sys::Uname::get(jnixx::env env) {
+  struct utsname names;
+  Uname retval = Uname::New(env);
+
+  (void)::uname(&names);
+    
+  retval.SetSysname(env, String::NewStringUTF(env, names.sysname));
+  retval.SetNodename(env, String::NewStringUTF(env, names.nodename));
+  retval.SetRelease(env, String::NewStringUTF(env, names.release));
+  retval.SetVersion(env, String::NewStringUTF(env, names.version));
+  retval.SetMachine(env, String::NewStringUTF(env, names.machine));
+#ifdef _GNU_SOURCE
+  retval.SetDomainname(env, String::NewStringUTF(env, names.domainname));
+#else
+  retval.SetDomainname(env, NULL);
+#endif
+  return retval;
+}

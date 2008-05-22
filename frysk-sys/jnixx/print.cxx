@@ -39,6 +39,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #include "jni.hxx"
 #include "jnixx/print.hxx"
@@ -66,7 +67,11 @@ String
 vajprintf(::jnixx::env& env, const char *fmt, va_list ap) {
   char* message = NULL;
   if (::vasprintf(&message, fmt, ap) < 0) {
-    errnoException(env, errno, "vasprintf");
+    // If this fails things are pretty much stuffed.
+    int err = errno;
+    fprintf(stderr, "warning: vasprintf in vajprintf failed (%s)\n",
+	    ::strerror(err));
+    RuntimeException::ThrowNew(env, "vasprintf in vajprintf failed");
   }
   try {
     return String::NewStringUTF(env, message);
