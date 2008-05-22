@@ -1,3 +1,7 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPtrace.java: Replace DaemonFactory with ForkFactory.
+
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AddressSpace.cxx (AddressSpace::transfer): Use elements().

@@ -1,5 +1,12 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/ChildFactory.cxx: Delete.
+	* cni/ChildFactory.cxx: Delete.
+	* ChildFactory.java: Delete.
+	* jni/DaemonFactory.cxx: Delete.
+	* cni/DaemonFactory.cxx: Delete.
+	* DaemonFactory.java: Delete.
+
 	* PipePair.java (daemon, child): New factory methods.
 	* cni/PipePair.cxx: New.
 	* jni/PipePair.cxx: New.

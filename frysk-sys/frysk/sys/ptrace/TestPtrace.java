@@ -42,11 +42,9 @@ package frysk.sys.ptrace;
 import frysk.sys.ProcessIdentifier;
 import frysk.junit.TestCase;
 import frysk.testbed.TearDownProcess;
+import frysk.testbed.ForkFactory;
 import frysk.sys.Fork;
-import frysk.sys.Itimer;
-import frysk.sys.Execute;
 import frysk.sys.Errno;
-import frysk.sys.DaemonFactory;
 import frysk.sys.Wait;
 import frysk.sys.Signal;
 import frysk.sys.UnhandledWaitBuilder;
@@ -115,11 +113,7 @@ public class TestPtrace extends TestCase {
      * Check attach (to oneself).
      */
     public void testAttachDetach() {
-	final ProcessIdentifier pid = DaemonFactory.create(new Execute() {
-		public void execute() {
-		    Itimer.sleep (TestCase.getTimeoutSeconds());
-		}
-	    });
+	final ProcessIdentifier pid = ForkFactory.detachedDaemon();
 	TearDownProcess.add(pid);
 	assertTrue ("pid", pid.intValue() > 0);
 
