@@ -1,3 +1,7 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (--with-libopcodes): Delete.
+
 2008-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (jnixx_sources): Fix path to sources.

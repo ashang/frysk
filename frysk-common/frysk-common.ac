@@ -248,12 +248,6 @@ FRYSK_DO_ARCH32_TEST
 FRYSK_WERROR
 FRYSK_COVERAGE
 
-AC_ARG_WITH(libopcodes,
-	AS_HELP_STRING([--with-libopcodes], [use libopcodes (disassembler)]),
-	[AC_DEFINE(WITH_LIBOPCODES)
-	 LIBS="$LIBS -lopcodes"]
-	[])
-
 AC_MSG_CHECKING([direct .jar to .o compilation (--enable-jar-compile)])
 AC_ARG_ENABLE([jar-compile],
 	[  --enable-jar-compile	Enable direct compilation of jars],
