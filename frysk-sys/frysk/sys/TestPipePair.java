@@ -40,7 +40,6 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
-import frysk.testbed.Tee;
 import frysk.rsl.Log;
 import frysk.config.Prefix;
 
@@ -106,24 +105,6 @@ public class TestPipePair extends TestCase {
     public void testChildTee ()
     {
 	pipe = new ChildPipePair (tee);
-	verifyIO ();
-    }
-
-    /**
-     * Test a daemon assembly file.
-     */
-    public void testDaemonExecute ()
-    {
-	pipe = new DaemonPipePair (new Tee ());
-	verifyIO ();
-    }
-
-    /**
-     * Test a child assembly file.
-     */
-    public void testChildExecute ()
-    {
-	pipe = new ChildPipePair (new Tee ());
 	verifyIO ();
     }
 

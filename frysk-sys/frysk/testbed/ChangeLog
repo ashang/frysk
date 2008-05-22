@@ -1,3 +1,10 @@
+2008-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ForkFactory.java: Don't use Execute.
+	* Tee.java: Delete.
+	* cni/Tee.java: Delete.
+	* jni/Tee.java: Delete.
+
 2008-05-14  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/LocalMemory.cxx: Update #includes to match jnixx rename.

@@ -1,5 +1,8 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPipePair.java (testDaemonExecute()): Delete.
+	(testChildExecute()): Delete.
+	
 	* jni/Poll.cxx: Implement.
 	* jni/AuditLibs.cxx: Implement.
 	* jni/StatelessFile.cxx: Implement.
