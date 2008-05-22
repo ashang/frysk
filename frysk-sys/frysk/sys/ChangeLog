@@ -1,5 +1,7 @@
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Pipe.cxx: Implement.
+
 	* Environ.java (putEnvironment(String[])): Change parameter from
 	Object[] to String[].
 	* jni/Environ.cxx: Implement.

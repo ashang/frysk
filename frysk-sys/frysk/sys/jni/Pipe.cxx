@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+
 #include "jni.hxx"
+
+#include "jnixx/exceptions.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys;
+
+jnixx::array<FileDescriptor>
+Pipe::pipe(jnixx::env env) {
+  const int nfds = 2;
+  int filedes[nfds];
+  if (::pipe (filedes) < 0) {
+    errnoException(env, errno, "pipe");
+  }
+  // printf ("pipe [%d, %d]\n", filedes[0], filedes[1]);
+  jnixx::array<FileDescriptor> fds
+    = jnixx::array<FileDescriptor>::NewObjectArray(env, nfds);
+  for (int i = 0; i < nfds; i++) {
+    fds.SetObjectArrayElement(env, i, FileDescriptor::New(env, filedes[i]));
+  }
+  return fds;
+}
