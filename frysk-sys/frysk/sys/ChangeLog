@@ -1,5 +1,8 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/Fork.hxx (class redirect_nostdin): New.
+	* cni/Fork.hxx (class redirect_nostdin): New.
+
 	* TestPipePair.java (testDaemonExecute()): Delete.
 	(testChildExecute()): Delete.
 	

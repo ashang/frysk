@@ -56,6 +56,18 @@ public:
   }
 };
 
+/**
+ * Just close standard input; leave the rest as is.
+ */
+class redirect_nostdin : public redirect {
+  void reopen() {
+    ::close(0);
+  }
+};
+
+/**
+ * What to do once the child/daemon process fork as occured.
+ */
 class exec {
 public:
   virtual void execute() = 0;
@@ -64,6 +76,9 @@ public:
   }
 };
 
+/**
+ * exec the specified program.
+ */
 class exec_program : public exec {
   StringChars exe;
   const char* exeElements;

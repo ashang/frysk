@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,75 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-enum tracing {
-  CHILD,
-  DAEMON,
-  PTRACE,
-  UTRACE,
-};
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 
-/**
- * Class to redirect a child's stdio; the destructor should clean up
- * the parent resources.
- */
-class redirect {
+#include <gcj/cni.h>
+
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/testbed/ForkFactory.h"
+#include "frysk/sys/cni/Fork.hxx"
+
+class exec_sleep : public exec {
+private:
+  int timeout;
 public:
-  virtual void reopen() = 0;
-  virtual ~redirect() {
-    // where the close code goes.
-  }
-};
-
-/**
- * Just close standard input; leave the rest as is.
- */
-class redirect_nostdin : public redirect {
-  void reopen() {
-    ::close(0);
-  }
-};
-
-/**
- * What to do once the child/daemon process fork as occured.
- */
-class exec {
-public:
-  virtual void execute() = 0;
-  virtual ~exec() {
-    // where the close code goes.
-  }
-};
-
-/**
- * exec the specified program.
- */
-class exec_program : public exec {
-  char* exePath;
-  char** argv;
-  char** environ;
-public:
-  exec_program(jstring exe, jstringArray args, jlong environ) {
-    this->exePath = MALLOC_STRING(exe);
-    this->argv = MALLOC_ARGV(args);
-    this->environ = (char**)(long)environ;
+  exec_sleep(int timeout) {
+    this->timeout = timeout;
   }
   void execute() {
-    if (environ != NULL) {
-      ::execve(exePath, argv, environ);
-      ::perror("execve");
-    } else {
-      ::execv(exePath, argv);
-      ::perror("execv");
-    }
-    ::_exit(errno);
-  }
-  ~exec_program() {
-    JvFree(exePath);
-    JvFree(argv);
+    int remaining = timeout;
+    do
+      remaining -= ::sleep(remaining);
+    while (remaining > 0);
+    ::_exit(0);
   }
 };
 
-/**
- * Spawn a child, return the PID, or throw an error.
- */
-extern int spawn(tracing trace, redirect& redirection, exec& execute);
+jint
+frysk::testbed::ForkFactory::fork(jint timeout) {
+  exec_sleep sleeper = exec_sleep(timeout);
+  redirect_nostdin nostdin = redirect_nostdin();
+  return ::spawn(DAEMON, nostdin, sleeper);
+}

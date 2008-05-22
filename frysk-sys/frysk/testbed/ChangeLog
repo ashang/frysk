@@ -1,5 +1,8 @@
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
+	* TestForkFactory.java: New.
+	* cni/ForkFactory.cxx: New.
+	* jni/ForkFactory.cxx: New.
 	* ForkFactory.java: Don't use Execute.
 	* Tee.java: Delete.
 	* cni/Tee.java: Delete.

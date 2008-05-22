@@ -41,15 +41,13 @@ package frysk.testbed;
 
 import frysk.rsl.Log;
 import frysk.junit.TestCase;
-import frysk.sys.Execute;
 import frysk.sys.Signal;
-import frysk.sys.Itimer;
 import frysk.sys.ProcessIdentifier;
+import frysk.sys.ProcessIdentifierFactory;
 import frysk.sys.ptrace.Ptrace;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.SignalBuilder;
-import frysk.sys.DaemonFactory;
 
 /**
  * Create a copy of this process running as a daemon.
@@ -59,19 +57,12 @@ public class ForkFactory {
     private static final Log fine = Log.fine(ForkFactory.class);
 
     public static ProcessIdentifier detachedDaemon() {
-	ProcessIdentifier pid = DaemonFactory.create(new Execute() {
-		final int timeout = TestCase.getTimeoutSeconds();
-		public void execute() {
-		    int remaining = timeout;
-		    do
-			remaining -= Itimer.sleep (remaining);
-		    while (remaining > 0);
-		}
-	    });
+	ProcessIdentifier pid = ProcessIdentifierFactory.create(fork(TestCase.getTimeoutSeconds()));
 	TearDownProcess.add(pid);
 	fine.log("detachedDaemon", pid);
 	return pid;
     }
+    private static native int fork(int timeout);
 
     public static ProcessIdentifier attachedDaemon() {
 	ProcessIdentifier pid = detachedDaemon();
