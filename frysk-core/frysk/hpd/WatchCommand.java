@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import frysk.expr.Expression;
+import frysk.isa.watchpoints.WatchpointFunctionFactory;
 import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
@@ -96,19 +97,43 @@ class WatchCommand extends ParameterizedCommand {
 		cli.printError(e);
 		continue;
 	    }	    
-	    // XXX: will fail for non-contiguos memory and registers 
-	    // XXX: Add error handling
-	    long address = expr.getLocation().getAddress();
 
 	    // XXX: getValue may modify inferior.
 	    String oldValueStr = expr.getValue().toPrint
-	                        (Format.NATURAL, task.getMemory());
+	                         (Format.NATURAL, task.getMemory());
 
-	    // Add a watch point observer to task.
+	    // Get the number of hardware watchpoints - architecture dependent
+	    int watchpointCount = WatchpointFunctionFactory.getWatchpointFunctions
+	                          (task.getISA()).getWatchpointCount();
+	    // Get the max length a hardware watchpoint can watch - architecture dependent
+	    int watchLength = WatchpointFunctionFactory.getWatchpointFunctions
+                              (task.getISA()).getWatchpointMaxLength();
+	 
+	    // XXX: May fail for non-contiguos memory and registers 
+	    long variableAddress = expr.getLocation().getAddress();
+	    int variableLength = expr.getType().getSize();
+	    
+	    if (variableLength > watchpointCount * watchLength )
+		throw new RuntimeException ("Watchpoint set error: Variable size too large.");
+
+	    // Calculate number of watch observers needed to completely
+	    // watch the variable.
+	    int numberOfObservers = (int)Math.ceil((double)variableLength/
+		                                   (double)watchLength);
+
+	    // Add watchpoint observers to task. 
+	    for (int i=0; i< numberOfObservers-1; i++) {
+		WatchpointObserver wpo = new WatchpointObserver
+		                         (expr, cli, expressionStr, oldValueStr);    
+		task.requestAddWatchObserver
+		     (wpo, variableAddress + i*watchLength, watchLength, writeOnly);
+	    }	
+	    // Last observer may not need to watch all watchLength bytes. 
 	    WatchpointObserver wpo = new WatchpointObserver
-	                             (expr, cli, expressionStr, oldValueStr);
+	                            (expr, cli, expressionStr, oldValueStr);
 	    task.requestAddWatchObserver
-	         (wpo, address, expr.getType().getSize(), writeOnly);		
+	         (wpo, variableAddress + (numberOfObservers-1)*watchLength, 
+	          variableLength-(numberOfObservers-1)*watchLength, writeOnly);
 	}       
     }
     
@@ -131,15 +156,14 @@ class WatchCommand extends ParameterizedCommand {
 	    
 	    String newValueStr = expr.getValue().toPrint
 	                         (Format.NATURAL, task.getMemory());
-	    cli.outWriter.println("Watchpoint hit: " + exprStr); 
-	    cli.outWriter.println(); 
-	    cli.outWriter.println("   Value before hit = " + oldValueStr);
-	    cli.outWriter.println("   Value after  hit = " + newValueStr);
-	    cli.outWriter.println(); 
+	    
+	    String watchMessage = "Watchpoint hit: " + exprStr + "\n" +
+	                          "   Value before hit = " + oldValueStr + "\n" +
+	                          "   Value after  hit = " + newValueStr + "\n";
 	    // Remember the previous value
 	    oldValueStr = newValueStr;
 
-	    cli.getSteppingEngine().blockedByActionPoint(task, this);
+	    cli.getSteppingEngine().blockedByActionPoint(task, this, watchMessage, cli.outWriter);
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
 	}

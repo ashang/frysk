@@ -94,4 +94,68 @@ public class TestWatchCommand extends TestLib {
       e.close();
   }  
   
+  /*
+   * Test to watch a variable that requires multiple
+   * watchpoints on IA32.
+   */
+  public void testWatchLongLong()
+  {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+      
+      e.send("watch long_long\n"); 
+      e.expect(".*Watchpoint set: long_long.*");
+      
+      e.send("go\n"); 
+      e.expect(".*Watchpoint hit: long_long.*Value before hit ="
+  	        + ".*Value after  hit =.*");
+
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();
+  }  
+  
+  /*
+   * Test to watch a data type whose size is larger than
+   * that can be watched by all hardware watch registers
+   * put together.
+   */
+  public void testWatchOversized()
+  {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+      
+      e.send("watch bigArray\n"); 
+      e.expect(".*Watchpoint set error: Variable size too large.*");
+      
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();
+  }   
+  
+  /*
+   * Test to watch a variable that is smaller than the max
+   * size a single watch register can watch.
+   */
+  public void testUndersized() {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+      
+      e.send("watch char_\n"); 
+      e.expect(".*Watchpoint set: char_.*");
+      
+      e.send("go\n"); 
+      e.expect(".*Watchpoint hit: char_.*Value before hit ="
+  	        + ".*Value after  hit =.*");
+
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();     
+  }
 }

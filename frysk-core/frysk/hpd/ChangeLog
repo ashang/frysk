@@ -1,7 +1,13 @@
+2008-05-23 Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java (interpret): Install multiple
+	watchobservers if necessary.
+	* TestWatchCommand.java: New tests added. 
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
-
+	
 	* TestDisassemblerCommand.java: Don't use lib.opcodes.
-
+	
 2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	ObjectDeclarationSearchEngine: Constructor now 
