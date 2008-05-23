@@ -129,7 +129,7 @@ class LibunwindAddressSpace extends AddressSpace {
 	fine.log(this, "findProcInfo ip", ip, "needUnwindInfo", needUnwindInfo);
 	ElfImage elfImage = getElfImage(ip);
 	fine.log(this, "Obtained elfImage", elfImage);
-	procInfo = getUnwinder()
+	procInfo = unwinder
 	    .createProcInfoFromElfImage(this, ip, needUnwindInfo, elfImage);
 	fine.log(this, "post procInfo", procInfo);
 	return procInfo;
@@ -151,7 +151,7 @@ class LibunwindAddressSpace extends AddressSpace {
 	}
 	if (DwflFactory.isVDSO(task.getProc(), map)) {
 	    fine.log(this, "Handling VDSO map");
-	    elfImage = getUnwinder()
+	    elfImage = unwinder
 		.createElfImageFromVDSO(this, map.addressLow, 
 					map.addressHigh, map.offset);
 	} else {

@@ -1,5 +1,9 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Unwind.java: For unwAddressSpace, pass a long, not RawData.
+	* AddressSpace.java (unwAddressSpace): Change type to jlong.
+	(getUnwinder()): Delete.
+	
 	* Cursor.java (unwCursor): Change type to long.
 	* Unwind.java: Replace managed cursor param with long unwCursor.
 	(destroyCursor(long)): New.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,10 +39,7 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawData;
-
-public abstract class AddressSpace
-{
+public abstract class AddressSpace {
     /**
      * Marker so that it is possible to confirm that this is an
      * AddressSpace.
@@ -50,28 +47,24 @@ public abstract class AddressSpace
     static final int MAGIC = 0xacce550a;
     final int magic = MAGIC;
 
-    final RawData unwAddrSpace;
-    final Unwind unwinder;
-  
-    public Unwind getUnwinder() {
-	return unwinder;
-    }
+    public final long unwAddressSpace;
+    public final Unwind unwinder;
   
     public AddressSpace(Unwind unwinder, ByteOrder byteOrder) {
 	this.unwinder = unwinder;
-	unwAddrSpace = unwinder.createAddressSpace(byteOrder);
+	unwAddressSpace = unwinder.createAddressSpace(byteOrder);
     }
     protected void finalize() {
-	unwinder.destroyAddressSpace(unwAddrSpace);
+	unwinder.destroyAddressSpace(unwAddressSpace);
     }
 
     public Cursor createCursor() {
-	return new Cursor(this, unwinder.createCursor(this, unwAddrSpace),
+	return new Cursor(this, unwinder.createCursor(this, unwAddressSpace),
 			  unwinder); 
     }
 
     public void setCachingPolicy (CachingPolicy cachingPolicy) {
-	unwinder.setCachingPolicy(unwAddrSpace, cachingPolicy);
+	unwinder.setCachingPolicy(unwAddressSpace, cachingPolicy);
     }
   
     /**

@@ -115,8 +115,7 @@ put_unwind_info(::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		void *addressSpace) {
   AddressSpace* space = vec(addressSpace);
   ProcInfo* procInfo
-    = new ProcInfo(space->unwinder,
-		   (gnu::gcj::RawDataManaged *) proc_info);
+    = new ProcInfo(space->unwinder, (gnu::gcj::RawDataManaged *) proc_info);
   space->putUnwindInfo (procInfo);
 }
 
@@ -208,15 +207,14 @@ get_proc_name(::unw_addr_space_t as,
 }
 
 jlong
-TARGET::createCursor(AddressSpace* addressSpace,
-		     gnu::gcj::RawData* unwAddrSpace)
+TARGET::createCursor(AddressSpace* addressSpace, jlong unwAddressSpace)
 {
-  logf(fine, this, "createCursor from address-space %lxf", (long) unwAddrSpace);
+  logf(fine, this, "createCursor from address-space %lxf", (long) unwAddressSpace);
   unw_cursor_t* unwCursor = (unw_cursor_t*) JvMalloc(sizeof(::unw_cursor_t));
   // XXX: Need to zero out the cursor, as unw_init_remote doesn't seem
   // to do it.
   memset(unwCursor, 0, sizeof(*unwCursor));
-  unw_init_remote(unwCursor, (unw_addr_space_t) unwAddrSpace,
+  unw_init_remote(unwCursor, (unw_addr_space_t) unwAddressSpace,
 		  (void *) addressSpace);
   logf(fine, this, "createCursor at %lx", (long) unwCursor);
   return (jlong) unwCursor;
@@ -228,7 +226,7 @@ TARGET::destroyCursor(jlong unwCursor) {
   JvFree((unw_cursor_t*) (long) unwCursor);
 }
 
-gnu::gcj::RawData*
+jlong
 TARGET::createAddressSpace(ByteOrder * byteOrder) {
   logf(fine, this, "createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
   static unw_accessors_t accessors = {
@@ -241,21 +239,22 @@ TARGET::createAddressSpace(ByteOrder * byteOrder) {
     resume,
     get_proc_name
   };
-
-  return (gnu::gcj::RawData *) unw_create_addr_space( &accessors, (int) byteOrder->hashCode());
+  jlong unwAddressSpace
+    = (jlong) unw_create_addr_space(&accessors, (int) byteOrder->hashCode());
+  logf(fine, this, "createAddressSpace at %lx", (long)unwAddressSpace);
+  return unwAddressSpace;
 }
 
 void
-TARGET::destroyAddressSpace(gnu::gcj::RawData* unwAddrSpace) {
-  logf(fine, this, "destroyAddressSpace");
-  unw_destroy_addr_space((unw_addr_space_t) unwAddrSpace);
+TARGET::destroyAddressSpace(jlong unwAddressSpace) {
+  logf(fine, this, "destroyAddressSpace %lx", (long)unwAddressSpace);
+  unw_destroy_addr_space((unw_addr_space_t) unwAddressSpace);
 }
 
 void
-TARGET::setCachingPolicy(gnu::gcj::RawData* unwAddrSpace,
-			 CachingPolicy* cachingPolicy) {
+TARGET::setCachingPolicy(jlong unwAddressSpace, CachingPolicy* cachingPolicy) {
   log(fine, this, "setCachingPolicy, cachingPolicy:", cachingPolicy);
-  unw_set_caching_policy((unw_addr_space_t) unwAddrSpace,
+  unw_set_caching_policy((unw_addr_space_t) unwAddressSpace,
                          (unw_caching_policy_t) cachingPolicy->hashCode());
 }
 
@@ -677,7 +676,7 @@ TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
     return new ElfImage((jint) -1);
 
   logf(fine, this, "checked size, 0x%lx", (unsigned long) size);
-  unw_addr_space_t as = (unw_addr_space_t) addressSpace->unwAddrSpace;
+  unw_addr_space_t as = (unw_addr_space_t) addressSpace->unwAddressSpace;
   a = unw_get_accessors (as);
   if (! a->access_mem)
     return new ElfImage((jint) -1);

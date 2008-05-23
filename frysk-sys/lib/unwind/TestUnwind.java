@@ -84,8 +84,7 @@ public class TestUnwind
     public void testCreateAddress() {  
 	AddressSpace addr = new TestAddressSpace(new UnwindX8664(),
 						 ByteOrder.DEFAULT);
-	assertNotNull("AddressSpace should not be null",
-		      addr.unwAddrSpace);
+	assertNotNull("AddressSpace should not be null", addr);
     }
   
     public void testCreateCursor() {

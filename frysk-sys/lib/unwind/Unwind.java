@@ -49,14 +49,13 @@ public abstract class Unwind {
     static final Log finest = LogFactory.finest(Unwind.class);
   
     abstract long createCursor(AddressSpace addressSpace,
-			       RawData unwAddrSpace);
+			       long unwAddressSpace);
     abstract void destroyCursor(long unwCursor);
      
-    abstract RawData createAddressSpace (ByteOrder byteOrder);
+    abstract long createAddressSpace (ByteOrder byteOrder);
+    abstract void destroyAddressSpace (long unwAddressSpace);
   
-    abstract void destroyAddressSpace (RawData addressSpace);
-  
-    abstract void setCachingPolicy(RawData addressSpace, 
+    abstract void setCachingPolicy(long unwAddressSpace, 
 				   CachingPolicy cachingPolicy);
   
     abstract int isSignalFrame (long unwCursor);

@@ -1,5 +1,7 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindAddressSpace.java: Use AddressSpace.unwinder (fixme);
+
 	* StackFactory.java: Use AddressSpace.createCursor().
 
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
