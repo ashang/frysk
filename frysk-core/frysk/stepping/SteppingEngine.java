@@ -39,6 +39,7 @@
 
 package frysk.stepping;
 
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,11 +49,15 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
+
 import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import lib.dwfl.DwflLine;
 import frysk.debuginfo.DebugInfoFrame;
+import frysk.event.ActionPointEvent;
+import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -106,6 +111,9 @@ public class SteppingEngine {
     private LinkedList threadsList;
 
     private BreakpointManager breakpointManager;
+    
+    /* Set that keeps the list of actionpoint messages */
+    private static Set messages = new HashSet();
 
     public SteppingEngine() {
 	this.runningTasks = new HashSet();
@@ -979,7 +987,7 @@ public class SteppingEngine {
 	tse = (TaskStepEngine) this.taskStateMap.get(task);
 	tse.setState(new RunningState(task));
     }
-    
+
     /**
      * Sets the stepping engine on being hit by an action point.  
      * 
@@ -1004,6 +1012,45 @@ public class SteppingEngine {
 	    // Remove the task from the running tasks list      
 	    this.runningTasks.remove(task);
 	}
+    }
+    
+    /**
+     * Sets the stepping engine on being hit by an action point.  
+     * 
+     * to      - Observer that causes task to block.
+     * message - message describing the cause of program block
+     * writer  - writer to print message to
+     */    
+    public void blockedByActionPoint(Task task, TaskObserver to, 
+	                             String message, PrintWriter writer) {
+	
+	/* Set messages being empty implies the fist action point being hit.
+	 */
+	if (messages.isEmpty()) {
+	    
+	    // Schedule a done event on the first sight of an action point
+	    Event e = new ActionPointEvent(messages, writer);
+	    Manager.eventLoop.add(e);
+	    
+	    // Requests the addition of the stepping observer to task if 
+	    // not inserted already.
+	    if (!(task.isInstructionObserverAdded(this.steppingObserver))) {
+		task.requestAddInstructionObserver(this.steppingObserver);
+	    }
+
+	    // Add the observer to the task's blockers list
+	    addBlocker(task, to);
+
+	    TaskStepEngine tse = null;
+	    tse = (TaskStepEngine) this.taskStateMap.get(task);	
+	    if (!tse.isStopped()) {
+		// Set the state of task as stopped
+		tse.setState(new StoppedState(task));	
+		// Remove the task from the running tasks list      
+		this.runningTasks.remove(task);
+	    }
+	}
+	messages.add(message);
     }
     
     /**

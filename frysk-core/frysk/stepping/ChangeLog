@@ -1,3 +1,8 @@
+2008-05-23    Teresa Thomas  <tthomas@redhat.com>
+
+	* SteppingEngine.java (messages): New.
+	(blockedByActionPoint(Task,TaskObserver,String,PrintWriter)): New.
+
 2008-04-17  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestStepping.java (testStepSigRaise): Don't mark unresolved #4237.
