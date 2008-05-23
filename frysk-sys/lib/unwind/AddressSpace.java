@@ -50,7 +50,7 @@ public abstract class AddressSpace
     static final int MAGIC = 0xacce550a;
     final int magic = MAGIC;
 
-    final RawData addressSpace;
+    final RawData unwAddrSpace;
     final Unwind unwinder;
   
     public Unwind getUnwinder() {
@@ -59,18 +59,21 @@ public abstract class AddressSpace
   
     public AddressSpace(Unwind unwinder, ByteOrder byteOrder) {
 	this.unwinder = unwinder;
-	addressSpace = unwinder.createAddressSpace(byteOrder);
+	unwAddrSpace = unwinder.createAddressSpace(byteOrder);
     }
-  
-    public void setCachingPolicy (CachingPolicy cachingPolicy) {
-	unwinder.setCachingPolicy(addressSpace, cachingPolicy);
-    }
-  
     protected void finalize() {
-	unwinder.destroyAddressSpace(addressSpace);
+	unwinder.destroyAddressSpace(unwAddrSpace);
     }
 
+    public Cursor createCursor() {
+	return new Cursor(this, unwinder.initRemote(this, unwAddrSpace),
+			  unwinder); 
+    }
 
+    public void setCachingPolicy (CachingPolicy cachingPolicy) {
+	unwinder.setCachingPolicy(unwAddrSpace, cachingPolicy);
+    }
+  
     /**
      * Locate the information needed to unwind a particular procedure.
      * @param ip the instruction-address inside the procedure whose

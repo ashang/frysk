@@ -1,3 +1,7 @@
+2008-05-23  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFactory.java: Use AddressSpace.createCursor().
+
 2008-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java: Use frysk.config.Prefix.

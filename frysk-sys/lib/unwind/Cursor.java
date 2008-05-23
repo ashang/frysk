@@ -47,57 +47,52 @@ public class Cursor {
     private static final Log fine = LogFactory.fine(Cursor.class);
     private static final Log finest = LogFactory.finest(Cursor.class);
 
-    final RawDataManaged cursor; 
+    final RawDataManaged unwCursor; 
     final Unwind unwinder;
     final AddressSpace addressSpace;
     private int step;
 
-    private Cursor(AddressSpace addressSpace, RawDataManaged cursor,
-		   Unwind unwinder) {
+    Cursor(AddressSpace addressSpace, RawDataManaged unwCursor,
+	   Unwind unwinder) {
 	this.addressSpace = addressSpace;
-	this.cursor = cursor;
+	this.unwCursor = unwCursor;
 	this.unwinder = unwinder;
 	this.step = 1;
 	fine.log(this, "Create Cursor");
     }
-    public Cursor(AddressSpace addressSpace) {
-	this(addressSpace,
-	     addressSpace.unwinder.initRemote(addressSpace),
-	     addressSpace.unwinder); 
-    }
-  
+
     public boolean isSignalFrame() {
-	return (unwinder.isSignalFrame(cursor) == 1);
+	return (unwinder.isSignalFrame(unwCursor) == 1);
     }
   
     public void getRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.getRegister(cursor, regNum, offset, length, bytes, start);
+	unwinder.getRegister(unwCursor, regNum, offset, length, bytes, start);
     }
 
     public void setRegister(Number regNum, long offset, int length,
 			    byte[] bytes, int start) {
-	unwinder.setRegister(cursor, regNum, offset, length, bytes, start);
+	unwinder.setRegister(unwCursor, regNum, offset, length, bytes, start);
     }
 
     public long getIP() {
-	return unwinder.getIP(cursor);
+	return unwinder.getIP(unwCursor);
     }
   
     public long getSP() {
-	return unwinder.getSP(cursor);
+	return unwinder.getSP(unwCursor);
     }
   
     public long getCFA() {
-	return unwinder.getCFA(cursor);
+	return unwinder.getCFA(unwCursor);
     }
   
     public int step() {
-	return unwinder.step(cursor);
+	return unwinder.step(unwCursor);
     }
   
     public ProcInfo getProcInfo () {
-	return unwinder.getProcInfo(cursor);
+	return unwinder.getProcInfo(unwCursor);
     }
   
     public Cursor unwind() {
@@ -108,7 +103,7 @@ public class Cursor {
 	    return null;
     
 	Cursor newCursor = new Cursor(addressSpace,
-				      unwinder.copyCursor(cursor), unwinder);
+				      unwinder.copyCursor(unwCursor), unwinder);
   
 	step = newCursor.step();
     

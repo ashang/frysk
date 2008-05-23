@@ -79,7 +79,7 @@ public class StackFactory
 	}
 	LibunwindAddressSpace addressSpace
 	    = new LibunwindAddressSpace(task, lib.unwind.ByteOrder.DEFAULT);
-	Cursor innermost = new Cursor(addressSpace);
+	Cursor innermost = addressSpace.createCursor();
 	LibunwindFrame innerFrame
 	    = new LibunwindFrame(innermost, null, task);
 	taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));

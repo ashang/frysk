@@ -1,3 +1,12 @@
+2008-05-23  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpace.java (createCursor()): New.
+	(unwAddrSpace): Rename addressSpace.
+	* Cursor.java (Cursor(AddressSpace)): Delete.
+	(unwCursor): Rename cursor.
+	* Unwind.java: Make most fields package-private.
+	(initRemote): Add unwAddrSpace parameter.
+
 2008-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/ElfImage.cxx: Include jni.hxx.

@@ -214,16 +214,16 @@ get_proc_name(::unw_addr_space_t as,
 }
 
 gnu::gcj::RawDataManaged*
-lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace)
+lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace,
+				gnu::gcj::RawData* unwAddrSpace)
 {
   logf(fine, this, "native initRemote");
-  gnu::gcj::RawDataManaged *cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
+  gnu::gcj::RawDataManaged *unwCursor
+    = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
 
-  unw_init_remote((unw_cursor_t *) cursor,
-                  (unw_addr_space_t) (addressSpace->addressSpace),
+  unw_init_remote((unw_cursor_t *) unwCursor, (unw_addr_space_t) unwAddrSpace,
 		  (void *) addressSpace);
-
-  return cursor;
+  return unwCursor;
 }
 
 gnu::gcj::RawData*
@@ -683,7 +683,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
     return new lib::unwind::ElfImage((jint) -1);
 
   logf(fine, this, "checked size, 0x%lx", (unsigned long) size);
-  unw_addr_space_t as = (unw_addr_space_t) addressSpace->addressSpace;
+  unw_addr_space_t as = (unw_addr_space_t) addressSpace->unwAddrSpace;
   a = unw_get_accessors (as);
   if (! a->access_mem)
     return new lib::unwind::ElfImage((jint) -1);

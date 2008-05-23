@@ -48,50 +48,53 @@ public abstract class Unwind {
     static final Log fine = LogFactory.fine(Unwind.class);
     static final Log finest = LogFactory.finest(Unwind.class);
   
-    abstract RawDataManaged initRemote(AddressSpace addressSpace);
+    abstract RawDataManaged initRemote(AddressSpace addressSpace,
+				       RawData unwAddrSpace);
      
-  abstract RawData createAddressSpace (ByteOrder byteOrder);
+    abstract RawData createAddressSpace (ByteOrder byteOrder);
   
-  abstract void destroyAddressSpace (RawData addressSpace);
+    abstract void destroyAddressSpace (RawData addressSpace);
   
-  abstract void setCachingPolicy(RawData addressSpace, 
-                                 CachingPolicy cachingPolicy);
+    abstract void setCachingPolicy(RawData addressSpace, 
+				   CachingPolicy cachingPolicy);
   
-  abstract int isSignalFrame (RawDataManaged cursor);
+    abstract int isSignalFrame (RawDataManaged cursor);
   
-  abstract int step (RawDataManaged cursor);
+    abstract int step (RawDataManaged cursor);
   
-  abstract ProcInfo getProcInfo (RawDataManaged cursor);
+    abstract ProcInfo getProcInfo (RawDataManaged cursor);
   
     abstract void getRegister(RawDataManaged cursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
     abstract void setRegister(RawDataManaged cursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
   
-    public abstract long getIP(RawDataManaged cursor);
-    public abstract long getSP(RawDataManaged cursor);
-    public abstract long getCFA(RawDataManaged cursor);
+    abstract long getIP(RawDataManaged cursor);
+    abstract long getSP(RawDataManaged cursor);
+    abstract long getCFA(RawDataManaged cursor);
   
-  abstract RawDataManaged copyCursor(RawDataManaged cursor);  
- abstract int getContext(RawDataManaged context);
+    abstract RawDataManaged copyCursor(RawDataManaged cursor);  
+    abstract int getContext(RawDataManaged context);
  
- public abstract ProcInfo createProcInfoFromElfImage(AddressSpace addressSpace,
-                                                     long ip, 
-                                                     boolean needUnwindInfo,
-                                                     ElfImage elfImage);
+    // FIXME: shouldn't be public.
+    public abstract ProcInfo createProcInfoFromElfImage(AddressSpace addressSpace,
+							long ip, 
+							boolean needUnwindInfo,
+							ElfImage elfImage);
  
- public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
-                                                 long segbase, long hi, 
-                                                 long mapoff);
+    // FIXME: shouldn't be public.
+    public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
+						    long segbase, long hi, 
+						    long mapoff);
 
- abstract long getStartIP(RawDataManaged procInfo);
- abstract long getEndIP(RawDataManaged procInfo);
- abstract long getLSDA(RawDataManaged procInfo);
- abstract long getHandler(RawDataManaged procInfo);
- abstract long getGP(RawDataManaged procInfo);
- abstract long getFlags(RawDataManaged procInfo);
+    abstract long getStartIP(RawDataManaged procInfo);
+    abstract long getEndIP(RawDataManaged procInfo);
+    abstract long getLSDA(RawDataManaged procInfo);
+    abstract long getHandler(RawDataManaged procInfo);
+    abstract long getGP(RawDataManaged procInfo);
+    abstract long getFlags(RawDataManaged procInfo);
  
- abstract int getFormat(RawDataManaged procInfo);
- abstract int getUnwindInfoSize(RawDataManaged procInfo);
- abstract RawData getUnwindInfo(RawDataManaged procInfo);
+    abstract int getFormat(RawDataManaged procInfo);
+    abstract int getUnwindInfoSize(RawDataManaged procInfo);
+    abstract RawData getUnwindInfo(RawDataManaged procInfo);
 }
