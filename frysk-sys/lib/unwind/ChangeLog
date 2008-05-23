@@ -1,5 +1,8 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/UnwindH.hxx: Use unwCursor, unwProcInfo, and unwAddrSpace to
+	refer to lib-unwind structures.  Use namespaces.
+
 	* AddressSpace.java (createCursor()): New.
 	(unwAddrSpace): Rename addressSpace.
 	* Cursor.java (Cursor(AddressSpace)): Delete.

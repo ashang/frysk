@@ -80,25 +80,27 @@
 # define MAX_VDSO_SIZE ((size_t) sysconf (_SC_PAGESIZE))
 #endif
 
-static lib::unwind::AddressSpace*
-addressSpace(void* arg)
-{
-  lib::unwind::AddressSpace* space = (lib::unwind::AddressSpace*)arg;
-  if (space->magic != lib::unwind::AddressSpace::MAGIC)
+using namespace java::lang;
+using namespace lib::unwind;
+
+static AddressSpace*
+vec(void* arg) {
+  AddressSpace* space = (AddressSpace*)arg;
+  if (space->magic != AddressSpace::MAGIC)
     throwRuntimeException ("bad AddressSpace");
   return space;
 }
 
 /*
- * Get misc. proc info
+ * Callback: Get misc. proc info
  */
 static int
-find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
-		::unw_proc_info_t *pip, int need_unwind_info,
-		void *arg)
+find_proc_info(::unw_addr_space_t as, ::unw_word_t ip,
+	       ::unw_proc_info_t *pip, int need_unwind_info,
+	       void *addressSpace)
 {
-  lib::unwind::ProcInfo* procInfo 
-    = addressSpace(arg)->findProcInfo ((jlong) ip, (jboolean) need_unwind_info);
+  ProcInfo* procInfo 
+    = vec(addressSpace)->findProcInfo((jlong) ip, (jboolean) need_unwind_info);
   if (procInfo->error != 0)
     return procInfo->error;
   memcpy(pip, procInfo->procInfo, sizeof (unw_proc_info_t));
@@ -106,191 +108,176 @@ find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 }
 
 /*
- * Free space allocated during find_proc_info
+ * Callback: Free space allocated during find_proc_info
  */
 static void
-put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
-		 void *arg)
-{
-  lib::unwind::AddressSpace* space = addressSpace(arg);
-  lib::unwind::ProcInfo* procInfo
-    = new lib::unwind::ProcInfo(space->unwinder,
-				(gnu::gcj::RawDataManaged *) proc_info);
+put_unwind_info(::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
+		void *addressSpace) {
+  AddressSpace* space = vec(addressSpace);
+  ProcInfo* procInfo
+    = new ProcInfo(space->unwinder,
+		   (gnu::gcj::RawDataManaged *) proc_info);
   space->putUnwindInfo (procInfo);
 }
 
 /*
- * Get the head of the dynamic unwind registration list.
+ * Callback: Get the head of the dynamic unwind registration list.
  * There is never any dynamic info in our case.
  */
 static int
-get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
-			void *arg)
-{
+get_dyn_info_list_addr(::unw_addr_space_t as, ::unw_word_t *dilap,
+		       void *addressSpace) {
   return -UNW_ENOINFO;
 }
 
 /*
- * Perform memory read/write.  Implement as copy-in, copy-out.
+ * Callback: Perform memory read/write.  Implement as copy-in,
+ * copy-out.
  */
 static int
-access_mem (::unw_addr_space_t as, ::unw_word_t addr,
-	    ::unw_word_t *valp, int write, void *arg)
-{
-  try
-    {
-      jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
-      memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
-      int ret = addressSpace(arg)->accessMem((jlong) addr,
-					     tmp, (jboolean) write);
-      memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
-      return ret;
-    }
-  catch (java::lang::RuntimeException *t)
-    {
-      // We have to catch all RuntimeExceptions here since there
-      // is no indicator for just "invalid memory location".
-      // Core files might have "holes" in their memory.
-      return -UNW_EINVAL;
-    }
+access_mem(::unw_addr_space_t as, ::unw_word_t addr,
+	   ::unw_word_t *valp, int write, void *addressSpace) {
+  try {
+    jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
+    memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
+    int ret = vec(addressSpace)->accessMem((jlong) addr,
+					   tmp, (jboolean) write);
+    memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
+    return ret;
+  } catch (RuntimeException *t) {
+    // We have to catch all RuntimeExceptions here since there
+    // is no indicator for just "invalid memory location".
+    // Core files might have "holes" in their memory.
+    return -UNW_EINVAL;
+  }
 }
 
 /*
- * perform register read/write
+ * Callback: perform register read/write
  */
 static int
 access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
-	   ::unw_word_t *valp, int write, void *arg)
-{
+	   ::unw_word_t *valp, int write, void *addressSpace) {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
   // Map the REGNUM back to the published ENUM.
-  java::lang::Number* num = lib::unwind::TARGET_REGISTERS::valueOf(regnum);
+  Number* num = TARGET_REGISTERS::valueOf(regnum);
   memcpy (elements (tmp), valp, JvGetArrayLength(tmp));
   if (write)
-    addressSpace(arg)->setReg(num, *valp);
+    vec(addressSpace)->setReg(num, *valp);
   else
-    *valp = addressSpace(arg)->getReg(num);
+    *valp = vec(addressSpace)->getReg(num);
   return 0;
 }
 
 /*
- * Perform a floating point register read/write
+ * Callback: Perform a floating point register read/write
  */
 static int
 access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
-	     ::unw_fpreg_t *fpvalp, int write, void *arg)
-{
+	     ::unw_fpreg_t *fpvalp, int write, void *addressSpace) {
   jbyteArray tmp = JvNewByteArray(sizeof (unw_fpreg_t));
   // Map the REGNUM back to the published ENUM.
-  java::lang::Number* num = lib::unwind::TARGET_REGISTERS::valueOf(regnum);
+  Number* num = TARGET_REGISTERS::valueOf(regnum);
   // Implement read/modify/write style op.
   memcpy (elements (tmp), fpvalp, JvGetArrayLength(tmp));
-  int ret = addressSpace(arg)->accessReg(num, tmp, (jboolean) write);
+  int ret = vec(addressSpace)->accessReg(num, tmp, (jboolean) write);
   memcpy(fpvalp, elements (tmp), JvGetArrayLength(tmp));
   return ret;
 }
 
 /*
- * Resumes the process at the provided stack level.
- * We never resume a process through libunwind.
+ * Callback: Resumes the process at the provided stack level.  We
+ * never resume a process through libunwind.
  */
 static int
-resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
-{
+resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *addressSpace) {
   return -UNW_EINVAL;
 }
 
 /*
- * Returns the name of the procedure that the provided address is in as well as
- * the offset from the start of the procedure.
+ * Callback: Returns the name of the procedure that the provided
+ * address is in as well as the offset from the start of the
+ * procedure.
  */
 static int
 get_proc_name(::unw_addr_space_t as,
 	      ::unw_word_t addr, char *bufp,
-	      size_t buf_len, ::unw_word_t *offp, void *arg)
-{
-    // This should never be called, always return an error.
-    return -UNW_ENOMEM;
+	      size_t buf_len, ::unw_word_t *offp, void *addressSpace) {
+  // This should never be called, always return an error.
+  return -UNW_ENOMEM;
 }
 
 gnu::gcj::RawDataManaged*
-lib::unwind::TARGET::initRemote(lib::unwind::AddressSpace* addressSpace,
-				gnu::gcj::RawData* unwAddrSpace)
+TARGET::initRemote(AddressSpace* addressSpace,
+		   gnu::gcj::RawData* unwAddrSpace)
 {
   logf(fine, this, "native initRemote");
   gnu::gcj::RawDataManaged *unwCursor
     = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
 
-  unw_init_remote((unw_cursor_t *) unwCursor, (unw_addr_space_t) unwAddrSpace,
+  unw_init_remote((unw_cursor_t*) unwCursor, (unw_addr_space_t) unwAddrSpace,
 		  (void *) addressSpace);
   return unwCursor;
 }
 
 gnu::gcj::RawData*
-lib::unwind::TARGET::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
-{
+TARGET::createAddressSpace(ByteOrder * byteOrder) {
   logf(fine, this, "createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
-  static unw_accessors_t accessors =
-    {
-      find_proc_info ,
-      put_unwind_info,
-      get_dyn_info_list_addr,
-      access_mem,
-      access_reg,
-      access_fpreg,
-      resume,
-      get_proc_name
-    };
+  static unw_accessors_t accessors = {
+    find_proc_info ,
+    put_unwind_info,
+    get_dyn_info_list_addr,
+    access_mem,
+    access_reg,
+    access_fpreg,
+    resume,
+    get_proc_name
+  };
 
   return (gnu::gcj::RawData *) unw_create_addr_space( &accessors, (int) byteOrder->hashCode());
 }
 
 void
-lib::unwind::TARGET::destroyAddressSpace(gnu::gcj::RawData* addressSpace)
-{
+TARGET::destroyAddressSpace(gnu::gcj::RawData* unwAddrSpace) {
   logf(fine, this, "destroyAddressSpace");
-  unw_destroy_addr_space((unw_addr_space_t) addressSpace);
+  unw_destroy_addr_space((unw_addr_space_t) unwAddrSpace);
 }
 
 void
-lib::unwind::TARGET::setCachingPolicy(gnu::gcj::RawData* addressSpace,
-                                      lib::unwind::CachingPolicy* cachingPolicy)
-{
+TARGET::setCachingPolicy(gnu::gcj::RawData* unwAddrSpace,
+			 CachingPolicy* cachingPolicy) {
   log(fine, this, "setCachingPolicy, cachingPolicy:", cachingPolicy);
-  unw_set_caching_policy((unw_addr_space_t) addressSpace,
+  unw_set_caching_policy((unw_addr_space_t) unwAddrSpace,
                          (unw_caching_policy_t) cachingPolicy->hashCode());
 }
 
 jint
-lib::unwind::TARGET::isSignalFrame(gnu::gcj::RawDataManaged* cursor)
-{
+TARGET::isSignalFrame(gnu::gcj::RawDataManaged* unwCursor) {
   logf(fine, this, "isSignalFrame");
-  return unw_is_signal_frame((unw_cursor_t *) cursor);
+  return unw_is_signal_frame((unw_cursor_t*) unwCursor);
 }
 
 jint
-lib::unwind::TARGET::step(gnu::gcj::RawDataManaged* cursor)
-{
-  logf(fine, this, "step cursor: %p", cursor);
-  return unw_step((unw_cursor_t *) cursor);
+TARGET::step(gnu::gcj::RawDataManaged* unwCursor) {
+  logf(fine, this, "step cursor: %p", unwCursor);
+  return unw_step((unw_cursor_t*) unwCursor);
 }
 
 static void
-verifyBounds(jlong offset, jint length, jbyteArray bytes, jint start, int size)
-{
+verifyBounds(jlong offset, jint length, jbyteArray bytes,
+	     jint start, int size) {
   verifyBounds(bytes, start, length);
   if (offset < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException(offset);
+    throw new ArrayIndexOutOfBoundsException(offset);
   if (offset + length > size)
-    throw new java::lang::ArrayIndexOutOfBoundsException(offset + length);
+    throw new ArrayIndexOutOfBoundsException(offset + length);
 }
 
 void
-lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
-                                 java::lang::Number* num,
-				 jlong offset, jint length,
-				 jbyteArray bytes, jint start)
-{
+TARGET::getRegister(gnu::gcj::RawDataManaged* unwCursor,
+		    Number* num,
+		    jlong offset, jint length,
+		    jbyteArray bytes, jint start) {
   int regNum = num->intValue();
   int status;
   union {
@@ -304,11 +291,11 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
     size = sizeof(word.w);
   verifyBounds(offset, length, bytes, start, size);
   if (unw_is_fpreg(regNum))
-    status = unw_get_fpreg((::unw_cursor_t *) cursor,
+    status = unw_get_fpreg((::unw_cursor_t*) unwCursor,
 			   (::unw_regnum_t) regNum,
 			   &word.fp);
   else
-    status = unw_get_reg((::unw_cursor_t *) cursor,
+    status = unw_get_reg((::unw_cursor_t*) unwCursor,
 			 (::unw_regnum_t) regNum,
 			 &word.w);
   if (status != 0)
@@ -317,11 +304,10 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
 }
 
 void
-lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
-                                 java::lang::Number *num,
-				 jlong offset, jint length,
-				 jbyteArray bytes, jint start)
-{
+TARGET::setRegister(gnu::gcj::RawDataManaged* unwCursor,
+		    Number *num,
+		    jlong offset, jint length,
+		    jbyteArray bytes, jint start) {
   int regNum = num->intValue();
   int status;
   union {
@@ -335,31 +321,30 @@ lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
     size = sizeof(word.w);
   verifyBounds(offset, length, bytes, start, size);
   if (unw_is_fpreg(regNum))
-    status = unw_get_fpreg((::unw_cursor_t *) cursor,
+    status = unw_get_fpreg((::unw_cursor_t*) unwCursor,
 			   (::unw_regnum_t) regNum,
 			   &word.fp);
   else
-    status = unw_get_reg((::unw_cursor_t *) cursor,
+    status = unw_get_reg((::unw_cursor_t*) unwCursor,
 			 (::unw_regnum_t) regNum,
 			 &word.w);
   if (status != 0)
     throwRuntimeException("set register failed");
   memcpy((uint8_t*)&word + offset, elements(bytes) + start, length);
   if (unw_is_fpreg(regNum))
-    status = unw_set_fpreg((::unw_cursor_t *) cursor,
+    status = unw_set_fpreg((::unw_cursor_t*) unwCursor,
 			   regNum, word.fp);
   else
-    status = unw_set_reg((::unw_cursor_t *) cursor,
+    status = unw_set_reg((::unw_cursor_t*) unwCursor,
 			 regNum, word.w);
   if (status != 0)
     throwRuntimeException("set register failed");
 }
 
 jlong
-lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor)
-{
+TARGET::getSP(gnu::gcj::RawDataManaged* unwCursor) {
   unw_word_t sp;
-  int status = unw_get_reg((::unw_cursor_t *) cursor, UNW_REG_SP, &sp);
+  int status = unw_get_reg((::unw_cursor_t*) unwCursor, UNW_REG_SP, &sp);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -367,10 +352,9 @@ lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor)
 }
 
 jlong
-lib::unwind::TARGET::getIP(gnu::gcj::RawDataManaged* cursor)
-{
+TARGET::getIP(gnu::gcj::RawDataManaged* unwCursor) {
   unw_word_t ip;
-  int status = unw_get_reg((::unw_cursor_t *) cursor, UNW_REG_IP, &ip);
+  int status = unw_get_reg((::unw_cursor_t*) unwCursor, UNW_REG_IP, &ip);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -378,25 +362,24 @@ lib::unwind::TARGET::getIP(gnu::gcj::RawDataManaged* cursor)
 }
 
 jlong
-lib::unwind::TARGET::getCFA(gnu::gcj::RawDataManaged* cursor)
-{
+TARGET::getCFA(gnu::gcj::RawDataManaged* unwCursor) {
 #ifdef UNW_TARGET_X86
 #define FRYSK_UNW_REG_CFA UNW_X86_CFA
 #else
 #ifdef UNW_TARGET_X86_64
 #define FRYSK_UNW_REG_CFA UNW_X86_64_CFA
 #else
-// This is wasteful, but there is no generic UNW_REG_CFA.
-// So just unwind and return the stack pointer.
+  // This is wasteful, but there is no generic UNW_REG_CFA.
+  // So just unwind and return the stack pointer.
 #define FRYSK_UNW_REG_CFA UNW_REG_SP
-cursor = copyCursor (cursor);
-if (unw_step((unw_cursor_t *) cursor) < 0)
-  return 0;
+  unwCursor = copyCursor(unwCursor);
+  if (unw_step((unw_cursor_t*) unwCursor) < 0)
+    return 0;
 #endif
 #endif
 
   unw_word_t cfa;
-  int status = unw_get_reg((::unw_cursor_t *) cursor, FRYSK_UNW_REG_CFA, &cfa);
+  int status = unw_get_reg((::unw_cursor_t*) unwCursor, FRYSK_UNW_REG_CFA, &cfa);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -405,37 +388,34 @@ if (unw_step((unw_cursor_t *) cursor) < 0)
 
 
 jint
-lib::unwind::TARGET::getContext(gnu::gcj::RawDataManaged* context)
-{
+TARGET::getContext(gnu::gcj::RawDataManaged* context) {
   return (jint) unw_getcontext((::unw_context_t *) context);
 }
 
 gnu::gcj::RawDataManaged*
-lib::unwind::TARGET::copyCursor(gnu::gcj::RawDataManaged* cursor)
-{
-  ::unw_cursor_t *nativeCursor = (::unw_cursor_t *) JvAllocBytes (sizeof (::unw_cursor_t));
+TARGET::copyCursor(gnu::gcj::RawDataManaged* unwCursor) {
+  ::unw_cursor_t *nativeCursor = (::unw_cursor_t*) JvAllocBytes (sizeof (::unw_cursor_t));
 
   // Create a local copy of the unwind cursor
-  memcpy (nativeCursor, cursor, sizeof (::unw_cursor_t));
+  memcpy(nativeCursor, unwCursor, sizeof (::unw_cursor_t));
 
   return (gnu::gcj::RawDataManaged *) nativeCursor;
 }
 
-lib::unwind::ProcInfo*
-lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
-{
-  logf(fine, this, "getProcInfo cursor: %p", cursor);
+ProcInfo*
+TARGET::getProcInfo(gnu::gcj::RawDataManaged* unwCursor) {
+  logf(fine, this, "getProcInfo cursor: %p", unwCursor);
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
-  int ret = unw_get_proc_info((::unw_cursor_t *) cursor, procInfo);
+  int ret = unw_get_proc_info((::unw_cursor_t*) unwCursor, procInfo);
 
   logf(fine, this, "getProcInfo finished get_proc_info");
-  lib::unwind::ProcInfo * myInfo;
+  ProcInfo * myInfo;
   if (ret < 0)
-    myInfo = new lib::unwind::ProcInfo((jint) ret);
+    myInfo = new ProcInfo((jint) ret);
   else
-    myInfo = new lib::unwind::ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
   log(fine, this, "getProcInfo returned", myInfo);
   return myInfo;
 }
@@ -584,29 +564,27 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
 // unw_get_unwind_table to access the eh_frame_hdr.  The arg pointer
 // is the base address, addr is the offset from the base address.
 static int 
-local_access_mem (unw_addr_space_t as, unw_word_t addr,
-		  unw_word_t *val, int write, void *arg) 
-{
+local_access_mem(unw_addr_space_t as, unw_word_t addr,
+		 unw_word_t *val, int write, void *baseAddress) {
   // Writing is not supported
   if (write)
     return -UNW_EINVAL;
   else
-    *val = *(unw_word_t *) (addr + (char *) arg);
+    *val = *(unw_word_t *) ((char *)baseAddress + addr);
 
   return UNW_ESUCCESS;
 }
   
 static unw_accessors_t local_accessors
-  = {NULL, NULL, NULL, local_access_mem, NULL, NULL, NULL, NULL};
+= {NULL, NULL, NULL, local_access_mem, NULL, NULL, NULL, NULL};
 
-lib::unwind::ProcInfo*
-lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addressSpace,
-						jlong ip,
-						jboolean needUnwindInfo,
-						lib::unwind::ElfImage* elfImage)
-{
+ProcInfo*
+TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
+				   jlong ip,
+				   jboolean needUnwindInfo,
+				   ElfImage* elfImage) {
   if (elfImage == NULL || elfImage->ret != 0)
-    return new lib::unwind::ProcInfo(-UNW_ENOINFO);
+    return new ProcInfo(-UNW_ENOINFO);
 
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
@@ -627,7 +605,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   //fprintf(stderr, "%s: %p\n", buffer, eh_table_hdr);
 
   if (eh_table_hdr == NULL)
-    return new lib::unwind::ProcInfo(-UNW_ENOINFO);
+    return new ProcInfo(-UNW_ENOINFO);
 
   int ret;
   if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
@@ -651,21 +629,20 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   
   
   logf(fine, this, "Post unw_get_unwind_table");
-  lib::unwind::ProcInfo *myInfo;
+  ProcInfo *myInfo;
   if (ret < 0)
-    myInfo = new lib::unwind::ProcInfo((jint) ret);
+    myInfo = new ProcInfo((jint) ret);
   else
-    myInfo = new lib::unwind::ProcInfo(this,
-				       (gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new ProcInfo(this,
+			  (gnu::gcj::RawDataManaged*) procInfo);
 
   return myInfo;
 }
 
-lib::unwind::ElfImage*
-lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSpace,
-					    jlong lowAddress, jlong highAddress,
-					    jlong offset)
-{
+ElfImage*
+TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
+			       jlong lowAddress, jlong highAddress,
+			       jlong offset) {
   logf(fine, this,
        "entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
        (unsigned long) lowAddress, (unsigned long) highAddress,
@@ -680,29 +657,29 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
 
   size = hi - segbase;
   if (size > MAX_VDSO_SIZE)
-    return new lib::unwind::ElfImage((jint) -1);
+    return new ElfImage((jint) -1);
 
   logf(fine, this, "checked size, 0x%lx", (unsigned long) size);
   unw_addr_space_t as = (unw_addr_space_t) addressSpace->unwAddrSpace;
   a = unw_get_accessors (as);
   if (! a->access_mem)
-    return new lib::unwind::ElfImage((jint) -1);
+    return new ElfImage((jint) -1);
 
   logf(fine, this, "checked access_mem");
   /* Try to decide whether it's an ELF image before bringing it all
      in.  */
   if (size <= EI_CLASS || size <= sizeof (magic))
-    return new lib::unwind::ElfImage((jint) -1);
+    return new ElfImage((jint) -1);
 
   if (sizeof (magic) >= SELFMAG)
     {
       int ret = (*a->access_mem) (as, (unw_word_t) segbase, &magic,
                                   0, (void *) addressSpace);
       if (ret < 0)
-        return new lib::unwind::ElfImage((jint) ret);
+        return new ElfImage((jint) ret);
 
       if (memcmp (&magic, ELFMAG, SELFMAG) != 0)
-        return new lib::unwind::ElfImage((jint) -1);
+        return new ElfImage((jint) -1);
     }
 
   logf(fine, this, "checked magic size");
@@ -710,7 +687,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   image = mmap (0, size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (image == MAP_FAILED)
-    return new lib::unwind::ElfImage((jint) -1);
+    return new ElfImage((jint) -1);
 
   logf(fine, this, "mapped elfImage");
   if (sizeof (magic) >= SELFMAG)
@@ -732,7 +709,7 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
       if (ret < 0)
         {
           munmap (image, size);
-          return new lib::unwind::ElfImage((jint) ret);
+          return new ElfImage((jint) ret);
         }
     }
 
@@ -741,64 +718,55 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   if (segbase == mapoff)
     mapoff = 0;
 
-  lib::unwind::ElfImage* elfImage
-    = new lib::unwind::ElfImage(JvNewStringLatin1("[vdso]"), (jlong) image, (jlong) size,
-				(jlong) segbase, (jlong) mapoff);
+  ElfImage* elfImage
+    = new ElfImage(JvNewStringLatin1("[vdso]"), (jlong) image, (jlong) size,
+		   (jlong) segbase, (jlong) mapoff);
 
   log(fine, this, "elfImage returned", elfImage);
   return elfImage;
 }
 
 jlong
-lib::unwind::TARGET::getStartIP(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->start_ip;
+TARGET::getStartIP(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->start_ip;
 }
 
 jlong
-lib::unwind::TARGET::getEndIP(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->end_ip;
+TARGET::getEndIP(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->end_ip;
 }
 
 jlong
-lib::unwind::TARGET::getLSDA(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->lsda;
+TARGET::getLSDA(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->lsda;
 }
 
 jlong
-lib::unwind::TARGET::getHandler(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->handler;
+TARGET::getHandler(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->handler;
 }
 
 jlong
-lib::unwind::TARGET::getGP(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->gp;
+TARGET::getGP(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->gp;
 }
 
 jlong
-lib::unwind::TARGET::getFlags(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jlong) ((unw_proc_info_t *) procInfo)->flags;
+TARGET::getFlags(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->flags;
 }
 
 jint
-lib::unwind::TARGET::getFormat(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jint) ((unw_proc_info_t *) procInfo)->format;
+TARGET::getFormat(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jint) ((unw_proc_info_t *) unwProcInfo)->format;
 }
 
 jint
-lib::unwind::TARGET::getUnwindInfoSize(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (jint) ((unw_proc_info_t *) procInfo)->unwind_info_size;
+TARGET::getUnwindInfoSize(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (jint) ((unw_proc_info_t *) unwProcInfo)->unwind_info_size;
 }
 
 gnu::gcj::RawData*
-lib::unwind::TARGET::getUnwindInfo(gnu::gcj::RawDataManaged* procInfo)
-{
-  return (gnu::gcj::RawData *) ((unw_proc_info_t *) procInfo)->unwind_info;
+TARGET::getUnwindInfo(gnu::gcj::RawDataManaged* unwProcInfo) {
+  return (gnu::gcj::RawData *) ((unw_proc_info_t *) unwProcInfo)->unwind_info;
 }
