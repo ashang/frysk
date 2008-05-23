@@ -207,17 +207,25 @@ get_proc_name(::unw_addr_space_t as,
   return -UNW_ENOMEM;
 }
 
-gnu::gcj::RawDataManaged*
-TARGET::initRemote(AddressSpace* addressSpace,
-		   gnu::gcj::RawData* unwAddrSpace)
+jlong
+TARGET::createCursor(AddressSpace* addressSpace,
+		     gnu::gcj::RawData* unwAddrSpace)
 {
-  logf(fine, this, "native initRemote");
-  gnu::gcj::RawDataManaged *unwCursor
-    = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
-
-  unw_init_remote((unw_cursor_t*) unwCursor, (unw_addr_space_t) unwAddrSpace,
+  logf(fine, this, "createCursor from address-space %lxf", (long) unwAddrSpace);
+  unw_cursor_t* unwCursor = (unw_cursor_t*) JvMalloc(sizeof(::unw_cursor_t));
+  // XXX: Need to zero out the cursor, as unw_init_remote doesn't seem
+  // to do it.
+  memset(unwCursor, 0, sizeof(*unwCursor));
+  unw_init_remote(unwCursor, (unw_addr_space_t) unwAddrSpace,
 		  (void *) addressSpace);
-  return unwCursor;
+  logf(fine, this, "createCursor at %lx", (long) unwCursor);
+  return (jlong) unwCursor;
+}
+
+void
+TARGET::destroyCursor(jlong unwCursor) {
+  logf(fine, this, "destroyCursor at %lx", (long) unwCursor);
+  JvFree((unw_cursor_t*) (long) unwCursor);
 }
 
 gnu::gcj::RawData*
@@ -252,15 +260,15 @@ TARGET::setCachingPolicy(gnu::gcj::RawData* unwAddrSpace,
 }
 
 jint
-TARGET::isSignalFrame(gnu::gcj::RawDataManaged* unwCursor) {
+TARGET::isSignalFrame(jlong unwCursor) {
   logf(fine, this, "isSignalFrame");
-  return unw_is_signal_frame((unw_cursor_t*) unwCursor);
+  return unw_is_signal_frame((unw_cursor_t*) (long) unwCursor);
 }
 
 jint
-TARGET::step(gnu::gcj::RawDataManaged* unwCursor) {
-  logf(fine, this, "step cursor: %p", unwCursor);
-  return unw_step((unw_cursor_t*) unwCursor);
+TARGET::step(jlong unwCursor) {
+  logf(fine, this, "step cursor: %lx", (long) unwCursor);
+  return unw_step((unw_cursor_t*) (long) unwCursor);
 }
 
 static void
@@ -274,11 +282,13 @@ verifyBounds(jlong offset, jint length, jbyteArray bytes,
 }
 
 void
-TARGET::getRegister(gnu::gcj::RawDataManaged* unwCursor,
+TARGET::getRegister(jlong unwCursor,
 		    Number* num,
 		    jlong offset, jint length,
 		    jbyteArray bytes, jint start) {
   int regNum = num->intValue();
+  logf(fine, this, "getRegister %d from %lx, offset %ld length %d start %d",
+       regNum, (long)unwCursor, (long) offset, (int)length, (int)start);
   int status;
   union {
     unw_word_t w;
@@ -290,21 +300,23 @@ TARGET::getRegister(gnu::gcj::RawDataManaged* unwCursor,
   else
     size = sizeof(word.w);
   verifyBounds(offset, length, bytes, start, size);
-  if (unw_is_fpreg(regNum))
-    status = unw_get_fpreg((::unw_cursor_t*) unwCursor,
+  if (unw_is_fpreg(regNum)) {
+    status = unw_get_fpreg((::unw_cursor_t*) (long) unwCursor,
 			   (::unw_regnum_t) regNum,
 			   &word.fp);
-  else
-    status = unw_get_reg((::unw_cursor_t*) unwCursor,
+  } else {
+    status = unw_get_reg((::unw_cursor_t*) (long) unwCursor,
 			 (::unw_regnum_t) regNum,
 			 &word.w);
+    logf(fine, this, "getRegister status %d %lx", status, (long)word.w);
+  }
   if (status != 0)
     throwRuntimeException("get register failed");
   memcpy(elements(bytes) + start, (uint8_t*)&word + offset, length);
 }
 
 void
-TARGET::setRegister(gnu::gcj::RawDataManaged* unwCursor,
+TARGET::setRegister(jlong unwCursor,
 		    Number *num,
 		    jlong offset, jint length,
 		    jbyteArray bytes, jint start) {
@@ -321,30 +333,30 @@ TARGET::setRegister(gnu::gcj::RawDataManaged* unwCursor,
     size = sizeof(word.w);
   verifyBounds(offset, length, bytes, start, size);
   if (unw_is_fpreg(regNum))
-    status = unw_get_fpreg((::unw_cursor_t*) unwCursor,
+    status = unw_get_fpreg((::unw_cursor_t*) (long) unwCursor,
 			   (::unw_regnum_t) regNum,
 			   &word.fp);
   else
-    status = unw_get_reg((::unw_cursor_t*) unwCursor,
+    status = unw_get_reg((::unw_cursor_t*) (long) unwCursor,
 			 (::unw_regnum_t) regNum,
 			 &word.w);
   if (status != 0)
     throwRuntimeException("set register failed");
   memcpy((uint8_t*)&word + offset, elements(bytes) + start, length);
   if (unw_is_fpreg(regNum))
-    status = unw_set_fpreg((::unw_cursor_t*) unwCursor,
+    status = unw_set_fpreg((::unw_cursor_t*) (long) unwCursor,
 			   regNum, word.fp);
   else
-    status = unw_set_reg((::unw_cursor_t*) unwCursor,
+    status = unw_set_reg((::unw_cursor_t*) (long) unwCursor,
 			 regNum, word.w);
   if (status != 0)
     throwRuntimeException("set register failed");
 }
 
 jlong
-TARGET::getSP(gnu::gcj::RawDataManaged* unwCursor) {
+TARGET::getSP(jlong unwCursor) {
   unw_word_t sp;
-  int status = unw_get_reg((::unw_cursor_t*) unwCursor, UNW_REG_SP, &sp);
+  int status = unw_get_reg((::unw_cursor_t*) (long) unwCursor, UNW_REG_SP, &sp);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -352,9 +364,9 @@ TARGET::getSP(gnu::gcj::RawDataManaged* unwCursor) {
 }
 
 jlong
-TARGET::getIP(gnu::gcj::RawDataManaged* unwCursor) {
+TARGET::getIP(jlong unwCursor) {
   unw_word_t ip;
-  int status = unw_get_reg((::unw_cursor_t*) unwCursor, UNW_REG_IP, &ip);
+  int status = unw_get_reg((::unw_cursor_t*) (long) unwCursor, UNW_REG_IP, &ip);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -362,7 +374,7 @@ TARGET::getIP(gnu::gcj::RawDataManaged* unwCursor) {
 }
 
 jlong
-TARGET::getCFA(gnu::gcj::RawDataManaged* unwCursor) {
+TARGET::getCFA(jlong unwCursor) {
 #ifdef UNW_TARGET_X86
 #define FRYSK_UNW_REG_CFA UNW_X86_CFA
 #else
@@ -372,14 +384,17 @@ TARGET::getCFA(gnu::gcj::RawDataManaged* unwCursor) {
   // This is wasteful, but there is no generic UNW_REG_CFA.
   // So just unwind and return the stack pointer.
 #define FRYSK_UNW_REG_CFA UNW_REG_SP
-  unwCursor = copyCursor(unwCursor);
-  if (unw_step((unw_cursor_t*) unwCursor) < 0)
+  unw_cursor_t copy;
+  memcpy(&copy, (unw_cursor_t*) (long) unwCursor, sizeof (copy));
+  if (unw_step(&copy) < 0)
     return 0;
+  unwCursor = (jlong) &copy;
 #endif
 #endif
 
   unw_word_t cfa;
-  int status = unw_get_reg((::unw_cursor_t*) unwCursor, FRYSK_UNW_REG_CFA, &cfa);
+  int status = unw_get_reg((::unw_cursor_t*) (long) unwCursor,
+			   FRYSK_UNW_REG_CFA, &cfa);
   if (status < 0)
     return 0; // bottom of stack.
   else
@@ -392,23 +407,25 @@ TARGET::getContext(gnu::gcj::RawDataManaged* context) {
   return (jint) unw_getcontext((::unw_context_t *) context);
 }
 
-gnu::gcj::RawDataManaged*
-TARGET::copyCursor(gnu::gcj::RawDataManaged* unwCursor) {
-  ::unw_cursor_t *nativeCursor = (::unw_cursor_t*) JvAllocBytes (sizeof (::unw_cursor_t));
-
+jlong
+TARGET::copyCursor(jlong unwCursor) {
+  ::unw_cursor_t *nativeCursor
+    = (::unw_cursor_t*) JvMalloc(sizeof(::unw_cursor_t));
   // Create a local copy of the unwind cursor
-  memcpy(nativeCursor, unwCursor, sizeof (::unw_cursor_t));
-
-  return (gnu::gcj::RawDataManaged *) nativeCursor;
+  memcpy(nativeCursor, (unw_cursor_t*) (long) unwCursor,
+	 sizeof (::unw_cursor_t));
+  logf(fine, this, "copyCursor %lx to %lx", (long) unwCursor,
+       (long) nativeCursor);
+  return (jlong) nativeCursor;
 }
 
 ProcInfo*
-TARGET::getProcInfo(gnu::gcj::RawDataManaged* unwCursor) {
-  logf(fine, this, "getProcInfo cursor: %p", unwCursor);
+TARGET::getProcInfo(jlong unwCursor) {
+  logf(fine, this, "getProcInfo cursor: %lx", (long) unwCursor);
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
 
-  int ret = unw_get_proc_info((::unw_cursor_t*) unwCursor, procInfo);
+  int ret = unw_get_proc_info((::unw_cursor_t*) (long) unwCursor, procInfo);
 
   logf(fine, this, "getProcInfo finished get_proc_info");
   ProcInfo * myInfo;

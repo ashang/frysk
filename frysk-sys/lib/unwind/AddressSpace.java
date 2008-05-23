@@ -66,7 +66,7 @@ public abstract class AddressSpace
     }
 
     public Cursor createCursor() {
-	return new Cursor(this, unwinder.initRemote(this, unwAddrSpace),
+	return new Cursor(this, unwinder.createCursor(this, unwAddrSpace),
 			  unwinder); 
     }
 

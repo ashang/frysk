@@ -1,5 +1,14 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Cursor.java (unwCursor): Change type to long.
+	* Unwind.java: Replace managed cursor param with long unwCursor.
+	(destroyCursor(long)): New.
+	(createCursor): Rename initRemote.
+	* cni/UnwindH.hxx: Update.
+	(TARGET::destroyCursor): Implement.
+	* AddressSpace.java: Update.
+	* TestUnwind.java: Update.
+	
 	* cni/UnwindH.hxx: Use unwCursor, unwProcInfo, and unwAddrSpace to
 	refer to lib-unwind structures.  Use namespaces.
 

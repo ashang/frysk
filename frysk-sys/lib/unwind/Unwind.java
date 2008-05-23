@@ -48,8 +48,9 @@ public abstract class Unwind {
     static final Log fine = LogFactory.fine(Unwind.class);
     static final Log finest = LogFactory.finest(Unwind.class);
   
-    abstract RawDataManaged initRemote(AddressSpace addressSpace,
-				       RawData unwAddrSpace);
+    abstract long createCursor(AddressSpace addressSpace,
+			       RawData unwAddrSpace);
+    abstract void destroyCursor(long unwCursor);
      
     abstract RawData createAddressSpace (ByteOrder byteOrder);
   
@@ -58,22 +59,22 @@ public abstract class Unwind {
     abstract void setCachingPolicy(RawData addressSpace, 
 				   CachingPolicy cachingPolicy);
   
-    abstract int isSignalFrame (RawDataManaged cursor);
+    abstract int isSignalFrame (long unwCursor);
   
-    abstract int step (RawDataManaged cursor);
+    abstract int step (long unwCursor);
   
-    abstract ProcInfo getProcInfo (RawDataManaged cursor);
+    abstract ProcInfo getProcInfo (long unwCursor);
   
-    abstract void getRegister(RawDataManaged cursor, Number regNum,
+    abstract void getRegister(long unwCursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
-    abstract void setRegister(RawDataManaged cursor, Number regNum,
+    abstract void setRegister(long unwCursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
   
-    abstract long getIP(RawDataManaged cursor);
-    abstract long getSP(RawDataManaged cursor);
-    abstract long getCFA(RawDataManaged cursor);
+    abstract long getIP(long unwCursor);
+    abstract long getSP(long unwCursor);
+    abstract long getCFA(long unwCursor);
   
-    abstract RawDataManaged copyCursor(RawDataManaged cursor);  
+    abstract long copyCursor(long unwCursor);  
     abstract int getContext(RawDataManaged context);
  
     // FIXME: shouldn't be public.

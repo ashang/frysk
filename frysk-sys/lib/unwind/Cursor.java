@@ -39,7 +39,6 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawDataManaged;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 
@@ -47,18 +46,23 @@ public class Cursor {
     private static final Log fine = LogFactory.fine(Cursor.class);
     private static final Log finest = LogFactory.finest(Cursor.class);
 
-    final RawDataManaged unwCursor; 
-    final Unwind unwinder;
-    final AddressSpace addressSpace;
+    private final long unwCursor; 
+    private final Unwind unwinder;
+    private final AddressSpace addressSpace;
     private int step;
 
-    Cursor(AddressSpace addressSpace, RawDataManaged unwCursor,
-	   Unwind unwinder) {
+    Cursor(AddressSpace addressSpace, long unwCursor, Unwind unwinder) {
 	this.addressSpace = addressSpace;
 	this.unwCursor = unwCursor;
 	this.unwinder = unwinder;
 	this.step = 1;
-	fine.log(this, "Create Cursor");
+    }
+    private Cursor(Cursor orig) {
+	this(orig.addressSpace, orig.unwinder.copyCursor(orig.unwCursor),
+	     orig.unwinder);
+    }
+    protected void finalize() {
+	unwinder.destroyCursor(unwCursor);
     }
 
     public boolean isSignalFrame() {
@@ -102,9 +106,7 @@ public class Cursor {
 	if (step == 0 || getIP() == 0)
 	    return null;
     
-	Cursor newCursor = new Cursor(addressSpace,
-				      unwinder.copyCursor(unwCursor), unwinder);
-  
+	Cursor newCursor = new Cursor(this);
 	step = newCursor.step();
     
 	finest.log(this, "unwind, step returned: ",  step);
