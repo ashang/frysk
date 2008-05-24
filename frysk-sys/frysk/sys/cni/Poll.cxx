@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -121,47 +121,53 @@ frysk::sys::Poll::addSignalHandler (frysk::sys::Signal* sig)
 
 
 
-void
-frysk::sys::Poll$Fds::init ()
-{
-  // Allocate a non-empty buffer, makes life easier.
-  numFds = 0;
-  fds = (gnu::gcj::RawDataManaged*) JvAllocBytes (sizeof (struct pollfd));
+jlong
+frysk::sys::Poll$Fds::malloc() {
+  // Allocate a non-empty buffer, marked with a sentinel.
+  struct pollfd* fds = (struct pollfd*) JvMalloc(sizeof (struct pollfd));
+  fds->fd = -1; // sentinel
+  return (jlong)(long) fds;
 }
 
-static void
-addPollFd (gnu::gcj::RawDataManaged* &pollFds, jint &numPollFds,
-	   int fd, short event)
-{
+void
+frysk::sys::Poll$Fds::free(jlong fds) {
+  JvFree((struct pollfd*)(long)fds);
+}
+
+static jlong
+addPollFd(jlong pollFds, int fd, short event) {
   struct pollfd* ufds = (struct pollfd*) pollFds;
-  // If the FD is alreay listed, just add the event.
-  for (int i = 0; i < numPollFds; i++) {
-    if (ufds[i].fd == fd) {
-      ufds[i].events |= event;
-      return;
+  // If the FD is alreay listed, just add the event; end up with a
+  // count of fds.
+  int numFds;
+  for (numFds = 0; ufds[numFds].fd >= 0; numFds++) {
+    if (ufds[numFds].fd == fd) {
+      ufds[numFds].events |= event;
+      return pollFds;
     }
   }
-  // Create space for, and then append a new poll fd.
-  struct pollfd* newFds = (struct pollfd*) JvAllocBytes ((numPollFds + 1) * sizeof (struct pollfd));
-  memcpy (newFds, ufds, numPollFds * sizeof (struct pollfd));
-  newFds[numPollFds].fd = fd;
-  newFds[numPollFds].events = event;
-  pollFds = (gnu::gcj::RawDataManaged*) newFds;
-  numPollFds++;
+  // Create space for the new fd (and retain space for the sentinel).
+  ufds = (struct pollfd*) JvRealloc(ufds, (numFds + 2) * sizeof (struct pollfd));
+  ufds[numFds + 0].fd = fd;
+  ufds[numFds + 0].events = event;
+  ufds[numFds + 1].fd = -1;
+  return (jlong) (long) ufds;
 }
 
-void
-frysk::sys::Poll$Fds::addPollIn (jint fd)
-{
-  addPollFd (fds, numFds, fd, POLLIN);
+jlong
+frysk::sys::Poll$Fds::addPollIn(jlong fds, jint fd) {
+  return addPollFd(fds, fd, POLLIN);
 }
 
 
 
 void
-frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
-			jlong timeout)
-{
+frysk::sys::Poll::poll(frysk::sys::PollBuilder* pollObserver, jlong timeout) {
+  // Compute the current number of poll fds.
+  struct pollfd* fds = (struct pollfd*)pollFds->fds;
+  int numFds;
+  for (numFds = 0; fds[numFds].fd >= 0; numFds++);
+
   // Set up a SIGSETJMP call that jumps back to here when any watched
   // signal is delivered.  The signals are accumulated in a sigset,
   // and removed from the current of signals being unmasked, and the
@@ -195,7 +201,7 @@ frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
   errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   if (errno != 0)
     throwErrno (errno, "pthread_sigmask.UNBLOCK");
-  int status = ::poll ((struct pollfd*)pollFds->fds, pollFds->numFds, timeout);
+  int status = ::poll (fds, numFds, timeout);
   if (status < 0)
     status = -errno; // Save the errno across the next system call.
   errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);

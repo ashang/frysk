@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -76,16 +76,20 @@ public final class Poll
     /**
      * Manage the file descriptors watched by the poll call.
      */
-    public static final class Fds
-    {
-	gnu.gcj.RawDataManaged fds;
-	int numFds;
-	private native void init ();
-	public final native void addPollIn (int fd);
-	public Fds ()
-	{
-	    init ();
+    public static final class Fds {
+	long fds;
+	public Fds() {
+	    fds = malloc();
 	}
+	protected void finalize() {
+	    free(fds);
+	}
+	private static native long malloc();
+	private static native void free(long fds);
+	public void addPollIn(int fd) {
+	    fds = addPollIn(fds, fd);
+	}
+	private static native long addPollIn(long fds, int fd);
     }
     static protected Fds pollFds = new Fds ();
 

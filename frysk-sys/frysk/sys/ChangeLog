@@ -1,3 +1,9 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java: Replace RawDataManaged with long.
+	(Fds): Add malloc and free methods.
+	* cni/Poll.cxx: Update.
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/Exec.cxx: Delete.
