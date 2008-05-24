@@ -1,3 +1,13 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Elf.java: Replace RawData with long.
+	* Dwarf.java: Ditto.
+	* Dwfl.java: Ditto.
+	* cni/Dwarf.cxx: Update.
+	* cni/Elf.cxx: Update.
+	* cni/Dwfl.cxx: Update.
+	* cni/DwflModule.cxx: Update.
+
 2008-05-21  Petr Machata  <pmachata@redhat.com>
 
 	* DwflDieBias.java: Make member variables public final, add ctor

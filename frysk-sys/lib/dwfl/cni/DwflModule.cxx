@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ lib::dwfl::DwflModule::module_getelf()
 		return NULL;
 		
 	lib::dwfl::ModuleElfBias *ret = new lib::dwfl::ModuleElfBias();
-	ret->elf = new lib::dwfl::Elf((gnu::gcj::RawData*) elf);
+	ret->elf = new lib::dwfl::Elf((jlong) elf);
 	ret->bias = (jlong) bias;
 		
 	return ret;	

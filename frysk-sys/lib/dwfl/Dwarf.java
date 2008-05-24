@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,8 +38,6 @@
 // exception.
 
 package lib.dwfl;
-
-import gnu.gcj.RawData;
 
 import java.util.LinkedList;
 
@@ -108,7 +106,7 @@ public class Dwarf {
 	return this.get_cu_by_name(name);
     }
     
-    protected native void dwarf_begin_elf(RawData elf, int command, long section);
+    protected native void dwarf_begin_elf(long elf, int command, long section);
     protected native void dwarf_begin(String file, int command);
     protected native String[] get_source_files();
     protected native LinkedList get_cu_by_name(String name);

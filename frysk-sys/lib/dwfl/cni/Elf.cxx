@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -63,13 +63,14 @@
 #include "lib/dwfl/ElfData.h"
 #include "frysk/sys/cni/Errno.hxx"
 
+using namespace java::lang;
 
 static void throw_last_elf_error() __attribute__((noreturn));
 static void throw_last_elf_error() {
   throw new lib::dwfl::ElfException(lib::dwfl::Elf::getLastErrorMsg());
 }
 
-gnu::gcj::RawData*
+jlong
 lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
 			  lib::dwfl::ElfCommand* command)
 {
@@ -90,7 +91,7 @@ lib::dwfl::Elf::elfBegin (frysk::sys::FileDescriptor* fd,
       fd->close();
       throw new lib::dwfl::ElfException(JvNewStringUTF(buf));
     }
-  return (gnu::gcj::RawData*)new_elf;
+  return (jlong)new_elf;
 }
 
 jint
@@ -100,7 +101,7 @@ lib::dwfl::Elf::elf_next ()
 }
 
 void
-lib::dwfl::Elf::elfEnd(gnu::gcj::RawData* pointer)
+lib::dwfl::Elf::elfEnd(jlong pointer)
 {
   ::elf_end((::Elf*) pointer);
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,10 +51,12 @@
 #include <java/util/LinkedList.h>
 #include <java/lang/Long.h>
 
+using namespace java::lang;
+
 #define DWARF_POINTER (::Dwarf *) this->pointer
 
 void
-lib::dwfl::Dwarf::dwarf_begin_elf(gnu::gcj::RawData* elf, jint command,
+lib::dwfl::Dwarf::dwarf_begin_elf(jlong elf, jint command,
 				  jlong section)
 {
   this->pointer = (jlong)
@@ -79,35 +81,35 @@ java::util::LinkedList*
 lib::dwfl::Dwarf::get_cu_by_name(java::lang::String* name)
 {
 	
-	java::util::LinkedList* list = new java::util::LinkedList();
+  java::util::LinkedList* list = new java::util::LinkedList();
 	
-	Dwarf_Off offset = 0;
-	Dwarf_Off old_offset;
-	Dwarf_Die cudie_mem;
-	size_t hsize;
+  Dwarf_Off offset = 0;
+  Dwarf_Off old_offset;
+  Dwarf_Die cudie_mem;
+  size_t hsize;
 	  
-	while (dwarf_nextcu ((::Dwarf *)this->pointer, old_offset = offset, &offset, 
-	                       &hsize, NULL, NULL, NULL) == 0)
-	{
+  while (dwarf_nextcu ((::Dwarf *)this->pointer, old_offset = offset, &offset, 
+		       &hsize, NULL, NULL, NULL) == 0)
+    {
 		
-		Dwarf_Die *cudie = dwarf_offdie ((::Dwarf *)this->pointer, old_offset + hsize, &cudie_mem);
-		const char *die_name = dwarf_diename (cudie);
-		java::lang::String* die_name_string = JvNewStringLatin1 (die_name);
+      Dwarf_Die *cudie = dwarf_offdie ((::Dwarf *)this->pointer, old_offset + hsize, &cudie_mem);
+      const char *die_name = dwarf_diename (cudie);
+      java::lang::String* die_name_string = JvNewStringLatin1 (die_name);
 		
-		if(die_name_string->endsWith(name)){
+      if(die_name_string->endsWith(name)){
 
-			Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+	Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
 			
-			memcpy(die, cudie, sizeof(*die));
-			lib::dwfl::DwarfDie* cuDie = lib::dwfl::DwarfDieFactory::getFactory()->makeDie((jlong)die, NULL);
-			cuDie->setManageDie(true);
+	memcpy(die, cudie, sizeof(*die));
+	lib::dwfl::DwarfDie* cuDie = lib::dwfl::DwarfDieFactory::getFactory()->makeDie((jlong)die, NULL);
+	cuDie->setManageDie(true);
 			 
-			list->add(cuDie);
-		}
+	list->add(cuDie);
+      }
 		
-	}
+    }
 	  
-	return list;
+  return list;
 }
 
 
@@ -171,5 +173,5 @@ lib::dwfl::Dwarf::get_source_files()
 
 jint 
 lib::dwfl::Dwarf::dwarf_end(){
-	return ::dwarf_end(DWARF_POINTER);
+  return ::dwarf_end(DWARF_POINTER);
 }

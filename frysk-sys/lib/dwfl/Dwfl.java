@@ -40,12 +40,11 @@
 package lib.dwfl;
 
 import java.util.LinkedList;
-import gnu.gcj.RawData;
 import frysk.sys.ProcessIdentifier;
 
 public class Dwfl {
 
-    private RawData pointer;
+    private long pointer;
 
     private DwflModule[] modules;
 
@@ -114,7 +113,7 @@ public class Dwfl {
 	return dwfl_addrdie(addr);
     }
 
-    RawData getPointer () {
+    long getPointer () {
 	return pointer;
     }
 
@@ -169,14 +168,14 @@ public class Dwfl {
     }
   
     public void close() {
-	if (this.pointer != null) {
+	if (this.pointer != 0) {
 	    dwfl_end();
-	    this.pointer = null;
+	    this.pointer = 0;
 	}
     }
   
-    private static native RawData dwflBegin (String s);
-    private static native RawData dwflBegin(String s, int pid);
+    private static native long dwflBegin (String s);
+    private static native long dwflBegin(String s, int pid);
   
     public native void dwfl_report_begin();
     public native void dwfl_report_end();

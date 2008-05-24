@@ -57,18 +57,20 @@
 #include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
 
+using namespace java::lang;
+
 // Suck in elf_from_remote_memory from elfutils
 
 extern "C"
 {
-    extern ::Elf *elf_from_remote_memory (GElf_Addr ehdr_vma,
-                                          GElf_Addr *loadbasep,
-                                          ssize_t (*read_memory) (void *arg,
-                                                                  void *data,
-                                                                  GElf_Addr address,
-                                                                  size_t minread,
-                                                                  size_t maxread),
-                                          void *arg);
+  extern ::Elf *elf_from_remote_memory (GElf_Addr ehdr_vma,
+					GElf_Addr *loadbasep,
+					ssize_t (*read_memory) (void *arg,
+								void *data,
+								GElf_Addr address,
+								size_t minread,
+								size_t maxread),
+					void *arg);
 }
 #define DWFL_POINTER (::Dwfl *) this->pointer
 
@@ -111,7 +113,7 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 	}
       return fd;
     }
-   else
+  else
     {
       /* Special case for in-memory ELF image.  */
       inua::eio::ByteBuffer * memory = (inua::eio::ByteBuffer *) *userdata;           
@@ -121,11 +123,11 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
       return -1;
     }
 
- //abort ();
+  //abort ();
   return -1;
 }
 
-gnu::gcj::RawData*
+jlong
 lib::dwfl::Dwfl::dwflBegin (jstring jsysroot, jint pid)
 {
   int len = jsysroot->length ();
@@ -135,7 +137,7 @@ lib::dwfl::Dwfl::dwflBegin (jstring jsysroot, jint pid)
   sysroot[len] = '\0';
   static char* flags;
   if (asprintf (&flags, ".debug:%s", sysroot) < 0)
-    return NULL;
+    return (jlong) NULL;
 
   static Dwfl_Callbacks callbacks = {
     &::dwfl_linux_proc_find_elf,
@@ -148,10 +150,10 @@ lib::dwfl::Dwfl::dwflBegin (jstring jsysroot, jint pid)
   ::dwfl_linux_proc_report(dwfl, (pid_t) pid);
   // FIXME: needs to re-build the module table.
   ::dwfl_report_end(dwfl, NULL, NULL);
-  return (gnu::gcj::RawData*)dwfl;
+  return (jlong)dwfl;
 }
 
-gnu::gcj::RawData*
+jlong
 lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
 {
   int len = jsysroot->length ();
@@ -160,7 +162,7 @@ lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
   sysroot[len] = '\0';
   static char* flags;
   if (asprintf (&flags, ".debug:%s", sysroot) < 0)
-    return NULL;
+    return (jlong) NULL;
 
   static Dwfl_Callbacks callbacks = {
     &::dwfl_frysk_proc_find_elf,
@@ -168,43 +170,43 @@ lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
     NULL,
     &flags,
   };
-  return (gnu::gcj::RawData*) ::dwfl_begin(&callbacks);
+  return (jlong) ::dwfl_begin(&callbacks);
 }
 
 void
 lib::dwfl::Dwfl::dwfl_report_begin()
 {
-	::dwfl_report_begin(DWFL_POINTER);
+  ::dwfl_report_begin(DWFL_POINTER);
 }
 
 void
 lib::dwfl::Dwfl::dwfl_report_end()
 {
-	::dwfl_report_end(DWFL_POINTER, NULL, NULL);
+  ::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
 
 
 void
 lib::dwfl::Dwfl::dwfl_report_module(jstring moduleName, jlong low, jlong high)
 {
-	jsize len = JvGetStringUTFLength(moduleName);
-	char modName[len+1]; 
+  jsize len = JvGetStringUTFLength(moduleName);
+  char modName[len+1]; 
 	
-	JvGetStringUTFRegion(moduleName, 0, len, modName);
-	modName[len] = '\0';
+  JvGetStringUTFRegion(moduleName, 0, len, modName);
+  modName[len] = '\0';
 	
-	::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
-	                     (::Dwarf_Addr) high);  
+  ::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
+		       (::Dwarf_Addr) high);  
 }
 
 void
 lib::dwfl::Dwfl::dwfl_end(){
-	::dwfl_end(DWFL_POINTER);
+  ::dwfl_end(DWFL_POINTER);
 }
 
 
 extern "C" int moduleCounter(Dwfl_Module *, void **, const char *,
-			      Dwarf_Addr, void *arg)
+			     Dwarf_Addr, void *arg)
 {
   int *iarg = (int *)arg;
   (*iarg)++;
@@ -220,7 +222,7 @@ struct ModuleAdderData
 };
 
 extern "C" int moduleAdder(Dwfl_Module *module, void **, const char *name,
-			    Dwarf_Addr, void *arg)
+			   Dwarf_Addr, void *arg)
 {
   ModuleAdderData *adderData = (ModuleAdderData *)arg;
   
@@ -258,26 +260,26 @@ lib::dwfl::Dwfl::dwfl_getmodules()
 
 jlong
 lib::dwfl::Dwfl::dwfl_getsrc(jlong addr){
-	return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
+  return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
 }
 
 lib::dwfl::DwflDieBias *
 lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
-	Dwarf_Addr bias;
-	Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
+  Dwarf_Addr bias;
+  Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
 
-	if(die == NULL)
-	  return NULL;
+  if(die == NULL)
+    return NULL;
 
-        lib::dwfl::DwflModule *module = lib::dwfl::Dwfl::getModule(addr);
-	lib::dwfl::DwarfDie *dwdie = factory->makeDie((jlong) die, module);
+  lib::dwfl::DwflModule *module = lib::dwfl::Dwfl::getModule(addr);
+  lib::dwfl::DwarfDie *dwdie = factory->makeDie((jlong) die, module);
 
-	return new lib::dwfl::DwflDieBias(dwdie, (jlong)bias);
+  return new lib::dwfl::DwflDieBias(dwdie, (jlong)bias);
 }
 
 jlong
 lib::dwfl::Dwfl::dwfl_addrmodule(jlong addr){
-	return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
+  return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
 }
 
 lib::dwfl::DwflModule*

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,18 +41,16 @@ package lib.dwfl;
 
 import frysk.sys.FileDescriptor;
 import frysk.sys.Errno;
-import gnu.gcj.RawData;
 import java.io.File;
 
 /**
  * This class represents an Elf object.
  */
-public class Elf
-{
-    private RawData pointer;
+public class Elf {
+    private long pointer;
     private FileDescriptor fd;
 
-    Elf (RawData ptr) {
+    Elf(long ptr) {
 	this.pointer = ptr;
 	this.fd = null;
     }
@@ -78,6 +76,22 @@ public class Elf
 	this.pointer = elfBegin(fd, command);
     }
 
+    /**
+     * Destroy the external elf file object associated with this object.
+     */
+    public void close() {
+	if (fd != null) {
+	    elfEnd(pointer);
+	    fd.close();
+	}
+	fd = null;
+	pointer = 0;
+    }
+  
+    protected void finalize () {
+	close();
+    }
+
     private static FileDescriptor getDescriptor(File file, ElfCommand command) {
 	try {
 	    if ((command == ElfCommand.ELF_C_READ
@@ -101,18 +115,6 @@ public class Elf
 	}
     }
 
-    /**
-     * Destroy the external elf file object associated with this object.
-     */
-    public void close() {
-	if (fd != null) {
-	    elfEnd(pointer);
-	    fd.close();
-	}
-	fd = null;
-	pointer = null;
-    }
-  
     /**
      * @return The next elf command
      */
@@ -367,7 +369,7 @@ public class Elf
 	return elf_rawfile(ptr);
     }
 
-    RawData getPointer () {
+    long getPointer () {
 	return this.pointer;
     }
     
@@ -396,14 +398,10 @@ public class Elf
     }
 
 
-    protected void finalize () {
-	close();
-    }
-
-    private static native RawData elfBegin (FileDescriptor fd,
-					    ElfCommand cmd)
+    private static native long elfBegin (FileDescriptor fd,
+					 ElfCommand cmd)
 	throws ElfException;
-    private static native void elfEnd (RawData elf);
+    private static native void elfEnd (long elf);
 
 
     // protected native void elf_memory(String __image, long __size);
