@@ -73,20 +73,18 @@ public abstract class Unwind {
     abstract int getContext(long context);
  
     abstract int fillProcInfoNotAvailable(long unwProcInfo);
-
-    // FIXME: shouldn't be public.
-    public abstract int createProcInfoFromElfImage(AddressSpace addressSpace,
-						   long ip, 
-						   boolean needUnwindInfo,
-						   ElfImage elfImage,
-						   ProcInfo procInfo);
- 
-    // FIXME: shouldn't be public.
-    public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
-						    long segbase, long hi, 
-						    long mapoff);
-
-
+    abstract int fillProcInfoFromElfImage(long unwProcInfo,
+ 					  long ip, boolean needUnwindInfo,
+ 					  AddressSpace addressSpace,
+ 					  String name,
+ 					  long addressLow, long addressHigh,
+ 					  long offset);
+    abstract int fillProcInfoFromVDSO(long unwProcInfo,
+ 				      long ip, boolean needUnwindInfo,
+ 				      AddressSpace addressSpace, 
+ 				      long addressLow, long addressHigh, 
+ 				      long offset);
+    
     abstract long getProcInfo(long unwCursor);
     abstract void destroyProcInfo(long unwProcInfo);
 

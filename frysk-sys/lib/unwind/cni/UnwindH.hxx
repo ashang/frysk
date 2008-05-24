@@ -44,6 +44,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
 #include <libdwfl.h>
 #include LIBUNWIND_TARGET_H
@@ -583,11 +585,15 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
   return hdr;
 }
 
-// The following is a local address space memory accessor used by
-// unw_get_unwind_table to access the eh_frame_hdr.  The arg pointer
-// is the base address, addr is the offset from the base address.
+/**
+ * The following are local memory image address space memory accessors
+ * used by unw_get_unwind_table to access the eh_frame_hdr.  The arg
+ * pointer is the base address, addr is the offset from the base
+ * address.
+ */
+
 static int 
-local_access_mem(unw_addr_space_t as, unw_word_t addr,
+image_access_mem(unw_addr_space_t as, unw_word_t addr,
 		 unw_word_t *val, int write, void *baseAddress) {
   // Writing is not supported
   if (write)
@@ -598,67 +604,75 @@ local_access_mem(unw_addr_space_t as, unw_word_t addr,
   return UNW_ESUCCESS;
 }
   
-static unw_accessors_t local_accessors
-= {NULL, NULL, NULL, local_access_mem, NULL, NULL, NULL, NULL};
+static unw_accessors_t image_accessors = {
+    NULL, NULL, NULL, image_access_mem, NULL, NULL, NULL, NULL
+};
 
-jint
-TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
-				   jlong ip,
-				   jboolean needUnwindInfo,
-				   ElfImage* elfImage,
-				   ProcInfo* procInfo) {
-  if (elfImage == NULL || elfImage->ret != 0)
-    return -UNW_ENOINFO;
-
-  unw_proc_info_t* unwProcInfo = (unw_proc_info_t*) procInfo->unwProcInfo;
-  logf(fine, this, "Pre unw_get_unwind_table");
+static jint
+fillProcInfoFromImage(frysk::rsl::Log* fine,
+		      const char* name,
+		      jlong unwProcInfo,
+		      jlong ip,
+		      jboolean needUnwindInfo,
+		      void *image,
+		      long size,
+		      long segbase) {
+  unw_proc_info_t *procInfo = (::unw_proc_info_t *) unwProcInfo;
+  logf(fine, "fillProcInfoFromImage"
+       " %s unwProcInfo %lx, ip %lx, image %p, size %ld, segBase %lx",
+       name, (long) unwProcInfo, (long)ip, image, size, segbase);
   
   unw_word_t peh_vaddr = 0;
-  char *eh_table_hdr = get_eh_frame_hdr_addr(unwProcInfo,
-					     (char *) elfImage->elfImage,
-					     elfImage->size,
-					     elfImage->segbase,
+  char *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
+					     (char *) image,
+					     size, segbase,
 					     &peh_vaddr);
-
-  //jsize length = JvGetStringUTFLength (elfImage->name);
-  //char buffer[length + 1];
-  //JvGetStringUTFRegion (elfImage->name, 0, elfImage->name->length(), buffer);
-  //buffer[length] = '\0';
-  //fprintf(stderr, "%s: %p\n", buffer, eh_table_hdr);
-
-  if (eh_table_hdr == NULL)
+  if (eh_table_hdr == NULL) {
+    logf(fine, "get_eh_frame_hdr failed");
+    munmap(image, size);
     return -UNW_ENOINFO;
+  }
 
   int ret;
-  if (unwProcInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
+  if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
     ret = unw_get_unwind_table((unw_word_t) ip,
-			       unwProcInfo,
+			       procInfo,
 			       (int) needUnwindInfo,
-			       &local_accessors,
+			       &image_accessors,
 			       // virtual address
 			       peh_vaddr,
 			       // address adjustment
 			       eh_table_hdr - peh_vaddr);
   else
     ret = unw_get_unwind_table((unw_word_t) ip,
-                               unwProcInfo,
+                               procInfo,
                                (int) needUnwindInfo,
-                               &local_accessors,
+                               &image_accessors,
                                // virtual address
                                0,
                                // address adjustment
                                eh_table_hdr);
-  
-  logf(fine, this, "Post unw_get_unwind_table %d", ret);
+
+  // FIXME: The munmap can't be done until after the step code has
+  // finished with the proc-info.  For moment ack around this by
+  // creating an ElfImage object that does the unmap in the finaliser.
+  // Of course this A) leaves many mmaped objects around; and B) has a
+  // race where the object could be unmapped before step has finished
+  // with it.
+  new ElfImage((jlong) image, (jlong) size);
+  // munmap(image, size);
+  logf(fine, "Post unw_get_unwind_table %d", ret);
   return ret;
 }
 
-ElfImage*
-TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
-			       jlong lowAddress, jlong highAddress,
-			       jlong offset) {
-  logf(fine, this,
-       "entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
+jint
+TARGET::fillProcInfoFromVDSO(jlong unwProcInfo, jlong ip,
+			     jboolean needUnwindInfo,
+			     AddressSpace* addressSpace,
+			     jlong lowAddress, jlong highAddress,
+			     jlong offset) {
+  logf(fine, this, "fillProcInfoFromVDSO"
+       " segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
        (unsigned long) lowAddress, (unsigned long) highAddress,
        (unsigned long) offset);
   void *image;
@@ -667,77 +681,114 @@ TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
   unw_accessors_t *a;
   unsigned long segbase = (unsigned long) lowAddress;
   unsigned long hi = (unsigned long) highAddress;
-  unsigned long mapoff = (unsigned long) offset;
 
   size = hi - segbase;
   if (size > MAX_VDSO_SIZE)
-    return new ElfImage((jint) -1);
-
+    return -UNW_ENOINFO;
   logf(fine, this, "checked size, 0x%lx", (unsigned long) size);
+
+  logf(fine, this, "checking access_mem");
   unw_addr_space_t as = (unw_addr_space_t) addressSpace->unwAddressSpace;
   a = unw_get_accessors (as);
   if (! a->access_mem)
-    return new ElfImage((jint) -1);
+    return -UNW_ENOINFO;
 
-  logf(fine, this, "checked access_mem");
-  /* Try to decide whether it's an ELF image before bringing it all
-     in.  */
+  // Try to decide whether it's an ELF image before bringing it all
+  // in.
+  logf(fine, this, "checking magic");
   if (size <= EI_CLASS || size <= sizeof (magic))
-    return new ElfImage((jint) -1);
-
-  if (sizeof (magic) >= SELFMAG)
-    {
-      int ret = (*a->access_mem) (as, (unw_word_t) segbase, &magic,
-                                  0, (void *) addressSpace);
-      if (ret < 0)
-        return new ElfImage((jint) ret);
-
-      if (memcmp (&magic, ELFMAG, SELFMAG) != 0)
-        return new ElfImage((jint) -1);
+    return -UNW_ENOINFO;
+  if (sizeof (magic) >= SELFMAG) {
+    int ret = (*a->access_mem) (as, (unw_word_t) segbase, &magic,
+				0, (void *) addressSpace);
+    if (ret < 0) {
+      logf(fine, this, "error accessing VDSO %d", ret);
+      return ret;
     }
+    if (memcmp (&magic, ELFMAG, SELFMAG) != 0) {
+      logf(fine, this, "VDSO has bad magic");
+      return -UNW_ENOINFO;
+    }
+  }
 
-  logf(fine, this, "checked magic size");
-
+  logf(fine, this, "mapping memory for image (using mmap, so can umaped)");
   image = mmap (0, size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (image == MAP_FAILED)
-    return new ElfImage((jint) -1);
-
-  logf(fine, this, "mapped elfImage");
-  if (sizeof (magic) >= SELFMAG)
-    {
-      *(unw_word_t *)image = magic;
-      hi = sizeof (magic);
-    }
-  else
-    hi = 0;
+    return -UNW_ENOINFO;
 
   logf(fine, this, "checked magic");
-  for (; hi < size; hi += sizeof (unw_word_t))
-    {
-      logf(finest, this, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p",
-	   segbase , image , hi, segbase+hi, (char *) image + hi);
-      int ret = (*a->access_mem) (as, segbase + hi,(unw_word_t *) ((char *) image + hi),
-                                  0, (void *) addressSpace);
+  if (sizeof (magic) >= SELFMAG) {
+    *(unw_word_t *)image = magic;
+    hi = sizeof (magic);
+  } else {
+    hi = 0;
+  }
 
-      if (ret < 0)
-        {
-          munmap (image, size);
-          return new ElfImage((jint) ret);
-        }
+  logf(fine, this, "reading in VDSO");
+  for (; hi < size; hi += sizeof (unw_word_t)) {
+    logf(finest, this, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p",
+	 segbase , image , hi, segbase+hi, (char *) image + hi);
+    int ret = (*a->access_mem) (as, segbase + hi,(unw_word_t *) ((char *) image + hi),
+				0, (void *) addressSpace);
+    if (ret < 0) {
+      logf(fine, this, "error reading vdso");
+      munmap (image, size);
+      return ret;
     }
+  }
 
-  logf(fine, this, "read memory into elf image");
+  return fillProcInfoFromImage(fine, "[vdso]", unwProcInfo, ip, needUnwindInfo,
+			       image, size, segbase);
+}
 
-  if (segbase == mapoff)
-    mapoff = 0;
+jint
+TARGET::fillProcInfoFromElfImage(jlong unwProcInfo, jlong ip,
+				 jboolean needUnwindInfo,
+				 AddressSpace* addressSpace,
+				 jstring elfImageName,
+				 jlong segbase, jlong hi,
+				 jlong mapoff) {
+  logf(fine, this, "fillProcInfoFromElfImage");
+  struct stat stat;
+  void *image;		/* pointer to mmap'd image */
+  size_t size;		/* (file-) size of the image */
+  int nameSize = JvGetStringUTFLength(elfImageName);
+  char name[nameSize+1];
+  //JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
+  JvGetStringUTFRegion(elfImageName, 0, nameSize, name);
+  name[nameSize] = '\0';
 
-  ElfImage* elfImage
-    = new ElfImage(JvNewStringLatin1("[vdso]"), (jlong) image, (jlong) size,
-		   (jlong) segbase, (jlong) mapoff);
+  logf(fine, this, "opening %s", name);
+  int fd = ::open(name, O_RDONLY);
+  if (fd < 0) {
+    int err = errno;
+    logf(fine, this, "open failed: %s", strerror(err));
+    return -UNW_ENOINFO;
+  }
 
-  log(fine, this, "elfImage returned", elfImage);
-  return elfImage;
+  logf(fine, this, "stat-ing %d", fd);
+  int ret = ::fstat(fd, &stat);
+  if (ret < 0) {
+    int err = errno;
+    ::close(fd);
+    logf(fine, this, "fstat failed: %s", strerror(err));
+    return -UNW_ENOINFO;
+  }
+
+  size = stat.st_size;
+  logf(fine, this, "mmaping %d, size %ld", fd, size);
+  image = ::mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  if (image == MAP_FAILED) {
+    int err = errno;
+    ::close(fd);
+    logf(fine, this, "mmap failed: %s", strerror(err));
+    return -UNW_ENOINFO;
+  }
+  ::close(fd);
+  
+  return fillProcInfoFromImage(fine, name, unwProcInfo, ip, needUnwindInfo,
+			       image, size, segbase);
 }
 
 jint

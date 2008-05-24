@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,46 +48,7 @@
 
 #include "lib/unwind/ElfImage.h"
 
-lib::unwind::ElfImage*
-lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi,
-                                   jlong mapoff)
-{
-  struct stat stat;
-  void *image;		/* pointer to mmap'd image */
-  size_t size;		/* (file-) size of the image */
-  int nameSize = JvGetStringUTFLength(elfImageName);
-  char name[nameSize+1];
-  //JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
-  JvGetStringUTFRegion(elfImageName, 0, nameSize, name);
-  name[nameSize] = '\0';
-
-  int fd = open (name, O_RDONLY);
-  if (fd < 0)
-    return new lib::unwind::ElfImage((jint) fd);
-
-  int ret = fstat (fd, &stat);
-  if (ret < 0)
-    {
-      close (fd);
-      return new lib::unwind::ElfImage((jint) ret);
-    }
-
-  size = stat.st_size;
-  image = mmap (NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
-
-  close (fd);
-  if (image == MAP_FAILED)
-    return new lib::unwind::ElfImage((jint) -1);
-
-  lib::unwind::ElfImage* elfImage
-    = new lib::unwind::ElfImage(elfImageName, (jlong) image, (jlong) size,
-                              (jlong) segbase, (jlong) mapoff);
-
-  return elfImage;
-}
-
 void
-lib::unwind::ElfImage::finalize()
-{
-  munmap((void *) elfImage, (size_t) size);
+lib::unwind::ElfImage::unmap(jlong image, jlong size) {
+  munmap((void *) image, (size_t) size);
 }

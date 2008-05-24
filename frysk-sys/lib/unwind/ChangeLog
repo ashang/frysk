@@ -1,5 +1,14 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+ 	* Unwind.java (createElfImageFromVDSO): Delete.
+ 	(createProcInfoFromElfImage): Delete.
+ 	(fillProcInfoFromVDSO): New.
+ 	(fillProcInfoFromElfImage): New.
+ 	* cni/UnwindH.hxx: Implement.
+ 	* ProcInfo.java: Use.
+ 	* ElfImage.java: Simplify.
+ 	* cni/ElfImage.cxx (ElfImage::mapElfImage): Delete.
+ 	
 	* ProcInfo.java (fillNotAvailable): New.
 	* Unwind.java (fillProcInfoNotAvailable): New.
 	

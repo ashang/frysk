@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,53 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.unwind;
 
-public class ElfImage
-{
+/**
+ * An object that, eventually, releases its underlying mmaped [elf]
+ * data during a garbage collect.
+ *
+ * Since the garbage collect will, typically, occure after libunwind's
+ * step has finished with the data this operation is safe.  However,
+ * there is the real possibility of the GC occuring early, unmapping
+ * the data causing an NPE.
+ */
 
-  final String name;
+public class ElfImage {
 
-  long elfImage;
+    private final long image;
+    private final long size;
 
-  long size;
-
-  long segbase;
-
-  long mapoff;
-
-  int ret = 0;
-  
-  public ElfImage (String name, long elfImage, long size, long segbase, long mapoff)
-  {
-    this.name = name;
-    this.elfImage = elfImage;
-    this.size = size;
-    this.segbase = segbase;
-    this.mapoff = mapoff;
-  }
-
-  public ElfImage (int ret)
-  {
-    this.name = "ERROR: " + Integer.toString(ret);
-    this.ret = ret;
-  }
-
-  public String toString ()
-  {
-    if (ret != 0)
-      return "Bad Elf Image, ret: " + ret;
-
-    return "Elf Image (" + name + "): 0x" + Long.toHexString(elfImage) + " size: " + size
-	   + " segbase: 0x" + Long.toHexString(segbase) + " mapoff: 0x"
-	   + Long.toHexString(mapoff);
-  }
-
-  public static native ElfImage mapElfImage (String elfImageName, long segbase,
-					     long hi, long mapoff);
-
-  // @Override
-  native protected void finalize () throws Throwable;
-
+    public ElfImage(long image, long size) {
+	this.image = image;
+	this.size = size;
+    }
+    // @Override
+    protected void finalize() {
+	unmap(image, size);
+    }
+    private static native void unmap(long image, long size);
 }

@@ -63,13 +63,9 @@ public class ProcInfo {
 			    long addressLow, long addressHigh,
 			    long offset, long ip,
 			    boolean needUnwindInfo) {
-	ElfImage elfImage = unwinder.createElfImageFromVDSO(addressSpace,
-							    addressLow,
-							    addressHigh,
-							    offset);
-	return unwinder.createProcInfoFromElfImage(addressSpace, ip,
-						   needUnwindInfo, elfImage,
-						   this);
+	return unwinder.fillProcInfoFromVDSO(unwProcInfo, ip, needUnwindInfo,
+					     addressSpace,
+					     addressLow, addressHigh, offset);
     }
 
     public int fillFromElfImage(AddressSpace addressSpace,
@@ -77,11 +73,11 @@ public class ProcInfo {
 				long addressLow, long addressHigh,
 				long offset, long ip,
 				boolean needUnwindInfo) {
-	ElfImage elfImage = ElfImage.mapElfImage(name, addressLow, addressHigh,
+	return unwinder.fillProcInfoFromElfImage(unwProcInfo, ip,
+						 needUnwindInfo,
+						 addressSpace,
+						 name, addressLow, addressHigh,
 						 offset);
-	return unwinder.createProcInfoFromElfImage(addressSpace, ip,
-						   needUnwindInfo, elfImage,
-						   this);
     }
 
     public long getStartIP() {
