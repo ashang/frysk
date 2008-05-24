@@ -587,25 +587,48 @@ get_eh_frame_hdr_addr(unw_proc_info_t *pi, char *image, size_t size,
 
 /**
  * The following are local memory image address space memory accessors
- * used by unw_get_unwind_table to access the eh_frame_hdr.  The arg
- * pointer is the base address, addr is the offset from the base
- * address.
+ * used by unw_get_unwind_table and run_cfi_program to access and
+ * interpret the eh_frame_hdr.  The arg pointer contains an image
+ * descriptor, ADDR is the offset into the eh-frame table within the
+ * image.
  */
+struct image {
+  int magic;
+  void *bytes;
+  size_t size;
+  char *table;
+};
+const int IMAGE_MAGIC = 0xfeed;
 
 static int 
 image_access_mem(unw_addr_space_t as, unw_word_t addr,
-		 unw_word_t *val, int write, void *baseAddress) {
+		 unw_word_t *val, int write, void *arg) {
+  struct image *image = (struct image*) arg;
+  if (image->magic != IMAGE_MAGIC) {
+    throw new RuntimeException(JvNewStringUTF("bad image magic number"));
+  }
   // Writing is not supported
   if (write)
     return -UNW_EINVAL;
   else
-    *val = *(unw_word_t *) ((char *)baseAddress + addr);
-
+    *val = *(unw_word_t *) (image->table + addr);
   return UNW_ESUCCESS;
 }
   
+static void
+image_put_unwind_info(::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
+		      void *arg) {
+  struct image *image = (struct image*) arg;
+  if (image->magic != IMAGE_MAGIC) {
+    fprintf(stderr, "corrupt image pointer\n");
+    throw new RuntimeException(JvNewStringUTF("bad image magic number"));
+  }
+  munmap(image->bytes, image->size);
+  ::free(image);
+}
+
 static unw_accessors_t image_accessors = {
-    NULL, NULL, NULL, image_access_mem, NULL, NULL, NULL, NULL
+  NULL, image_put_unwind_info, NULL, image_access_mem, NULL, NULL, NULL, NULL
 };
 
 static jint
@@ -614,36 +637,47 @@ fillProcInfoFromImage(frysk::rsl::Log* fine,
 		      jlong unwProcInfo,
 		      jlong ip,
 		      jboolean needUnwindInfo,
-		      void *image,
+		      void *bytes,
 		      long size,
 		      long segbase) {
   unw_proc_info_t *procInfo = (::unw_proc_info_t *) unwProcInfo;
   logf(fine, "fillProcInfoFromImage"
-       " %s unwProcInfo %lx, ip %lx, image %p, size %ld, segBase %lx",
-       name, (long) unwProcInfo, (long)ip, image, size, segbase);
+       " %s unwProcInfo %lx, ip %lx, bytes %p, size %ld, segBase %lx",
+       name, (long) unwProcInfo, (long)ip, bytes, size, segbase);
   
   unw_word_t peh_vaddr = 0;
   char *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
-					     (char *) image,
+					     (char *) bytes,
 					     size, segbase,
 					     &peh_vaddr);
   if (eh_table_hdr == NULL) {
     logf(fine, "get_eh_frame_hdr failed");
-    munmap(image, size);
+    munmap(bytes, size);
     return -UNW_ENOINFO;
   }
 
+  struct image *image = new struct image();
+  if (image == NULL) {
+    munmap(bytes, size);
+    return -UNW_ENOINFO;
+  }
+  image->magic = IMAGE_MAGIC;
+  image->bytes = bytes;
+  image->size = size;
+
   int ret;
-  if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
+  if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE) {
+    // address adjustment
+    image->table = eh_table_hdr - peh_vaddr;
     ret = unw_get_unwind_table((unw_word_t) ip,
 			       procInfo,
 			       (int) needUnwindInfo,
 			       &image_accessors,
 			       // virtual address
 			       peh_vaddr,
-			       // address adjustment
-			       eh_table_hdr - peh_vaddr);
-  else
+			       image);
+  } else {
+    image->table = eh_table_hdr;
     ret = unw_get_unwind_table((unw_word_t) ip,
                                procInfo,
                                (int) needUnwindInfo,
@@ -651,16 +685,8 @@ fillProcInfoFromImage(frysk::rsl::Log* fine,
                                // virtual address
                                0,
                                // address adjustment
-                               eh_table_hdr);
-
-  // FIXME: The munmap can't be done until after the step code has
-  // finished with the proc-info.  For moment ack around this by
-  // creating an ElfImage object that does the unmap in the finaliser.
-  // Of course this A) leaves many mmaped objects around; and B) has a
-  // race where the object could be unmapped before step has finished
-  // with it.
-  new ElfImage((jlong) image, (jlong) size);
-  // munmap(image, size);
+                               image);
+  }
   logf(fine, "Post unw_get_unwind_table %d", ret);
   return ret;
 }

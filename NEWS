@@ -11,6 +11,14 @@ multi-process, and multi-threaded systems while they are running.
 
 --
 
+Release 0.4, ????-??-??
+
+-> Smaller memory foot-print when generating stack backtraces.
+   Frysk has been changed to more aggressively release memory
+   allocated by the unwinder.
+
+--
+
 Release 0.3, 2008-05-09
 
 - Exported a prototype of low level watchpoint api on IA32,X8664 
@@ -29,17 +37,11 @@ Release 0.3, 2008-05-09
 - Imported a newer version of upstream elfutils.
 - Fixed breakpoints to work correctly through forks.
 
---
-
-Post-Release 0.2 Updates:
-
 -> 2004-04-24 - New support in FHPD: sysroot
 
    Frysk now also supports finding libraries in a special system
    directory heirarchy as well as the previously supported source files
    and debuginfo files.  This is specified via the -sysroot option.
-
---
 
 -> 2004-04-16 - New command in FHPD: watch
 

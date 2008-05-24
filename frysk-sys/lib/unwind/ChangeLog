@@ -1,5 +1,10 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/UnwindH.hxx (image_put_unwind_info): New.
+	(struct image): New.
+	(fillProcInfoFromImage): Create an image and pass to
+	unw_get_unwind_table.
+
  	* Unwind.java (createElfImageFromVDSO): Delete.
  	(createProcInfoFromElfImage): Delete.
  	(fillProcInfoFromVDSO): New.

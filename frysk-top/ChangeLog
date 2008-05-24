@@ -1,3 +1,7 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* NEWS: Mention reduced memory footprint.
+
 2008-05-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* Update NEWS file for release 0.3.
