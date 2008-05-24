@@ -649,7 +649,6 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
                                // address adjustment
                                eh_table_hdr);
   
-  
   logf(fine, this, "Post unw_get_unwind_table %d", ret);
   return ret;
 }
@@ -739,6 +738,11 @@ TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
 
   log(fine, this, "elfImage returned", elfImage);
   return elfImage;
+}
+
+jint
+TARGET::fillProcInfoNotAvailable(jlong unwProcInfo) {
+  return -UNW_ENOINFO;
 }
 
 jlong

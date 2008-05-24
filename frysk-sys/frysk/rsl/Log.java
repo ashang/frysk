@@ -386,6 +386,18 @@ public final class Log {
 	    return;
 	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
     }
+    public void log(Object self, String p1, long p2, String p3, long p4, String p5, long p6) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).suffix();
+    }
+
+    // dynamic 8 parameters
+    public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6, String p7, long p8) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).suffix();
+    }
 
     // dynamic 9 parameters
     public void log(Object self, String p1, Object p2, String p3, long p4, String p5, int p6, String p7, int p8, String p9) {

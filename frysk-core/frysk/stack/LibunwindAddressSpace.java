@@ -123,22 +123,30 @@ class LibunwindAddressSpace extends AddressSpace {
 			    ProcInfo procInfo) {
 	fine.log(this, "findProcInfo ip", ip, "needUnwindInfo", needUnwindInfo);
 	MemoryMap map = task.getProc().getMap(ip);
+	int ret;
 	if (map == null) {
 	    fine.log(this, "Couldn't find memory map");
-	    return -1;
-	}
-	if (DwflFactory.isVDSO(task.getProc(), map)) {
-	    fine.log(this, "Handling VDSO map");
-	    return procInfo.fillFromVDSO(this, map.addressLow,
-					 map.addressHigh, map.offset,
-					 ip, needUnwindInfo);
+	    return procInfo.fillNotAvailable();
+	} else if (DwflFactory.isVDSO(task.getProc(), map)) {
+	    fine.log(this, "Filling from VDSO " +
+		     "low", map.addressLow,
+		     "high", map.addressHigh,
+		     "offset", map.offset);
+	    ret = procInfo.fillFromVDSO(this, map.addressLow,
+					map.addressHigh, map.offset,
+					ip, needUnwindInfo);
 	} else {
-	    fine.log(this, "Handling regular map name", map.name);
-	    return procInfo.fillFromElfImage(this, map.name,
-					     map.addressLow,
-					     map.addressHigh, map.offset,
-					     ip, needUnwindInfo);
+	    fine.log(this, "Filling from file " +
+		     "name", map.name,
+		     "low", map.addressLow,
+		     "high", map.addressHigh,
+		     "offset", map.offset);
+	    ret = procInfo.fillFromElfImage(this, map.name,
+					    map.addressLow,
+					    map.addressHigh, map.offset,
+					    ip, needUnwindInfo);
 	}
+	return ret;
     }
 
     public void putUnwindInfo (final ProcInfo procInfo) {

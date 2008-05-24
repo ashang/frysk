@@ -1,3 +1,8 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Log.java (log(Object,String,long,String,long,String,long)): New.
+	(log(Object,String,Object,String,long,String,long,String,long)): New.
+	
 2008-05-15  Petr Machata  <pmachata@redhat.com>
 
 	* Log.java (log(String, Object, String, long, String, Object, String, Object)): New.

@@ -72,6 +72,8 @@ public abstract class Unwind {
     abstract long copyCursor(long unwCursor);  
     abstract int getContext(long context);
  
+    abstract int fillProcInfoNotAvailable(long unwProcInfo);
+
     // FIXME: shouldn't be public.
     public abstract int createProcInfoFromElfImage(AddressSpace addressSpace,
 						   long ip, 

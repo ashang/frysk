@@ -51,6 +51,14 @@ public class ProcInfo {
 	unwinder.destroyProcInfo(unwProcInfo);
     }
   
+    /**
+     * Oops, there was no unwind info; for instance, the address is
+     * invalid.  Fill-in and return the applicable failure indication.
+     */
+    public int fillNotAvailable() {
+	return unwinder.fillProcInfoNotAvailable(unwProcInfo);
+    }
+
     public int fillFromVDSO(AddressSpace addressSpace,
 			    long addressLow, long addressHigh,
 			    long offset, long ip,

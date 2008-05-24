@@ -1,5 +1,8 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcInfo.java (fillNotAvailable): New.
+	* Unwind.java (fillProcInfoNotAvailable): New.
+	
 	* ProcInfo.java (ProcInfo(int)): Delete.
 	(error, getError()): Delete.
 	(fillFromElfImage, fillFromVDSO): New.

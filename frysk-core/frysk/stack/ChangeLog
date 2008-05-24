@@ -1,5 +1,8 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* LibunwindAddressSpace.java (findProcInfo): Return
+	ProcInfo.fillNotAvailable() when there is no map.
+	
 	* LibunwindAddressSpace.java (procInfo): Delete.
 	(getElfImage(long)): Delete.
 	(findProcInfo): Use ProcInfo.fillFromElfImage et.al. methods.
