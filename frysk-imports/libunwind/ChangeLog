@@ -1,3 +1,8 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* src/dwarf/Gparser.c (put_unwind_info): Call the eh-frame's
+	put_unwind_info method if present.
+
 2007-03-19  Mark Wielaard  <mwielaard@redhat.com>
 
 	* src/x86_64/Gstep.c (is_call_instr_at): New function.

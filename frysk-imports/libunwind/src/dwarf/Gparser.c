@@ -439,13 +439,36 @@ put_unwind_info (struct dwarf_cursor *c, unw_proc_info_t *pi)
   if (!c->pi_valid)
     return;
 
-  if (c->pi_is_dynamic)
+  if (c->pi_is_dynamic) {
     unwi_put_dynamic_unwind_info (c->as, pi, c->as_arg);
-  else if (pi->unwind_info);
-    {
-      mempool_free (&dwarf_cie_info_pool, pi->unwind_info);
-      pi->unwind_info = NULL;
+    return;
+  }
+
+  if (pi->unwind_info); {
+    // Find the eh-frame's address space and arguments.
+    unw_addr_space_t frame_as;
+    void *frame_arg;
+#ifndef UNW_LOCAL_ONLY
+    struct dwarf_cie_info *dci = pi->unwind_info;
+    frame_as = dci->as;
+    frame_arg = dci->as_arg;
+#else
+    frame_as = c->as;
+    frame_arg = c->as_arg;
+#endif
+    if (frame_as) {
+      // notify the eh-frame accessors that the info is being
+      // released so it can also release its local data (for instance
+      // the frame_arg pointer).
+      unw_accessors_t *a = unw_get_accessors (frame_as);
+      if (a->put_unwind_info != NULL) {
+	a->put_unwind_info(frame_as, pi, frame_arg);
+      }
     }
+    // Free this data.
+    mempool_free (&dwarf_cie_info_pool, pi->unwind_info);
+    pi->unwind_info = NULL;
+  }
 }
 
 static inline int
