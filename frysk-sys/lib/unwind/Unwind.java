@@ -42,7 +42,6 @@ package lib.unwind;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
 import gnu.gcj.RawDataManaged;
-import gnu.gcj.RawData;
 
 public abstract class Unwind {
     static final Log fine = LogFactory.fine(Unwind.class);
@@ -61,8 +60,6 @@ public abstract class Unwind {
     abstract int isSignalFrame (long unwCursor);
   
     abstract int step (long unwCursor);
-  
-    abstract ProcInfo getProcInfo (long unwCursor);
   
     abstract void getRegister(long unwCursor, Number regNum,
 			      long offset, int length, byte[] word, int start);
@@ -87,14 +84,17 @@ public abstract class Unwind {
 						    long segbase, long hi, 
 						    long mapoff);
 
-    abstract long getStartIP(RawDataManaged procInfo);
-    abstract long getEndIP(RawDataManaged procInfo);
-    abstract long getLSDA(RawDataManaged procInfo);
-    abstract long getHandler(RawDataManaged procInfo);
-    abstract long getGP(RawDataManaged procInfo);
-    abstract long getFlags(RawDataManaged procInfo);
- 
-    abstract int getFormat(RawDataManaged procInfo);
-    abstract int getUnwindInfoSize(RawDataManaged procInfo);
-    abstract RawData getUnwindInfo(RawDataManaged procInfo);
+
+    abstract ProcInfo getProcInfo(long unwCursor);
+    abstract void destroyProcInfo(long unwProcInfo);
+
+    abstract long getStartIP(long unwProcInfo);
+    abstract long getEndIP(long unwProcInfo);
+    abstract long getLSDA(long unwProcInfo);
+    abstract long getHandler(long unwProcInfo);
+    abstract long getGP(long unwProcInfo);
+    abstract long getFlags(long unwProcInfo);
+    abstract int getFormat(long unwProcInfo);
+    abstract int getUnwindInfoSize(long unwProcInfo);
+    abstract long getUnwindInfo(long unwProcInfo);
 }

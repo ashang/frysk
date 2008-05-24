@@ -1,5 +1,10 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcInfo.java (unwProcInfo): Replace procInfo, a long.
+	* Unwind.java: Ditto.
+	* Cursor.java (getProcInfo()): Update.
+	* cni/UnwindH.hxx: Update.
+
 	* Unwind.java: For unwAddressSpace, pass a long, not RawData.
 	* AddressSpace.java (unwAddressSpace): Change type to jlong.
 	(getUnwinder()): Delete.

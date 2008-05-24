@@ -103,7 +103,8 @@ find_proc_info(::unw_addr_space_t as, ::unw_word_t ip,
     = vec(addressSpace)->findProcInfo((jlong) ip, (jboolean) need_unwind_info);
   if (procInfo->error != 0)
     return procInfo->error;
-  memcpy(pip, procInfo->procInfo, sizeof (unw_proc_info_t));
+  // Extract the info.
+  memcpy(pip, (void*) procInfo->unwProcInfo, sizeof (unw_proc_info_t));
   return 0;
 }
 
@@ -114,8 +115,8 @@ static void
 put_unwind_info(::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		void *addressSpace) {
   AddressSpace* space = vec(addressSpace);
-  ProcInfo* procInfo
-    = new ProcInfo(space->unwinder, (gnu::gcj::RawDataManaged *) proc_info);
+  // This is passing up a stack pointer, which may then be freed.
+  ProcInfo* procInfo = new ProcInfo(space->unwinder, (jlong) proc_info);
   space->putUnwindInfo (procInfo);
 }
 
@@ -422,8 +423,7 @@ ProcInfo*
 TARGET::getProcInfo(jlong unwCursor) {
   logf(fine, this, "getProcInfo cursor: %lx", (long) unwCursor);
   unw_proc_info_t *procInfo
-    = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
-
+    = (::unw_proc_info_t *) JvMalloc(sizeof (::unw_proc_info_t));
   int ret = unw_get_proc_info((::unw_cursor_t*) (long) unwCursor, procInfo);
 
   logf(fine, this, "getProcInfo finished get_proc_info");
@@ -431,9 +431,14 @@ TARGET::getProcInfo(jlong unwCursor) {
   if (ret < 0)
     myInfo = new ProcInfo((jint) ret);
   else
-    myInfo = new ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new ProcInfo(this, (jlong) procInfo);
   log(fine, this, "getProcInfo returned", myInfo);
   return myInfo;
+}
+
+void
+TARGET::destroyProcInfo(jlong unwProcInfo) {
+  JvFree((unw_proc_info_t*) (long) unwProcInfo);
 }
 
 // Return NULL when eh_frame_hdr cannot be found.
@@ -603,7 +608,7 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
     return new ProcInfo(-UNW_ENOINFO);
 
   unw_proc_info_t *procInfo
-    = (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
+    = (::unw_proc_info_t *) JvMalloc(sizeof (::unw_proc_info_t));
 
   logf(fine, this, "Pre unw_get_unwind_table");
   
@@ -649,8 +654,7 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
   if (ret < 0)
     myInfo = new ProcInfo((jint) ret);
   else
-    myInfo = new ProcInfo(this,
-			  (gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new ProcInfo(this, (jlong) procInfo);
 
   return myInfo;
 }
@@ -743,46 +747,46 @@ TARGET::createElfImageFromVDSO(AddressSpace* addressSpace,
 }
 
 jlong
-TARGET::getStartIP(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getStartIP(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->start_ip;
 }
 
 jlong
-TARGET::getEndIP(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getEndIP(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->end_ip;
 }
 
 jlong
-TARGET::getLSDA(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getLSDA(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->lsda;
 }
 
 jlong
-TARGET::getHandler(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getHandler(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->handler;
 }
 
 jlong
-TARGET::getGP(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getGP(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->gp;
 }
 
 jlong
-TARGET::getFlags(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getFlags(jlong unwProcInfo) {
   return (jlong) ((unw_proc_info_t *) unwProcInfo)->flags;
 }
 
 jint
-TARGET::getFormat(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getFormat(jlong unwProcInfo) {
   return (jint) ((unw_proc_info_t *) unwProcInfo)->format;
 }
 
 jint
-TARGET::getUnwindInfoSize(gnu::gcj::RawDataManaged* unwProcInfo) {
+TARGET::getUnwindInfoSize(jlong unwProcInfo) {
   return (jint) ((unw_proc_info_t *) unwProcInfo)->unwind_info_size;
 }
 
-gnu::gcj::RawData*
-TARGET::getUnwindInfo(gnu::gcj::RawDataManaged* unwProcInfo) {
-  return (gnu::gcj::RawData *) ((unw_proc_info_t *) unwProcInfo)->unwind_info;
+jlong
+TARGET::getUnwindInfo(jlong unwProcInfo) {
+  return (jlong) ((unw_proc_info_t *) unwProcInfo)->unwind_info;
 }

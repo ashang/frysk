@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,65 +39,63 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawData;
-import gnu.gcj.RawDataManaged;
-
-public class ProcInfo
-{
+public class ProcInfo {
     final Unwind unwinder;
-    final RawDataManaged procInfo;
+    final long unwProcInfo;
     final int error;
+  
+    ProcInfo(Unwind unwinder, long unwProcInfo) {
+	this.unwinder = unwinder;
+	this.error = 0;
+	this.unwProcInfo = unwProcInfo; 
+    }
+    ProcInfo(int error) {
+	this.error = error;
+	this.unwinder = null;
+	this.unwProcInfo = 0;
+    }
+    protected void finalize() {
+	unwinder.destroyProcInfo(unwProcInfo);
+    }
   
     public int getError() {
 	return error;
     }
   
     public long getStartIP() {
-	return unwinder.getStartIP(procInfo);
+	return unwinder.getStartIP(unwProcInfo);
     }
   
     long getEndIP() {
-	return unwinder.getEndIP(procInfo);
+	return unwinder.getEndIP(unwProcInfo);
     }
   
     long getLSDA() {
-	return unwinder.getLSDA(procInfo);
+	return unwinder.getLSDA(unwProcInfo);
     }
   
     long getHandler() {
-	return unwinder.getHandler(procInfo);
+	return unwinder.getHandler(unwProcInfo);
     }
   
     long getGP() {
-	return unwinder.getGP(procInfo);
+	return unwinder.getGP(unwProcInfo);
     }
   
     long getFlags() {
-	return unwinder.getFlags(procInfo);
+	return unwinder.getFlags(unwProcInfo);
     }
   
     int getFormat() {
-	return unwinder.getFormat(procInfo);
+	return unwinder.getFormat(unwProcInfo);
     }
   
     int getUnwindInfoSize() {
-	return unwinder.getUnwindInfoSize(procInfo);
+	return unwinder.getUnwindInfoSize(unwProcInfo);
     }
   
-    RawData getUnwindInfo() {
-	return unwinder.getUnwindInfo(procInfo);
-    }
-  
-    ProcInfo(Unwind unwinder, RawDataManaged procInfo) {
-	this.unwinder = unwinder;
-	this.error = 0;
-	this.procInfo = procInfo; 
-    }
-  
-    public ProcInfo (int error) {
-	this.error = error;
-	this.unwinder = null;
-	this.procInfo = null;
+    long getUnwindInfo() {
+	return unwinder.getUnwindInfo(unwProcInfo);
     }
   
     public String toString() {
@@ -105,9 +103,13 @@ public class ProcInfo
 	    return "ProcInfo Error: " + error;
 
 	return "ProcInfo startIP: 0x" + Long.toHexString(getStartIP()) 
-	    + " endIP: 0x" + Long.toHexString(getEndIP()) + " lsda: " + getLSDA() + " handler: " +
-	    getHandler() + " gp: " + getGP() + " flags: " + getFlags()
-	    + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 
-	    + " hasUnwindInfo?: " + (getUnwindInfo() != null);
+	    + " endIP: 0x" + Long.toHexString(getEndIP())
+	    + " lsda: " + getLSDA()
+	    + " handler: " + getHandler()
+	    + " gp: " + getGP()
+	    + " flags: " + getFlags()
+	    + " format: " + getFormat()
+	    + " unwindInfoSize: " + getUnwindInfoSize() 
+	    + " hasUnwindInfo: " + getUnwindInfo();
     }
 }
