@@ -99,10 +99,13 @@ find_proc_info(::unw_addr_space_t as, ::unw_word_t ip,
 	       ::unw_proc_info_t *pip, int need_unwind_info,
 	       void *addressSpace)
 {
-  ProcInfo* procInfo 
-    = vec(addressSpace)->findProcInfo((jlong) ip, (jboolean) need_unwind_info);
-  if (procInfo->error != 0)
-    return procInfo->error;
+  ProcInfo* procInfo = new ProcInfo(vec(addressSpace)->unwinder,
+				    (long) JvMalloc(sizeof(unw_proc_info_t)));
+  int ok = vec(addressSpace)->findProcInfo((jlong)ip,
+					   (jboolean)need_unwind_info,
+					   procInfo);
+  if (ok < 0)
+    return ok;
   // Extract the info.
   memcpy(pip, (void*) procInfo->unwProcInfo, sizeof (unw_proc_info_t));
   return 0;
@@ -419,21 +422,20 @@ TARGET::copyCursor(jlong unwCursor) {
   return (jlong) nativeCursor;
 }
 
-ProcInfo*
+jlong
 TARGET::getProcInfo(jlong unwCursor) {
   logf(fine, this, "getProcInfo cursor: %lx", (long) unwCursor);
   unw_proc_info_t *procInfo
     = (::unw_proc_info_t *) JvMalloc(sizeof (::unw_proc_info_t));
   int ret = unw_get_proc_info((::unw_cursor_t*) (long) unwCursor, procInfo);
 
-  logf(fine, this, "getProcInfo finished get_proc_info");
-  ProcInfo * myInfo;
-  if (ret < 0)
-    myInfo = new ProcInfo((jint) ret);
-  else
-    myInfo = new ProcInfo(this, (jlong) procInfo);
-  log(fine, this, "getProcInfo returned", myInfo);
-  return myInfo;
+  logf(fine, this, "getProcInfo finished get_proc_info %lx", (jlong) procInfo);
+  if (ret < 0) {
+    JvFree(procInfo);
+    return 0;
+  } else {
+    return (jlong)procInfo;
+  }
 }
 
 void
@@ -599,21 +601,20 @@ local_access_mem(unw_addr_space_t as, unw_word_t addr,
 static unw_accessors_t local_accessors
 = {NULL, NULL, NULL, local_access_mem, NULL, NULL, NULL, NULL};
 
-ProcInfo*
+jint
 TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
 				   jlong ip,
 				   jboolean needUnwindInfo,
-				   ElfImage* elfImage) {
+				   ElfImage* elfImage,
+				   ProcInfo* procInfo) {
   if (elfImage == NULL || elfImage->ret != 0)
-    return new ProcInfo(-UNW_ENOINFO);
+    return -UNW_ENOINFO;
 
-  unw_proc_info_t *procInfo
-    = (::unw_proc_info_t *) JvMalloc(sizeof (::unw_proc_info_t));
-
+  unw_proc_info_t* unwProcInfo = (unw_proc_info_t*) procInfo->unwProcInfo;
   logf(fine, this, "Pre unw_get_unwind_table");
   
   unw_word_t peh_vaddr = 0;
-  char *eh_table_hdr = get_eh_frame_hdr_addr(procInfo,
+  char *eh_table_hdr = get_eh_frame_hdr_addr(unwProcInfo,
 					     (char *) elfImage->elfImage,
 					     elfImage->size,
 					     elfImage->segbase,
@@ -626,12 +627,12 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
   //fprintf(stderr, "%s: %p\n", buffer, eh_table_hdr);
 
   if (eh_table_hdr == NULL)
-    return new ProcInfo(-UNW_ENOINFO);
+    return -UNW_ENOINFO;
 
   int ret;
-  if (procInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
+  if (unwProcInfo->format == UNW_INFO_FORMAT_REMOTE_TABLE)
     ret = unw_get_unwind_table((unw_word_t) ip,
-			       procInfo,
+			       unwProcInfo,
 			       (int) needUnwindInfo,
 			       &local_accessors,
 			       // virtual address
@@ -640,7 +641,7 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
 			       eh_table_hdr - peh_vaddr);
   else
     ret = unw_get_unwind_table((unw_word_t) ip,
-                               procInfo,
+                               unwProcInfo,
                                (int) needUnwindInfo,
                                &local_accessors,
                                // virtual address
@@ -649,14 +650,8 @@ TARGET::createProcInfoFromElfImage(AddressSpace* addressSpace,
                                eh_table_hdr);
   
   
-  logf(fine, this, "Post unw_get_unwind_table");
-  ProcInfo *myInfo;
-  if (ret < 0)
-    myInfo = new ProcInfo((jint) ret);
-  else
-    myInfo = new ProcInfo(this, (jlong) procInfo);
-
-  return myInfo;
+  logf(fine, this, "Post unw_get_unwind_table %d", ret);
+  return ret;
 }
 
 ElfImage*

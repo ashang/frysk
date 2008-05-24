@@ -75,7 +75,8 @@ public abstract class AddressSpace {
      *  fields of the returned ProcInfo should be set.
      * @return A ProcInfo object holding the processes info.
      */
-    public abstract ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+    public abstract int findProcInfo(long ip, boolean needUnwindInfo,
+				     ProcInfo procInfo);
 
     /**
      * Used to free a ProcInfo object created with needUnwindInfo as

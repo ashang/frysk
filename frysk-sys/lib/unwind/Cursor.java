@@ -96,7 +96,7 @@ public class Cursor {
     }
   
     public ProcInfo getProcInfo () {
-	return unwinder.getProcInfo(unwCursor);
+	return new ProcInfo(unwinder, unwinder.getProcInfo(unwCursor));
     }
   
     public Cursor unwind() {

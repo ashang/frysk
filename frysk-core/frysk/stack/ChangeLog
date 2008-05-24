@@ -1,3 +1,9 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* LibunwindAddressSpace.java (procInfo): Delete.
+	(getElfImage(long)): Delete.
+	(findProcInfo): Use ProcInfo.fillFromElfImage et.al. methods.
+
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindAddressSpace.java: Use AddressSpace.unwinder (fixme);

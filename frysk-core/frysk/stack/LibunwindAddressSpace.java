@@ -52,7 +52,6 @@ import frysk.proc.Task;
 import frysk.rsl.Log;
 import lib.unwind.AddressSpace;
 import lib.unwind.ByteOrder;
-import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import frysk.isa.registers.RegisterMap;
 
@@ -62,11 +61,6 @@ class LibunwindAddressSpace extends AddressSpace {
     private final Task task;
     private final ISA isa;
     private final RegisterMap registerMap;
-
-    // procInfo is a wrapper for a RawDataManaged object, keep a reference
-    // to it for as long as needed.
-    ProcInfo procInfo;
-
 
     static private Unwind unwinder(ISA isa) {
 	// FIXME: Call UnwindFactory.singleton(task.getISA())!
@@ -125,41 +119,28 @@ class LibunwindAddressSpace extends AddressSpace {
 	task.setRegister(register, regval);
     }
 
-    public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
+    public int findProcInfo(long ip, boolean needUnwindInfo,
+			    ProcInfo procInfo) {
 	fine.log(this, "findProcInfo ip", ip, "needUnwindInfo", needUnwindInfo);
-	ElfImage elfImage = getElfImage(ip);
-	fine.log(this, "Obtained elfImage", elfImage);
-	procInfo = unwinder
-	    .createProcInfoFromElfImage(this, ip, needUnwindInfo, elfImage);
-	fine.log(this, "post procInfo", procInfo);
-	return procInfo;
-    }
-
-    public void putUnwindInfo (final ProcInfo procInfo) {
-	// No longer need to hold procInfo.
-	this.procInfo = null;
-    }
-
-    private ElfImage getElfImage (long addr) {
-	fine.log(this, "getElfImage addr", addr);
-	ElfImage elfImage = null;
-	MemoryMap map = task.getProc().getMap(addr);
-    
+	MemoryMap map = task.getProc().getMap(ip);
 	if (map == null) {
 	    fine.log(this, "Couldn't find memory map");
-	    return null;
+	    return -1;
 	}
 	if (DwflFactory.isVDSO(task.getProc(), map)) {
 	    fine.log(this, "Handling VDSO map");
-	    elfImage = unwinder
-		.createElfImageFromVDSO(this, map.addressLow, 
-					map.addressHigh, map.offset);
+	    return procInfo.fillFromVDSO(this, map.addressLow,
+					 map.addressHigh, map.offset,
+					 ip, needUnwindInfo);
 	} else {
 	    fine.log(this, "Handling regular map name", map.name);
-	    elfImage = ElfImage.mapElfImage(map.name, map.addressLow, 
-					    map.addressHigh, map.offset);
+	    return procInfo.fillFromElfImage(this, map.name,
+					     map.addressLow,
+					     map.addressHigh, map.offset,
+					     ip, needUnwindInfo);
 	}
-	fine.log(this, "Leaving getElfImage");
-	return elfImage;
+    }
+
+    public void putUnwindInfo (final ProcInfo procInfo) {
     }
 }

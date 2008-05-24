@@ -40,28 +40,42 @@
 package lib.unwind;
 
 public class ProcInfo {
-    final Unwind unwinder;
+    private final Unwind unwinder;
     final long unwProcInfo;
-    final int error;
   
     ProcInfo(Unwind unwinder, long unwProcInfo) {
 	this.unwinder = unwinder;
-	this.error = 0;
 	this.unwProcInfo = unwProcInfo; 
-    }
-    ProcInfo(int error) {
-	this.error = error;
-	this.unwinder = null;
-	this.unwProcInfo = 0;
     }
     protected void finalize() {
 	unwinder.destroyProcInfo(unwProcInfo);
     }
   
-    public int getError() {
-	return error;
+    public int fillFromVDSO(AddressSpace addressSpace,
+			    long addressLow, long addressHigh,
+			    long offset, long ip,
+			    boolean needUnwindInfo) {
+	ElfImage elfImage = unwinder.createElfImageFromVDSO(addressSpace,
+							    addressLow,
+							    addressHigh,
+							    offset);
+	return unwinder.createProcInfoFromElfImage(addressSpace, ip,
+						   needUnwindInfo, elfImage,
+						   this);
     }
-  
+
+    public int fillFromElfImage(AddressSpace addressSpace,
+				String name,
+				long addressLow, long addressHigh,
+				long offset, long ip,
+				boolean needUnwindInfo) {
+	ElfImage elfImage = ElfImage.mapElfImage(name, addressLow, addressHigh,
+						 offset);
+	return unwinder.createProcInfoFromElfImage(addressSpace, ip,
+						   needUnwindInfo, elfImage,
+						   this);
+    }
+
     public long getStartIP() {
 	return unwinder.getStartIP(unwProcInfo);
     }
@@ -99,9 +113,6 @@ public class ProcInfo {
     }
   
     public String toString() {
-	if (error != 0)
-	    return "ProcInfo Error: " + error;
-
 	return "ProcInfo startIP: 0x" + Long.toHexString(getStartIP()) 
 	    + " endIP: 0x" + Long.toHexString(getEndIP())
 	    + " lsda: " + getLSDA()
@@ -110,6 +121,6 @@ public class ProcInfo {
 	    + " flags: " + getFlags()
 	    + " format: " + getFormat()
 	    + " unwindInfoSize: " + getUnwindInfoSize() 
-	    + " hasUnwindInfo: " + getUnwindInfo();
+	    + " unwindInfo: " + getUnwindInfo();
     }
 }

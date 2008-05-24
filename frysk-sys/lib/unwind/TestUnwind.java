@@ -67,8 +67,9 @@ public class TestUnwind
 	}
 	public void setReg(Number regnum, long regval) {
 	}
-	public ProcInfo findProcInfo (long ip, boolean needUnwindInfo) {
-	    return null;
+	public int findProcInfo(long ip, boolean needUnwindInfo,
+				ProcInfo procInfo) {
+	    return -1;
 	}
 	public int getDynInfoListAddr (byte[] dilap) {
 	    return 0;

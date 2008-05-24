@@ -1,3 +1,16 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcInfo.java (ProcInfo(int)): Delete.
+	(error, getError()): Delete.
+	(fillFromElfImage, fillFromVDSO): New.
+	* Unwind.java (getProcInfo): Return a long.
+	* Cursor.java (getProcInfo()): Update.
+	* AddressSpace.java (findProcInfo): Add ProcInfo parameter.
+	* Unwind.java (createProcInfoFromElfImage): Ditto.
+	* TestUnwind.java: Update.
+	* cni/UnwindH.hxx (find_proc_info): Update.
+	(TARGET::createProcInfoFromElfImage): Update.
+
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Unwind.java (getContext): Change parameter to long.
