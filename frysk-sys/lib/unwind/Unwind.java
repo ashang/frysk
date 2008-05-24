@@ -41,7 +41,6 @@ package lib.unwind;
 
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
-import gnu.gcj.RawDataManaged;
 
 public abstract class Unwind {
     static final Log fine = LogFactory.fine(Unwind.class);
@@ -71,7 +70,7 @@ public abstract class Unwind {
     abstract long getCFA(long unwCursor);
   
     abstract long copyCursor(long unwCursor);  
-    abstract int getContext(RawDataManaged context);
+    abstract int getContext(long context);
  
     // FIXME: shouldn't be public.
     public abstract ProcInfo createProcInfoFromElfImage(AddressSpace addressSpace,

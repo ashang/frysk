@@ -1,5 +1,8 @@
 2008-05-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Unwind.java (getContext): Change parameter to long.
+	* cni/UnwindH.hxx (TARGET::getContext): Update.
+	
 	* ProcInfo.java (unwProcInfo): Replace procInfo, a long.
 	* Unwind.java: Ditto.
 	* Cursor.java (getProcInfo()): Update.

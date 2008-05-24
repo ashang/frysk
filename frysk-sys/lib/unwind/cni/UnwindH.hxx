@@ -403,7 +403,7 @@ TARGET::getCFA(jlong unwCursor) {
 
 
 jint
-TARGET::getContext(gnu::gcj::RawDataManaged* context) {
+TARGET::getContext(jlong context) {
   return (jint) unw_getcontext((::unw_context_t *) context);
 }
 
