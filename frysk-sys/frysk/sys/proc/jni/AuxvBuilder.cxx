@@ -193,7 +193,7 @@ AuxvBuilder::construct(jnixx::env env, jint pid) {
 
 bool
 AuxvBuilder::construct(jnixx::env env, jnixx::jbyteArray buf) {
-  ArrayBytes bytes = ArrayBytes(env, buf);
+  jbyteArrayElements bytes = jbyteArrayElements(env, buf);
   bool ok = ::construct(env, *this, bytes);
   bytes.release();
   return ok;

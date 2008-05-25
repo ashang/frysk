@@ -1,5 +1,10 @@
 2008-05-25  Andrew Cagney  <cagney@redhat.com>
 
+	* elements.hxx (jbyteArrayElements): Rename ArrayBytes.
+	(jlongArrayElements): Define.
+	(jstringUTFChars): Replace StringChars.
+	* jni/Native.cxx: Update.
+	
 	* JniBindings.java: Generate GetArrayElements and
 	ReleaesArrayElements as aliases for Get<primitive>ArrayElements
 	et.al.

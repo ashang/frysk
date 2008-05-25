@@ -124,7 +124,7 @@ Status::scan(jnixx::env env, jint pid) {
 
 Status
 Status::scan(jnixx::env env, jnixx::jbyteArray buf) {
-  ArrayBytes bytes = ArrayBytes(env, buf);
+  jbyteArrayElements bytes = jbyteArrayElements(env, buf);
   Status s = ::scan(env, (const char*)bytes.elements(), *this, GetFine(env));
   bytes.release();
   return s;

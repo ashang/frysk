@@ -85,7 +85,7 @@ FileDescriptor::write(jnixx::env env, jint fd,
 {
   verifyBounds(env, bytes, off, len);
   errno = 0;
-  ArrayBytes b = ArrayBytes(env, bytes);
+  jbyteArrayElements b = jbyteArrayElements(env, bytes);
   int size = ::write(fd, b.elements() + off, len);
   int err = errno;
   // ::fprintf (stderr, "wrote <<%c>>\n", (char) b);
@@ -152,7 +152,7 @@ FileDescriptor::read(jnixx::env env, jint fd,
 		     jnixx::jbyteArray bytes,
 		     jint off, jint len) {
   verifyBounds(env, bytes, off, len);
-  ArrayBytes b = ArrayBytes(env, bytes);
+  jbyteArrayElements b = jbyteArrayElements(env, bytes);
   jint ok = doRead(env, fd, b.elements() + off, len);
   b.release();
   return ok;
@@ -181,7 +181,7 @@ FileDescriptor::creat(jnixx::env) {
 jint
 FileDescriptor::open(jnixx::env env, String file, jint flags, jint mode) {
   // ::fprintf ("opening <<%s>>\n", pathname);
-  StringChars pathname = StringChars(env, file);
+  jstringUTFChars pathname = jstringUTFChars(env, file);
   int fd = ::open(pathname.elements(), flags, mode);
   if (fd < 0) {
     errnoException(env, errno, "open", "file %s", pathname.elements());

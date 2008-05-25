@@ -80,7 +80,7 @@ public:
  * exec the specified program.
  */
 class exec_program : public exec {
-  StringChars exe;
+  jstringUTFChars exe;
   const char* exeElements;
   StringArrayChars argv;
   char** argvElements;
@@ -88,7 +88,7 @@ class exec_program : public exec {
 public:
   exec_program(jnixx::env env, java::lang::String exe,
 	       jnixx::array<java::lang::String> args, jlong environ) {
-    this->exe = StringChars(env, exe);
+    this->exe = jstringUTFChars(env, exe);
     this->argv = StringArrayChars(env, args);
     this->environ = (char**)(long)environ;
     // allocate the exec strings before the fork

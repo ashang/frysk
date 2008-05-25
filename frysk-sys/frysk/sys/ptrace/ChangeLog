@@ -1,3 +1,8 @@
+2008-05-25  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx: Use jbyteArrayElements.
+	* jni/RegisterSet.cxx: Ditto.
+
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AddressSpace.cxx: Update; byteArray -> jbyteArray.

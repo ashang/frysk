@@ -60,6 +60,6 @@ frysk::sys::AuditLibs::syscallToName(jnixx::env env, jint syscall,
 jint
 frysk::sys::AuditLibs::nameToSyscall(jnixx::env env, String name,
 				     jint machine) {
-  StringChars syscall_name = StringChars(env, name);
+  jstringUTFChars syscall_name = jstringUTFChars(env, name);
   return audit_name_to_syscall(syscall_name.elements(), machine);
 }

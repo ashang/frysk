@@ -58,7 +58,7 @@ frysk::sys::StatelessFile::pread(jnixx::env env, jlong fileOffset,
 				 jint start, jint length) {
   verifyBounds(env, bytes, start, length);
   
-  ArrayBytes unixPath = ArrayBytes(env, GetUnixPath(env));
+  jbyteArrayElements unixPath = jbyteArrayElements(env, GetUnixPath(env));
   int fd = ::open((const char *)unixPath.elements(), O_RDONLY);
   if (fd < 0)
     errnoException(env, errno, "open", "filename %s",
@@ -66,7 +66,7 @@ frysk::sys::StatelessFile::pread(jnixx::env env, jlong fileOffset,
   unixPath.release();
 
   // XXX: 64-bit?
-  ArrayBytes buffer = ArrayBytes(env, bytes);
+  jbyteArrayElements buffer = jbyteArrayElements(env, bytes);
   ssize_t rc = ::pread64 (fd, start + buffer.elements(), length, fileOffset);
   if (rc < 0) {
     int savedErrno = errno;
@@ -86,7 +86,7 @@ frysk::sys::StatelessFile::pwrite(jnixx::env env, jlong fileOffset,
 				  jint start, jint length) {
   verifyBounds (env, bytes, start, length);
   
-  ArrayBytes unixPath = ArrayBytes(env, GetUnixPath(env));
+  jbyteArrayElements unixPath = jbyteArrayElements(env, GetUnixPath(env));
   int fd = ::open((const char *)unixPath.elements(), O_WRONLY);
   if (fd < 0)
     errnoException(env, errno, "open", "filename %s",
@@ -94,7 +94,7 @@ frysk::sys::StatelessFile::pwrite(jnixx::env env, jlong fileOffset,
   unixPath.release();
 
   // XXX: 64-bit?
-  ArrayBytes buffer = ArrayBytes(env, bytes);
+  jbyteArrayElements buffer = jbyteArrayElements(env, bytes);
   ssize_t rc = ::pwrite64 (fd, start + buffer.elements(), length, fileOffset);
   if (rc < 0) {
     int savedErrno = errno;

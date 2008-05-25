@@ -89,11 +89,11 @@ frysk::sys::PseudoTerminal::getName(jnixx::env env, jint fd) {
 }
 
 class redirect_tty : public redirect {
-  StringChars pty;
+  jstringUTFChars pty;
   const char* ptyElements;
 public:
   redirect_tty(jnixx::env env, String name) {
-    pty = StringChars(env, name);
+    pty = jstringUTFChars(env, name);
     ptyElements = pty.elements();
   }
   ~redirect_tty() {

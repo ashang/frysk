@@ -97,9 +97,9 @@ jnixx::Native::catchRuntimeException(jnixx::env env, jnixx::Native e) {
 }
 
 static void
-throwCopy(jnixx::env env, int n, StringChars stringChars,
+throwCopy(jnixx::env env, int n, jstringUTFChars stringChars,
 	  StringArrayChars stringArrayChars,
-	  ArrayBytes arrayBytes) {
+	  jbyteArrayElements arrayBytes) {
   if (n <= 0) {
     java::lang::RuntimeException::ThrowNew(env, "oops!");
   } else {
@@ -114,8 +114,8 @@ void
 jnixx::Native::throwElements(jnixx::env env, String string,
 			     jnixx::array<String> stringArray,
 			     jnixx::jbyteArray bytes) {
-  StringChars stringChars = StringChars(env, string);
+  jstringUTFChars stringChars = jstringUTFChars(env, string);
   StringArrayChars stringArrayChars = StringArrayChars(env, stringArray);
-  ArrayBytes arrayBytes = ArrayBytes(env, bytes);
+  jbyteArrayElements arrayBytes = jbyteArrayElements(env, bytes);
   throwCopy(env, 4, stringChars, stringArrayChars, arrayBytes);
 }

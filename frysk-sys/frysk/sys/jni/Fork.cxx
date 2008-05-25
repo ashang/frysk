@@ -141,17 +141,17 @@ private:
       ::_exit(errno);
     }
   }
-  StringChars in;
-  StringChars out;
-  StringChars err;
+  jstringUTFChars in;
+  jstringUTFChars out;
+  jstringUTFChars err;
   const char* inElements;
   const char* outElements;
   const char* errElements;
 public:
   redirect_stdio(jnixx::env env, String in, String out, String err) {
-    this->in = StringChars(env, in);
-    this->out = StringChars(env, out);
-    this->err = StringChars(env, err);
+    this->in = jstringUTFChars(env, in);
+    this->out = jstringUTFChars(env, out);
+    this->err = jstringUTFChars(env, err);
     // allocate memory for the arrays before the fork.
     inElements = this->in.elements();
     outElements = this->out.elements();

@@ -51,48 +51,6 @@ extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
 extern ::jnixx::array<java::lang::String> chars2strings(::jnixx::env, char**);
 extern void slurp(::jnixx::env, const char[], jbyte* (&), jsize&);
 
-class StringChars {
-private:
-  ::java::lang::String string;
-  ::jnixx::env env;
-  const char* p;
-public:
-  void operator=(const StringChars& src) {
-    this->env = src.env;
-    this->string = src.string;
-    // Avoid double references by not copying P.
-    this->p = NULL;
-  }
-  StringChars() {
-    this->p = NULL;
-  }
-  StringChars(const StringChars& old) {
-    this->operator=(old);
-  }
-  StringChars(::jnixx::env env, ::java::lang::String string) {
-    this->env = env;
-    this->string = string;
-    this->p = NULL;
-  }
-  const char* elements() {
-    if (p == NULL) {
-      if (string != NULL) {
-	this->p = string.GetStringUTFChars(env);
-      }
-    }
-    return p;
-  }
-  void release() {
-    if (p != NULL) {
-      string.ReleaseStringUTFChars(env, p);
-      p = NULL;
-    }
-  }
-  ~StringChars() {
-    release();
-  }
-};
-
 class StringArrayChars {
 private:
   ::jnixx::env env;
@@ -197,6 +155,44 @@ public:
 typedef Elements<jbyte> Bytes;
 
 /**
+ * Scratch UTF Chars.
+ */
+class jstringUTFChars : public Elements<const char> {
+private:
+  ::java::lang::String string;
+public:
+  void operator=(const jstringUTFChars& src) {
+    this->copy(src);
+    this->string = src.string;
+  }
+  jstringUTFChars() {
+  }
+  jstringUTFChars(const jstringUTFChars& old) {
+    this->operator=(old);
+  }
+  jstringUTFChars(::jnixx::env env, ::java::lang::String string)
+    : Elements<const char>(env) {
+    this->string = string;
+  }
+  void slurp(jnixx::env& env, const char* (&buf), jsize &len) {
+    if (string == NULL) {
+      buf = NULL;
+      len = 0;
+    } else {
+      buf = string.GetStringUTFChars(env);
+      len = ::strlen(buf);
+    }
+  }
+  void free(jnixx::env& env, const char* buf, int mode) {
+    string.ReleaseStringUTFChars(env, buf);
+  }
+  ~jstringUTFChars() {
+    release();
+  }
+};
+
+
+/**
  * A scratch buffer containing the file's entire contents; the buffer
  * is recovered once this goes out of scope.
  */
@@ -292,6 +288,7 @@ protected:
     types.ReleaseArrayElements(env, buf, mode);
   }
 };
-typedef ArrayElements<jbyte,::jnixx::jbyteArray> ArrayBytes;
+typedef ArrayElements<jbyte,::jnixx::jbyteArray> jbyteArrayElements;
+typedef ArrayElements<jlong,::jnixx::jlongArray> jlongArrayElements;
 
 #endif
