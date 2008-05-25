@@ -1,5 +1,7 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/UnwindH.hxx: Fix 32-bit type casts.
+
 	* cni/UnwindH.hxx (image_put_unwind_info): New.
 	(struct image): New.
 	(fillProcInfoFromImage): Create an image and pass to

@@ -431,7 +431,7 @@ TARGET::getProcInfo(jlong unwCursor) {
     = (::unw_proc_info_t *) JvMalloc(sizeof (::unw_proc_info_t));
   int ret = unw_get_proc_info((::unw_cursor_t*) (long) unwCursor, procInfo);
 
-  logf(fine, this, "getProcInfo finished get_proc_info %lx", (jlong) procInfo);
+  logf(fine, this, "getProcInfo finished get_proc_info %lx", (long) procInfo);
   if (ret < 0) {
     JvFree(procInfo);
     return 0;
@@ -803,7 +803,7 @@ TARGET::fillProcInfoFromElfImage(jlong unwProcInfo, jlong ip,
   }
 
   size = stat.st_size;
-  logf(fine, this, "mmaping %d, size %ld", fd, size);
+  logf(fine, this, "mmaping %d, size %ld", fd, (long) size);
   image = ::mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
   if (image == MAP_FAILED) {
     int err = errno;
