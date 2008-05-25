@@ -1,5 +1,7 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* jnixx.hxx: Fully qualify all JNI types.
+
 	* Printer.java: Generate jnixx::jbyteArray, instead of
 	jnixx::byteArray; et.al.
 	* PrintNamespaces.java: Ditto.
