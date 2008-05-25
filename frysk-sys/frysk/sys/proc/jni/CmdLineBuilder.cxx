@@ -84,7 +84,7 @@ frysk::sys::proc::CmdLineBuilder::construct(jnixx::env env, jint pid) {
 
 bool
 frysk::sys::proc::CmdLineBuilder::construct(jnixx::env env,
-					    jnixx::byteArray buf) {
+					    jnixx::jbyteArray buf) {
   ArrayBytes bytes = ArrayBytes(env, buf);
   bool ok = ::construct(env, this, bytes);
   bytes.release();

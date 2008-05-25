@@ -101,7 +101,7 @@ construct(jnixx::env env, frysk::sys::proc::MapsBuilder* builder, Bytes& buf) {
 }
 
 bool
-frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jnixx::byteArray buf) {
+frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jnixx::jbyteArray buf) {
   ArrayBytes bytes = ArrayBytes(env, buf);
   bool ok = ::construct(env, this, bytes);
   bytes.release();
@@ -114,7 +114,7 @@ frysk::sys::proc::MapsBuilder::construct(jnixx::env env, jint pid) {
   if (bytes.elements() == NULL)
     return false;
   {
-    jnixx::byteArray array = jnixx::byteArray::NewByteArray(env, bytes.length());
+    jnixx::jbyteArray array = jnixx::jbyteArray::NewByteArray(env, bytes.length());
     ArrayBytes b = ArrayBytes(env, array);
     memcpy(b.elements(), bytes.elements(), bytes.length());
     b.release();

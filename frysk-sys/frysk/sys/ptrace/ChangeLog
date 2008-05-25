@@ -1,3 +1,8 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx: Update; byteArray -> jbyteArray.
+	* jni/RegisterSet.cxx: Ditto.
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPtrace.java: Replace DaemonFactory with ForkFactory.

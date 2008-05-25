@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@
 
 using namespace java::lang;
 
-static ::jnixx::byteArray
+static ::jnixx::jbyteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
-  ::jnixx::byteArray bytes = ::jnixx::byteArray::NewByteArray(env, length);
+  ::jnixx::jbyteArray bytes = ::jnixx::jbyteArray::NewByteArray(env, length);
   bytes.SetByteArrayRegion(env, 0, length, (jbyte*) addr);
   return bytes;
 }
@@ -65,7 +65,7 @@ frysk::testbed::LocalMemory::getDataAddr(::jnixx::env) {
   return (jlong) &memory;
 }
 
-::jnixx::byteArray
+::jnixx::jbyteArray
 frysk::testbed::LocalMemory::getDataBytes(::jnixx::env env) {
   return getBytes(env, &memory, sizeof(memory));
 }
@@ -99,7 +99,7 @@ frysk::testbed::LocalMemory::getCodeAddr(::jnixx::env) {
   return (jlong)codeAddr();
 }
 
-::jnixx::byteArray
+::jnixx::jbyteArray
 frysk::testbed::LocalMemory::getCodeBytes(::jnixx::env env) {
   return getBytes(env, codeAddr(), sizeof(memory));
 }
@@ -110,6 +110,6 @@ frysk::testbed::LocalMemory::constructStack(::jnixx::env env,
   // Copy known data onto the stack.
   uint8_t addr[sizeof(memory)];
   memcpy(addr, &memory, sizeof(memory));
-  ::jnixx::byteArray bytes = getBytes(env, addr, sizeof(memory));
+  ::jnixx::jbyteArray bytes = getBytes(env, addr, sizeof(memory));
   builder.stack(env, (jlong)addr, bytes);
 }

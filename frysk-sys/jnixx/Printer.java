@@ -176,7 +176,7 @@ class Printer {
 		if (global) {
 		    print("::");
 		}
-		print("jnixx::");
+		print("jnixx::j");
 		print(componentType.getName());
 		print("Array");
 	    } else {
@@ -216,12 +216,15 @@ class Printer {
 
     /**
      * Print the class's unqualified C++ name; that is just the class
-     * name.
+     * name; used within a class to print the classes name.
      */
     void printUnqualifiedCxxName(Class klass) {
 	if (klass.isArray()) {
 	    printUnqualifiedCxxName(klass.getComponentType());
 	    print("Array");
+	} else if (klass.isPrimitive()) {
+	    print("j");
+	    print(klass.getName());
 	} else {
 	    String name = klass.getName();
 	    int dot = name.lastIndexOf('.');

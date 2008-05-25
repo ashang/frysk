@@ -1,5 +1,8 @@
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
+	* jni/FileDescriptor.cxx: Update; byteArray -> jbyteArray.
+	* jni/StatelessFile.cxx: Ditto.
+
 	* jni/Poll.cxx: Implement.
 	
 	* Poll.java: Replace RawDataManaged with long.

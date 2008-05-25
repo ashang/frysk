@@ -113,7 +113,7 @@ throwCopy(jnixx::env env, int n, StringChars stringChars,
 void
 jnixx::Native::throwElements(jnixx::env env, String string,
 			     jnixx::array<String> stringArray,
-			     jnixx::byteArray bytes) {
+			     jnixx::jbyteArray bytes) {
   StringChars stringChars = StringChars(env, string);
   StringArrayChars stringArrayChars = StringArrayChars(env, stringArray);
   ArrayBytes arrayBytes = ArrayBytes(env, bytes);

@@ -54,7 +54,7 @@ using namespace java::lang;
 
 jint
 frysk::sys::StatelessFile::pread(jnixx::env env, jlong fileOffset,
-				 jnixx::byteArray bytes,
+				 jnixx::jbyteArray bytes,
 				 jint start, jint length) {
   verifyBounds(env, bytes, start, length);
   
@@ -82,7 +82,7 @@ frysk::sys::StatelessFile::pread(jnixx::env env, jlong fileOffset,
 
 jint
 frysk::sys::StatelessFile::pwrite(jnixx::env env, jlong fileOffset,
-				  jnixx::byteArray bytes,
+				  jnixx::jbyteArray bytes,
 				  jint start, jint length) {
   verifyBounds (env, bytes, start, length);
   

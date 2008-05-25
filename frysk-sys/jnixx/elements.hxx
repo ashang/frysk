@@ -164,7 +164,7 @@ public:
 
 class ArrayBytes : public Bytes {
 private:
-  ::jnixx::byteArray bytes;
+  ::jnixx::jbyteArray bytes;
 public:
   void operator=(const ArrayBytes& src) {
     release();
@@ -177,7 +177,7 @@ public:
   ArrayBytes(const ArrayBytes& old) {
     this->operator=(old);
   }
-  ArrayBytes(::jnixx::env env, ::jnixx::byteArray bytes) {
+  ArrayBytes(::jnixx::env env, ::jnixx::jbyteArray bytes) {
     this->bytes = bytes;
     this->env = env;
   }

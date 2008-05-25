@@ -1,3 +1,13 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Printer.java: Generate jnixx::jbyteArray, instead of
+	jnixx::byteArray; et.al.
+	* PrintNamespaces.java: Ditto.
+	* JniBindings.java: Ditto.
+	* elements.hxx: Update.
+	* bounds.hxx: Update.
+	* jni/Native.cxx: Update.
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* exceptions.cxx (errnoException): Pass up error, not errno.

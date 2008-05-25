@@ -139,7 +139,7 @@ frysk::sys::proc::Stat::scan(jnixx::env env, jint procPid) {
 }
 
 frysk::sys::proc::Stat
-frysk::sys::proc::Stat::scan(jnixx::env env, jnixx::byteArray buf) {
+frysk::sys::proc::Stat::scan(jnixx::env env, jnixx::jbyteArray buf) {
   ArrayBytes bytes = ArrayBytes(env, buf);
   ::scan(env, (const char*) bytes.elements(), *this, GetFine(env));
   bytes.release();

@@ -377,9 +377,10 @@ class JniBindings {
 	    double[].class,
 	};
 	for (int i = 0; i < types.length; i++) {
-	    String type = types[i].getComponentType().getName();
-	    String Type = (Character.toUpperCase(type.charAt(0))
-			   + type.substring(1));
+	    String name = types[i].getComponentType().getName();
+	    String type = "j" + name;
+	    String Type = (Character.toUpperCase(name.charAt(0))
+			   + name.substring(1));
 	    bindings
 		.put(types[i], Binding.DYNAMIC,
 		     "jsize", "GetArrayLength",
@@ -388,7 +389,7 @@ class JniBindings {
 		     },
 		     null,
 		     new Object[] {
-			 "return env.GetArrayLength((j" + type + "Array) _object);"
+			 "return env.GetArrayLength((::" + type + "Array) _object);"
 		     })
 		.put(types[i], Binding.STATIC,
 		     "::jnixx::" + type + "Array", "New" + Type + "Array",
@@ -401,25 +402,25 @@ class JniBindings {
 			 "return " + type + "Array(env, env.New" + Type + "Array(length));",
 		     })
 		.put(types[i], Binding.DYNAMIC,
-		     "j" + type + "*", "Get" + Type + "ArrayElements",
+		     type + "*", "Get" + Type + "ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
 			 "jboolean*", "isCopy",
 		     },
 		     null,
 		     new Object[] {
-			 "return env.Get" + Type + "ArrayElements((j" + type + "Array) _object, isCopy);"
+			 "return env.Get" + Type + "ArrayElements((::" + type + "Array) _object, isCopy);"
 		     })
 		.put(types[i], Binding.DYNAMIC,
 		     null, "Release" + Type +"ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
-			 "j" + type + "*", "elements",
+			 type + "*", "elements",
 			 "jint", "mode"
 		     },
 		     null,
 		     new Object[] {
-			 "env.Release" + Type + "ArrayElements((j" + type + "Array)_object, elements, mode);",
+			 "env.Release" + Type + "ArrayElements((::" + type + "Array)_object, elements, mode);",
 		     })
 		.put(types[i], Binding.DYNAMIC,
 		     "void", "Get" + Type + "ArrayRegion",
@@ -427,11 +428,11 @@ class JniBindings {
 			 "::jnixx::env", "env",
 			 "jsize", "start",
 			 "jsize", "length",
-			 "j" + type + "*", "buf",
+			 type + "*", "buf",
 		     },
 		     null,
 		     new Object[] {
-			 "env.Get" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
+			 "env.Get" + Type + "ArrayRegion((::" + type + "Array) _object, start, length, buf);"
 		     })
 		.put(types[i], Binding.DYNAMIC,
 		     "void", "Set" + Type + "ArrayRegion",
@@ -439,11 +440,11 @@ class JniBindings {
 			 "::jnixx::env", "env",
 			 "jsize", "start",
 			 "jsize", "length",
-			 "j" + type + "*", "buf",
+			 type + "*", "buf",
 		     },
 		     null,
 		     new Object[] {
-			 "env.Set" + Type + "ArrayRegion((j" + type + "Array) _object, start, length, buf);"
+			 "env.Set" + Type + "ArrayRegion((::" + type + "Array) _object, start, length, buf);"
 		     })
 		;
 	}

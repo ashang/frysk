@@ -107,7 +107,7 @@ frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, j
 void
 frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
 					   jint op, jint pid, jlong addr,
-					   ::jnixx::byteArray byteArray,
+					   ::jnixx::jbyteArray byteArray,
 					   jint offset, jint length) {
   const int ptPeek = GetPtPeek(env);
   const int ptPoke = GetPtPoke(env);

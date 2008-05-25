@@ -80,7 +80,7 @@ FileDescriptor::write(jnixx::env env, jint fd, jint b) {
 
 jint
 FileDescriptor::write(jnixx::env env, jint fd,
-		      jnixx::byteArray bytes,
+		      jnixx::jbyteArray bytes,
 		      jint off, jint len)
 {
   verifyBounds(env, bytes, off, len);
@@ -149,7 +149,7 @@ FileDescriptor::read(jnixx::env env, jint fd) {
 
 jint
 FileDescriptor::read(jnixx::env env, jint fd,
-		     jnixx::byteArray bytes,
+		     jnixx::jbyteArray bytes,
 		     jint off, jint len) {
   verifyBounds(env, bytes, off, len);
   ArrayBytes b = ArrayBytes(env, bytes);

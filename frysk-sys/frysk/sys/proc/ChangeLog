@@ -1,3 +1,11 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AuxvBuilder.cxx: Update; byteArray -> jbyteArray.
+	* jni/Status.cxx: Ditto.
+	* jni/Stat.cxx: Ditto.
+	* jni/CmdLineBuilder.cxx: Ditto.
+	* jni/MapsBuilder.cxx: Ditto.
+
 2008-05-21  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AuxvBuilder.cxx (verify): Use length() and elements().

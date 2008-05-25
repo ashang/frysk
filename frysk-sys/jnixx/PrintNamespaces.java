@@ -78,7 +78,7 @@ class PrintNamespaces extends ClassWalker {
 	if (component.isPrimitive()) {
 	    printNamespace(new String[] {
 		    "jnixx",
-		    component.getName() + "Array",
+		    "j" + component.getName() + "Array",
 		});
 	}
     }

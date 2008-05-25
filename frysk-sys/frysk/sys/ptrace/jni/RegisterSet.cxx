@@ -52,7 +52,7 @@
 void
 frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,
 					  jint op, jint pid,
-					  ::jnixx::byteArray data,
+					  ::jnixx::jbyteArray data,
 					  jint length) {
   verifyBounds(env, data, length);
   ArrayBytes bytes = ArrayBytes(env, data);

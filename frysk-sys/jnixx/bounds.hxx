@@ -42,7 +42,7 @@
  * access is out-of-bounds throw an exception.
  */
 
-inline void verifyBounds(::jnixx::env env, ::jnixx::byteArray data,
+inline void verifyBounds(::jnixx::env env, ::jnixx::jbyteArray data,
 			 jint stop) {
   if (stop < 0) {
     ::java::lang::ArrayIndexOutOfBoundsException::New(env, stop).Throw(env);
@@ -52,7 +52,7 @@ inline void verifyBounds(::jnixx::env env, ::jnixx::byteArray data,
   }
 }
 
-inline void verifyBounds(::jnixx::env env, ::jnixx::byteArray data,
+inline void verifyBounds(::jnixx::env env, ::jnixx::jbyteArray data,
 			 jint start, jint length) {
   if (start < 0) {
     ::java::lang::ArrayIndexOutOfBoundsException::New(env, start).Throw(env);

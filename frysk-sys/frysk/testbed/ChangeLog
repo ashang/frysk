@@ -1,3 +1,7 @@
+2008-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/LocalMemory.cxx: Update; byteArray -> jbyteArray.
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestForkFactory.java: New.
