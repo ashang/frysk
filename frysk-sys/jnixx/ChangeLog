@@ -1,3 +1,15 @@
+2008-05-25  Andrew Cagney  <cagney@redhat.com>
+
+	* JniBindings.java: Generate GetArrayElements and
+	ReleaesArrayElements as aliases for Get<primitive>ArrayElements
+	et.al.
+	* elements.hxx (Elements<type>): Re-implement Bytes using a
+	template; typedef Bytes as Elements<jbyte>
+	(FileElements<type>): Ditto for FileBytes.
+	(ArrayElements<type,types>): Ditto for ArrayBytes.
+	(slurp): New.
+	* elements.cxx: Update.
+	
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* jnixx.hxx: Fully qualify all JNI types.

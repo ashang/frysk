@@ -412,6 +412,16 @@ class JniBindings {
 			 "return env.Get" + Type + "ArrayElements((::" + type + "Array) _object, isCopy);"
 		     })
 		.put(types[i], Binding.DYNAMIC,
+		     type + "*", "GetArrayElements",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 "jboolean*", "isCopy",
+		     },
+		     null,
+		     new Object[] {
+			 "return Get" + Type + "ArrayElements(env, isCopy);",
+		     })
+		.put(types[i], Binding.DYNAMIC,
 		     null, "Release" + Type +"ArrayElements",
 		     new String[] {
 			 "::jnixx::env", "env",
@@ -421,6 +431,17 @@ class JniBindings {
 		     null,
 		     new Object[] {
 			 "env.Release" + Type + "ArrayElements((::" + type + "Array)_object, elements, mode);",
+		     })
+		.put(types[i], Binding.DYNAMIC,
+		     null, "ReleaseArrayElements",
+		     new String[] {
+			 "::jnixx::env", "env",
+			 type + "*", "elements",
+			 "jint", "mode"
+		     },
+		     null,
+		     new Object[] {
+			 "Release" + Type + "ArrayElements(env, elements, mode);",
 		     })
 		.put(types[i], Binding.DYNAMIC,
 		     "void", "Get" + Type + "ArrayRegion",

@@ -103,47 +103,7 @@ chars2strings(::jnixx::env env, char** argv) {
 }
 
 void
-FileBytes::operator=(const FileBytes& src) {
-  release();
-  ::strcpy(this->file, src.file);
-  this->env = src.env;
-  // Don't copy the pointer.
-}
-
-FileBytes::FileBytes(jnixx::env env, const char* fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  if (::vsnprintf(file, sizeof file, fmt, ap)
-      >= (int) sizeof file) {
-    errnoException(env, errno, "vsnprintf");
-  }
-  va_end(ap);
-  this->env = env;
-}
-
-FileBytes::FileBytes(jnixx::env env, int pid, const char* name) {
-  // Convert the string into a file.
-  if (::snprintf(file, sizeof file, "/proc/%d/%s", pid, name)
-      >= (int) sizeof file) {
-    errnoException(env, errno, "snprintf");
-  }
-  this->env = env;
-}
-
-FileBytes::FileBytes(jnixx::env env, int pid, int tid, const char* name) {
-  // Convert the string into a file.
-  if (::snprintf(file, sizeof file, "/proc/%d/task/%d/%s", pid, tid, name)
-      >= (int) sizeof file) {
-    errnoException(env, errno, "snprintf");
-  }
-  this->env = env;
-}
-
-jsize
-FileBytes::length() {
-  if (l >= 0)
-    return l;
-
+slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
   // Attempt to open the file.
   int fd = ::open(file, O_RDONLY);
   if (fd < 0) {
@@ -157,63 +117,49 @@ FileBytes::length() {
   // reads are needed to confirm EOF.  Allocating 2&BUFSIZE ensures
   // that there's always space for at least two reads.  Ref SW #3370
   jsize allocated = BUFSIZ * 2 + 1;
-  p = (jbyte*) ::malloc(allocated);
-  if (p == NULL) {
+  buf = (jbyte*) ::malloc(allocated);
+  if (buf == NULL) {
     errnoException(env, errno, "malloc");
   }
 
-  l = 0;
+  len = 0;
   while (true) {
     // Attempt to fill the remaining buffer; less space for a
     // terminating NUL character.
-    int size = ::read(fd, p + l, allocated - l - 1);
+    int size = ::read(fd, buf + len, allocated - len - 1);
     if (size < 0) {
       ::close(fd);
-      release();
+      ::free(buf);
       // Abandon the read with elements == NULL.
-      p = NULL;
-      l = 0;
-      return 0;
+      buf = NULL;
+      len = 0;
+      return;
     } else if (size == 0) {
       break;
     }
-    l += size;
+    len += size;
 
-    if (l + BUFSIZ >= allocated) {
+    if (len + BUFSIZ >= allocated) {
       // Not enough space for the next ~BUFSIZ'd read; expand the
       // buffer.  Don't trust realloc with the pointer; will need to
       // free the old buffer if something goes wrong.
       allocated += BUFSIZ;
-      jbyte *tmp = (jbyte*)::realloc(p, allocated);
+      jbyte *tmp = (jbyte*)::realloc(buf, allocated);
       if (tmp == NULL) {
 	int err = errno;
 	::close(fd);
-	release();
+	::free(buf);
+	buf = NULL;
+	len = 0;
 	errnoException(env, err, "realloc");
       }
-      p = tmp;
+      buf = tmp;
     }
   }
 
   ::close(fd);
 
   // Null terminate the buffer.
-  p[l] = '\0';
-  l++; // count the trailing NUL
-  return l;
-}
-
-jbyte*
-FileBytes::elements() {
-  length();
-  return p;
-}
-
-void
-FileBytes::release() {
-  if (p != NULL) {
-    ::free(p);
-    p = NULL;
-  }
-  l = -1;
+  buf[len] = '\0';
+  len++; // count the trailing NUL
 }

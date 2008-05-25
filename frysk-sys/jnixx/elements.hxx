@@ -37,9 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
-extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
+#ifndef elements_hxx
+#define elements_hxx
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
+#include <jnixx/exceptions.hxx>
+
+extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
 extern ::jnixx::array<java::lang::String> chars2strings(::jnixx::env, char**);
+extern void slurp(::jnixx::env, const char[], jbyte* (&), jsize&);
 
 class StringChars {
 private:
@@ -126,85 +136,162 @@ public:
   }
 };
 
-class Bytes {
-protected:
+/**
+ * A buffer of primitive types that is automatically re-claimed when
+ * the function returns, or an exception is thrown.
+ */
+template <typename type> class Elements {
+private:
   jnixx::env env;
-  jbyte* p;
-  jsize l;
-  Bytes() {
-    p = NULL;
-    l = -1;
+  type* buf;
+  jsize len;
+protected:
+  Elements() {
+    buf = NULL;
+    // Use len<0 as a marker to indicate that the buffer hasn't been
+    // read / extracted / converted.
+    len = -1;
   }
-  virtual ~Bytes() {
+  Elements(jnixx::env env) {
+    this->env = env;
+    this->len = -1;
+    this->buf = NULL;
+  }
+  void copy(const Elements& old) {
+    release();
+    this->env = old.env;
+    this->len = -1;
+    this->buf = NULL;
+  }
+  virtual ~Elements() {
+  }
+  virtual void slurp(jnixx::env& env, type* (&buf), jsize &len) = 0;
+  virtual void free(jnixx::env& env, type* buf, int mode) {
   }
 public:
-  virtual jbyte* elements() = 0;
-  virtual jsize length() = 0;
+  type* elements() {
+    if (len < 0) {
+      slurp(env, buf, len);
+    }
+    return buf;
+  };
+  jsize length() {
+    if (len < 0) {
+      slurp(env, buf, len);
+    }
+    return len;
+  };
+  void release(int mode) {
+    if (len >= 0) {
+      if (buf != NULL) {
+	free(env, buf, mode);
+	buf = NULL;
+      }
+      len = -1;
+    }
+  }
+  void release() {
+    release(0);
+  }
 };
+typedef Elements<jbyte> Bytes;
 
-class FileBytes : public Bytes {
+/**
+ * A scratch buffer containing the file's entire contents; the buffer
+ * is recovered once this goes out of scope.
+ */
+template <typename type> class FileElements : public Elements<type> {
 private:
   char file[FILENAME_MAX];
 public:
-  void operator=(const FileBytes& src);
-  FileBytes(const FileBytes& old) {
-    this->operator=(old);
+  void operator=(const FileElements& src) {
+    copy(src);
+    ::strcpy(this->file, src.file);
+    // Don't copy the pointer.
   }
-  FileBytes(jnixx::env env, const char* fmt, ...)
-  __attribute__((format(printf, 3, 4)));
-  FileBytes(jnixx::env env, int pid, const char* name);
-  FileBytes(jnixx::env env, int pid, int tid, const char* name);
-  jbyte* elements();
-  jsize length();
-  void release();
-  ~FileBytes() {
-    release();
+  FileElements(const FileElements& src) {
+    this->operator=(src);
+  }
+  FileElements(jnixx::env env, const char* fmt, ...)
+  __attribute__((format(printf, 3, 4))) : Elements<type>(env) {
+    va_list ap;
+    va_start(ap, fmt);
+    if (::vsnprintf(file, sizeof file, fmt, ap)
+	>= (int) sizeof file) {
+      errnoException(env, errno, "vsnprintf");
+    }
+    va_end(ap);
+  }
+  FileElements(jnixx::env env, int pid, const char* name)
+    : Elements<type>(env) {
+    // Convert the string into a file.
+    if (::snprintf(file, sizeof file, "/proc/%d/%s", pid, name)
+	>= (int) sizeof file) {
+      errnoException(env, errno, "snprintf");
+    }
+  }
+  FileElements(jnixx::env env, int pid, int tid, const char* name)
+    : Elements<type>(env) {
+    // Convert the string into a file.
+    if (::snprintf(file, sizeof file, "/proc/%d/task/%d/%s", pid, tid, name)
+	>= (int) sizeof file) {
+      errnoException(env, errno, "snprintf");
+    }
+  }
+  ~FileElements() {
+    this->release();
+  }
+protected:
+  void slurp(jnixx::env& env, type* (&buf), jsize &len) {
+    jbyte* buffer;
+    jsize length;
+    ::slurp(env, file, buffer, length);
+    buf = (type*)buffer;
+    len = length / sizeof(type);
+  }
+  void free(jnixx::env& env, type* buf, int mode) {
+    delete buf;
   }
 };
+typedef FileElements<jbyte> FileBytes;
 
-class ArrayBytes : public Bytes {
+/**
+ * Provide access to a java primitive type array's elements.
+ */
+template <typename type, typename typeArray> class ArrayElements
+  : public Elements<type> {
 private:
-  ::jnixx::jbyteArray bytes;
+  typeArray types;
 public:
-  void operator=(const ArrayBytes& src) {
-    release();
-    this->env = src.env;
-    this->bytes = src.bytes;
-    // don't copy the pointer.
+  void operator=(const ArrayElements& src) {
+    this->copy(src);
+    this->types = src.types;
   }
-  ArrayBytes() {
+  ArrayElements() {
   }
-  ArrayBytes(const ArrayBytes& old) {
+  ArrayElements(const ArrayElements& old) {
     this->operator=(old);
   }
-  ArrayBytes(::jnixx::env env, ::jnixx::jbyteArray bytes) {
-    this->bytes = bytes;
-    this->env = env;
+  ArrayElements(::jnixx::env env, typeArray types) : Elements<type>(env) {
+    this->types = types;
   }
-  jbyte* elements() {
-    length();
-    return p;
+  ~ArrayElements() {
+    this->release();
   }
-  jsize length() {
-    if (l < 0) {
-      if (bytes != NULL) {
-	this->l = bytes.GetArrayLength(env);
-	this->p = bytes.GetByteArrayElements(env, NULL);
-      } else {
-	this->l = 0;
-	this->p = NULL;
-      }
+protected:
+  void slurp(jnixx::env& env, type* (&buf), jsize &len) {
+    if (types != NULL) {
+      len = types.GetArrayLength(env);
+      buf = types.GetArrayElements(env, NULL);
+    } else {
+      len = 0;
+      buf = NULL;
     }
-    return l;
   }
-  void release() {
-    if (p != NULL) {
-      bytes.ReleaseByteArrayElements(env, p, 0);
-      p = NULL;
-    }
-    l = -1;
-  }
-  ~ArrayBytes() {
-    release();
+  void free(jnixx::env& env, type* buf, int mode) {
+    types.ReleaseArrayElements(env, buf, mode);
   }
 };
+typedef ArrayElements<jbyte,::jnixx::jbyteArray> ArrayBytes;
+
+#endif

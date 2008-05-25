@@ -153,7 +153,9 @@ FileDescriptor::read(jnixx::env env, jint fd,
 		     jint off, jint len) {
   verifyBounds(env, bytes, off, len);
   ArrayBytes b = ArrayBytes(env, bytes);
-  return doRead(env, fd, b.elements() + off, len);
+  jint ok = doRead(env, fd, b.elements() + off, len);
+  b.release();
+  return ok;
 }
 
 jint
