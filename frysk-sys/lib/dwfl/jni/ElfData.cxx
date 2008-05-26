@@ -86,12 +86,9 @@ lib::dwfl::ElfData::getBytes(jnixx::env env) {
   return ret;
 }
 
-extern jnixx::jbyteArray internal_buffer;
-
 void
 lib::dwfl::ElfData::elf_data_set_buff (jnixx::env env, jlong size) {
-  fprintf(stderr, "accessing a global buffer\n");
-  jbyteArrayElements bytes = jbyteArrayElements(env, internal_buffer);
+  jbyteArrayElements bytes = jbyteArrayElements(env, GetInternal_buffer(env));
   fprintf(stderr, "saving a pointer into the JNI\n");
   (ELF_DATA_POINTER)->d_buf = bytes.elements();
   (ELF_DATA_POINTER)->d_size = bytes.length();

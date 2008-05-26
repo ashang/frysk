@@ -92,11 +92,8 @@ lib::dwfl::ElfData::getBytes()
 	return ret;
 }
 
-extern jbyteArray internal_buffer;
-
 void
-lib::dwfl::ElfData::elf_data_set_buff (jlong size){
-
+lib::dwfl::ElfData::elf_data_set_buff(jlong size) {
         jbyte *bytes = elements(internal_buffer);
 	((Elf_Data*) this->pointer)->d_buf = bytes;
 	((Elf_Data*) this->pointer)->d_size = size;

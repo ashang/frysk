@@ -1,5 +1,8 @@
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/ElfData.cxx (internal_buffer): Delete extern declaration.
+	* jni/ElfData.cxx (internal_buffer): Update.
+
 	* cni/ElfPrstatus.cxx (internalThreads): Delete extern declaration.
 	* jni/ElfPrXFPRegSet.cxx (internalThreads): Ditto.
 	* jni/ElfPrFPRegSet.cxx (internalThreads): Ditto.
