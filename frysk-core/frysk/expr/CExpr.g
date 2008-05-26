@@ -640,6 +640,7 @@ PARSE_FQIDENT
             if (!Character.isJavaIdentifierStart(part.charAt(0)))
                 throw new RecognitionException("Invalid symbol `" + part + "'.");
 
+            if (false) {
             if (dso != null)
                 System.err.println("DSO:  " + dso);
             if (file != null)
@@ -650,11 +651,10 @@ PARSE_FQIDENT
                 System.err.println("Proc: " + proc);
             System.err.println("Symb: " + (wantPlt ? "plt:" : "")
                                + part + (version != null ? "@" + version : ""));
+            }
 
-            // The string MATCHED holds whole fqid expression.  Decide
-            // if it's syntactically correct.
             fqmatch(matched);
-            System.out.println("matched = " + matched);
+            //System.out.println("matched = " + matched);
         } ;
 
 protected
