@@ -1,3 +1,7 @@
+2008-05-26  Petr Machata  <pmachata@redhat.com>
+
+	* CExpr.g: Implement #-syntax parser.
+
 2008-05-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ExprSearchEngine.java: New.

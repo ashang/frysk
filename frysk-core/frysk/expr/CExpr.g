@@ -79,6 +79,9 @@ header
 // version and license this file solely under the GPL without
 // exception.
     package frysk.expr;
+
+    import java.util.regex.Pattern;
+    import java.util.regex.Matcher;
 }
 
 class CExprParser extends Parser;
@@ -418,6 +421,27 @@ tokens
     OPERATOR = "operator";
 }
 
+{
+    private String fqinit;
+    private char fqLA(int i) throws CharStreamException {
+        if (i >= fqinit.length())
+            return LA(i - fqinit.length() + 1);
+        else
+            return fqinit.charAt(i);
+    }
+    private void fqmatch(String s) throws MismatchedCharException, CharStreamException {
+        while (fqinit.length() > 0) {
+            char c = s.charAt(0);
+            char d = fqinit.charAt(0);
+            if (c != d)
+                throw new MismatchedCharException(d, c, false, this);
+            s = s.substring(1);
+            fqinit = fqinit.substring(1);
+        }
+        super.match(s);
+    }
+}
+
 AMPERSAND       : '&' ;
 AND		        : "&&" ;
 ASSIGNEQUAL     : '=' ;
@@ -471,11 +495,171 @@ TIMESEQUAL      : "*=" ;
 protected
 ELLIPSIS  : "..." ;
 
+/*
+ * Funky HPD #-syntax doesn't map very well to LL-k type parser (for
+ * constant 'k').  When written directly, we get lots of lexical
+ * ambiguities.  We work around that by doing arbitrary manual
+ * look-ahead and just parsing the tokens ourselves.  Any whitespace
+ * or EOF stops the lookahead.
+ */
+
+private
+PARSE_FQIDENT
+    : {
+            // Automaton state is composed of following sub-states:
+            final int FILE = 1;
+            final int LINE = 2;
+            final int SYMB = 4;
+            int state = LINE | SYMB;
+
+            String matched = "";
+            String part = "";
+
+            String dso = null;
+            String file = null;
+            String proc = null;
+            String line = null;
+
+            int i = 0;
+            char c;
+            if ((c = fqLA(0)) == '#') {
+                matched += c;
+                i++;
+                while (true) {
+                    c = fqLA(i++);
+                    matched += c;
+                    if (Character.isWhitespace(c) || c == EOF_CHAR)
+                        // This is a wack.
+                        throw new RecognitionException("Nonterminated DSO part `" + matched
+                                                       + "' in fully qualified notation.");
+                    else if (c == '#')
+                        break;
+                    part += c;
+                }
+                if (part.length() == 0)
+                    throw new RecognitionException("Empty DSO part `" + matched
+                                                   + "' in fully qualified notation.");
+                dso = part;
+                part = "";
+            }
+
+            loop: while(true) {
+                c = fqLA(i++);
+                if (Character.isWhitespace(c) || c == EOF_CHAR)
+                    break;
+
+                matched += c;
+                part += c;
+                switch (c) {
+                    case '.': {
+                        state |= FILE;
+                        state &= ~SYMB;
+                        break;
+                    }
+
+                    case '#': {
+                        if (line == null && proc == null) {
+                            if ((state & FILE) != 0 && file == null)
+                                file = part.substring(0, part.length() - 1);
+                            else if ((state & LINE) != 0)
+                                line = part.substring(0, part.length() - 1);
+                            else if ((state & SYMB) != 0) {
+                                proc = part.substring(0, part.length() - 1);
+                                if (!Character.isJavaIdentifierStart(proc.charAt(0)))
+                                    throw new RecognitionException("Procedure part (`" + proc + "') in fully "
+                                                                   + "qualified notation has to be valid identifier.");
+                            } else
+                                // This # could belong to the next symbol.
+                                // Break out and try to match the initial sequence.
+                                break loop;
+                        } else
+                            throw new RecognitionException("Unexpected `#' after line or proc name was defined.");
+
+                        state = SYMB;
+                        if (line == null && proc == null)
+                            state |= LINE;
+                        part = "";
+                        break;
+                    }
+
+                    default: {
+                        if (!(c >= '0' && c <= '9')) {
+                            state &= ~LINE;
+
+                            if (!(Character.isJavaIdentifierStart(c)
+                                  || c == '@'
+                                  || (c == ':' && part.equals("plt:")))) {
+
+                                // Break out early if we are already
+                                // just waiting for symbol.
+                                if (line != null || proc != null)
+                                    break loop;
+                                else
+                                    state &= ~SYMB;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ((state & SYMB) == 0) here means that we've parsed more
+            // than a symbol name, in hope it would turn out to be a
+            // file name (e.g. hello-world.c#symbol as a symbol
+            // reference vs. hello-world.c as an expression involving
+            // subtraction and struct access).  In following, we take
+            // care not to consume anything that's not an identifier.
+            // E.g. when the user types "a+b", we want to match
+            // only identifier "a".
+
+            boolean wantPlt = false;
+            if (part.startsWith("plt:")) {
+                wantPlt = true;
+                part = part.substring(4);
+            }
+
+            int v = part.indexOf('@');
+            String version = null;
+            if (v >= 0) {
+                version = part.substring(v + 1);
+                part = part.substring(0, v);
+            }
+
+            // This is delibaretely simplified and ignores request for initial letter.
+            // This is for better error reporting below, we first snip off irrelevant
+            // parts before yelling at user that his identifier sucks.
+            Matcher m = Pattern.compile("[a-zA-Z0-9_$]*").matcher(part);
+            if (m.lookingAt()) {
+                // XXX This accepts also e.g. "plt:something" (i.e. without the "#" part). Ok?
+                int diff = part.length() - m.end();
+                if (diff > 0) {
+                    matched = matched.substring(0, matched.length() - diff);
+                    part = part.substring(0, m.end());
+                }
+            }
+
+            if (!Character.isJavaIdentifierStart(part.charAt(0)))
+                throw new RecognitionException("Invalid symbol `" + part + "'.");
+
+            if (dso != null)
+                System.err.println("DSO:  " + dso);
+            if (file != null)
+                System.err.println("File: " + file);
+            if (line != null)
+                System.err.println("Line: " + line);
+            if (proc != null)
+                System.err.println("Proc: " + proc);
+            System.err.println("Symb: " + (wantPlt ? "plt:" : "")
+                               + part + (version != null ? "@" + version : ""));
+
+            // The string MATCHED holds whole fqid expression.  Decide
+            // if it's syntactically correct.
+            fqmatch(matched);
+            System.out.println("matched = " + matched);
+        } ;
+
 protected
 IDENT
-options {testLiterals = true;}
-    :   ('$')*('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-;
+    : ('$'|'#'|'a'..'z'|'A'..'Z'|'_') { fqinit = $getText; } PARSE_FQIDENT ;
 
 /**
  *  A <TAB> token is returned not only on regular tabs
@@ -621,7 +805,9 @@ NUM
 
 			|	('0'..'7')+			{_ttype = OCTALINT;}
 			)?
-		|	('1'..'9') ('0'..'9')*  {_ttype = DECIMALINT;}
+		|	(('1'..'9') ('0'..'9')* {_ttype = DECIMALINT;})
+             ( '#' {fqinit = $getText;}
+               PARSE_FQIDENT { $setType(IDENT); } )?
 		)
 		(	('l'|'L') { _ttype = DECIMALINT; }
 
