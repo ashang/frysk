@@ -40,6 +40,9 @@
 package frysk.hpd;
 
 import frysk.config.Prefix;
+import frysk.isa.ISA;
+import frysk.proc.Task;
+import frysk.testbed.DaemonBlockedAtEntry;
 
 /**
 * This class tests the "watch" command.
@@ -158,4 +161,41 @@ public class TestWatchCommand extends TestLib {
       e.expect("Quitting\\.\\.\\.");
       e.close();     
   }
+  
+  /*
+   * Test for watching expressions with no legal addresses.
+   */
+  public void testBadWatch() {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+
+      Task task = getStoppedTask();
+      ISA isa = task.getISA();
+
+      if (isa == ISA.IA32) {
+	  e.send("watch $eax\n"); 
+      } else if (isa == ISA.X8664) {
+	  e.send("watch $rdi\n");
+      }
+      e.expect("Error: Location not in contiguous memory.*");
+      
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();     
+  }
+
+  
+  private Task getStoppedTask() {
+      return this.getStoppedTask("funit-ctypes");
+  }
+
+  private Task getStoppedTask (String process) {
+      DaemonBlockedAtEntry daemon = new DaemonBlockedAtEntry 
+                                    (new String[] { getExecPath(process) });
+      
+      return daemon.getMainTask();
+  }  
+
 }

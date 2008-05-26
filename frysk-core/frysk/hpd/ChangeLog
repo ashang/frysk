@@ -1,3 +1,7 @@
+2008-05-26 Teresa Thomas  <tthomas@redhat.com>
+
+	* TestWatchCommand.java (testBadWatch): New.
+
 2008-05-23 Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (interpret): Install multiple
