@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,95 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <gelf.h>
+#include <stdio.h>
+
 #include "jni.hxx"
+
+#define ELF_SCN_POINTER ((::Elf_Scn*)GetPointer(env))
+
+using namespace java::lang;
+
+jlong
+lib::dwfl::ElfSection::elf_ndxscn(jnixx::env env) {
+  return ::elf_ndxscn(ELF_SCN_POINTER);
+}
+
+lib::dwfl::ElfSectionHeader
+lib::dwfl::ElfSection::elf_getshdr(jnixx::env env){
+  GElf_Shdr tmp;
+  if(::gelf_getshdr(ELF_SCN_POINTER, &tmp) == NULL)
+    return ElfSectionHeader(env, NULL);
+		
+  lib::dwfl::ElfSectionHeader header = lib::dwfl::ElfSectionHeader::New(env, GetParent(env));
+  GElf_Ehdr *ehdr = (GElf_Ehdr *) alloca(sizeof(GElf_Ehdr));
+  ehdr = gelf_getehdr((::Elf *) this->GetParent(env).getPointer(env), ehdr);
+  char *str = ::elf_strptr((::Elf *) GetParent(env).getPointer(env),
+			   ehdr->e_shstrndx, tmp.sh_name);
+  if (str != NULL) {
+    const char *name = ::elf_strptr((::Elf *) GetParent(env).getPointer(env),
+				    ehdr->e_shstrndx, tmp.sh_name); 
+    String jname = String::NewStringUTF(env, name);
+    header.SetName(env, jname);
+    jname.DeleteLocalRef(env);
+  }
+  header.SetType(env, (jint) tmp.sh_type);
+  header.SetFlags(env, (jlong) tmp.sh_flags);
+  header.SetAddr(env, (jlong) tmp.sh_addr);
+  header.SetOffset(env, (jlong) tmp.sh_offset);
+  header.SetSize(env, (jlong) tmp.sh_size);
+  header.SetLink(env, (jint) tmp.sh_link);
+  header.SetInfo(env, (jint) tmp.sh_info);
+  header.SetAddralign(env, (jlong) tmp.sh_addralign);
+  header.SetEntsize(env, (jlong) tmp.sh_entsize);
+	
+  return header;
+}
+
+jint
+lib::dwfl::ElfSection::elf_updateshdr(jnixx::env env,
+				      lib::dwfl::ElfSectionHeader section) {
+  GElf_Shdr header;
+
+  if(::gelf_getshdr(ELF_SCN_POINTER, &header) == NULL)
+    return -1;
+		
+  header.sh_name = section.GetNameAsNum(env);
+  header.sh_type = (jint) section.GetType(env);
+  header.sh_flags = (jlong) section.GetFlags(env);
+  header.sh_addr = (jlong) section.GetAddr(env);
+  header.sh_offset = (jlong) section.GetOffset(env);
+  header.sh_size = (jlong) section.GetSize(env);
+  header.sh_link = (jint) section.GetLink(env);
+  header.sh_info = (jint) section.GetInfo(env);
+  header.sh_addralign = (jlong) section.GetAddralign(env);
+  header.sh_entsize = (jlong) section.GetEntsize(env);
+	
+  return gelf_update_shdr(ELF_SCN_POINTER,&header);
+}
+
+jint
+lib::dwfl::ElfSection::elf_flagscn(jnixx::env env, jint command, jint flags) {
+  return ::elf_flagscn(ELF_SCN_POINTER, (Elf_Cmd) command, flags);
+}
+
+jint
+lib::dwfl::ElfSection::elf_flagshdr(jnixx::env env, jint command, jint flags) {
+  return ::elf_flagshdr(ELF_SCN_POINTER, (Elf_Cmd) command, flags);
+}
+
+jlong
+lib::dwfl::ElfSection::elf_getdata(jnixx::env env){
+  return (jlong) ::elf_getdata(ELF_SCN_POINTER, (Elf_Data*) NULL);
+}
+
+jlong
+lib::dwfl::ElfSection::elf_rawdata(jnixx::env env) {
+  return (jlong) ::elf_rawdata(ELF_SCN_POINTER, (Elf_Data*) NULL);
+}
+
+jlong
+lib::dwfl::ElfSection::elf_newdata(jnixx::env env){
+  return (jlong) ::elf_newdata(ELF_SCN_POINTER);
+}

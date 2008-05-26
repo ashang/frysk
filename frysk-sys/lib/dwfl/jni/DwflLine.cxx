@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,49 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <libdwfl.h>
+#include <alloca.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+#define DWFL_LINE_POINTER ((::Dwfl_Line *) GetPointer(env))
+
+String
+lib::dwfl::DwflLine::dwfl_lineinfo_source(jnixx::env env) {
+  const char* str = ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, NULL, NULL, NULL);
+  return String::NewStringUTF(env, str);
+}
+
+jlong
+lib::dwfl::DwflLine::dwfl_lineinfo_addr(jnixx::env env) {
+  Dwarf_Addr addr;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, &addr, NULL, NULL, NULL, NULL);
+  return (jlong) addr;
+}
+
+jint
+lib::dwfl::DwflLine::dwfl_lineinfo_linenum(jnixx::env env) {
+  int lineNum;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, &lineNum, NULL, NULL, NULL);
+  return (jint) lineNum;
+}
+
+
+jint
+lib::dwfl::DwflLine::dwfl_lineinfo_col(jnixx::env env) {
+  int col;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, &col, NULL, NULL);
+  return (jint) col;
+}
+
+String
+lib::dwfl::DwflLine::dwfl_linecomp_dir(jnixx::env env) {
+  const char *dir = ::dwfl_line_comp_dir(DWFL_LINE_POINTER);	
+  if(dir == NULL){
+    return String::NewStringUTF(env, "");
+  } else {
+    return String::NewStringUTF(env, dir);
+  }
+}

@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2005, IBM Inc.
 // Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -37,4 +38,57 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <gelf.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
+#include <gelf.h>
+
 #include "jni.hxx"
+
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+jint
+lib::dwfl::ElfNhdr::getNhdrSize(jnixx::env env) {
+  return sizeof(GElf_Nhdr);
+}
+
+jlong 
+lib::dwfl::ElfNhdr::fillNhdr(jnixx::env env, jnixx::jbyteArray jbuffer,
+			     jlong startAddress) {
+  jbyteArrayElements buffer = jbyteArrayElements(env, jbuffer);
+  jbyte *bs = buffer.elements() + startAddress;
+	
+  errno = 0;
+  GElf_Nhdr *nhdr = (GElf_Nhdr *)malloc(sizeof(GElf_Nhdr));
+	
+  memset(nhdr, 0, sizeof(GElf_Nhdr));
+	
+  // copy the GElf_Nhdr struct into buffer.
+  nhdr->n_namesz = GetNamesz(env);
+  nhdr->n_descsz = GetDescsz(env);
+	
+  nhdr->n_type = GetType(env);
+	
+  memcpy(bs, nhdr, sizeof(GElf_Nhdr));
+	
+  return sizeof(GElf_Nhdr);
+}
+
+jlong 
+lib::dwfl::ElfNhdr::fillNhdrName(jnixx::env env, jnixx::jbyteArray jbuffer,
+				 jlong startAddress) {
+  jbyteArrayElements buffer = jbyteArrayElements(env, jbuffer);
+  jbyte *bs = buffer.elements() + startAddress;
+
+  //Copy the name infor into buffer.
+  GetName(env).GetStringUTFRegion(env, 0, GetNamesz(env), (char *)bs);
+  return GetNamesz(env);
+}

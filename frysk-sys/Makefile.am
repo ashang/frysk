@@ -76,6 +76,9 @@ lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 JNIXX_CLASSES += frysk.sys.ProcessIdentifierFactory
 JNIXX_CLASSES += java.lang.ArrayIndexOutOfBoundsException
 JNIXX_CLASSES += frysk.sys.Errno$$Esrch
+JNIXX_CLASSES += lib.dwfl.DwAttributeNotFoundException
+JNIXX_CLASSES += java.lang.Long
+JNIXX_CLASSES += lib.dwfl.ElfException
 
 
 # Quick hack to get a test JNI program up-and-running; as a package is

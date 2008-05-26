@@ -1,3 +1,25 @@
+2008-05-26  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/ElfSymbol.cxx: Implement.
+	* jni/ElfSection.cxx: Implement.
+	* jni/ElfRel.cxx: Implement.
+	* jni/ElfPrXFPRegSet.cxx: Implement.
+	* jni/ElfPrpsinfo.cxx: Implement.
+	* jni/ElfPrFPRegSet.cxx: Implement.
+	* jni/ElfPrAuxv.cxx: Implement.
+	* jni/ElfNhdr.cxx: Implement.
+	* jni/ElfDynamic.cxx: Implement.
+	* jni/ElfData.cxx: Implement.
+	* jni/Elf.cxx: Implement.
+	* jni/ElfArchiveSymbol.cxx: Implement.
+	* jni/DwflModule.cxx: Implement.
+	* jni/DwflLine.cxx: Implement.
+	* jni/Dwfl.cxx: Implement.
+	* jni/DwException.cxx: Implement.
+	* jni/DwarfDie.cxx: Implement.
+	* jni/Dwarf.cxx: Implement.
+	* jni/Disassembler.cxx: Implement.
+
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Elf.java: Replace RawData with long.

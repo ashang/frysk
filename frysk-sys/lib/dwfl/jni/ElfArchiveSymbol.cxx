@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <libelf.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+#define ARSYM_POINTER ((::Elf_Arsym*)GetPointer(env))
+
+String
+lib::dwfl::ElfArchiveSymbol::elf_as_get_name(jnixx::env env) {
+  char* name = ARSYM_POINTER->as_name;
+  return String::NewStringUTF(env, name);
+}
+
+jint
+lib::dwfl::ElfArchiveSymbol::elf_as_get_offset(jnixx::env env){
+  return ARSYM_POINTER->as_off;
+}
+
+jlong
+lib::dwfl::ElfArchiveSymbol::elf_as_get_hash(jnixx::env env){
+  return (jlong) ARSYM_POINTER->as_hash;
+}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,143 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <gelf.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+bool
+lib::dwfl::ElfSymbol::elf_buildsymbol(jnixx::env env,
+				      lib::dwfl::Elf parent,
+				      jlong data_pointer,
+				      jlong symbol_index,
+				      jlong str_sect_index,
+				      java::util::List versions,
+				      lib::dwfl::ElfSymbol$Builder builder) {
+  ::GElf_Sym sym;
+  if (::gelf_getsym ((::Elf_Data*)data_pointer, symbol_index, &sym) == NULL)
+    return false;
+
+  String name = parent.getStringAtOffset(env, str_sect_index, sym.st_name);
+  jlong value = sym.st_value;
+  jlong size = sym.st_size;
+  ElfSymbolType type
+    = ElfSymbolType::intern(env, ELF64_ST_TYPE(sym.st_info));
+  ElfSymbolBinding bind
+    = ElfSymbolBinding::intern(env, ELF64_ST_BIND(sym.st_info));
+  ElfSymbolVisibility visibility
+    = ElfSymbolVisibility::intern(env, ELF64_ST_VISIBILITY(sym.st_other));
+  jlong shndx = sym.st_shndx;
+
+  builder.symbol(env, symbol_index, name, value, size, type, bind,
+		 visibility, shndx, versions);
+  return true;
+}
+
+jint
+lib::dwfl::ElfSymbol::elf_getversym(jnixx::env env, jlong data_pointer,
+				    jlong symbol_index) {
+  ::GElf_Versym ver;
+  if (::gelf_getversym ((::Elf_Data*)data_pointer, symbol_index, &ver) == NULL)
+    return -1;
+  return (jint)ver;
+}
+
+bool
+lib::dwfl::ElfSymbol::elf_load_verneed(jnixx::env env,
+				       lib::dwfl::Elf parent,
+				       jlong data_pointer,
+				       jlong str_sect_index,
+				       jnixx::array<lib::dwfl::ElfSymbol$PrivVerneed> ret) {
+  ::Elf_Data * data = (::Elf_Data*)data_pointer;
+
+  typedef lib::dwfl::ElfSymbol$PrivVerneed Need;
+  typedef lib::dwfl::ElfSymbol$PrivVerneed$Aux Aux;
+
+  int count = ret.GetArrayLength(env);
+  int offset = 0;
+  for (int i = 0; i < count; ++i) {
+    ::GElf_Verneed ver;
+    if (::gelf_getverneed(data, offset, &ver) == NULL)
+      return false;
+
+    Need verneed = Need::New(env);
+    ret.SetObjectArrayElement(env, i, verneed);
+    int auxcount = ver.vn_cnt;
+
+    verneed.SetVersion(env, ver.vn_version);
+    verneed.SetFilename(env, parent.getStringAtOffset(env, str_sect_index,
+						      ver.vn_file));
+    jnixx::array<Aux> aux_elems
+      = jnixx::array<Aux>::NewObjectArray(env, auxcount);
+    verneed.SetAux(env, aux_elems);
+
+    int aux_offset = offset + ver.vn_aux;
+    offset += ver.vn_next;
+    for (int j = 0; j < auxcount; ++j) {
+      ::GElf_Vernaux aux;
+      if (::gelf_getvernaux(data, aux_offset, &aux) == NULL)
+	return false;
+
+      Aux vernaux = Aux::New(env);
+      vernaux.SetHash(env, (jint)aux.vna_hash);
+      vernaux.SetWeak(env, (bool)((aux.vna_flags & VER_FLG_WEAK) == VER_FLG_WEAK));
+      String jname = parent.getStringAtOffset(env, str_sect_index,
+					      aux.vna_name);
+      vernaux.SetName(env, jname);
+      jname.DeleteLocalRef(env);
+      vernaux.SetIndex(env, (jint)aux.vna_other);
+      vernaux.DeleteLocalRef(env);
+      aux_elems.SetObjectArrayElement(env, j, vernaux);
+      aux_offset += aux.vna_next;
+    }
+  }
+  return true;
+}
+
+bool
+lib::dwfl::ElfSymbol::elf_load_verdef(jnixx::env env,
+				      lib::dwfl::Elf parent,
+				      jlong data_pointer,
+				      jlong str_sect_index,
+				      jnixx::array<lib::dwfl::ElfSymbol$PrivVerdef> ret) {
+  ::Elf_Data * data = (::Elf_Data*)data_pointer;
+
+  typedef lib::dwfl::ElfSymbol$PrivVerdef Def;
+
+  int count = ret.GetArrayLength(env);
+  int offset = 0;
+  for (int i = 0; i < count; ++i) {
+    ::GElf_Verdef ver;
+    if (::gelf_getverdef(data, offset, &ver) == NULL)
+      return false;
+
+    Def verdef = Def::New(env);
+    ret.SetObjectArrayElement(env, i, verdef);
+    int auxcount = ver.vd_cnt;
+
+    verdef.SetVersion(env, ver.vd_version);
+    verdef.SetBase(env, (bool)((ver.vd_flags & VER_FLG_BASE) == VER_FLG_BASE));
+    verdef.SetIndex(env, ver.vd_ndx);
+    verdef.SetHash(env, ver.vd_hash);
+    jnixx::array<String> names_elems
+      = jnixx::array<String>::NewObjectArray(env, auxcount);
+    verdef.SetNames(env, names_elems);
+    verdef.DeleteLocalRef(env);
+
+    int aux_offset = offset + ver.vd_aux;
+    offset += ver.vd_next;
+    for (int j = 0; j < auxcount; ++j) {
+      ::GElf_Verdaux aux;
+      if (::gelf_getverdaux(data, aux_offset, &aux) == NULL)
+	return false;
+      String jname = parent.getStringAtOffset(env, str_sect_index,
+					      aux.vda_name);
+      names_elems.SetObjectArrayElement(env, j, jname);
+      jname.DeleteLocalRef(env);
+      aux_offset += aux.vda_next;
+    }
+  }
+  return true;
+}

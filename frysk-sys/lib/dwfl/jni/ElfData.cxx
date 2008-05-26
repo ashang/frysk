@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,135 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <gelf.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <alloca.h>
+
 #include "jni.hxx"
+
+#include "jnixx/elements.hxx"
+
+using namespace java::lang;
+
+#define ELF_DATA_POINTER ((::Elf_Data*)GetPointer(env))
+
+void
+lib::dwfl::ElfData::elf_data_finalize(jnixx::env env) {
+  //	free((Elf_Data*) this->pointer);
+}
+
+
+void
+lib::dwfl::ElfData::elf_data_create_native(jnixx::env env) {
+  Elf_Data* data = (Elf_Data*)::malloc(sizeof(Elf_Data));
+  data->d_type = ELF_T_BYTE;
+  SetPointer(env, (jlong) data);
+}
+
+jbyte
+lib::dwfl::ElfData::elf_data_get_byte(jnixx::env env, jlong offset) {
+  uint8_t* data = (uint8_t*) (ELF_DATA_POINTER)->d_buf;	
+  size_t size = (ELF_DATA_POINTER)->d_size;
+  if (offset < 0)
+    return -1;
+  if ((size_t) offset > size)
+    return -1;
+  return (jbyte) data[offset];
+}
+
+jnixx::jbyteArray
+lib::dwfl::ElfData::getBytes(jnixx::env env) {
+  uint8_t* data = (uint8_t*) (ELF_DATA_POINTER)->d_buf;	
+  size_t size = (ELF_DATA_POINTER)->d_size;
+  jnixx::jbyteArray ret = jnixx::jbyteArray::NewByteArray(env, (jsize) size);
+  jbyteArrayElements bytes = jbyteArrayElements(env, ret);
+  for (size_t i = 0; i < size; i++) {
+    bytes.elements()[i] = (jbyte) data[i];
+  }
+  return ret;
+}
+
+extern jnixx::jbyteArray internal_buffer;
+
+void
+lib::dwfl::ElfData::elf_data_set_buff (jnixx::env env, jlong size) {
+  fprintf(stderr, "accessing a global buffer\n");
+  jbyteArrayElements bytes = jbyteArrayElements(env, internal_buffer);
+  fprintf(stderr, "saving a pointer into the JNI\n");
+  (ELF_DATA_POINTER)->d_buf = bytes.elements();
+  (ELF_DATA_POINTER)->d_size = bytes.length();
+}
+
+
+jint
+lib::dwfl::ElfData::elf_data_get_type(jnixx::env env) {
+  return (int) (ELF_DATA_POINTER)->d_type;
+}
+
+void
+lib::dwfl::ElfData::elf_data_set_type(jnixx::env env, jint type) {
+  if (type == 0)
+    (ELF_DATA_POINTER)->d_type = ELF_T_BYTE;
+}
+
+jint
+lib::dwfl::ElfData::elf_data_get_version(jnixx::env env) {
+  return (ELF_DATA_POINTER)->d_version;
+}
+
+void
+lib::dwfl::ElfData::elf_data_set_version(jnixx::env env, jint version) {
+  (ELF_DATA_POINTER)->d_version = version;
+}
+
+jlong
+lib::dwfl::ElfData::elf_data_get_size(jnixx::env env) {
+  return (ELF_DATA_POINTER)->d_size;
+}
+
+void
+lib::dwfl::ElfData::elf_data_set_size(jnixx::env env, jlong size){
+  (ELF_DATA_POINTER)->d_size = size;
+}
+
+
+jint
+lib::dwfl::ElfData::elf_data_get_off(jnixx::env env){
+  return (ELF_DATA_POINTER)->d_off;
+}
+
+void
+lib::dwfl::ElfData::elf_data_set_off(jnixx::env env, jint offset){
+  (ELF_DATA_POINTER)->d_off = offset;
+}
+
+jlong
+lib::dwfl::ElfData::elf_data_get_align(jnixx::env env){
+  return (ELF_DATA_POINTER)->d_align;
+}
+
+void
+lib::dwfl::ElfData::elf_data_set_align(jnixx::env env, jlong align){
+  (ELF_DATA_POINTER)->d_align = align;
+}
+
+jint
+lib::dwfl::ElfData::elf_flagdata(jnixx::env env, jint command, jint flags){
+  return ::elf_flagdata(ELF_DATA_POINTER, (Elf_Cmd) command, flags);
+}
+
+jlong
+lib::dwfl::ElfData::elf_xlatetom(jnixx::env env, jint encode){
+  ::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
+  return (jlong) ::gelf_xlatetom((::Elf*) GetParent(env).getPointer(env),
+				 tmp, ELF_DATA_POINTER, (unsigned int) encode);
+
+}
+
+jlong
+lib::dwfl::ElfData::elf_xlatetof(jnixx::env env, jint encode){
+  ::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
+  return (jlong) gelf_xlatetof((::Elf*) GetParent(env).getPointer(env),
+			       tmp, ELF_DATA_POINTER, (unsigned int) encode);
+}

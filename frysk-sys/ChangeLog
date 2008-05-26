@@ -1,3 +1,8 @@
+2008-05-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JNIXX_CLASSES): Add DwAttributeNotFoundException,
+	ElfException, and java.lang.Long.
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* lib/opcodes/: Delete.

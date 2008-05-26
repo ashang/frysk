@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+#include <gelf.h>
+#include <stdio.h>
+
 #include "jni.hxx"
+
+bool
+lib::dwfl::ElfRel::elf_fillreloc (jnixx::env env, jlong data_pointer,
+				  jint section_type,
+				  jlong reloc_index,
+				  lib::dwfl::ElfRel result) {
+  if (section_type == SHT_REL) {
+    ::GElf_Rel rel;
+    if (::gelf_getrel ((::Elf_Data*)data_pointer, reloc_index, &rel) == NULL)
+      return false;
+    result.SetOffset(env, rel.r_offset);
+    result.SetSymbolIndex(env, ELF64_R_SYM(rel.r_info));
+    result.SetType(env, ELF64_R_TYPE(rel.r_info));
+    result.SetAddend(env, 0);
+  } else if (section_type == SHT_RELA) {
+    ::GElf_Rela rela;
+    if (::gelf_getrela ((::Elf_Data*)data_pointer, reloc_index, &rela) == NULL)
+      return false;
+    result.SetOffset(env, rela.r_offset);
+    result.SetSymbolIndex(env, ELF64_R_SYM(rela.r_info));
+    result.SetType(env, ELF64_R_TYPE(rela.r_info));
+    result.SetAddend(env, rela.r_addend);
+  } else {
+    return false;
+  }
+
+  return true;
+}

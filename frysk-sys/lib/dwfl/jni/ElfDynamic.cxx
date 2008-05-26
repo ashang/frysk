@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <gelf.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+bool
+lib::dwfl::ElfDynamic::elf_buildentry(jnixx::env env,
+				      lib::dwfl::Elf parent,
+				      jlong data_pointer,
+				      jlong entry_index,
+				      lib::dwfl::ElfDynamic$Builder builder) {
+  ::GElf_Dyn dyn;
+  if (::gelf_getdyn ((::Elf_Data*)data_pointer, entry_index, &dyn) == NULL)
+    return false;
+
+  builder.entry(env, (jint)dyn.d_tag, *(jlong*)&dyn.d_un);
+  return true;
+}

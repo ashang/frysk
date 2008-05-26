@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,4 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <libdw.h>
+
 #include "jni.hxx"
+
+using namespace java::lang;
+
+String
+lib::dwfl::DwException::getDwErrMessage(jnixx::env env, jint errno) {
+  const char *message = dwarf_errmsg(errno);
+  if (message != NULL)
+    return String::NewStringUTF(env, message);
+  else
+    return String(env, NULL);
+}
+
+void
+lib::dwfl::DwException::throwDwException(jnixx::env env) {
+  throwDwException(env, dwarf_errno());
+}
