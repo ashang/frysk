@@ -89,9 +89,14 @@ CLEANFILES += JniRunner
 JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	rm -f $@.tmp
 	echo "#!/bin/sh"					>> $@.tmp
-	echo "export LD_PRELOAD=libstdc++.so.6"			>> $@.tmp
+	echo "export LD_PRELOAD=\"libstdc++.so.6 libdw.so libelf.so\"" >> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"	>> $@.tmp
-	echo "export LD_LIBRARY_PATH=.:/usr/lib64:/usr/lib"	>> $@.tmp
+	echo "export LD_LIBRARY_PATH=.\\"			>> $@.tmp
+	echo ":$$(cd ../frysk-imports/elfutils/libdw && pwd)\\"	>> $@.tmp
+	echo ":$$(cd ../frysk-imports/elfutils/libelf && pwd)\\" >> $@.tmp
+	echo ":$$(cd ../frysk-imports/elfutils/backends && pwd)\\" >> $@.tmp
+	echo ":/usr/lib64\\"			      	 	>> $@.tmp
+	echo ":/usr/lib"					>> $@.tmp
 	echo "export CLASSPATH=\\"				>> $@.tmp
 	echo "$(CLASSPATH):frysk-sys.jar:JniRunner.jar"		>> $@.tmp
 	echo "if test \$$# -eq 0 ; then"			>> $@.tmp
