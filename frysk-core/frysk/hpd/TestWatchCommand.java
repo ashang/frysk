@@ -133,7 +133,8 @@ public class TestWatchCommand extends TestLib {
       e.sendCommandExpectPrompt("start", "Attached to process.*");
       
       e.send("watch bigArray\n"); 
-      e.expect(".*Watchpoint set error: Variable size too large.*");
+      e.expect(".*Watch error: Available watchpoints not sufficient " +
+      	       "to watch complete value..*");
       
       e.send("quit\n");
       e.expect("Quitting\\.\\.\\.");

@@ -52,6 +52,7 @@ import frysk.value.Format;
 class WatchCommand extends ParameterizedCommand {
 
     private boolean writeOnly = true;
+    private static int watchpointsInUse = 0;
     
     WatchCommand() {
 	// XXX: Add details on thread-handling when implemented
@@ -108,13 +109,13 @@ class WatchCommand extends ParameterizedCommand {
 	    // Get the max length a hardware watchpoint can watch - architecture dependent
 	    int watchLength = WatchpointFunctionFactory.getWatchpointFunctions
                               (task.getISA()).getWatchpointMaxLength();
-	 
-	    // XXX: May fail for non-contiguos memory and registers 
+
 	    long variableAddress = expr.getLocation().getAddress();
 	    int variableLength = expr.getType().getSize();
 	    
-	    if (variableLength > watchpointCount * watchLength )
-		throw new RuntimeException ("Watchpoint set error: Variable size too large.");
+	    if (variableLength > (watchpointCount-watchpointsInUse) * watchLength )
+		throw new RuntimeException ("Watch error: Available watchpoints not sufficient to " +
+				            "watch complete value.");
 
 	    // Calculate number of watch observers needed to completely
 	    // watch the variable.
@@ -174,9 +175,11 @@ class WatchCommand extends ParameterizedCommand {
 
 	public void addedTo(Object observable) {
 	    cli.outWriter.println("Watchpoint set: " + exprStr); 
+	    watchpointsInUse++;
 	}
 
 	public void deletedFrom(Object observable) {
+	    watchpointsInUse--;
 	}
 
     }

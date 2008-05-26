@@ -1,5 +1,10 @@
 2008-05-26 Teresa Thomas  <tthomas@redhat.com>
 
+	* WatchCommand.java (watchpointsInUse): New
+	(WatchpointObserver.addedTo): Increment watchpointsInUse.
+	(WatchpointObserver.deletedFrom): Decrement watchpointsInUse.
+	* TestWatchCommand.java (testWatchOversized): Update.	
+
 	* TestWatchCommand.java (testBadWatch): New.
 
 2008-05-23 Teresa Thomas  <tthomas@redhat.com>
