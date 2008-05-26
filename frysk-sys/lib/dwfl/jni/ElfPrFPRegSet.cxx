@@ -78,7 +78,6 @@ lib::dwfl::ElfPrFPRegSet::fillMemRegion(jnixx::env env,
   return length;
 }
 
-extern ArrayList internalThreads;
 jlong lib::dwfl::ElfPrFPRegSet::getNoteData(jnixx::env env, ElfData data) {
   void *elf_data = ((Elf_Data*)data.getPointer(env))->d_buf;
   GElf_Nhdr *nhdr = (GElf_Nhdr *)elf_data;
@@ -114,8 +113,7 @@ jlong lib::dwfl::ElfPrFPRegSet::getNoteData(jnixx::env env, ElfData data) {
     memcpy(buf.elements(), ((unsigned char  *)elf_data)+note_data_loc,
 	   nhdr->n_descsz);
       
-    fprintf(stderr, "acessing global internalThreads\n");
-    internalThreads.add(env, jbuf);
+    GetInternalThreads(env).add(env, jbuf);
 
     // Move pointer along, now we have processed the first thread
     note_loc += (sizeof (GElf_Nhdr) + ((nhdr->n_namesz + 0x03) & ~0x3)) + nhdr->n_descsz;

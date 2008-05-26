@@ -1,5 +1,12 @@
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/ElfPrstatus.cxx (internalThreads): Delete extern declaration.
+	* jni/ElfPrXFPRegSet.cxx (internalThreads): Ditto.
+	* jni/ElfPrFPRegSet.cxx (internalThreads): Ditto.
+	* jni/ElfPrstatus.cxx (internalThreads): Ditto.
+	* cni/ElfPrFPRegSet.cxx (internalThreads): Ditto.
+	* cni/ElfPrXFPRegSet.cxx (internalThreads): Ditto.
+
 	* jni/ElfSymbol.cxx: Implement.
 	* jni/ElfSection.cxx: Implement.
 	* jni/ElfRel.cxx: Implement.

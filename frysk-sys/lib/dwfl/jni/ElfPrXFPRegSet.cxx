@@ -79,7 +79,6 @@ lib::dwfl::ElfPrXFPRegSet::fillMemRegion(jnixx::env env,
   return length;
 }
 
-extern ArrayList internalThreads;
 jlong lib::dwfl::ElfPrXFPRegSet::getNoteData(jnixx::env env,
 					     ElfData data) {
   void *elf_data = ((Elf_Data*)data.getPointer(env))->d_buf;
@@ -115,7 +114,7 @@ jlong lib::dwfl::ElfPrXFPRegSet::getNoteData(jnixx::env env,
 	jbyteArrayElements buf = jbyteArrayElements(env, jbuf);
 	memcpy(buf.elements(),((unsigned char  *)elf_data)+note_data_loc,
 	       nhdr->n_descsz);
-	internalThreads.add(env, jbuf);
+	GetInternalThreads(env).add(env, jbuf);
 	buf.release();
 	jbuf.DeleteLocalRef(env);
       }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat, Inc.
+// Copyright 2007, 2008, Red Hat, Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -87,7 +87,6 @@ lib::dwfl::ElfPrXFPRegSet::fillMemRegion(jbyteArray buffer, jlong startAddress)
   return this->raw_registers->length;
 }
 
-extern ArrayList internalThreads;
 jlong lib::dwfl::ElfPrXFPRegSet::getNoteData(ElfData *data)
 {
   void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
