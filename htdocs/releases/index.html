@@ -55,10 +55,11 @@
 	    <td valign="top">
 	      <!-- start logo -->
 <p>
+<a href="#before">Before the Release</a><br>
 <a href="#branch">Branch</a><br>
-<a href="#release">Release</a>
-<a href="#upload">Upload</a>
-<a href="#upload">Announce</a>
+<a href="#release">Release</a><br>
+<a href="#upload">Upload</a><br>
+<a href="#upload">Announce</a><br>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -89,7 +90,26 @@ patch-level number like <tt>0.2.1</tt> and use the original releases
 branch</li>
 </ul>
 
+<a name="before"><h2>Before The Release</h2></a>
+
+<p>About a week before the release drop an e-mail to frysk@, and in
+the Wednesday meeting, reminding everyone:
+
+<ul>
+
+<li>when the release is planned
+<li>to add whats-new to the NEWS file
+
+</ul>
+
+<p>In the meeting, or on IRC, you might even collect suggestions and
+add them yourself.  If you think of anything, just add it also.
+
+
 <a name="branch"><h2>Cutting the Branch</h2></a>
+
+<p>First, before cutting the branch, ask around for any late breaking
+NEWS additions.
 
 <p>Here's a suggested sequence:</p>
 
@@ -101,7 +121,7 @@ meaningful:
 
 <pre>
 cd frysk  (change to the directory where a fresh checkout of frysk is)
-version=0.2 ! ! ! change this
+version=0.3 ! ! ! change this
 echo $version
 date=`date -u +"%Y.%m.%d"`
 echo date=$date 1>&2
@@ -122,17 +142,34 @@ git push origin $branch
 </pre>
 </li>
 
-<li>Finally, we update the version number of the branch, and push
-that:
+<li>Then, we update the version number of the branch, and edit the
+NEWS file to state that this is a release, and push that:
+
 <pre>
 git checkout $branch
 echo $version > frysk-common/version.in
 cat frysk-common/version.in
+$EDITOR NEWS
 git add frysk-common/version.in
-git commit -m "Set version.in to $version"
+git add NEWS
+git commit -m "Update version.in and NEWS for release $version"
 git push origin $branch
 </pre>
 </li>
+
+<li>And finally we update the mainline so its version.in and NEWS file
+are ready for the next release.
+
+<pre>
+... in mainline ... (git checkout ???)
+echo $version.50 > frysk-common/version.in
+$EDITOR NEWS
+... start a new section for the next release ...
+git add frysk-common/version.in
+git add NEWS
+git commit -m "Update version.in and NEWS for release $version + 1"
+git push origin
+</pre>
 
 </ul>
 
@@ -218,20 +255,22 @@ local frysk packages.  Either way, the announcement should at least
 include:
 
 <ul>
+
 <li>All the contributors to this release (you can get this by going
 through GIT and, perhaps, the <tt>ChangeLog</tt> files; something
 like: <tt> git-log --after=frysk/0.2 --pretty=format:"%an %ae" | sort
 -u</tt>
-<li>The contents of the NEWS entry.
+
+<li>The contents of whats new section lifted verbatum from the NEWS
+
 </ul>
 
-<p>and might also include:
+<p>The announcement might also include:
 
 <ul>
 <li>Where to download frysk
 <li>file check-sums
-<li>a description of frysk
-<li>???
+<li>a very brief description of frysk
 </ul>
 
 
