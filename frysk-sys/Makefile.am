@@ -79,6 +79,10 @@ JNIXX_CLASSES += frysk.sys.Errno$$Esrch
 JNIXX_CLASSES += lib.dwfl.DwAttributeNotFoundException
 JNIXX_CLASSES += java.lang.Long
 JNIXX_CLASSES += lib.dwfl.ElfException
+JNIXX_CLASSES += lib.unwind.UnwindRegistersPPC32
+JNIXX_CLASSES += lib.unwind.UnwindRegistersPPC64
+JNIXX_CLASSES += lib.unwind.UnwindRegistersX86
+JNIXX_CLASSES += lib.unwind.UnwindRegistersX8664
 
 
 # Quick hack to get a test JNI program up-and-running; as a package is
@@ -89,12 +93,24 @@ CLEANFILES += JniRunner
 JniRunner: | frysk-sys.jar libfrysk-sys-jni.so
 	rm -f $@.tmp
 	echo "#!/bin/sh"					>> $@.tmp
-	echo "export LD_PRELOAD=\"libstdc++.so.6 libdw.so libelf.so\"" >> $@.tmp
+	echo "export LD_PRELOAD=\"\\"				>> $@.tmp
+	echo "libstdc++.so.6 \\"				>> $@.tmp
+	echo "libdw.so \\"					>> $@.tmp
+	echo "libelf.so \\"					>> $@.tmp
+	echo "libunwind-x86.so \\"				>> $@.tmp
+	echo "libunwind-ppc32.so \\"				>> $@.tmp
+	echo "libunwind-ppc64.so \\"				>> $@.tmp
+	echo "libunwind-x86_64.so \\"				>> $@.tmp
+	echo "\"" >> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"	>> $@.tmp
 	echo "export LD_LIBRARY_PATH=.\\"			>> $@.tmp
 	echo ":$$(cd ../frysk-imports/elfutils/libdw && pwd)\\"	>> $@.tmp
 	echo ":$$(cd ../frysk-imports/elfutils/libelf && pwd)\\" >> $@.tmp
 	echo ":$$(cd ../frysk-imports/elfutils/backends && pwd)\\" >> $@.tmp
+	echo ":$$(cd ../frysk-imports/libunwind-i386/src/.libs && pwd)\\" >> $@.tmp
+	echo ":$$(cd ../frysk-imports/libunwind-ppc32/src/.libs && pwd)\\" >> $@.tmp
+	echo ":$$(cd ../frysk-imports/libunwind-ppc64/src/.libs && pwd)\\" >> $@.tmp
+	echo ":$$(cd ../frysk-imports/libunwind-x86_64/src/.libs && pwd)\\" >> $@.tmp
 	echo ":/usr/lib64\\"			      	 	>> $@.tmp
 	echo ":/usr/lib"					>> $@.tmp
 	echo "export CLASSPATH=\\"				>> $@.tmp

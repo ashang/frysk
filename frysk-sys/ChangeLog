@@ -1,5 +1,7 @@
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (JNIXX_CLASSES): Add UnwindRegistersX86 et.al.
+	
 	* Makefile.am (JniRunner): Load libdw and libelf.
 
 	* Makefile.am (JNIXX_CLASSES): Add DwAttributeNotFoundException,
