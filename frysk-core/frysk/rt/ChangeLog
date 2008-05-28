@@ -1,3 +1,7 @@
+2008-05-28  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchObserverInstaller.java: New file.
+
 2008-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FunctionBreakpoint.java: Added comment.

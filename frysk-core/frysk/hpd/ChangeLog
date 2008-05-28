@@ -1,3 +1,7 @@
+2008-05-28 Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchCommand.java (interpret): Use rt.WatchObserverInstaller.
+
 2008-05-26 Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (watchpointsInUse): New

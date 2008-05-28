@@ -43,16 +43,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import frysk.expr.Expression;
-import frysk.isa.watchpoints.WatchpointFunctionFactory;
-import frysk.proc.Action;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-import frysk.value.Format;
+import frysk.rt.WatchObserverInstaller;
 
 class WatchCommand extends ParameterizedCommand {
 
     private boolean writeOnly = true;
-    private static int watchpointsInUse = 0;
     
     WatchCommand() {
 	// XXX: Add details on thread-handling when implemented
@@ -99,89 +95,11 @@ class WatchCommand extends ParameterizedCommand {
 		continue;
 	    }	    
 
-	    // XXX: getValue may modify inferior.
-	    String oldValueStr = expr.getValue().toPrint
-	                         (Format.NATURAL, task.getMemory());
-
-	    // Get the number of hardware watchpoints - architecture dependent
-	    int watchpointCount = WatchpointFunctionFactory.getWatchpointFunctions
-	                          (task.getISA()).getWatchpointCount();
-	    // Get the max length a hardware watchpoint can watch - architecture dependent
-	    int watchLength = WatchpointFunctionFactory.getWatchpointFunctions
-                              (task.getISA()).getWatchpointMaxLength();
-
-	    long variableAddress = expr.getLocation().getAddress();
-	    int variableLength = expr.getType().getSize();
-	    
-	    if (variableLength > (watchpointCount-watchpointsInUse) * watchLength )
-		throw new RuntimeException ("Watch error: Available watchpoints not sufficient to " +
-				            "watch complete value.");
-
-	    // Calculate number of watch observers needed to completely
-	    // watch the variable.
-	    int numberOfObservers = (int)Math.ceil((double)variableLength/
-		                                   (double)watchLength);
-
-	    // Add watchpoint observers to task. 
-	    for (int i=0; i< numberOfObservers-1; i++) {
-		WatchpointObserver wpo = new WatchpointObserver
-		                         (expr, cli, expressionStr, oldValueStr);    
-		task.requestAddWatchObserver
-		     (wpo, variableAddress + i*watchLength, watchLength, writeOnly);
-	    }	
-	    // Last observer may not need to watch all watchLength bytes. 
-	    WatchpointObserver wpo = new WatchpointObserver
-	                            (expr, cli, expressionStr, oldValueStr);
-	    task.requestAddWatchObserver
-	         (wpo, variableAddress + (numberOfObservers-1)*watchLength, 
-	          variableLength-(numberOfObservers-1)*watchLength, writeOnly);
-	}       
-    }
-    
-    static class WatchpointObserver 
-    implements TaskObserver.Watch
-    {
-        Expression expr;
-	CLI cli;
-	String exprStr;
-	String oldValueStr;
-
-	WatchpointObserver(Expression expr, CLI cli, String exprStr, String oldValueStr) {
-	    this.expr = expr;
-	    this.cli = cli;
-	    this.exprStr = exprStr;
-	    this.oldValueStr = oldValueStr;
-
+	    WatchObserverInstaller installer = new WatchObserverInstaller 
+	                                       (expr, cli.getSteppingEngine(),
+		                                cli.getPrintWriter(), expressionStr);
+	    installer.install(task, writeOnly);
 	}
-	public Action updateHit(Task task, long address, int length) {
-	    
-	    String newValueStr = expr.getValue().toPrint
-	                         (Format.NATURAL, task.getMemory());
-	    
-	    String watchMessage = "Watchpoint hit: " + exprStr + "\n" +
-	                          "   Value before hit = " + oldValueStr + "\n" +
-	                          "   Value after  hit = " + newValueStr + "\n";
-	    // Remember the previous value
-	    oldValueStr = newValueStr;
-
-	    cli.getSteppingEngine().blockedByActionPoint(task, this, watchMessage, cli.outWriter);
-	    task.requestUnblock(this);
-	    return Action.BLOCK;
-	}
-
-	public void addFailed(Object observable, Throwable w) {
-	    cli.outWriter.println ("Watchpoint Error:" + w.getMessage());
-	}
-
-	public void addedTo(Object observable) {
-	    cli.outWriter.println("Watchpoint set: " + exprStr); 
-	    watchpointsInUse++;
-	}
-
-	public void deletedFrom(Object observable) {
-	    watchpointsInUse--;
-	}
-
     }
     
     int completer(CLI cli, Input input, int cursor, List completions) {
