@@ -61,6 +61,11 @@ public class WatchObserverInstaller {
     
     private static int watchpointsInUse = 0;
     
+    // Maintain oldValue statically so that changes made to a 
+    // a value being watched by multiple watchpoints are
+    // are reflected in all watch observers.
+    private static String oldValue = "";
+    
     Expression expr;
     String exprString;
     SteppingEngine ste;
@@ -74,7 +79,7 @@ public class WatchObserverInstaller {
      * @param exprString Text string of expression
      */
     public WatchObserverInstaller(Expression expr, SteppingEngine ste,
-	    		       PrintWriter writer, String exprString) {
+	    		          PrintWriter writer, String exprString) {
 	this.expr = expr;
 	this.ste = ste;
 	this.writer = writer;
@@ -132,7 +137,6 @@ public class WatchObserverInstaller {
 	String exprString;
 	SteppingEngine ste;
 	PrintWriter writer;
-	String oldValue;
 	Task task;
 	
 	WatchpointObserver(Expression expr, String exprStr, Task task,
@@ -142,9 +146,8 @@ public class WatchObserverInstaller {
 	    this.ste = ste;
 	    this.writer = writer;
 	    this.task = task;
-	    this.oldValue = "";
-
 	}
+	
 	public Action updateHit(Task task, long address, int length) {
 
 	    String newValue = expr.getValue().toPrint
@@ -170,7 +173,7 @@ public class WatchObserverInstaller {
 	    watchpointsInUse++;
 	    // XXX: getValue may modify inferior.
 	    oldValue = expr.getValue().toPrint
-	                      (Format.NATURAL, task.getMemory());	    
+	               (Format.NATURAL, task.getMemory());	    
 	}
 
 	public void deletedFrom(Object observable) {
