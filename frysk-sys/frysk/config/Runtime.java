@@ -1,8 +1,6 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,33 +37,64 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import frysk.junit.Runner;
-import @GEN_PACKAGENAME@.JUnitTests;
-import frysk.config.Prefix;
-import frysk.config.PrefixFactory;
-import frysk.config.Runtime;
+package frysk.config;
 
 /**
- * Run the JUnit tests from within the build tree.
+ * Attempt to load frysk's runtime bindings.
  */
 
-public class TestRunner {
-    public static void main (String[] args) {
-	String ABS_BUILDDIR = "@abs_builddir@";
-	String ROOT_SRCDIR = "@root_srcdir@";
-
-	Prefix configAll = PrefixFactory.createBuildPrefix(ROOT_SRCDIR, ABS_BUILDDIR);
-	Prefix config32 = PrefixFactory.createBuildPrefix32(ROOT_SRCDIR, ABS_BUILDDIR);
-	Prefix config64 = PrefixFactory.createBuildPrefix64(ROOT_SRCDIR, ABS_BUILDDIR);
-
-	Runner testRunner = new Runner("TestRunner", args,
-				       configAll, config32, config64);
-	int status = testRunner.runTestCases(JUnitTests.get());
-	System.exit (status);
+public class Runtime {
+    private final String name;
+    private Runtime(String name) {
+	this.name = name;
     }
-    static {
-	// Needs to be done before main, and hence before any
-	// libraries main needs to load.
-	Runtime.load();
+    public String toString() {
+	return name;
     }
+
+    public static final Runtime COMPILER_NATIVE_INTERFACE = new Runtime("CNI");
+    public static final Runtime JAVA_NATIVE_INTERFACE = new Runtime("JNI");
+
+    private static boolean tryBindings() {
+	// Try calling a binding, if it works cool.  If it fails,
+	// check that it failed on the expected symbol and if that is
+	// wrong abort.
+	try {
+	    runtime();
+	    return true;
+	} catch (UnsatisfiedLinkError e) {
+	    if (!e.getMessage().equals("runtime")) {
+		System.err.println("Problem loading runtime bindings, unexpected error: " + e.toString());
+		System.exit(1);
+	    }
+	    return false;
+	}
+    }
+
+    public static void load() {
+	// Just try a call, perhaps things have already been loaded so
+	// things will just work.
+	if (tryBindings()) {
+	    return;
+	}
+	// No such luck, try explicitly loading frysk's JNI runtime.
+	try {
+	    System.loadLibrary("frysk-sys-jni");
+	} catch (UnsatisfiedLinkError e) {
+	    System.err.println("Problem loading runtime bindings, "
+			       + e.getMessage());
+	    System.exit(1);
+	}
+	if (tryBindings()) {
+	    return;
+	}
+	System.err.println("Problem loading runtime bindings.");
+	System.exit(1);
+    }
+    
+    public static Runtime get() {
+	return runtime();
+    }
+
+    private static native Runtime runtime();
 }

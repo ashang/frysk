@@ -505,7 +505,8 @@ endif
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 SCRIPT_BUILT += ${GEN_SOURCENAME}/JUnitTests.java
 TESTS += TestRunner
-noinst_PROGRAMS += TestRunner
+noinst_PROGRAMS += TestRunner Runner JniRunner
+noinst_DATA += TestRunner.jar
 EOF
 echo_LDFLAGS TestRunner
 

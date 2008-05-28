@@ -1,8 +1,6 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,33 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import frysk.junit.Runner;
-import @GEN_PACKAGENAME@.JUnitTests;
-import frysk.config.Prefix;
-import frysk.config.PrefixFactory;
-import frysk.config.Runtime;
+#include "jni.hxx"
 
-/**
- * Run the JUnit tests from within the build tree.
- */
+using namespace frysk::config;
 
-public class TestRunner {
-    public static void main (String[] args) {
-	String ABS_BUILDDIR = "@abs_builddir@";
-	String ROOT_SRCDIR = "@root_srcdir@";
-
-	Prefix configAll = PrefixFactory.createBuildPrefix(ROOT_SRCDIR, ABS_BUILDDIR);
-	Prefix config32 = PrefixFactory.createBuildPrefix32(ROOT_SRCDIR, ABS_BUILDDIR);
-	Prefix config64 = PrefixFactory.createBuildPrefix64(ROOT_SRCDIR, ABS_BUILDDIR);
-
-	Runner testRunner = new Runner("TestRunner", args,
-				       configAll, config32, config64);
-	int status = testRunner.runTestCases(JUnitTests.get());
-	System.exit (status);
-    }
-    static {
-	// Needs to be done before main, and hence before any
-	// libraries main needs to load.
-	Runtime.load();
-    }
+Runtime
+Runtime::runtime(jnixx::env env) {
+  return GetCOMPILER_NATIVE_INTERFACE(env);
 }

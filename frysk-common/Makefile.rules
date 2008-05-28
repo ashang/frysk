@@ -337,9 +337,25 @@ SUFFIXES += .xml-in
 .xml.8:
 	mkdir -p `dirname $@`
 	$(XMLTO) -o `dirname $@` man $<
+
+# When compiling the test runner be sure to include the current
+# directories classes.
 
+TestRunner.jar: TestRunner.java
+	rm -f $@.tmp $*.class
+	$(JAVAC) `echo $(JAVACFLAGS) | sed -e 's/-classpath /-classpath $(GEN_DIRNAME).jar:/'` $*.java
+	$(JAR) cf $@.tmp $*.class
+	rm -f $*.class
+	mv $@.tmp $@
+
+# Make gets confused about which root to build TestRunner.o from -
+# .jar or .java, spell it out.
+
+TestRunner.o: TestRunner.java
+	$(GCJCOMPILE) -c $<
 TestRunner.java: common/TestRunner.java-in
 	$(SUBST)
+
 $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	mkdir -p $(GEN_SOURCENAME)
 	rm -f $@.tmp
@@ -370,6 +386,43 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	echo >> $@.tmp '  }'
 	echo >> $@.tmp '}'
 	mv -f $@.tmp $@
+
+frysk_imports = $$(cd ../frysk-imports && pwd)
+Runner:
+	rm -f $@
+	echo "#!/bin/sh"					>> $@.tmp
+	echo "export LD_PRELOAD=\"\\"                           >> $@.tmp
+	echo "libstdc++.so.6 \\"                                >> $@.tmp
+	echo "libdw.so \\"					>> $@.tmp
+	echo "libelf.so \\"					>> $@.tmp
+	echo "libunwind-x86.so \\"				>> $@.tmp
+	echo "libunwind-ppc32.so \\"				>> $@.tmp
+	echo "libunwind-ppc64.so \\"				>> $@.tmp
+	echo "libunwind-x86_64.so \\"				>> $@.tmp
+	echo "\""		  			      	>> $@.tmp
+	echo "# hack to hopefully find the right libstdc++.so"  >> $@.tmp
+	echo "export LD_LIBRARY_PATH=.\\"			>> $@.tmp
+	echo ":$(frysk_imports)/elfutils/libdw\\"		>> $@.tmp
+	echo ":$(frysk_imports)/elfutils/libelf\\"		>> $@.tmp
+	echo ":$(frysk_imports)/elfutils/backends\\"		>> $@.tmp
+	echo ":$(frysk_imports)/libunwind-i386/src/.libs\\"	>> $@.tmp
+	echo ":$(frysk_imports)/libunwind-ppc32/src/.libs\\"	>> $@.tmp
+	echo ":$(frysk_imports)/libunwind-ppc64/src/.libs\\" 	>> $@.tmp
+	echo ":$(frysk_imports)/libunwind-x86_64/src/.libs\\"	>> $@.tmp
+	echo ":/usr/lib64\\"					>> $@.tmp
+	echo ":/usr/lib"					>> $@.tmp
+	echo "export CLASSPATH=\\"				>> $@.tmp
+	echo "$(CLASSPATH):$(GEN_DIRNAME).jar:TestRunner.jar"	>> $@.tmp
+	echo "gij \"\$$@\""					>> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
+JniRunner:
+	rm -f $@
+	echo "#!/bin/sh"					>> $@.tmp
+	echo "exec ./Runner TestRunner \"\$$@\""		>> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
 
 # Generate one or more .h files, one per named class, and using CNI,
 # from the corresponding .java file.  Anonymous classes are pruned.

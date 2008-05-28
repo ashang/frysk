@@ -1,3 +1,10 @@
+2008-05-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (JniRunner.java): Delete.
+	(JniRunner.jar): Delete.
+	(noinst_DATA): Delete JniRunner.jar and JniRunner.
+	(JniRunner): Delete.
+	
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (JNIXX_CLASSES): Add UnwindRegistersX86 et.al.

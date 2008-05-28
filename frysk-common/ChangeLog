@@ -1,3 +1,10 @@
+2008-05-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (noinst_DATA): Add TestRunner.jar.
+	* Makefile.rules (TestRunner.jar): New target.
+	(JniRunner, Runner): New.
+	* TestRunner.java-in: Call Runtime.load().
+
 2008-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (--with-libopcodes): Delete.
