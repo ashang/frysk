@@ -423,12 +423,14 @@ tokens
 
 {
     private String fqinit;
+
     private char fqLA(int i) throws CharStreamException {
         if (i >= fqinit.length())
             return LA(i - fqinit.length() + 1);
         else
             return fqinit.charAt(i);
     }
+
     private void fqmatch(String s) throws MismatchedCharException, CharStreamException {
         while (fqinit.length() > 0) {
             char c = s.charAt(0);
@@ -503,22 +505,16 @@ ELLIPSIS  : "..." ;
  * or EOF stops the lookahead.
  */
 
-private
+protected
 PARSE_FQIDENT
     : {
-            // Automaton state is composed of following sub-states:
-            final int FILE = 1;
-            final int LINE = 2;
-            final int SYMB = 4;
-            int state = LINE | SYMB;
-
             String matched = "";
             String part = "";
 
-            String dso = null;
-            String file = null;
-            String proc = null;
-            String line = null;
+            String partDso = null;
+            String partFile = null;
+            String partProc = null;
+            String partLine = null;
 
             int i = 0;
             char c;
@@ -539,10 +535,15 @@ PARSE_FQIDENT
                 if (part.length() == 0)
                     throw new RecognitionException("Empty DSO part `" + matched
                                                    + "' in fully qualified notation.");
-                dso = part;
+                partDso = part;
                 part = "";
             }
 
+            // Automaton state is composed of following sub-states:
+            final int FILE = 1;
+            final int LINE = 2;
+            final int SYMB = 4;
+            int state = LINE | SYMB;
             loop: while(true) {
                 c = fqLA(i++);
                 if (Character.isWhitespace(c) || c == EOF_CHAR)
@@ -558,15 +559,15 @@ PARSE_FQIDENT
                     }
 
                     case '#': {
-                        if (line == null && proc == null) {
-                            if ((state & FILE) != 0 && file == null)
-                                file = part.substring(0, part.length() - 1);
+                        if (partLine == null && partProc == null) {
+                            if ((state & FILE) != 0 && partFile == null)
+                                partFile = part.substring(0, part.length() - 1);
                             else if ((state & LINE) != 0)
-                                line = part.substring(0, part.length() - 1);
+                                partLine = part.substring(0, part.length() - 1);
                             else if ((state & SYMB) != 0) {
-                                proc = part.substring(0, part.length() - 1);
-                                if (!Character.isJavaIdentifierStart(proc.charAt(0)))
-                                    throw new RecognitionException("Procedure part (`" + proc + "') in fully "
+                                partProc = part.substring(0, part.length() - 1);
+                                if (!Character.isJavaIdentifierStart(partProc.charAt(0)))
+                                    throw new RecognitionException("Procedure part (`" + partProc + "') in fully "
                                                                    + "qualified notation has to be valid identifier.");
                             } else
                                 // This # could belong to the next symbol.
@@ -576,7 +577,7 @@ PARSE_FQIDENT
                             throw new RecognitionException("Unexpected `#' after line or proc name was defined.");
 
                         state = SYMB;
-                        if (line == null && proc == null)
+                        if (partLine == null && partProc == null)
                             state |= LINE;
                         part = "";
                         break;
@@ -588,11 +589,12 @@ PARSE_FQIDENT
 
                             if (!(Character.isJavaIdentifierStart(c)
                                   || c == '@'
-                                  || (c == ':' && part.equals("plt:")))) {
+                                  || (c == ':' && part.length() == 4
+                                      && part.equals("plt:")))) {
 
                                 // Break out early if we are already
                                 // just waiting for symbol.
-                                if (line != null || proc != null)
+                                if (partLine != null || partProc != null)
                                     break loop;
                                 else
                                     state &= ~SYMB;
@@ -629,7 +631,6 @@ PARSE_FQIDENT
             // parts before yelling at user that his identifier sucks.
             Matcher m = Pattern.compile("[a-zA-Z0-9_$]*").matcher(part);
             if (m.lookingAt()) {
-                // XXX This accepts also e.g. "plt:something" (i.e. without the "#" part). Ok?
                 int diff = part.length() - m.end();
                 if (diff > 0) {
                     matched = matched.substring(0, matched.length() - diff);
@@ -640,26 +641,25 @@ PARSE_FQIDENT
             if (!Character.isJavaIdentifierStart(part.charAt(0)))
                 throw new RecognitionException("Invalid symbol `" + part + "'.");
 
-            if (false) {
-            if (dso != null)
-                System.err.println("DSO:  " + dso);
-            if (file != null)
-                System.err.println("File: " + file);
-            if (line != null)
-                System.err.println("Line: " + line);
-            if (proc != null)
-                System.err.println("Proc: " + proc);
-            System.err.println("Symb: " + (wantPlt ? "plt:" : "")
-                               + part + (version != null ? "@" + version : ""));
-            }
+            FqIdentToken tok = new FqIdentToken(IDENT, matched);
+            tok.dso = partDso;
+            tok.file = partFile;
+            tok.line = partLine;
+            tok.proc = partProc;
+            tok.symbol = part;
+            tok.version = version;
+            tok.wantPlt = wantPlt;
+            tok.setLine(getLine());
+            $setToken(tok);
 
             fqmatch(matched);
-            //System.out.println("matched = " + matched);
+            tok.setColumn(getColumn() - matched.length());
         } ;
 
 protected
 IDENT
-    : ('$'|'#'|'a'..'z'|'A'..'Z'|'_') { fqinit = $getText; } PARSE_FQIDENT ;
+    : ('$'|'#'|'a'..'z'|'A'..'Z'|'_') { fqinit = $getText; }
+      fqident:PARSE_FQIDENT { $setToken(fqident); } ;
 
 /**
  *  A <TAB> token is returned not only on regular tabs
@@ -668,7 +668,10 @@ IDENT
 
 IDENT_TAB 
     :   '\t'
-    |   IDENT {$setType(IDENT);} ('\t' {$setType(IDENT_TAB);})? 
+    |   ident:IDENT { $setType(IDENT); $setToken(ident); }
+        ('\t' { $setType(IDENT_TAB);
+                ident.setText($getText);
+                ident.setType(IDENT_TAB); })?
     ;
 
 protected
@@ -807,7 +810,7 @@ NUM
 			)?
 		|	(('1'..'9') ('0'..'9')* {_ttype = DECIMALINT;})
              ( '#' {fqinit = $getText;}
-               PARSE_FQIDENT { $setType(IDENT); } )?
+               fqident:PARSE_FQIDENT { $setType(IDENT); $setToken(fqident); } )?
 		)
 		(	('l'|'L') { _ttype = DECIMALINT; }
 

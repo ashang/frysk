@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,29 +39,25 @@
 
 package frysk.expr;
 
-import antlr.collections.AST;
-import java.util.List;
+public class FqIdentToken
+    extends antlr.CommonToken
+{
+    public String dso = null, file = null, line = null,
+		  proc = null, symbol = null, version = null;
+    boolean wantPlt = false;
 
-/** 
- * An incomplete identifier; e.g.: foo&lt;tab&gt;
- */
-class IncompleteIdentifierException extends CompletionException {
-    static final long serialVersionUID = 1;
-    IncompleteIdentifierException(AST identifier) {
-	super(identifier);
+    public FqIdentToken(int t, String txt) {
+	super (t, txt);
     }
-    public String getMessage() {
-	return ("complete identifier <<"
-		+ getText()
-		+ ">> at "
-		+ getColumn()
-		);
-    }
-    int complete(ExprSymTab symTab, List candidates) {
-	symTab.complete(getText(), candidates);
-	if (candidates.size() == 0)
-	    return -1;
-	else
-	    return getColumn();
+
+    public String toString() {
+        return "[" + super.toString()
+	    + (dso != null ? ", dso:" + dso : "")
+	    + (file != null ? ", file:" + file : "")
+	    + (line != null ? ", line:" + line : "")
+	    + (proc != null ? ", proc:" + proc : "")
+	    + (wantPlt ? ", pltref" : "")
+	    + (symbol != null ? ", symbol:" + symbol : "")
+	    + (version != null ? ", version:" + symbol : "") + "]";
     }
 }
