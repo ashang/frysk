@@ -629,7 +629,7 @@ PARSE_FQIDENT
             // This is delibaretely simplified and ignores request for initial letter.
             // This is for better error reporting below, we first snip off irrelevant
             // parts before yelling at user that his identifier sucks.
-            Matcher m = Pattern.compile("[a-zA-Z0-9_$]*").matcher(part);
+            Matcher m = Pattern.compile("[a-zA-Z0-9_$]+").matcher(part);
             if (m.lookingAt()) {
                 int diff = part.length() - m.end();
                 if (diff > 0) {

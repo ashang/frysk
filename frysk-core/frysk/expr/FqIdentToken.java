@@ -44,7 +44,7 @@ public class FqIdentToken
 {
     public String dso = null, file = null, line = null,
 		  proc = null, symbol = null, version = null;
-    boolean wantPlt = false;
+    public boolean wantPlt = false;
 
     public FqIdentToken(int t, String txt) {
 	super (t, txt);
