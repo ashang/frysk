@@ -1,3 +1,14 @@
+2008-05-29  Petr Machata  <pmachata@redhat.com>
+
+	* SymbolTracePoint.java: New class.
+	* RuleOptions.java: New class.
+	* FtraceController.java: Drop PLT special casing, except when the
+	driver is actually asked to trace symbol or PLT entry.
+	* Rule.java, AddrRule.java, PLTRule.java, SymbolRule.java:
+	Work with RuleOptions instead of tracking booleans by hand.
+	* TaskTracer.java: Format address tracing event according to new
+	scheme with #soname# at the beginning.
+
 2008-05-14  Petr Machata  <pmachata@redhat.com>
 
 	* AddrRule.java: New file.

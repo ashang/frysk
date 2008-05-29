@@ -48,17 +48,16 @@ public abstract class Rule {
     private static final Log fine = Log.fine(Rule.class);
 
     final public boolean addition;
-    final public boolean stackTrace;
+    final public RuleOptions options;
 
-    protected Rule(boolean addition, boolean stackTrace) {
+    protected Rule(boolean addition, RuleOptions options) {
 	this.addition = addition;
-	this.stackTrace = stackTrace;
+	this.options = options;
     }
 
     public String toString() {
-	return ""
-	    + (this.addition ? "" : "-")
-	    + (this.stackTrace ? "#" : "");
+	return (this.addition ? "" : "-")  + "/" +
+	    (this.options.stackTrace ? "s" : "");
     }
 
     public boolean apply(Collection candidates,
@@ -76,23 +75,23 @@ public abstract class Rule {
 		    matched = true;
 		    if (workingSet.add(candidate))
 			fine.log(this, "add", candidate);
-		    if (this.stackTrace
+		    if (options.stackTrace
 			&& stackTraceSet.add(candidate))
 			fine.log(this, "stack trace on", candidate);
 		}
 	    }
 	}
 	else {
-	    // For '-' or '-#' rules iterate over
+	    // For '-' or '-/s' rules iterate over
 	    // workingSet or stackTraceSet, and remove
 	    // what matches.
-	    Set iterateOver = this.stackTrace ? stackTraceSet : workingSet;
+	    Set iterateOver = options.stackTrace ? stackTraceSet : workingSet;
 	    for (Iterator jt = iterateOver.iterator(); jt.hasNext(); ) {
 		Object candidate = jt.next();
 		if (this.matches(candidate)) {
 		    matched = true;
 		    jt.remove();
-		    if (!this.stackTrace)
+		    if (!options.stackTrace)
 			stackTraceSet.remove(candidate);
 		    fine.log(this, "remove", candidate);
 		}

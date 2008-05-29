@@ -2,6 +2,21 @@
 
 	* fhpd.java: Add code for parameter passing.
 
+2008-05-29  Petr Machata  <pmachata@redhat.com>
+	
+	* ftrace.java: Use frysk lexer to parse symbol rules, and
+	therefore move towards the #soname#file.c#proc#symbol syntax (even
+	though file and proc components are not actually used yet).
+
+	Drop PLT special casing, drop -plt option.  It's now possible to
+	request PLT entries with #soname#plt:symbol syntax.  Stack trace
+	has new syntax, -sym=blabla/s (necessary because '#' is used as
+	fully qualified symbol name separator).  This lends itself to
+	seamless extensibility, hence class ftrace.RuleOptions was
+	introduced to track options.  Use that class to construct rules.
+
+	* ftrace.xml-in: Describe all these changes.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFexe.java (testExeOfScript()): New.

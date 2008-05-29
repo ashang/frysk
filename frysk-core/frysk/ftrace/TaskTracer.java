@@ -321,7 +321,7 @@ class TaskTracer
 	public Action updateHit(Task task, long address) {
 	    fine.log("Address observer hit at 0x" + Long.toHexString(address));
 	    String addrFmt = ArchFormatter.toHexString(task, token.longValue());
-	    String event = "checkpoint " + addrFmt + "@" + objf.getSoname();
+	    String event = "checkpoint #" + objf.getSoname() + '#' + addrFmt;
 
 	    ftrace.reporter.eventSingle(task, event);
 
@@ -376,8 +376,8 @@ class TaskTracer
 	return ob;
     }
 
-    public void traceSymbol(Task task, DwflSymbol sym)
-    {
+    public void traceSymbol(Task task, DwflSymbol sym) {
+
 	long addr = sym.getAddress();
 	if (!sym.isFunctionSymbol() || !sym.isDefined() || addr == 0) {
 	    finest.log("Ignoring request for tracing undefined "
@@ -390,8 +390,8 @@ class TaskTracer
 	fine.log("Request for tracing symbol", sym, "at", sym.getAddress());
     }
 
-    public void tracePLTEntry(Task task, PLTEntry entry)
-    {
+    public void tracePLTEntry(Task task, PLTEntry entry) {
+
 	FunctionEnterObserver ob = getObserver(task, entry.getSymbol(), entry);
 	ob.addSymbol(entry.getSymbol());
 	fine.log("Request for tracing PLT", entry.getSymbol(),

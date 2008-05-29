@@ -85,7 +85,6 @@
       <arg choice="opt">-pc</arg>
       <arg choice="opt">-sys=<replaceable>SYSCALL</replaceable>[,<replaceable>SYSCALL</replaceable>...]</arg>
       <arg choice="opt">-sig=<replaceable>SIG</replaceable>[,<replaceable>SIG</replaceable>...]</arg>
-      <arg choice="opt">-plt=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-sym=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-addr=<replaceable>RULE</replaceable>[,<replaceable>RULE</replaceable>...]</arg>
       <arg choice="opt">-stack</arg>
@@ -137,39 +136,33 @@
 	    <listitem>
 	      <para>Trace inside dynamic linker.  When this option is
 	      not present, <function>ftrace</function> will function
-	      as if -@INTERP rule was present at the end of each
+	      as if -#INTERP#* rule was present at the end of each
 	      tracing script.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry>
-	    <term>-plt=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
-	    <listitem>
-	      <para>Trace library calls done via PLT entries matching
-	      each given <replaceable>SYMBOL</replaceable> ruleset.
-	      By tracing PLT entry, you effectively trace calls done
-	      FROM given library or executable, and generally can't
-	      say which library the call leads TO.  (At least for now.
-	      Ftrace may grow brains for this in future.)  See below
-	      for description of <replaceable>SYMBOL</replaceable>
-	      rule syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
 	    <term>-sym=<replaceable>SYMBOL</replaceable>[,<replaceable>SYMBOL</replaceable>...]</term>
 	    <listitem>
-	      <para>Trace calls through the symbol entry points.  By
-	      tracing entry points, you catch all calls that end up at
-	      this symbol, including the calls that don't go through PLT
-	      and as such are not intended as inter-library calls, but
-	      rather intra-library calls.  This is probably not what you
-	      usually want, because you get lots of output when various
-	      functions call each other in the library internals.  On the
-	      other hand, it may be useful to cherry pick few entry points
-	      to see when or if they are called, and with which arguments.
-	      See below for description of <replaceable>SYMBOL</replaceable>
-	      rule syntax.</para>
+	      <para>Trace calls through the symbol entry points.
+	      Ftrace displays a message each time a thread of
+	      execution hits entry point of one of the traced
+	      functions, and then when (if) the function returns.</para>
+
+	      <para>If <replaceable>SYMBOL</replaceable> references
+	      PLT slot, calls done through that PLT slot are recorded.
+	      You then effectively trace calls done FROM given library
+	      or executable, and generally can't say which library the
+	      call leads TO.</para>
+
+	      <para>When tracing ordinary symbol, catch all calls that
+	      end up at this symbol.  That includes the calls that
+	      don't go through PLT and as such are not intended as
+	      inter-library calls, but rather intra-library
+	      calls.</para>
+
+	      <para>See below for detailed description of
+	      <replaceable>SYMBOL</replaceable> rule syntax.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -258,32 +251,32 @@
     is modified depending on the rules.  Rules are delimited by a
     comma.  Syntax of each rule is following:</para>
 
-    <para>[-][#]<replaceable>pattern</replaceable></para>
+    <para>[-]<replaceable>pattern</replaceable>[/<replaceable>options</replaceable>]</para>
 
     <para>Optional &quot;-&quot; at the beginning of the rule means
     removal from the working set.  When the sign is omitted, the
-    default action is to add to the working set.  Optional
-    &quot;#&quot; means that ftrace should print out stack trace when
-    it hits the call.  The combination of &quot;-#&quot; then means
-    that the call should still be traced, but stack trace shouldn't be
-    generated.  <replaceable>pattern</replaceable> defines which PLT
-    entries from which libraries should be added or removed from
-    working sennt.  Syntax of pattern is the following:</para>
+    default action is to add matching symbols to the working
+    set.</para>
 
-    <para><optional><replaceable>symbol</replaceable></optional><optional>@<replaceable>soname</replaceable></optional><optional>@@<replaceable>version</replaceable></optional></para>
+    <para>If optional &quot;/&quot; is present at the end of the rule,
+    following letters are interpreted as rule flags.  Currently only
+    one flag is available, &quot;s&quot;.  When present, it means
+    ftrace should show a stack trace when it hits a symbol that
+    matches this rule.</para>
 
-    <para>All three components, <replaceable>symbol</replaceable>,
-    <replaceable>soname</replaceable> and
-    <replaceable>version</replaceable>, are written using glob
-    expression syntax.  Any of the components can be omitted, missing
-    component is then wild card matching anything.  By extension,
-    empty pattern matches all symbols of all versions in all libraries
-    and in the executable itself.</para>
+    <para>When a &quot;-#&quot; rule is considered that has
+    &quot;s&quot; flag, then the call should still be traced, but
+    stack trace shouldn't be generated.</para>
 
-    <para><replaceable>symbol</replaceable> component is matched
-    against the name of symbol under consideration (or symbol
-    associated with PLT slot in case of -plt option).  Whole symbol
-    name has to match.</para>
+    <para><replaceable>pattern</replaceable> defines which symbols or
+    PLT slots from which libraries should be added or removed from
+    working set.  Syntax of pattern is the following:</para>
+
+    <para><optional>#<replaceable>soname</replaceable>#</optional>
+    	  <optional><replaceable>filename.c</replaceable>#</optional>
+    	  <optional>(<replaceable>proc</replaceable>|<replaceable>line</replaceable>)#</optional>
+	  <optional>plt:</optional>symbol<optional>@<replaceable>version</replaceable></optional></para>
+
 
     <para><replaceable>soname</replaceable> component is matched
     against a soname of a library in which we wish to track the call.
@@ -291,15 +284,33 @@
     executable, the match is done against the file name (without a
     path).  Two special sonames are distinguished: "MAIN", which
     always matches main executable; and "INTERP", which always matches
-    ELF interpreter of the main executable.</para>
+    ELF interpreter (dynamic linker) of the main executable.  If the
+    component is missing, then the rule is applicable in all libraries
+    and in main executable.</para>
+
+    <para><replaceable>filename.c</replaceable> component is matched
+    against the name of a file where the symbol is defined.</para>
+
+    <para><replaceable>proc</replaceable> component is matched against
+    the name of block surrounding the definition we wish to trace.  If
+    the block doesn't have a name, you can instead refer to it with
+    the <replaceable>line</replaceable> number that the block
+    surrounds.</para>
+
+    <para><replaceable>symbol</replaceable> component is matched
+    against the name of symbol under consideration.  If
+    &quot;plt:&quot; prefix is present, the rule matches PLT entry
+    associated with the symbol instead of the symbol itself.</para>
 
     <para><replaceable>version</replaceable> component is matched
     against version associated with symbol.  If the symbol has no
     associated version, it is considered to be an empty string.  (It
     is possible to request symbol without a version with the pattern
-    "foo@@".)  NOTE: This is currently not implemented.</para>
+    "foo@".)</para>
 
-    <para>Empty rule is considered to miss all components.</para>
+    <para>NOTE: A lot of this is not yet implemented.  Currently all
+    the components are required to be plain strings, although in
+    future some form of globbing will be introduced.</para>
   </refsect1>
 
   <refsect1>
@@ -316,18 +327,18 @@
     <para>The system call and signal rule syntax and semantics are the
     same as the symbol rule syntax:</para>
 
-    <para>[-][#]<replaceable>pattern</replaceable></para>
+    <para>[-]<replaceable>pattern</replaceable>[/<replaceable>options</replaceable>]</para>
 
     <para>Event selection pattern syntax is then as follows:</para>
 
     <para><optional><replaceable>event name</replaceable>|<replaceable>event number</replaceable></optional></para>
 
-    <para>When the pattern is empty, then it matches all events known
-    to frysk.  When the pattern is simple number (e.g.
-    &quot;12&quot;), then the pattern matches the event with the given
-    number.  Otherwise the pattern is considered to be
-    case-insensitive glob, and matched against event names.  Whole
-    name has to match for event to be part of working set.</para>
+    <para>When the pattern is empty, it matches all events known to
+    frysk.  When the pattern is simple number (e.g.  &quot;12&quot;),
+    then the pattern matches the event with the given number.
+    Otherwise the pattern is considered to be case-insensitive glob,
+    and matched against event names.  Whole name has to match for
+    event to be a part of working set.</para>
 
     <para>Signal can be given both with and without leading
     &quot;sig&quot; (e.g. &quot;sigkill&quot; as well as
@@ -341,32 +352,32 @@
     should be traced is the same as for symbol rules, and the general
     syntax reflects that.  Each rule looks like this:</para>
 
-    <para>[-][#]<replaceable>pattern</replaceable></para>
+    <para>[-]<replaceable>pattern</replaceable>[/<replaceable>options</replaceable>]</para>
 
-    <para>Each pattern however looks like this:</para>
+    <para>Each pattern then looks like this:</para>
 
-    <para><optional>0x</optional><replaceable>address</replaceable><optional>@<replaceable>soname</replaceable></optional></para>
+    <para><optional>#<replaceable>soname</replaceable>#</optional><optional>0x</optional><replaceable>address</replaceable></para>
 
-    <para>Addresses are given in hexadecimal, even if initial 0x is
-    missing.</para>
+    <para>Addresses are always given in hexadecimal notation, even if
+    initial 0x is missing.</para>
 
     <para><replaceable>soname</replaceable> component is the same as
-    in symbol tracing, i.e. it's a glob that's matched against a
-    soname of a library in which we wish to trace the address.  Same
-    rules apply regarding INTERP and MAIN meta-sonames.  Refer there
-    for detailed description.</para>
+    in symbol tracing, i.e. it's matched against a soname of a library
+    in which we wish to trace the address.  Same rules apply regarding
+    INTERP and MAIN meta-sonames.  Refer there for detailed
+    description.</para>
 
     <para>Even though <replaceable>soname</replaceable> is optional,
-    at least one soname has to be specified at the end of the
+    at least one soname has to be specified at the beginning of the
     <option>-addr</option> command.  That's because in general it
     makes no sense to want to trace the same address in ALL object
     files at once.  The components that are soname-less are assumed to
-    have a soname of the next soname-full component.</para>
+    have a soname of the previous component that has soname.</para>
 
     <informalexample>
       <para>For example, this will trace two addresses from the main
       binary, and stack trace one of them:</para>
-      <cmdsynopsis><command>ftrace -addr=#0x08052780,08049314@MAIN -- ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -addr=#MAIN#0x08052780/s,08049314 -- ls</command></cmdsynopsis>
     </informalexample>
 
     <para>If you need to trace the same address in several files, you
@@ -387,18 +398,19 @@
       <para>Trace variants of stat system call and moreover a system call #3:</para>
       <cmdsynopsis><command>ftrace -sys=&apos;*stat*,3&apos; ls</command></cmdsynopsis>
       <para>Various ways to tell ftrace that you want to stack trace on SIGUSR1:</para>
-      <cmdsynopsis><command>ftrace -sig=#USR1,#usr1,#SIGUSR1,#sigusr1,#10 ~/sig</command></cmdsynopsis>
-      <para>Trace all library calls:</para>
-      <cmdsynopsis><command>ftrace -plt= ls</command></cmdsynopsis>
+      <cmdsynopsis><command>ftrace -sig=USR1/s,usr1/s,SIGUSR1/s,sigusr1/s,10/s ~/sig</command></cmdsynopsis>
+      <para>Trace all library calls (NOTE globbing doesn't work yet):</para>
+      <cmdsynopsis><command>ftrace -sym=plt:* ls</command></cmdsynopsis>
       <para>Trace all library calls to functions that contain
-      substring "write" in their names:</para>
-      <cmdsynopsis><command>ftrace -plt=&apos;*write*&apos; ls</command></cmdsynopsis>
+      substring "write" in their names (NOTE globbing doesn't work yet):</para>
+      <cmdsynopsis><command>ftrace -sym=plt:*write* ls</command></cmdsynopsis>
       <para>Trace memory functions done from libraries, i.e. not from
-      main executable:</para>
-      <cmdsynopsis><command>ftrace -plt=&apos;[cm]alloc|free,-@MAIN&apos; ls</command></cmdsynopsis>
+      main executable (NOTE globbing doesn't work yet):</para>
+      <cmdsynopsis><command>ftrace -sym=&apos;plt:*alloc,plt:free,-#MAIN#plt:*&apos; ls</command></cmdsynopsis>
       <para>Stack trace on everything, except for memory allocation
-      functions (which should still be traced):</para>
-      <cmdsynopsis><command>ftrace -plt=&apos;#,-#[cm]alloc,-#free&apos; ls</command></cmdsynopsis>
+      functions (which should still be traced) (NOTE globbing doesn't
+      work yet):</para>
+      <cmdsynopsis><command>ftrace -sym=&apos;plt:*/s,-plt:*alloc/s,-plt:free/s&apos; ls</command></cmdsynopsis>
     </informalexample>
 
   </refsect1>

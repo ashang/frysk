@@ -54,9 +54,9 @@ public class SymbolRule extends Rule {
      */
     final public Pattern namePattern;
 
-    public SymbolRule(boolean addition, boolean stackTrace,
+    public SymbolRule(boolean addition, RuleOptions options,
 		      String nameRe, String sonameRe, String versionRe) {
-	super (addition, stackTrace);
+	super (addition, options);
 	this.sonamePattern = Glob.compile((sonameRe != null) ? sonameRe : "*");
 	this.versionPattern = Glob.compile((versionRe != null) ? versionRe : "*");
 	this.namePattern = Glob.compile((nameRe != null) ? nameRe : "*");
@@ -115,8 +115,11 @@ public class SymbolRule extends Rule {
     }
 
     public boolean matches(Object traceable) {
-	DwflSymbol sym = (DwflSymbol)traceable;
-	return checkNameMatches(sym)
-	    /*&& checkVersionMatches(sym)*/;
+	if (traceable instanceof DwflSymbol) {
+	    DwflSymbol sym = (DwflSymbol)traceable;
+	    return checkNameMatches(sym)
+		/*&& checkVersionMatches(sym)*/;
+	}
+	return false;
     }
 }

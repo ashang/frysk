@@ -70,7 +70,6 @@ public class FtraceController
     private static final Log fine = LogFactory.fine(FtraceController.class);
 
     // ArrayList<SymbolRule>
-    private final List pltRules = new ArrayList();
     private final List symRules = new ArrayList();
     private final List addrRules = new ArrayList();
     private final List sysRules = new ArrayList();
@@ -90,11 +89,6 @@ public class FtraceController
     }
 
     public FtraceController() { }
-
-    public void gotPltRules(List rules) {
-	fine.log("Got " + rules.size() + " PLT rules.");
-	this.pltRules.addAll(rules);
-    }
 
     public void gotSymRules(List rules) {
 	fine.log("Got " + rules.size() + " symbol rules.");
@@ -177,9 +171,9 @@ public class FtraceController
 	void applyTracePoint(Object tracePoint);
     }
 
-    private void applyTracingRules(final Task task, final ObjectFile objf,
-				   final List tracePoints, final List rules,
-				   RuleHandler handler)
+    private void applySymbolRules(final Task task, final ObjectFile objf,
+				  final List tracePoints,
+				  final List rules, RuleHandler handler)
 	throws lib.dwfl.ElfException
     {
 	String path = objf.getFilename().getPath();
@@ -270,36 +264,33 @@ public class FtraceController
 			   final Ftrace.Driver driver) {
 
 	Map symbolTable = SymbolFactory.getSymbolTable(module);
-	List pltEntries = SymbolFactory.getPLTEntries(module, symbolTable);
-	List symbols = new ArrayList(symbolTable.values());
-	if (symbols.size() == 0)
+	if (symbolTable.size() == 0)
 	    // In that case we also know there are no PLT entries,
 	    // because each PLT entry is defined on a symbol.
 	    return;
 
-	try {
-	    applyTracingRules
-		(task, objf, pltEntries, pltRules,
-		 new RuleHandler() {
-		     public void applyTracePoint(Object tracePoint) {
-			 PLTEntry entry = (PLTEntry)tracePoint;
-			 driver.tracePLTEntry(task, entry);
-		     }
-		 });
+	List traceables = new ArrayList(symbolTable.values());
+	traceables.addAll(SymbolFactory.getPLTEntries(module, symbolTable));
 
-	    applyTracingRules
-		(task, objf, symbols, symRules,
+	try {
+	    applySymbolRules
+		(task, objf, traceables, symRules,
 		 new RuleHandler() {
 		     public void applyTracePoint(Object tracePoint) {
-			 DwflSymbol symbol = (DwflSymbol)tracePoint;
-			 driver.traceSymbol(task, symbol);
+			 if (tracePoint instanceof PLTEntry) {
+			     PLTEntry entry = (PLTEntry)tracePoint;
+			     driver.tracePLTEntry(task, entry);
+			 } else {
+			     DwflSymbol symbol = (DwflSymbol)tracePoint;
+			     driver.traceSymbol(task, symbol);
+			 }
 		     }
 		 });
 
 	    ModuleElfBias eb = module.getElf();
 	    applyAddrRules(task, objf, eb.bias, addrRules, driver);
-	}
-	catch (lib.dwfl.ElfException ee) {
+
+	} catch (lib.dwfl.ElfException ee) {
 	    ee.printStackTrace();
 	}
     }

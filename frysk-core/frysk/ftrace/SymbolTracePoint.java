@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,27 +39,29 @@
 
 package frysk.ftrace;
 
-import java.util.regex.Pattern;
-import frysk.util.Glob;
+import frysk.expr.FqIdentToken;
 
-public class AddrRule extends Rule {
-    final public long addr;
-    final public Pattern sonamePattern;
+public class SymbolTracePoint {
 
-    public AddrRule(boolean addition, RuleOptions options, long addr, String sonameRe) {
-	super (addition, options);
-	this.addr = addr;
-	this.sonamePattern = Glob.compile(sonameRe);
-    }
+    final public String dso;
+    final public String file;
+    final public Long line;
+    final public String proc;
+    final public String symbol;
+    final public String version;
+    final public boolean wantPlt;
 
-    public String toString() {
-	return super.toString()
-	    + "0x" + Long.toHexString(addr)
-	    + "@" + this.sonamePattern.pattern();
-    }
+    public SymbolTracePoint(FqIdentToken tok) {
+	this.dso = tok.dso;
+	this.file = tok.file;
+	this.proc = tok.proc;
+	this.symbol = tok.symbol;
+	this.version = tok.version;
+	this.wantPlt = tok.wantPlt;
 
-    public boolean matches(Object traceable) {
-	Long addr = (Long)traceable;
-	return addr.longValue() == this.addr;
+	if (tok.line != null)
+	    this.line = new Long(Long.parseLong(tok.line, 10));
+	else
+	    this.line = null;
     }
 }

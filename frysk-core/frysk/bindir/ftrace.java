@@ -41,6 +41,7 @@ package frysk.bindir;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,13 +53,19 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
 import inua.util.PrintWriter;
 
+import antlr.Token;
+
 import frysk.debuginfo.PrintStackOptions;
+import frysk.expr.CExprLexer;
+import frysk.expr.FqIdentToken;
 import frysk.ftrace.AddrRule;
 import frysk.ftrace.Ftrace;
 import frysk.ftrace.FtraceController;
 import frysk.ftrace.PLTRule;
 import frysk.ftrace.Rule;
+import frysk.ftrace.RuleOptions;
 import frysk.ftrace.SymbolRule;
+import frysk.ftrace.SymbolTracePoint;
 import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Proc;
@@ -70,6 +77,7 @@ import frysk.util.StackPrintUtil;
 import frysk.util.Util;
 
 class ftrace {
+
     static private final Log fine = LogFactory.fine(ftrace.class);
     static private final Log warning = LogFactory.warning(ftrace.class);
 
@@ -84,7 +92,6 @@ class ftrace {
     // For configuration of overall working set.  We need to load and
     // apply rules separately, to get all log messages, that's the
     // reason we need these temporary array lists.
-    private final List pltRules = new ArrayList();
     private final List symRules = new ArrayList();
     private final List addrRules = new ArrayList();
     private final List sysRules = new ArrayList();
@@ -97,13 +104,30 @@ class ftrace {
     private final Ftrace tracer = new Ftrace(stackPrintOptions);
 
     private interface SymbolRuleCreator {
-	Rule createRule(boolean addition, boolean stackTrace,
-			String nameRe, String sonameRe, String versionRe);
+	Rule createRule(boolean addition, RuleOptions options,
+			SymbolTracePoint spec);
     }
 
     private interface RuleMatcher {
-	void rule(String str, boolean addition, boolean stackTrace, Collection c);
-	void check();
+	void rule(String str, boolean addition, RuleOptions options,
+		  Collection c);
+    }
+
+    private String parseOptions(String str, RuleOptions opts) {
+	int pos;
+	if ((pos = str.lastIndexOf('/')) != -1) {
+	    String options = str.substring(pos + 1);
+	    str = str.substring(0, pos);
+
+	    for (int j = 0; j < options.length(); ++j) {
+		char opt = options.charAt(j);
+		if (opt == 's')
+		    opts.stackTrace = true;
+		else
+		    warning.log("Unknown rule option", opt);
+	    }
+	}
+	return str;
     }
 
     private List parseGenericRules(String arg, RuleMatcher matcher)
@@ -112,9 +136,8 @@ class ftrace {
 	List rules = new ArrayList();
 	for (int i = 0; i < strs.length; ++i) {
 	    String str = strs[i];
-	    final boolean addition;
-	    final boolean stackTrace;
 
+	    final boolean addition;
 	    if (str.length() > 0 && str.charAt(0) == '-') {
 		addition = false;
 		str = str.substring(1);
@@ -122,62 +145,51 @@ class ftrace {
 	    else
 		addition = true;
 
-	    if (str.length() > 0 && str.charAt(0) == '#') {
-		stackTrace = true;
-		str = str.substring(1);
-	    }
-	    else
-		stackTrace = false;
+	    RuleOptions opts = new RuleOptions();
+	    str = parseOptions(str, opts);
 
-	    matcher.rule(str, addition, stackTrace, rules);
+	    matcher.rule(str, addition, opts, rules);
 	}
-	matcher.check();
 	return rules;
+    }
+
+    private void garbage(String text) {
+	warning.log("Ignoring garbage after the end of the symbol rule", text);
+    }
+    private void invalid(String text) {
+	warning.log("Invalid symbol rule", text);
     }
 
     private List parseSymbolRules(String arg, final SymbolRuleCreator creator) {
 	return parseGenericRules(arg, new RuleMatcher() {
 		public void rule(String str, boolean addition,
-				 boolean stackTrace, Collection rules) {
-		    // 111 single fully qualified symbol:           'symbol@soname@@version'
-		    // 101 symbol of given version in all dsos:     'symbol@@version'
-		    // 100 symbol of given name from any dso:       'symbol'
-		    // 011 all symbols of given version of the dso: '@soname@@version'
-		    // 010 all symbols of given soname:             '@soname'
-		    // 001 all symbols of given version:            '@@version'
-		    // 000 all symbols of all versions in all dsos: ''
+				 RuleOptions options, Collection rules) {
 
-		    final String symbolRe, sonameRe, versionRe;
-		    int pos;
+		    StringReader r = new StringReader(str);
+		    CExprLexer lexer = new CExprLexer(r);
+		    Token tok;
 
-		    if ((pos = str.indexOf("@@")) != -1) {
-			versionRe = str.substring(pos + 2);
-			str = str.substring(0, pos);
+		    try {
+			tok = lexer.nextToken();
+
+			if (!(tok instanceof FqIdentToken)) {
+			    invalid(str);
+			    return;
+			}
+
+			if (lexer.nextToken().getType() != Token.EOF_TYPE)
+			    garbage(tok.getText());
+
+		    } catch (antlr.TokenStreamException exc) {
+			invalid(str);
+			return;
 		    }
-		    else
-			versionRe = null;
 
-		    if ((pos = str.indexOf('@')) != -1) {
-			sonameRe = str.substring(pos + 1);
-			str = str.substring(0, pos);
-		    }
-		    else
-			sonameRe = null;
+		    FqIdentToken fqTok = (FqIdentToken)tok;
 
-		    if (!str.equals(""))
-			symbolRe = str;
-		    else
-			symbolRe = null;
-
-		    fine.log(str + ": symbol=" + symbolRe
-			     + ", soname=" + sonameRe
-			     + ", version=" + versionRe);
-
-		    rules.add(creator.createRule(addition, stackTrace,
-						 symbolRe, sonameRe,
-						 versionRe));
+		    SymbolTracePoint spec = new SymbolTracePoint(fqTok);
+		    rules.add(creator.createRule(addition, options, spec));
 		}
-		public void check() {}
 	    });
     }
 
@@ -186,42 +198,35 @@ class ftrace {
 
     private List parseAddrRules(String arg) {
 	return parseGenericRules(arg, new RuleMatcher() {
-		class Delayed {
-		    private final boolean addition;
-		    private final boolean stackTrace;
-		    private final long addr;
-
-		    public Delayed(boolean addition, boolean stackTrace, long addr) {
-			this.addition = addition;
-			this.stackTrace = stackTrace;
-			this.addr = addr;
-		    }
-
-		    public Rule gotSoname(String sonameRe) {
-			return new AddrRule(this.addition, this.stackTrace,
-					    this.addr, sonameRe);
-		    }
-		}
-
-		List delays = new ArrayList();
+		String lastSoname = null;
 
 		public void rule(String str, boolean addition,
-				 boolean stackTrace, Collection rules) {
-		    // address[@soname].  If soname is omitted, then
-		    // the soname of next soname-full rule is used.
+				 RuleOptions options, Collection rules) {
 
+		    // [#soname#]address.  If soname is omitted, then
+		    // previous is reused.
 		    String addressS, sonameRe;
-		    int pos;
-		    if ((pos = str.indexOf('@')) >= 0) {
-			sonameRe = str.substring(pos + 1);
-			addressS = str.substring(0, pos);
+
+		    if (str.length() > 0 && str.charAt(0) == '#') {
+			int pos = str.indexOf('#', 1);
+			if (pos == -1 || str.indexOf('#', pos+1) != -1) {
+			    warning.log("Ignoring address rule with mangled soname component:", str);
+			    return;
+			}
+			sonameRe = str.substring(1, pos);
+			addressS = str.substring(pos + 1);
 		    } else {
-			sonameRe = null;
+			sonameRe = lastSoname;
 			addressS = str;
 		    }
 
+		    if (sonameRe == null) {
+			warning.log("Ignoring address rule with unknown soname context:", str);
+			return;
+		    }
+
 		    if (!addressPat.matcher(addressS).matches()) {
-			warning.log("Ignoring rule `" + str + "' with mangled or missing address component.");
+			warning.log("Ignoring rule with mangled or missing address component:", str);
 			return;
 		    }
 
@@ -231,21 +236,7 @@ class ftrace {
 
 		    fine.log(str + ": address=" + Long.toHexString(addr)
 			     + ", soname=" + sonameRe);
-		    if (sonameRe != null) {
-			for (Iterator it = delays.iterator(); it.hasNext(); )
-			    rules.add(((Delayed)it.next()).gotSoname(sonameRe));
-			delays.clear();
-			rules.add(new AddrRule(addition, stackTrace,
-					       addr, sonameRe));
-		    }
-		    else
-			delays.add(new Delayed(addition, stackTrace, addr));
-		}
-
-		public void check() {
-		    if (!delays.isEmpty())
-			warning.log("Ignoring", delays.size(),
-				    "address rules that miss soname qualificator");
+		    rules.add(new AddrRule(addition, options, addr, sonameRe));
 		}
 	    });
     }
@@ -267,7 +258,6 @@ class ftrace {
 	    String str = strs[i];
 	    final Rule rule;
 	    final boolean addition;
-	    final boolean stackTrace;
 
 	    if (str.length() > 0 && str.charAt(0) == '-') {
 		addition = false;
@@ -276,17 +266,14 @@ class ftrace {
 	    else
 		addition = true;
 
-	    if (str.length() > 0 && str.charAt(0) == '#') {
-		stackTrace = true;
-		str = str.substring(1);
-	    }
-	    else
-		stackTrace = false;
+	    RuleOptions opts = new RuleOptions();
+	    str = parseOptions(str, opts);
 
 	    final String ruleKern = new String(str);
+
 	    abstract class SigSysRule extends Rule {
-		public SigSysRule(boolean addition, boolean stackTrace) {
-		    super(addition, stackTrace);
+		public SigSysRule(boolean addition, RuleOptions options) {
+		    super(addition, options);
 		}
 		public String toString() {
 		    return super.toString() + ruleKern;
@@ -296,7 +283,7 @@ class ftrace {
 	    if (sysnumPat.matcher(str).matches()) {
 		fine.log(i + ": " + str + ": by number rule");
 		final int number = (new Integer(str)).intValue();
-		rule = new SigSysRule(addition, stackTrace) {
+		rule = new SigSysRule(addition, opts) {
 			public boolean matches(final Object traceable) {
 			    return number == examiner.traceableNumber(traceable);
 			}
@@ -308,7 +295,7 @@ class ftrace {
 		if (optionalPrefix != null && !str.startsWith(optionalPrefix))
 		    str = optionalPrefix + str;
 		final Pattern pattern = Glob.compile(str, Pattern.CASE_INSENSITIVE);
-		rule = new SigSysRule(addition, stackTrace) {
+		rule = new SigSysRule(addition, opts) {
 			public boolean matches(final Object traceable) {
 			    String name = examiner.traceableName(traceable);
 			    return pattern.matcher(name).matches();
@@ -317,7 +304,7 @@ class ftrace {
 	    }
 	    else {
 		fine.log(i + ": " + str + ": \"everything\" rule");
-		rule = new SigSysRule(addition, stackTrace) {
+		rule = new SigSysRule(addition, opts) {
 			public boolean matches(Object traceable) {
 			    return true;
 			}
@@ -386,11 +373,6 @@ class ftrace {
 		    sysRules.add(arg);
 		}
 	    });
-	group.add(new Option("plt", "trace library calls done via PLT", "RULE[,RULE]...") {
-		public void parsed(String arg) {
-		    pltRules.add(arg);
-		}
-	    });
 	group.add(new Option("sym", "trace function entry points", "RULE[,RULE]...") {
 		public void parsed(String arg) {
 		    symRules.add(arg);
@@ -438,42 +420,28 @@ class ftrace {
             writer = new PrintWriter(System.out);
         tracer.setWriter(writer);
 
-	if (!pltRules.isEmpty() || !symRules.isEmpty() || !addrRules.isEmpty()) {
+	if (!symRules.isEmpty() || !addrRules.isEmpty()) {
 	    // If tracing dynamic linker disabled, generate implicit
-	    // -@INTERP rule at the end of the chain.
-	    if (!allowInterpTracing) {
-		pltRules.add("-@INTERP");
-		symRules.add("-@INTERP");
-	    }
+	    // inhibition rules at the end of the chain.
+	    if (!allowInterpTracing)
+		symRules.add("-#INTERP#*");
 
 	    // Symbol tracing
 	    class SymbolCreator implements SymbolRuleCreator {
-		public Rule createRule(boolean addition, boolean stackTrace,
-				       String nameRe, String sonameRe,
-				       String versionRe) {
-		    return new SymbolRule(addition, stackTrace,
-					  nameRe, sonameRe, versionRe);
+		public Rule createRule(boolean addition, RuleOptions options,
+				       SymbolTracePoint spec) {
+		    if (spec.wantPlt)
+			return new PLTRule(addition, options,
+					   spec.symbol, spec.dso, spec.version);
+		    else
+			return new SymbolRule(addition, options,
+					      spec.symbol, spec.dso, spec.version);
 		}
 	    }
 	    SymbolRuleCreator symbolCreator = new SymbolCreator();
 	    for (Iterator it = symRules.iterator(); it.hasNext(); ) {
 		List rules = parseSymbolRules((String)it.next(), symbolCreator);
 		controller.gotSymRules(rules);
-	    }
-
-	    // PLT tracing
-	    class PLTCreator implements SymbolRuleCreator {
-		public Rule createRule(boolean addition, boolean stackTrace,
-				       String nameRe, String sonameRe,
-				       String versionRe) {
-		    return new PLTRule(addition, stackTrace,
-				       nameRe, sonameRe, versionRe);
-		}
-	    }
-	    SymbolRuleCreator pltCreator = new PLTCreator();
-	    for (Iterator it = pltRules.iterator(); it.hasNext(); ) {
-		List rules = parseSymbolRules((String)it.next(), pltCreator);
-		controller.gotPltRules(rules);
 	    }
 
 	    // Address tracing

@@ -44,15 +44,18 @@ import frysk.symtab.PLTEntry;
 
 public class PLTRule extends SymbolRule {
 
-    public PLTRule(boolean addition, boolean stackTrace,
+    public PLTRule(boolean addition, RuleOptions options,
 		   String nameRe, String sonameRe, String versionRe) {
-	super (addition, stackTrace, nameRe, sonameRe, versionRe);
+	super (addition, options, nameRe, sonameRe, versionRe);
     }
 
     public boolean matches(Object traceable) {
-	PLTEntry entry = (PLTEntry)traceable;
-	DwflSymbol sym = entry.getSymbol();
-	return checkNameMatches(sym)
-	    && checkVersionMatches(sym);
+	if (traceable instanceof PLTEntry) {
+	    PLTEntry entry = (PLTEntry)traceable;
+	    DwflSymbol sym = entry.getSymbol();
+	    return checkNameMatches(sym)
+		&& checkVersionMatches(sym);
+	}
+	return false;
     }
 }
