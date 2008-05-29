@@ -149,10 +149,7 @@ public class LoadCommand extends ParameterizedCommand {
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	    }
 	}
-	if (params == null) 
-	    System.out.println("LoadCommand.load: params.length = null");
-	else
-	    System.out.println("LoadCommand.load: params.length = " + params.length);
+
 	synchronized (cli) {
 	    cli.loadedProcs.put(new Integer(procID), 
 		    exeProc.getExeFile().getSysRootedPath());
