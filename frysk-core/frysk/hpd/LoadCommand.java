@@ -118,14 +118,16 @@ public class LoadCommand extends ParameterizedCommand {
 	    exeProc = LinuxExeFactory.createProc(cmd.stringArrayValue(), o.sysroot);
 	}
 
-	load(exeProc, cli, o.sysroot);
+	load(exeProc, cli, o.sysroot, cmd.stringArrayValue());
     }
 
-    public static void load(Proc exeProc, CLI cli) {
-    load(exeProc, cli, null);
+    public static void load(Proc exeProc, CLI cli, String[] params) {
+	load(exeProc, cli, null, params);
     }
 
-    public static void load(Proc exeProc, CLI cli, String sysroot) {
+    public static void load(Proc exeProc, CLI cli, String sysroot, 
+	    String[] params) {
+	
 	int procID;
 	if (cli.taskID < 0)
 	    procID = cli.idManager.reserveProcID();
@@ -133,6 +135,9 @@ public class LoadCommand extends ParameterizedCommand {
 	    procID = cli.taskID;
 	
 	cli.idManager.manageProc(exeProc, procID);
+	
+	if (params.length == 1)
+	    params = (String []) cli.ptsetParams.get(new Integer(procID));
 
 	Iterator foo = cli.targetset.getTasks();
 	while (foo.hasNext()) {
@@ -144,8 +149,19 @@ public class LoadCommand extends ParameterizedCommand {
 		cli.setTaskDebugInfo(task, new DebugInfo(frame));
 	    }
 	}
+	if (params == null) 
+	    System.out.println("LoadCommand.load: params.length = null");
+	else
+	    System.out.println("LoadCommand.load: params.length = " + params.length);
 	synchronized (cli) {
-	    cli.getLoadedProcs().put(exeProc, new Integer(procID));
+	    cli.loadedProcs.put(new Integer(procID), 
+		    exeProc.getExeFile().getSysRootedPath());
+	    if (params != null)
+		cli.ptsetParams.put(new Integer(procID), params);
+	    else {
+		String[] command = { exeProc.getExeFile().getSysRootedPath() };
+		cli.ptsetParams.put(new Integer(procID), command);
+	    }
 	}
 
 	cli.addMessage("[" + procID + ".0] Loaded executable file: " + 
@@ -169,9 +185,9 @@ public class LoadCommand extends ParameterizedCommand {
 	// numerical order after sorting them
 	for (Iterator foo = procSet.iterator(); foo.hasNext();) {
 	    Map.Entry me = (Map.Entry) foo.next();
-	    Proc proc = (Proc) me.getKey();
-	    Integer taskid = (Integer) me.getValue();
-	    listing.add("[" + taskid.intValue() + ".0]\t\t" + proc.getExeFile().getSysRootedPath());
+	    Integer taskid = (Integer) me.getKey();
+	    String proc = (String) me.getValue();
+	    listing.add("[" + taskid.intValue() + ".0]\t\t" + proc);
 	}
 	String alphaListing[] = (String[]) listing.toArray(new String[listing.size()]);
 	java.util.Arrays.sort(alphaListing);

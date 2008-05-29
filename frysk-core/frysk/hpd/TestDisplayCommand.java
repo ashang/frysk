@@ -45,7 +45,7 @@ public class TestDisplayCommand
     public void testHpdDisplayCommands() {
 	e = HpdTestbed.load("funit-rt-varchange");
 	e.send("start\n");
-	e.expect("starting with this commmand.*" + prompt);
+	e.expect("Attached to process.*" + prompt);
 
 	// Break
 	

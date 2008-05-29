@@ -73,8 +73,8 @@ class GoCommand extends ParameterizedCommand {
 		     * can do for now.
 		     */
 		    try {
-			if (CLI.notRunningProc(task.getProc().getPid(), cli.getLoadedProcs()) || 
-				CLI.notRunningProc(task.getProc().getPid(), cli.getCoreProcs())) {
+			if (task.getProc().getPid() == 0 || 
+				CLI.notRunningProc(task.getProc().getPid(), cli.coreProcs)) {
 				cli.addMessage("Cannot use 'go' on a loaded or core file, must " +
 					"use 'start' first",
 					Message.TYPE_ERROR);

@@ -139,7 +139,7 @@ public class CoreCommand extends ParameterizedCommand {
 	}
 	// Finally, done.
 	synchronized (cli) {
-	    cli.getCoreProcs().put(coreProc, new Integer(procID));
+	    cli.coreProcs.put(coreProc, new Integer(procID));
 	}
 	cli.outWriter.println("Attached to core file: "
 			      + coreProc.getHost().getName());

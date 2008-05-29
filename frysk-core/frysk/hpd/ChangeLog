@@ -1,3 +1,17 @@
+2008-05-29  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Clean up by removing unnecessary methods;
+	changed from ArrayList to HashMap for parameter storage.
+	* StartRun.java: Re-write for parameter storage.
+	* LoadCommand.java: Added parameter storage.
+	* UnloadCommand.java: Changed loaded proc storage access.
+	* GoCommand.java: Ditto.
+	* CoreCommand.java: Remove unnecessary method call.
+	* TestRunCommand.java: Add tests for above changes.
+	* TestStartCommand.java: Add tests for above changes.
+	* TestDisplayCommand.java: Fix message testing.
+	* TestFhpdStepping.java: Ditto.
+
 2008-05-28 Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (interpret): Use rt.WatchObserverInstaller.

@@ -58,7 +58,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = HpdTestbed.load("funit-stepping-asm");
         e.send("start\n");
-        e.expect("starting with this commmand.*" + prompt);
+        e.expect("Attached to process.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -83,7 +83,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = HpdTestbed.load("funit-stepping-asm");
         e.send("start\n");
-        e.expect("starting with this commmand.*" + prompt);
+        e.expect("Attached to process.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -108,7 +108,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = HpdTestbed.load("funit-stepping-asm");
         e.send("start\n");
-        e.expect("starting with this commmand.*" + prompt);
+        e.expect("Attached to process.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -133,7 +133,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = HpdTestbed.load("funit-stepping-asm");
         e.send("start\n");
-        e.expect("starting with this commmand.*" + prompt);
+        e.expect("Attached to process.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);
@@ -158,7 +158,7 @@ public class TestFhpdStepping extends TestLib {
 	
 	e = HpdTestbed.load("funit-stepping-asm");
         e.send("start\n");
-        e.expect("starting with this commmand.*" + prompt);
+        e.expect("Attached to process.*" + prompt);
 	
 	e.send("break #" + source + "#" + startLine + "\n");
 	e.expect("breakpoint.*\n" + prompt);

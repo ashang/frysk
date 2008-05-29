@@ -262,4 +262,44 @@ public class TestRunCommand extends TestLib {
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
+    
+    public void testLoadedParams() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath() +
+		" abc def ghi", "\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("run", "running.*abc def ghi.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg3", "running.*-arg3.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg4 -arg5", "running.*-arg4 -arg5.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testFhpdLoadedParams() {
+	if(unresolved(6576))
+	    return;
+	
+	String[] command = new String[] {Prefix.pkgLibFile("funit-parameters").getPath(),
+					 "zzz",
+					 "yyy"};
+    	e = new HpdTestbed(command);
+	//e = new HpdTestbed(Prefix.pkgLibFile("funit-parameters").getPath() + " zzz yyy", 
+	//	"Loaded executable file.*funit-parameters.*");
+	e.sendCommandExpectPrompt("run", "running.*zzz yyy.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg3", "running.*-arg3.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	try { Thread.sleep(500); } catch (Exception e) {}
+	e.sendCommandExpectPrompt("run -arg4 -arg5", "running.*-arg4 -arg5.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
 }

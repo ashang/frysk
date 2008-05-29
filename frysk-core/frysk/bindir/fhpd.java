@@ -66,6 +66,7 @@ public class fhpd {
     private static Proc command;
     private static Proc[] cores;
     private static int exitStatus;
+    private static String[] params;
 
     final static class FhpdCompletor implements Completor {
         CLI cli;
@@ -136,7 +137,7 @@ public class fhpd {
 		    CoreCommand.load(cores[i], cli);
 		}
 	    } else if (command != null) {
-		LoadCommand.load(command, cli);
+		LoadCommand.load(command, cli, params);
 	    }
 
 	    // Make sure any messages logged by the Attach or Load commands
@@ -176,7 +177,7 @@ public class fhpd {
             };
     
         parser.setHeader("Usage: fhpd <PID> || fhpd <EXEFILE> || fhpd <COREFILE> [<EXEFILE>]");
-        parser.parse(args);
+        params = parser.parse(args);
 	Manager.eventLoop.add(new CommandLine());
 	// Add event to handle Ctrl-C signal
 	Manager.eventLoop.add(SigIntHandler.fhpd);

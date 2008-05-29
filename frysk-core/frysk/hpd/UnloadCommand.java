@@ -90,7 +90,7 @@ public class UnloadCommand extends ParameterizedCommand {
 		cli.addMessage("Trying to remove a proc that has not been loaded", Message.TYPE_ERROR);
 		return;
 	    }
-	    if (removeFromHashMap(proc, cli.getLoadedProcs(), cli)) {
+	    if (removeFromHashMap(proc, cli.loadedProcs, cli)) {
 		cli.targetset.removeProc(id);
 		cli.addMessage("Removed Target set [" + id + "]" , Message.TYPE_NORMAL);
 	    } else {
@@ -99,7 +99,7 @@ public class UnloadCommand extends ParameterizedCommand {
 	    return;
 	}
 	if (cmd.parameter(0).equals("-all")) {
-	    removeAllProcs(cli.getLoadedProcs(), cli);
+	    removeAllProcs(cli.loadedProcs, cli);
 	    cli.addMessage("All loaded procs removed", Message.TYPE_NORMAL);
 	    return;
 	}

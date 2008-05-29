@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.expr.ExprSearchEngine;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -64,7 +65,6 @@ import frysk.sys.Signal;
 import frysk.util.CountDownLatch;
 import frysk.util.WordWrapWriter;
 import frysk.event.SignalEvent;
-import frysk.expr.ExprSearchEngine;
 import frysk.expr.Expression;
 import frysk.expr.ScratchSymTab;
 import frysk.expr.ExprSymTab;
@@ -80,6 +80,8 @@ public class CLI {
     final HashSet runningProcs = new HashSet();
     //Processes loaded with load command
     final HashMap loadedProcs = new HashMap();
+    //Params for loaded Procs
+    final HashMap ptsetParams = new HashMap();
     //Processes loaded with core command
     final HashMap coreProcs = new HashMap(); 
     //Task ID to use
@@ -498,33 +500,6 @@ public class CLI {
      */
     public PrintWriter getPrintWriter() {
         return outWriter;
-    }
-
-    /**
-     * Get the set of processes (Proc) started by the run command. Access to the
-     * CLI object should be synchronized when using the set.
-     * @return the set
-     */
-    public HashSet getRunningProcs() {
-        return runningProcs;
-    }
- 
-    /**
-     * Get the set of processes (Proc) started by the load command. Access to the
-     * CLI object should be synchronized when using the set.
-     * @return the set
-     */
-    public HashMap getLoadedProcs() {
-        return loadedProcs;
-    }
-    
-    /**
-     * Get the set of processes (Proc) started by the core command. Access to the
-     * CLI object should be synchronized when using the set.
-     * @return the set
-     */
-    public HashMap getCoreProcs() {
-        return coreProcs;
     }
     
     SteppingEngine getSteppingEngine () {

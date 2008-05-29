@@ -47,7 +47,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.proc.ProcTasksAction;
 import frysk.util.CountDownLatch;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -59,11 +59,11 @@ import java.util.List;
  */
 abstract class StartRun extends ParameterizedCommand {
     
-    final ArrayList procTaskDataList = new ArrayList();
+    final HashMap procTaskDataList = new HashMap();
     
-    final ArrayList procProcCommand = new ArrayList();
+    final HashMap procProcCommand = new HashMap();
     
-    final ArrayList procProcArgs = new ArrayList();
+    final HashMap procProcArgs = new HashMap();
     
     PTSet userSet;
     
@@ -86,7 +86,7 @@ abstract class StartRun extends ParameterizedCommand {
 		launchedTask = task;
 	    }
 	    synchronized (cli) {
-		cli.getRunningProcs().add(proc);
+		cli.runningProcs.add(proc);
 	    }
 	    new ProcTasksAction(proc, new ProcTasksObserver() {
 		public void existingTask(Task task) {
@@ -107,7 +107,7 @@ abstract class StartRun extends ParameterizedCommand {
 		public void taskRemoved(Task task) {
 		    if (proc.getChildren().size() == 0) {
 			synchronized (cli) {
-			    HashSet procs = cli.getRunningProcs();
+			    HashSet procs = cli.runningProcs;
 			    procs.remove(proc);
 			}
 		    }
@@ -132,24 +132,23 @@ abstract class StartRun extends ParameterizedCommand {
     
     public void interpretCmd(CLI cli, Input cmd, Object options,
 			     boolean runToBreak) {
+	
 	userSet = cli.getCommandPTSet(cmd);
+	setParams(cmd, cli);
 	// See if there are any tasks to be killed
 	if (killProcs(cli)) {
 	// See if there are any tasks in the current target set
 	    TaskData taskData = null;
 	    int counter = 0;
-	    Iterator foo = procTaskDataList.iterator();
+	    Iterator foo = userSet.getTaskData();
 	    while (foo.hasNext()) {
 		taskData = (TaskData) foo.next();
-		String command = (String) procProcCommand.get(counter);
-		String[] argList = (String[]) procProcArgs.get(counter);
-		run(cli, cmd, command, argList, runToBreak, 
+		int parentID = taskData.getParentID();
+		String command = (String) cli.loadedProcs.get(new Integer(parentID));
+		run(cli, cmd, command, runToBreak, 
 			taskData.getParentID());
 		counter++;
 	    }
-	    procTaskDataList.clear();
-	    procProcArgs.clear();
-	    procProcCommand.clear();
 	    return;
 	}
 	// Take care of loaded procs
@@ -162,24 +161,89 @@ abstract class StartRun extends ParameterizedCommand {
 	    TaskData taskData = (TaskData) foo.next();
 	    Task task = taskData.getTask();
 	    if (!cli.loadedProcs.isEmpty() && 
-		    cli.loadedProcs.containsKey(task.getProc())) {
+		    cli.loadedProcs.containsKey(new Integer(taskData.getParentID()))) {
 		run(cli, cmd, task.getProc().getExeFile().getSysRootedPath(),
-			task.getProc().getCmdLine(), runToBreak, taskData.getParentID());
+			runToBreak, taskData.getParentID());
 		synchronized (cli) {
 		    cli.loadedProcs.remove(task.getProc());
 		}
 	    }
-	// Take care of core procs
+	    // Take care of core procs
+	    // XXX: need to take care of parameters here that were passed into the
+	    //      process that created the core file    
 	    else if (!cli.coreProcs.isEmpty() &&
 		    cli.coreProcs.containsKey(task.getProc())) {
 		run(cli, cmd, task.getProc().getExeFile().getSysRootedPath(), 
-			task.getProc().getCmdLine(), runToBreak, taskData.getParentID());
+			runToBreak, taskData.getParentID());
 		synchronized (cli) {
 		    cli.coreProcs.remove(new Integer(taskData.getParentID()));
 		}
 	    }
 	}
 	
+    }
+    
+    /**
+     * setParams will take the passed parameters by the run/start commands
+     * and makes them the new current parameters.
+     * 
+     * @param params is a String[] containing the new params
+     * @param cli is the current commandline interface object
+     */
+    private void setParams(Input cmd, CLI cli) {
+
+	Iterator foo = userSet.getTaskData();
+	TaskData taskData = null;
+	while (foo.hasNext()) {
+	    taskData = (TaskData) foo.next();
+	    int parentID = taskData.getParentID();
+	    switch (cmd.size()) {
+
+		// No parameters were passed on the commandline, except maybe "--"
+		case 0:
+		    /**
+		     * There is an exception to the rule of cmd.size() being 0 and that
+		     * is when a "--" was entered, CLI removes that but the full command
+		     * line string in the Input object has it. So, if cmd.size() reports
+		     * 0 parameters, check to see if actually a "--" was entered. If it
+		     * was the user wants no args passed to the process this run.
+		     * 
+		     * Leave the command as is if "--" was not passed.
+		     */
+		    int index = cmd.getFullCommand().indexOf("--");
+		    if (index != -1) {
+			String[] command = new String[1];
+			String[] oldCommand = (String[]) cli.ptsetParams.get(new Integer(parentID));
+			command[0] = oldCommand[0];
+			// Set proc params to null so we won't run with them again
+			cli.ptsetParams.put(new Integer(parentID), command);
+		    }
+		    break;
+		    
+		    // Params were passed
+		default:
+		    cli.ptsetParams.put(new Integer(parentID),
+			    makeCommand(cmd.stringArrayValue(), parentID, cli));
+		    break;
+	    }
+	}	      
+    }
+    
+    /**
+     * makeCommand takes the previous command and a new set of parameters and creates a new
+     * command.  This new command is stored in the cli.ptsetParams HashMap.
+     * 
+     * @param params is the String array of parameters passed via a run or start command
+     * @return returns a String[]
+     */
+    
+    private String[] makeCommand(String[] params, int parentID, CLI cli) {
+	String[] newParams = new String[params.length + 1];
+	String[] oldParams = (String[]) cli.ptsetParams.get(new Integer(parentID));
+	newParams[0] = oldParams[0];
+	for (int i = 1; i < newParams.length; i++)
+	    newParams[i] = params[i-1];
+	return newParams;
     }
     
     /**
@@ -203,9 +267,6 @@ abstract class StartRun extends ParameterizedCommand {
 	    Task task = taskData.getTask();
 	    if (task.getProc().getPid() != oldPid && 
 		    task.getProc().getPid() > 0) {
-		procTaskDataList.add(taskData);
-		procProcCommand.add(task.getProc().getExeFile().getSysRootedPath());
-		procProcArgs.add(task.getProc().getCmdLine());
 		cli.execCommand("kill " + task.getProc().getPid() + "\n");
 		oldPid = task.getProc().getPid();
 	    }
@@ -222,56 +283,28 @@ abstract class StartRun extends ParameterizedCommand {
      * @param cli is the commandline object
      * @param cmd is the command object with all the parameters
      * @param command is a string containing the command to run
-     * @param argList is a String array with the args from the commandline
      * @param runToBreak true if the process is to run to the first break point
      * 		or until it blows up("run" command), false if it should stop
      * 		at the first executable statement("start" command)
      * @param taskid the internal target set id that should be used for this process
      */
-    private void run(CLI cli, Input cmd, String command, String[] argList, boolean runToBreak,
+    private void run(CLI cli, Input cmd, String command, boolean runToBreak,
 	    int taskid) {
+	
 	Runner runner = new Runner(cli);
 	String startrun = "";
 	if (runToBreak)
 	    startrun = "running";
 	else
 	    startrun = "starting";
-	
-	switch (cmd.size()) {
-	
-	// No parameters were passed on the commandline, except maybe "--"
-	case 0:
-	    /** There is an exception to the rule of cmd.size() being 0 and that
-	     * is when a "--" was entered, CLI removes that but the full command line
-	     * string in the Input object has it.  So, if cmd.size() reports 0
-	     * parameters, check to see if actually a "--" was entered. If it was
-	     * the user wants no args passed to the process this run.
-	     */
-	    int index = cmd.getFullCommand().indexOf("--");
-	    if (index != -1) {
-		cli.addMessage(startrun + " with this commmand: " + 
-			command, Message.TYPE_NORMAL);
-		Manager.host.requestCreateAttachedProc(createArgList(null, argList), runner);
-	    }
-	    else {
-		String[] temp = new String[1];
-		if (command != "" || command != null) 
-		    temp[0] = command;
-		else
-		    temp [0] = argList[0];
-		cli.addMessage(startrun + " with this commmand: " + 
-			   asString("", temp, cmd), Message.TYPE_NORMAL);
-		Manager.host.requestCreateAttachedProc(createArgList(command, temp), runner);
-	    }
-	    break;
-	    
-	default:
-	    String[] args = createArgList(command, cmd.stringArrayValue()); 
-	    cli.addMessage(startrun + " with this command: " + 
-			   asString(command, args, cmd), Message.TYPE_NORMAL);
-	    
-	    Manager.host.requestCreateAttachedProc(args, runner);
-	}
+
+	cli.addMessage(startrun
+		+ " with this command: "
+		+ asString((String[]) cli.ptsetParams.get(new Integer(
+			taskid))), Message.TYPE_NORMAL);
+	Manager.host.requestCreateAttachedProc((String[]) cli.ptsetParams
+		.get(new Integer(taskid)), runner);
+
 	while (true) {
 	    try {
 		runner.latch = new CountDownLatch(1);
@@ -283,64 +316,35 @@ abstract class StartRun extends ParameterizedCommand {
 	// register with SteppingEngine et.al.
 	// Make sure we use the old task id for the new one
 	synchronized (cli) {
-		cli.taskID = taskid;
+	    cli.taskID = taskid;
 	}
 	cli.doAttach(runner.launchedTask.getProc(), runToBreak);
 	runner.launchedTask.requestUnblock(runner);
 	synchronized (cli) {
-		cli.taskID = -1;
+	    cli.taskID = -1;
 	}
     }
     
     /**
-     * createArgList takes a path to the executable and an argument list
-     * and creates a String[] to pass to the create proc method.
-     * @param command is a String with the path to the executable
-     * @param argList is a String[] with an argument list
-     * @return a String[] to pass to Manager.host.createAttachedProc
-     */
-    private String[] createArgList(String command, String[] argList) {
-	// If command is null, the command is at the begging of argList
-	// so we need to do nothing
-	if (command == null) 
-	    return argList;
-	String[] args = new String[argList.length + 1];
-	    args[0] = command;
-	    if (args.length > 1) {
-		for (int i = 0; i < argList.length; i++) {
-		    if (i == argList.length - 1 && argList.equals("--"))
-			args[i + 1] = "";
-		    else
-			args[i + 1] = argList[i];
-		}
-	    }
-	    return args;
-    }
-    /**
-     * asString takes an array of arguments and converts it to a single
-     *    string of args as would be appropriate for a commandline
-     * @param command is the String representing the full command path for
-     * 		this process
-     * @param argList is a String array of arguments to pass to the process to be run
-     * @param cmd is the current Input command object
-     * @return a String of args that are to be passed to the process
-     *          on the commandline
+     * asString takes an array of parameters and converts it to a single
+     *    string of command/params as would be appropriate for a commandline
+     * @param params is a String array with the first position in the array is
+     *         the command to be run and the rest of the positions are params
+     *         to pass to the command(if any)
+     * @return a String containing the command to be run follwed by its parameters
+     *         (if there are any)
      */
 
-    private String asString(String command, String[] argList, Input cmd) {
-	String[] args = cmd.stringArrayValue();
-	// If there were no args on the commandline, see if there were any
-	// on a previous run and if there were, use those
-	if (args == null || args.length <= 0 || args == null)
-	    args = argList;
-	StringBuffer b = new StringBuffer(command);
-	// No args entered, return just the command
-	if (args == null)
+    private String asString(String[] params) {
+
+	StringBuffer b = new StringBuffer(params[0]);
+	// No params entered, return just the command
+	if (params.length == 1)
 	    return b.toString();
-	// args were entered, append to the command
-	for (int i = 0; i < args.length; i++) {
+	// params were entered, append to the command
+	for (int i = 1; i < params.length; i++) {
 	    b.append(" ");
-	    b.append(args[i]);
+	    b.append(params[i]);
 	}
 	return b.toString();
     }
