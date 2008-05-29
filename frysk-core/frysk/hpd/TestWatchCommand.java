@@ -120,6 +120,26 @@ public class TestWatchCommand extends TestLib {
       e.close();
   }  
   
+  public void testWatchpointSetMessage()
+  {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+      
+      // Should show set message only once even 
+      // when multiple debug registers required.
+      e.send("watch long_long\n"); 
+      e.expect("Watchpoint set: long_long.*");
+            
+      e.send("watch char_\n"); 
+      e.expect("Watchpoint set: char_.*");
+
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();
+  }   
+  
   /*
    * Test to watch a data type whose size is larger than
    * that can be watched by all hardware watch registers

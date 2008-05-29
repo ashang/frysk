@@ -1,3 +1,7 @@
+2008-05-29  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestWatchCommand.java (testWatchpointSetMessage): New.	
+
 2008-05-29  Rick Moseley  <rmoseley@redhat.com>
 
 	* CLI.java: Clean up by removing unnecessary methods;
@@ -12,11 +16,11 @@
 	* TestDisplayCommand.java: Fix message testing.
 	* TestFhpdStepping.java: Ditto.
 
-2008-05-28 Teresa Thomas  <tthomas@redhat.com>
+2008-05-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (interpret): Use rt.WatchObserverInstaller.
 
-2008-05-26 Teresa Thomas  <tthomas@redhat.com>
+2008-05-26  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (watchpointsInUse): New
 	(WatchpointObserver.addedTo): Increment watchpointsInUse.
@@ -25,7 +29,7 @@
 
 	* TestWatchCommand.java (testBadWatch): New.
 
-2008-05-23 Teresa Thomas  <tthomas@redhat.com>
+2008-05-23  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchCommand.java (interpret): Install multiple
 	watchobservers if necessary.

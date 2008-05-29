@@ -102,18 +102,21 @@ public class WatchObserverInstaller {
 	// to completely watch the variable.
 	int numberOfObservers = (int)Math.ceil((double)variableLength/
 	                           	       (double)maxWatchLength);
+	int observerNumber = 1;
 	
 	// Add watchpoint observers to task. 
 	for (int i=0; i< numberOfObservers-1; i++) {
 	    WatchpointObserver wpo = new WatchpointObserver
-	                               (expr, exprString, task, ste, writer);    
+	                               (expr, exprString, task, ste, writer, 
+	                        	observerNumber++, numberOfObservers);    
 	    task.requestAddWatchObserver
 	         (wpo, variableAddress + i*maxWatchLength, 
 	          maxWatchLength, writeOnly);
-	}	
+	}
 	// Last observer may not need to watch all watchLength bytes. 
 	WatchpointObserver wpo = new WatchpointObserver
-	                           (expr, exprString, task, ste, writer); 
+	                           (expr, exprString, task, ste, writer, 
+	                            observerNumber++, numberOfObservers); 
 	task.requestAddWatchObserver
 	       (wpo, variableAddress + (numberOfObservers-1)*maxWatchLength, 
 		variableLength-(numberOfObservers-1)*maxWatchLength, writeOnly);
@@ -134,17 +137,22 @@ public class WatchObserverInstaller {
 	PrintWriter writer;
 	String oldValue;
 	Task task;
+	int observerNumber;
+	int numberOfObservers;
 	
 	WatchpointObserver(Expression expr, String exprStr, Task task,
-		           SteppingEngine ste, PrintWriter writer) {
+		           SteppingEngine ste, PrintWriter writer,
+		           int observerNumber, int numberOfObservers) {
 	    this.expr = expr;
 	    this.exprString = exprStr;
 	    this.ste = ste;
 	    this.writer = writer;
 	    this.task = task;
 	    this.oldValue = "";
-
+	    this.observerNumber = observerNumber;
+	    this.numberOfObservers = numberOfObservers;
 	}
+	
 	public Action updateHit(Task task, long address, int length) {
 
 	    String newValue = expr.getValue().toPrint
@@ -166,11 +174,18 @@ public class WatchObserverInstaller {
 	}
 
 	public void addedTo(Object observable) {
-	    writer.println("Watchpoint set: " + exprString); 
+	    
+	    // Display set message only for first 
+	    // observer of an expression
+	    if (observerNumber == 1) {
+		writer.print("Watchpoint set: " + exprString); 
+		writer.println(" (Uses "+ numberOfObservers + " debug register(s))");	
+	    }
+	    
 	    watchpointsInUse++;
 	    // XXX: getValue may modify inferior.
 	    oldValue = expr.getValue().toPrint
-	                      (Format.NATURAL, task.getMemory());	    
+	                 (Format.NATURAL, task.getMemory());	    
 	}
 
 	public void deletedFrom(Object observable) {

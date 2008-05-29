@@ -1,3 +1,8 @@
+2008-05-29  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchObserverInstaller.java (WatchpointObserver.addedTo):
+	Display set message only for first observer. 
+
 2008-05-28  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchObserverInstaller.java (WatchpointObserver):
