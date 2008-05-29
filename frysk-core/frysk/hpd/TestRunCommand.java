@@ -281,15 +281,8 @@ public class TestRunCommand extends TestLib {
     }
     
     public void testFhpdLoadedParams() {
-	if(unresolved(6576))
-	    return;
 	
-	/*String[] command = new String[] {Prefix.pkgLibFile("funit-parameters").getPath(),
-					 "zzz",
-					 "yyy"};
-    	e = new HpdTestbed(command);
-	//e = new HpdTestbed(Prefix.pkgLibFile("funit-parameters").getPath() + " zzz yyy", 
-	//	"Loaded executable file.*funit-parameters.*");
+    	e = HpdTestbed.load("funit-parameters zzz yyy");
 	e.sendCommandExpectPrompt("run", "running.*zzz yyy.*" +
 		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	try { Thread.sleep(500); } catch (Exception e) {}
@@ -300,6 +293,6 @@ public class TestRunCommand extends TestLib {
 		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
-	e.close(); */
+	e.close();
     }
 }

@@ -153,8 +153,10 @@ public class LoadCommand extends ParameterizedCommand {
 	synchronized (cli) {
 	    cli.loadedProcs.put(new Integer(procID), 
 		    exeProc.getExeFile().getSysRootedPath());
-	    if (params != null)
+	    if (params != null) {
+		params[0] = exeProc.getExeFile().getSysRootedPath();
 		cli.ptsetParams.put(new Integer(procID), params);
+	    }
 	    else {
 		String[] command = { exeProc.getExeFile().getSysRootedPath() };
 		cli.ptsetParams.put(new Integer(procID), command);

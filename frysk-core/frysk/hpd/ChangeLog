@@ -15,6 +15,11 @@
 	* TestStartCommand.java: Add tests for above changes.
 	* TestDisplayCommand.java: Fix message testing.
 	* TestFhpdStepping.java: Ditto.
+	
+	* LoadCommand.java: Fix invalid setting of 
+	path-to-executable.
+	* TestRunCommand.java: Fix bz #6576 that adds test
+	for change to LoadCommand above.
 
 2008-05-28  Teresa Thomas  <tthomas@redhat.com>
 
