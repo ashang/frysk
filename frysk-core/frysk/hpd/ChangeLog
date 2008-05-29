@@ -20,6 +20,8 @@
 	path-to-executable.
 	* TestRunCommand.java: Fix bz #6576 that adds test
 	for change to LoadCommand above.
+	
+	* LoadCommand.java: Fix help comment.
 
 2008-05-28  Teresa Thomas  <tthomas@redhat.com>
 

@@ -64,15 +64,13 @@ public class LoadCommand extends ParameterizedCommand {
 
     LoadCommand() {
 	super("load", 
-	      "load [ path-to-executable ] [ -sysroot Path ]", 
+	      "load [ path-to-executable ] [ -sysroot Path ] [arg1, arg2...]", 
 	      "The load command lets the user examine information about"
 	      + " an executable file without actually running it.  An"
 	      + " executable must be loaded with this command before it"
 	      + " can be run with either the 'start' or 'run' command. "
-	      + " If no args are entered a list of the loaded procs (if any)"
-	      + " is displayed.\nNo arguments to be passed to the proc are"
-	      + " entered here.  Those arguments are passed to the proc(s)"
-	      + " via the 'start' or 'run' commands.");
+	      + " If no args are entered, a list of the loaded procs (if any)"
+	      + " is displayed.\n");
         add(new CommandOption("sysroot", "pathname to use as a sysroot",
 			      "Pathname") {
 		void parse(String args, Object options) {
