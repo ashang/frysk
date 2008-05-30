@@ -41,7 +41,7 @@ package frysk.expr;
 
 public class FQIdentifier {
 
-    final public String dso;
+    final public String soname;
     final public String file;
     final public Long line;
     final public String proc;
@@ -50,7 +50,7 @@ public class FQIdentifier {
     final public boolean wantPlt;
 
     public FQIdentifier(FQIdentToken tok) {
-	this.dso = tok.dso;
+	this.soname = tok.dso;
 	this.file = tok.file;
 	this.proc = tok.proc;
 	this.symbol = tok.symbol;

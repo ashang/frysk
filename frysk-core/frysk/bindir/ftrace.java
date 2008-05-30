@@ -408,10 +408,12 @@ class ftrace {
 				       FQIdentifier spec) {
 		    if (spec.wantPlt)
 			return new PLTRule(addition, options,
-					   spec.symbol, spec.dso, spec.version);
+					   spec.symbol, spec.soname,
+					   spec.version);
 		    else
 			return new SymbolRule(addition, options,
-					      spec.symbol, spec.dso, spec.version);
+					      spec.symbol, spec.soname,
+					      spec.version);
 		}
 	    }
 	    SymbolRuleCreator symbolCreator = new SymbolCreator();
