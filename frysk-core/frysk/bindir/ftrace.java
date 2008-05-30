@@ -41,7 +41,6 @@ package frysk.bindir;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,8 +51,6 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
 import inua.util.PrintWriter;
-
-import antlr.Token;
 
 import frysk.debuginfo.PrintStackOptions;
 import frysk.expr.CExprLexer;
@@ -153,42 +150,23 @@ class ftrace {
 	return rules;
     }
 
-    private void garbage(String text) {
-	warning.log("Ignoring garbage after the end of the symbol rule", text);
-    }
-    private void invalid(String text) {
-	warning.log("Invalid symbol rule", text);
-    }
-
     private List parseSymbolRules(String arg, final SymbolRuleCreator creator) {
 	return parseGenericRules(arg, new RuleMatcher() {
 		public void rule(String str, boolean addition,
 				 RuleOptions options, Collection rules) {
 
-		    StringReader r = new StringReader(str);
-		    CExprLexer lexer = new CExprLexer(r);
-		    Token tok;
-
 		    try {
-			tok = lexer.nextToken();
-
-			if (!(tok instanceof FqIdentToken)) {
-			    invalid(str);
-			    return;
-			}
-
-			if (lexer.nextToken().getType() != Token.EOF_TYPE)
-			    garbage(tok.getText());
-
-		    } catch (antlr.TokenStreamException exc) {
-			invalid(str);
-			return;
+			FqIdentToken fqTok = CExprLexer.parseFqIdent(str);
+			SymbolTracePoint spec = new SymbolTracePoint(fqTok);
+			rules.add(creator.createRule(addition, options, spec));
 		    }
-
-		    FqIdentToken fqTok = (FqIdentToken)tok;
-
-		    SymbolTracePoint spec = new SymbolTracePoint(fqTok);
-		    rules.add(creator.createRule(addition, options, spec));
+		    catch (CExprLexer.FqIdentExtraGarbageException exc) {
+			warning.log("Ignoring garbage after the end of the symbol rule",
+				    exc.getMessage());
+		    }
+		    catch (CExprLexer.FqIdentInvalidTokenException exc) {
+			warning.log("Invalid symbol rule", exc.getMessage());
+		    }
 		}
 	    });
     }
