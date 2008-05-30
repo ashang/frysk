@@ -58,7 +58,6 @@ import frysk.expr.FQIdentifier;
 import frysk.ftrace.AddrRule;
 import frysk.ftrace.Ftrace;
 import frysk.ftrace.FtraceController;
-import frysk.ftrace.PLTRule;
 import frysk.ftrace.Rule;
 import frysk.ftrace.RuleOptions;
 import frysk.ftrace.SymbolRule;
@@ -98,11 +97,6 @@ class ftrace {
     private final PrintStackOptions stackPrintOptions
 	= new PrintStackOptions();
     private final Ftrace tracer = new Ftrace(stackPrintOptions);
-
-    private interface SymbolRuleCreator {
-	Rule createRule(boolean addition, RuleOptions options,
-			FQIdentifier spec);
-    }
 
     private interface RuleMatcher {
 	void rule(String str, boolean addition, RuleOptions options,
@@ -149,14 +143,14 @@ class ftrace {
 	return rules;
     }
 
-    private List parseSymbolRules(String arg, final SymbolRuleCreator creator) {
+    private List parseSymbolRules(String arg) {
 	return parseGenericRules(arg, new RuleMatcher() {
 		public void rule(String str, boolean addition,
 				 RuleOptions options, Collection rules) {
 
 		    try {
-			rules.add(creator.createRule(addition, options,
-						     CExprLexer.parseFQIdentifier(str)));
+			FQIdentifier fqid = CExprLexer.parseFQIdentifier(str);
+			rules.add(new SymbolRule(addition, options, fqid));
 		    }
 		    catch (CExprLexer.FQIdentExtraGarbageException exc) {
 			warning.log("Ignoring garbage after the end of the symbol rule",
@@ -403,22 +397,8 @@ class ftrace {
 		symRules.add("-#INTERP#*");
 
 	    // Symbol tracing
-	    class SymbolCreator implements SymbolRuleCreator {
-		public Rule createRule(boolean addition, RuleOptions options,
-				       FQIdentifier spec) {
-		    if (spec.wantPlt)
-			return new PLTRule(addition, options,
-					   spec.symbol, spec.soname,
-					   spec.version);
-		    else
-			return new SymbolRule(addition, options,
-					      spec.symbol, spec.soname,
-					      spec.version);
-		}
-	    }
-	    SymbolRuleCreator symbolCreator = new SymbolCreator();
 	    for (Iterator it = symRules.iterator(); it.hasNext(); ) {
-		List rules = parseSymbolRules((String)it.next(), symbolCreator);
+		List rules = parseSymbolRules((String)it.next());
 		controller.gotSymRules(rules);
 	    }
 

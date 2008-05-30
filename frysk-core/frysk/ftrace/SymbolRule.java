@@ -39,34 +39,22 @@
 
 package frysk.ftrace;
 
-import java.util.regex.Pattern;
-import frysk.util.Glob;
+import frysk.expr.FQIdentifier;
 import frysk.symtab.DwflSymbol;
+import frysk.symtab.PLTEntry;
 
 public class SymbolRule extends Rule {
 
-    /** See namePattern */
-    final public Pattern sonamePattern, versionPattern;
+    // No globbing supported atm.
+    public final FQIdentifier fqid;
 
-    /**
-     * Object that performs a pattern matching of a symbol name. null
-     * for "anything" matcher.
-     */
-    final public Pattern namePattern;
-
-    public SymbolRule(boolean addition, RuleOptions options,
-		      String nameRe, String sonameRe, String versionRe) {
+    public SymbolRule(boolean addition, RuleOptions options, FQIdentifier fqid) {
 	super (addition, options);
-	this.sonamePattern = Glob.compile((sonameRe != null) ? sonameRe : "*");
-	this.versionPattern = Glob.compile((versionRe != null) ? versionRe : "*");
-	this.namePattern = Glob.compile((nameRe != null) ? nameRe : "*");
+	this.fqid = fqid;
     }
 
     public String toString() {
-	return super.toString()
-	    + this.namePattern.pattern()
-	    + "@" + this.sonamePattern.pattern()
-	    + "@@" + this.versionPattern.pattern();
+	return super.toString() + fqid;
     }
 
 
@@ -98,7 +86,7 @@ public class SymbolRule extends Rule {
 
     protected boolean checkNameMatches(final DwflSymbol symbol)
     {
-	if (this.namePattern.matcher(symbol.getName()).matches())
+	if (fqid.symbol.equals(symbol.getName()))
 	    return true;
 
 	// XXX Alias support didn't arrive yet.
@@ -115,11 +103,17 @@ public class SymbolRule extends Rule {
     }
 
     public boolean matches(Object traceable) {
-	if (traceable instanceof DwflSymbol) {
-	    DwflSymbol sym = (DwflSymbol)traceable;
+	DwflSymbol sym = null;
+	if (fqid.wantPlt) {
+	    if (traceable instanceof PLTEntry)
+		sym = ((PLTEntry)traceable).getSymbol();
+	} else if (traceable instanceof DwflSymbol)
+		sym = (DwflSymbol)traceable;
+
+	if (sym != null)
 	    return checkNameMatches(sym)
-		/*&& checkVersionMatches(sym)*/;
-	}
-	return false;
+		&& checkVersionMatches(sym);
+	else
+	    return false;
     }
 }

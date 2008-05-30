@@ -1,5 +1,14 @@
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
+	* PLTRule.java: Drop.  The functionality is taken over by...
+	* SymbolRule.java: ... SymbolRule, which now works with
+	FQIdentifier instead of set of Strings.  Hence the globbing was
+	definitely dropped for the time being.
+	* FtraceController.java: Defer soname matching to FQIdentifier
+	where this feature has been implemented.
+
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
 	* SymbolTracePoint.java: Moved to frysk.expr.FQIdentifier
 
 2008-05-29  Petr Machata  <pmachata@redhat.com>

@@ -195,15 +195,8 @@ public class FtraceController
 	    final SymbolRule rule = (SymbolRule)it.next();
 	    fine.log("Considering symbol rule " + rule + ".");
 
-	    // MAIN is meta-soname meaning "main executable".
-	    if ((rule.sonamePattern.pattern().equals("MAIN")
-		 && task.getProc().getExeFile().getSysRootedPath().equals(path))
-		|| (rule.sonamePattern.pattern().equals("INTERP")
-		    && isInterpOf(objf, task.getProc().getExeFile().getSysRootedPath()))
-		|| rule.sonamePattern.matcher(objf.getSoname()).matches())
-	    {
+	    if (rule.fqid.sonameMatches(task, objf))
 		rule.apply(tracePoints, workingSet, stackTraceSet);
-	    }
 	}
 
 	// Finally, apply constructed working set.
@@ -237,7 +230,7 @@ public class FtraceController
 	    final List candidate = new ArrayList(1);
 	    candidate.add(new Long(rule.addr));
 
-	    fine.log("Considering addr rule " + rule + ".");
+	    fine.log("Considering addr rule", rule);
 
 	    // MAIN is meta-soname meaning "main executable".
 	    if ((rule.sonamePattern.pattern().equals("MAIN")

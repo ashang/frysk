@@ -1,5 +1,11 @@
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java: Drop more of the PLT special casing.  Use
+	SymbolRule for all symbol rules, get rid of now unnecessary
+	abstraction SymbolRuleCreator.
+
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Adapt to changes in frysk.ftrace and frysk.expr
 
 2008-05-30  Petr Machata  <pmachata@redhat.com>
