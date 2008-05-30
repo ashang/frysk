@@ -1,3 +1,9 @@
+2008-05-30  Rick Moseley  <rmoseley@redhat.com>
+
+	* InfoArgsCommand.java: Updated how args are gotten.
+	* TestInfoArgsCommand.java: Added new more comprehensive 
+	tests.
+
 2008-05-29  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestWatchCommand.java (testWatchpointSetMessage): New.	

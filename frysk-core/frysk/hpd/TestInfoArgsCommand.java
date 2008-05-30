@@ -39,10 +39,51 @@
 
 package frysk.hpd;
 
+import frysk.config.Prefix;
+
 public class TestInfoArgsCommand extends TestLib {
 
     public void testInfoArgs() {
 	e = HpdTestbed.load("funit-stacks");
-	e.sendCommandExpectPrompt("info args", "funit-stacks\r\n");
+	e.sendCommandExpectPrompt("info args", "   .*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testInfoArgsLoad() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath() +
+		" abcd efgh", "\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("info args", "The args list.*abcd.*efgh.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testInfoArgsRun() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath() +
+		" abcd efgh", "\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("info args", "The args list.*abcd.*efgh.*");
+	e.sendCommandExpectPrompt("run 1111 2222", "running.*1111 2222.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.sendCommandExpectPrompt("info args", "The args list.*1111.*2222.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testInfoArgsLoadTwo() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-threads-looper").getPath() +
+		" abcd efgh", "\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath() +
+		" 1234 5678 zzzz yyyy", "\\[1\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("info args", "The args list.*funit-threads-looper.*abcd.*efgh.*" +
+		"The args list.*funit-parameters.*1234.*5678.*zzzz.*yyyy.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
     }
 }

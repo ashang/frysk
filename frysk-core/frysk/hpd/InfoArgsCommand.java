@@ -40,14 +40,14 @@
 package frysk.hpd;
 
 import java.util.Iterator;
-import frysk.proc.Proc;
+//import frysk.proc.Proc;
 import java.util.List;
 
 class InfoArgsCommand extends ParameterizedCommand {
-    
+
     InfoArgsCommand() {
 	super("print arguments", "args",
-	      "print the processes command-line arguments");
+		"print the processes command-line arguments");
     }
 
     void interpret(CLI cli, Input cmd, Object options) {
@@ -55,11 +55,18 @@ class InfoArgsCommand extends ParameterizedCommand {
 	Iterator taskDataIter = ptset.getTaskData();
 	while (taskDataIter.hasNext()) {
 	    TaskData td = (TaskData) taskDataIter.next();
-	    Proc proc = td.getTask().getProc();
 	    td.printHeader(cli.outWriter);
-	    String[] args = proc.getCmdLine();
-	    for (int i = 0; i < args.length; i++) {
-		cli.outWriter.println(args[i]);
+	    int parentID = td.getParentID();
+	    String[] args = (String[]) cli.ptsetParams
+		    .get(new Integer(parentID));
+	    cli.outWriter.println("The args list for: " + args[0] +
+		    " is.....");
+	    if (args.length > 1)
+		for (int i = 1; i < args.length; i++) {
+		    cli.outWriter.println("   " + args[i]);
+		}
+	    else {
+		cli.outWriter.println("   ");
 	    }
 	}
     }
