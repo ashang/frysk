@@ -1,5 +1,9 @@
 2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestDwfl.java: Removed bad imports.
+
+2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* DwflModule.java: Added getCuDies().
 	* cni/DwflModule.cxx: Added get_cu_dies().
 	
