@@ -82,6 +82,7 @@ header
 
     import java.util.regex.Pattern;
     import java.util.regex.Matcher;
+    import java.io.StringReader;
 }
 
 class CExprParser extends Parser;
@@ -441,6 +442,52 @@ tokens
             fqinit = fqinit.substring(1);
         }
         super.match(s);
+    }
+
+    public static class FqIdentException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+        public FqIdentException(String s) {
+            super(s);
+        }
+    }
+
+    public static class FqIdentExtraGarbageException extends FqIdentException {
+        private static final long serialVersionUID = 1L;
+        public FqIdentExtraGarbageException(String garbage) {
+            super(garbage);
+        }
+    }
+
+    public static class FqIdentInvalidTokenException extends FqIdentException {
+        private static final long serialVersionUID = 1L;
+        public FqIdentInvalidTokenException(String token) {
+            super(token);
+        }
+    }
+
+    public static FqIdentToken parseFqIdent(String str)
+        throws FqIdentExtraGarbageException, FqIdentInvalidTokenException
+    {
+        StringReader r = new StringReader(str);
+        CExprLexer lexer = new CExprLexer(r);
+        Token tok;
+
+        try {
+            tok = lexer.nextToken();
+
+            if (!(tok instanceof FqIdentToken))
+                throw new FqIdentInvalidTokenException(tok.getText());
+
+            FqIdentToken fqTok = (FqIdentToken)tok;
+
+            if ((tok = lexer.nextToken()).getType() != Token.EOF_TYPE)
+                throw new FqIdentExtraGarbageException(tok.getText());
+
+            return fqTok;
+
+        } catch (antlr.TokenStreamException exc) {
+            throw new FqIdentInvalidTokenException(str);
+        }
     }
 }
 

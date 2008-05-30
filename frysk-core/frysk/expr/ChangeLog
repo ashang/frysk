@@ -1,3 +1,9 @@
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
+	* CExpr.g
+	(CExprLexer.parseFqIdent): New function, logic extracted from ftrace.
+	(CExprLexer.FqIdent*Exception): Exception classes for the above.
+
 2008-05-29  Petr Machata  <pmachata@redhat.com>
 
 	* CExpr.g (PARSE_FQIDENT): Forbid empty string as symbol name.
