@@ -1,5 +1,10 @@
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
+	* FQIdentifier.java: Implement soname expansion and soname
+	matching.  (Parts copied over from frysk.ftrace.FtraceController.)
+
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
 	* FQIdentToken.java: Renamed from FqIdentToken
 	* FQIdentifier: Moved from frysk.ftrace.SymbolTracePoint
 	* CExpr.g: Rename exceptions to FQIdent*Exception, adapt to above.
