@@ -54,7 +54,7 @@ import inua.util.PrintWriter;
 
 import frysk.debuginfo.PrintStackOptions;
 import frysk.expr.CExprLexer;
-import frysk.expr.FqIdentToken;
+import frysk.expr.FQIdentifier;
 import frysk.ftrace.AddrRule;
 import frysk.ftrace.Ftrace;
 import frysk.ftrace.FtraceController;
@@ -62,7 +62,6 @@ import frysk.ftrace.PLTRule;
 import frysk.ftrace.Rule;
 import frysk.ftrace.RuleOptions;
 import frysk.ftrace.SymbolRule;
-import frysk.ftrace.SymbolTracePoint;
 import frysk.isa.signals.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Proc;
@@ -102,7 +101,7 @@ class ftrace {
 
     private interface SymbolRuleCreator {
 	Rule createRule(boolean addition, RuleOptions options,
-			SymbolTracePoint spec);
+			FQIdentifier spec);
     }
 
     private interface RuleMatcher {
@@ -156,15 +155,14 @@ class ftrace {
 				 RuleOptions options, Collection rules) {
 
 		    try {
-			FqIdentToken fqTok = CExprLexer.parseFqIdent(str);
-			SymbolTracePoint spec = new SymbolTracePoint(fqTok);
-			rules.add(creator.createRule(addition, options, spec));
+			rules.add(creator.createRule(addition, options,
+						     CExprLexer.parseFQIdentifier(str)));
 		    }
-		    catch (CExprLexer.FqIdentExtraGarbageException exc) {
+		    catch (CExprLexer.FQIdentExtraGarbageException exc) {
 			warning.log("Ignoring garbage after the end of the symbol rule",
 				    exc.getMessage());
 		    }
-		    catch (CExprLexer.FqIdentInvalidTokenException exc) {
+		    catch (CExprLexer.FQIdentInvalidTokenException exc) {
 			warning.log("Invalid symbol rule", exc.getMessage());
 		    }
 		}
@@ -407,7 +405,7 @@ class ftrace {
 	    // Symbol tracing
 	    class SymbolCreator implements SymbolRuleCreator {
 		public Rule createRule(boolean addition, RuleOptions options,
-				       SymbolTracePoint spec) {
+				       FQIdentifier spec) {
 		    if (spec.wantPlt)
 			return new PLTRule(addition, options,
 					   spec.symbol, spec.dso, spec.version);

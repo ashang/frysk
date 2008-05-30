@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, 2008 Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,25 +39,27 @@
 
 package frysk.expr;
 
-public class FqIdentToken
-    extends antlr.CommonToken
-{
-    public String dso = null, file = null, line = null,
-		  proc = null, symbol = null, version = null;
-    public boolean wantPlt = false;
+public class FQIdentifier {
 
-    public FqIdentToken(int t, String txt) {
-	super (t, txt);
-    }
+    final public String dso;
+    final public String file;
+    final public Long line;
+    final public String proc;
+    final public String symbol;
+    final public String version;
+    final public boolean wantPlt;
 
-    public String toString() {
-        return "[" + super.toString()
-	    + (dso != null ? ", dso:" + dso : "")
-	    + (file != null ? ", file:" + file : "")
-	    + (line != null ? ", line:" + line : "")
-	    + (proc != null ? ", proc:" + proc : "")
-	    + (wantPlt ? ", pltref" : "")
-	    + (symbol != null ? ", symbol:" + symbol : "")
-	    + (version != null ? ", version:" + symbol : "") + "]";
+    public FQIdentifier(FQIdentToken tok) {
+	this.dso = tok.dso;
+	this.file = tok.file;
+	this.proc = tok.proc;
+	this.symbol = tok.symbol;
+	this.version = tok.version;
+	this.wantPlt = tok.wantPlt;
+
+	if (tok.line != null)
+	    this.line = new Long(Long.parseLong(tok.line, 10));
+	else
+	    this.line = null;
     }
 }

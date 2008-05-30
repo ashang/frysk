@@ -444,29 +444,29 @@ tokens
         super.match(s);
     }
 
-    public static class FqIdentException extends RuntimeException {
+    public static class FQIdentException extends RuntimeException {
         private static final long serialVersionUID = 1L;
-        public FqIdentException(String s) {
+        public FQIdentException(String s) {
             super(s);
         }
     }
 
-    public static class FqIdentExtraGarbageException extends FqIdentException {
+    public static class FQIdentExtraGarbageException extends FQIdentException {
         private static final long serialVersionUID = 1L;
-        public FqIdentExtraGarbageException(String garbage) {
+        public FQIdentExtraGarbageException(String garbage) {
             super(garbage);
         }
     }
 
-    public static class FqIdentInvalidTokenException extends FqIdentException {
+    public static class FQIdentInvalidTokenException extends FQIdentException {
         private static final long serialVersionUID = 1L;
-        public FqIdentInvalidTokenException(String token) {
+        public FQIdentInvalidTokenException(String token) {
             super(token);
         }
     }
 
-    public static FqIdentToken parseFqIdent(String str)
-        throws FqIdentExtraGarbageException, FqIdentInvalidTokenException
+    public static FQIdentifier parseFQIdentifier(String str)
+        throws FQIdentExtraGarbageException, FQIdentInvalidTokenException
     {
         StringReader r = new StringReader(str);
         CExprLexer lexer = new CExprLexer(r);
@@ -475,18 +475,18 @@ tokens
         try {
             tok = lexer.nextToken();
 
-            if (!(tok instanceof FqIdentToken))
-                throw new FqIdentInvalidTokenException(tok.getText());
+            if (!(tok instanceof FQIdentToken))
+                throw new FQIdentInvalidTokenException(tok.getText());
 
-            FqIdentToken fqTok = (FqIdentToken)tok;
+            FQIdentToken fqTok = (FQIdentToken)tok;
 
             if ((tok = lexer.nextToken()).getType() != Token.EOF_TYPE)
-                throw new FqIdentExtraGarbageException(tok.getText());
+                throw new FQIdentExtraGarbageException(tok.getText());
 
-            return fqTok;
+            return new FQIdentifier(fqTok);
 
         } catch (antlr.TokenStreamException exc) {
-            throw new FqIdentInvalidTokenException(str);
+            throw new FQIdentInvalidTokenException(str);
         }
     }
 }
@@ -688,7 +688,7 @@ PARSE_FQIDENT
             if (!Character.isJavaIdentifierStart(part.charAt(0)))
                 throw new RecognitionException("Invalid symbol `" + part + "'.");
 
-            FqIdentToken tok = new FqIdentToken(IDENT, matched);
+            FQIdentToken tok = new FQIdentToken(IDENT, matched);
             tok.dso = partDso;
             tok.file = partFile;
             tok.line = partLine;

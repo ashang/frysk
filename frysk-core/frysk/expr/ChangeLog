@@ -1,5 +1,12 @@
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
+	* FQIdentToken.java: Renamed from FqIdentToken
+	* FQIdentifier: Moved from frysk.ftrace.SymbolTracePoint
+	* CExpr.g: Rename exceptions to FQIdent*Exception, adapt to above.
+	(parseFqIdent): Return FQIdentifier instead if FqIdentToken
+
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
 	* CExpr.g
 	(CExprLexer.parseFqIdent): New function, logic extracted from ftrace.
 	(CExprLexer.FqIdent*Exception): Exception classes for the above.
@@ -7,7 +14,7 @@
 2008-05-29  Petr Machata  <pmachata@redhat.com>
 
 	* CExpr.g (PARSE_FQIDENT): Forbid empty string as symbol name.
-	* FqIdentToken (wantPlt): Publish.
+	* FqIdentToken.java (wantPlt): Publish.
 
 2008-05-28  Petr Machata  <pmachata@redhat.com>
 

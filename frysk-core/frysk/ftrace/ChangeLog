@@ -1,3 +1,7 @@
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
+	* SymbolTracePoint.java: Moved to frysk.expr.FQIdentifier
+
 2008-05-29  Petr Machata  <pmachata@redhat.com>
 
 	* SymbolTracePoint.java: New class.

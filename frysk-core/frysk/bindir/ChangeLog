@@ -1,5 +1,9 @@
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
+	* ftrace.java: Adapt to changes in frysk.ftrace and frysk.expr
+
+2008-05-30  Petr Machata  <pmachata@redhat.com>
+
 	* ftrace.java: Move FQ identifier parsing logic to CExprLexer.
 	(parseSymbolRules): Use new function from CExprLexer.
 
