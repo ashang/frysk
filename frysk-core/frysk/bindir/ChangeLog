@@ -1,3 +1,8 @@
+2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fdebugdump.java: New utility.
+	* TestDebugdump.java: New test.
+
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
 	* ftrace.java: Drop more of the PLT special casing.  Use

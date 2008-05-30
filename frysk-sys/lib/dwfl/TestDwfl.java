@@ -43,9 +43,12 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import frysk.dwfl.DwflCache;
 import frysk.junit.Runner;
 import frysk.junit.TestCase;
+import frysk.proc.Task;
 import frysk.sys.Pid;
+import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.LocalMemory;
 
 public class TestDwfl

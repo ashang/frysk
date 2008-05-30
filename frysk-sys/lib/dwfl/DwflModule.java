@@ -136,4 +136,9 @@ public class DwflModule
      * @return path to debuginfo package if found, NULL otherwise 
      */
     public native String getDebuginfo();
+    
+    public LinkedList getCuDies(){
+	return get_cu_dies();
+    }
+    private native LinkedList get_cu_dies();
 }

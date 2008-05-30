@@ -449,3 +449,34 @@ lib::dwfl::DwflModule::offdie(jlong die, jlong offset){
    
   return dwarfDie;
 }
+
+java::util::LinkedList*
+lib::dwfl::DwflModule::get_cu_dies()
+{
+	
+	java::util::LinkedList* list = new java::util::LinkedList();
+    
+    Dwarf_Die* cu;
+    Dwarf_Die lastcu;
+    Dwarf_Addr bias;
+    
+    cu = dwfl_module_nextcu((::Dwfl_Module*)this->pointer, NULL, &bias);
+    
+    fflush(stdout);
+    while ( cu != NULL){
+  	  
+      Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  				
+  	  memcpy(die, cu, sizeof(*die));
+  	  lib::dwfl::DwarfDie* cuDie = lib::dwfl::DwarfDieFactory::getFactory()->makeDie((jlong)die, NULL);
+  	  cuDie->setManageDie(true);
+  	  
+  	  list->add(cuDie);
+  	  
+  	  memcpy(&lastcu, cu, sizeof(*cu));
+      cu = dwfl_module_nextcu((::Dwfl_Module*)this->pointer, &lastcu, &bias);
+      
+    }
+	  
+  return list;
+}

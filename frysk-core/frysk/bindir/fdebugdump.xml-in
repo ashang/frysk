@@ -1,0 +1,113 @@
+<?xml version='1.0'?> <!-- -*- xml -*- -->
+
+<!--
+
+ This file is part of the program FRYSK.
+
+ Copyright 2006, 2008, Red Hat Inc.
+
+ FRYSK is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+
+ FRYSK is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with FRYSK; if not, write to the Free Software Foundation,
+ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+ 
+ In addition, as a special exception, Red Hat, Inc. gives You the
+ additional right to link the code of FRYSK with code not covered
+ under the GNU General Public License ("Non-GPL Code") and to
+ distribute linked combinations including the two, subject to the
+ limitations in this paragraph. Non-GPL Code permitted under this
+ exception must only link to the code of FRYSK through those well
+ defined interfaces identified in the file named EXCEPTION found in
+ the source code files (the "Approved Interfaces"). The files of
+ Non-GPL Code may instantiate templates or use macros or inline
+ functions from the Approved Interfaces without causing the
+ resulting work to be covered by the GNU General Public
+ License. Only Red Hat, Inc. may make changes or additions to the
+ list of Approved Interfaces. You must obey the GNU General Public
+ License in all respects for all of the FRYSK code and other code
+ used in conjunction with FRYSK except the Non-GPL Code covered by
+ this exception. If you modify this file, you may extend this
+ exception to your version of the file, but you are not obligated to
+ do so. If you do not wish to provide this exception without
+ modification, you must delete this exception statement from your
+ version and license this file solely under the GPL without
+ exception.
+
+-->
+
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+ [
+ <!ENTITY stackoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/stack-options.xml">
+ <!ENTITY standardoptions SYSTEM "@abs_root_srcdir@/frysk-core/frysk/util/standard-options.xml">
+ <!ENTITY version SYSTEM "@abs_root_srcdir@/common/version.in">
+ <!ENTITY command "fdebugdump">
+ <!ENTITY volume "1">
+ ]
+>
+
+<refentry>
+
+  <refentryinfo>
+    <title>Frysk</title>
+    <date>May 2008</date>
+  </refentryinfo>
+  
+  <refmeta>
+    <refentrytitle>&command;</refentrytitle>
+    <manvolnum>&volume;</manvolnum>
+    <refmiscinfo class='source'>Frysk</refmiscinfo>
+    <refmiscinfo class='version'>&version;</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>fdebugdump</refname>
+    <refpurpose>dumps a hierarchy of the debug info dies</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>fdebugrpm</command>
+      <arg choice="req">
+	<replaceable>executable</replaceable>
+      </arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para><function>fdebugdump</function> 
+    runs the given program and dumps a hierarchical view of libraries
+    loaded at attach time.
+    
+    Does not watch for loading of new modules, but that would be a
+    good extension.
+    </para>
+
+  </refsect1>
+  
+  <refsect1>
+    <title>EXAMPLE</title>
+    <screen>&command; ls</screen>
+  </refsect1>
+
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>frysk(7)</para>
+  </refsect1>
+  
+  <refsect1>
+    <title>BUGS</title>
+    <para>Report bugs to <ulink url="http://sourceware.org/frysk"/></para>
+  </refsect1>
+  
+</refentry>

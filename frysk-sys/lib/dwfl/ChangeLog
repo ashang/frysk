@@ -1,3 +1,8 @@
+2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DwflModule.java: Added getCuDies().
+	* cni/DwflModule.cxx: Added get_cu_dies().
+	
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/ElfData.cxx (internal_buffer): Delete extern declaration.
