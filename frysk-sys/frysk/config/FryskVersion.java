@@ -44,6 +44,9 @@ package frysk.config;
  */
 
 public class FryskVersion {
+    static {
+	// Needs to be done before initializing V.
+	Runtime.load();    }
     private static native String version();
     private static final String v = version();
     /**

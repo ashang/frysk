@@ -47,3 +47,7 @@ Runtime*
 Runtime::runtime() {
   return COMPILER_NATIVE_INTERFACE;
 }
+
+void
+Runtime::nativeCall() {
+}

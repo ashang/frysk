@@ -54,27 +54,42 @@ public class Runtime {
 
     public static final Runtime COMPILER_NATIVE_INTERFACE = new Runtime("CNI");
     public static final Runtime JAVA_NATIVE_INTERFACE = new Runtime("JNI");
+    public static Runtime get() {
+	return runtime();
+    }
+    private static native Runtime runtime();
 
-    private static boolean tryBindings() {
+    private static boolean tryNativeCall() {
 	// Try calling a binding, if it works cool.  If it fails,
 	// check that it failed on the expected symbol and if that is
 	// wrong abort.
 	try {
-	    runtime();
+	    nativeCall();
 	    return true;
 	} catch (UnsatisfiedLinkError e) {
-	    if (!e.getMessage().equals("runtime")) {
-		System.err.println("Problem loading runtime bindings, unexpected error: " + e.toString());
-		System.exit(1);
+	    String m = e.getMessage();
+	    if (m.equals("nativeCall")) {
+		// Error from GIJ.
+		return false;
 	    }
-	    return false;
+	    if (m.equals("frysk.config.Runtime.nativeCall()V")) {
+		// Error from IcedTea/OpenJDK.
+		return false;
+	    }
+	    throw new RuntimeException("Problem loading runtime bindings, unexpected error", e);
 	}
     }
+    private static native void nativeCall();
 
+    private static boolean loaded = false;
     public static void load() {
+	if (loaded) {
+	    return;
+	}
+	loaded = true;
 	// Just try a call, perhaps things have already been loaded so
 	// things will just work.
-	if (tryBindings()) {
+	if (tryNativeCall()) {
 	    return;
 	}
 	// No such luck, try explicitly loading frysk's JNI runtime.
@@ -85,16 +100,10 @@ public class Runtime {
 			       + e.getMessage());
 	    System.exit(1);
 	}
-	if (tryBindings()) {
+	if (tryNativeCall()) {
 	    return;
 	}
 	System.err.println("Problem loading runtime bindings.");
 	System.exit(1);
     }
-    
-    public static Runtime get() {
-	return runtime();
-    }
-
-    private static native Runtime runtime();
 }

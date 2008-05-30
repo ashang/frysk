@@ -45,3 +45,7 @@ Runtime
 Runtime::runtime(jnixx::env env) {
   return GetCOMPILER_NATIVE_INTERFACE(env);
 }
+
+void
+Runtime::nativeCall(jnixx::env env) {
+}

@@ -388,6 +388,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files-java.list
 	mv -f $@.tmp $@
 
 frysk_imports = $$(cd ../frysk-imports && pwd)
+frysk_sys = $$(cd ../frysk-sys && pwd)
 Runner:
 	rm -f $@
 	echo "#!/bin/sh"					>> $@.tmp
@@ -401,7 +402,7 @@ Runner:
 	echo "libunwind-x86_64.so \\"				>> $@.tmp
 	echo "\""		  			      	>> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"  >> $@.tmp
-	echo "export LD_LIBRARY_PATH=.\\"			>> $@.tmp
+	echo "export LD_LIBRARY_PATH=$(frysk_sys)\\"		>> $@.tmp
 	echo ":$(frysk_imports)/elfutils/libdw\\"		>> $@.tmp
 	echo ":$(frysk_imports)/elfutils/libelf\\"		>> $@.tmp
 	echo ":$(frysk_imports)/elfutils/backends\\"		>> $@.tmp
@@ -413,7 +414,8 @@ Runner:
 	echo ":/usr/lib"					>> $@.tmp
 	echo "export CLASSPATH=\\"				>> $@.tmp
 	echo "$(CLASSPATH):$(GEN_DIRNAME).jar:TestRunner.jar"	>> $@.tmp
-	echo "gij \"\$$@\""					>> $@.tmp
+	echo "JAVA=$${JAVA:-gij}"				>> $@.tmp
+	echo "\$${JAVA} \"\$$@\""				>> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 

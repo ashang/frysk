@@ -43,7 +43,6 @@ import frysk.junit.Runner;
 import @GEN_PACKAGENAME@.JUnitTests;
 import frysk.config.Prefix;
 import frysk.config.PrefixFactory;
-import frysk.config.Runtime;
 
 /**
  * Run the JUnit tests from within the build tree.
@@ -62,10 +61,5 @@ public class TestRunner {
 				       configAll, config32, config64);
 	int status = testRunner.runTestCases(JUnitTests.get());
 	System.exit (status);
-    }
-    static {
-	// Needs to be done before main, and hence before any
-	// libraries main needs to load.
-	Runtime.load();
     }
 }
