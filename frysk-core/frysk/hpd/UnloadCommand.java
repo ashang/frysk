@@ -73,7 +73,7 @@ public class UnloadCommand extends ParameterizedCommand {
 	    throw new InvalidCommandException("Too many parameters");
 	} else if (cmd.size() < 1 && !cli.loadedProcs.isEmpty()) {
 	    // List the loaded procs if no parameters entered
-	    ViewsetCommand.printLoop(cli.targetset, cli, "Target set", true);
+	    LoadCommand.printLoop(cli, "Loaded Procs", cli.loadedProcs);
 	    return;
 	} else if (cmd.size() < 1 && cli.loadedProcs.isEmpty()) {
 	    cli.addMessage("No loaded procs currently, must load a proc before unloading", 

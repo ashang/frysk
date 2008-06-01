@@ -1,3 +1,9 @@
+2008-06-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestUnloadCommand.java: New.
+	* TestLoadCommand.java: Fix arg listing error.
+	* UnloadCommand.java: Use printLoop in LoadCommand.
+
 2008-05-30  Rick Moseley  <rmoseley@redhat.com>
 
 	* InfoArgsCommand.java: Updated how args are gotten.

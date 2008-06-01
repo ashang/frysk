@@ -114,14 +114,20 @@ public class TestLoadCommand extends TestLib {
 
     public void testLoadExeArg() {
 	e = new HpdTestbed();
-	e.sendCommandExpectPrompt("load arg0 arg1 -exe /bin/ls",
+	e.sendCommandExpectPrompt("load /bin/ls arg0 arg1",
 				  "/bin/ls\r\n");
-	e.sendCommandExpectPrompt("info args", "arg0\r\n" + "arg1\r\n");
+	e.sendCommandExpectPrompt("info args", "The args.*/bin/ls.*arg0.*arg1.*");
 	e.sendCommandExpectPrompt("info exe", "/bin/ls\r\n");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
     }
 
     public void testLoadPath() {
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("load ls", "/bin/ls\r\n");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
     }
 }
