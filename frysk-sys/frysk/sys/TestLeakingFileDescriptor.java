@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.sys;
 
+import frysk.config.Runtime;
 import frysk.junit.TestCase;
 import java.util.WeakHashMap;
 import java.util.Iterator;
@@ -83,6 +84,8 @@ public class TestLeakingFileDescriptor
      * likes to run.
      */
     public void testLeakyPipes () {
+	if (unsupported("JNI", Runtime.get() == Runtime.JAVA_NATIVE_INTERFACE))
+	    return;
 	for (int i = 0; i < 2000; i++) {
 	    Pipe pipe = new Pipe();
 	    fds.put (pipe.in, null);
@@ -100,6 +103,8 @@ public class TestLeakingFileDescriptor
      * likes to run.
      */
     public void testLeakyFileDescriptors () {
+	if (unsupported("JNI", Runtime.get() == Runtime.JAVA_NATIVE_INTERFACE))
+	    return;
 	for (int i = 0; i < 4000; i++) {
 	    FileDescriptor file = new FileDescriptor("/etc/passwd",
 						     FileDescriptor.RDONLY);

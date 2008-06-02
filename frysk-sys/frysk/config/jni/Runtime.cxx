@@ -43,7 +43,7 @@ using namespace frysk::config;
 
 Runtime
 Runtime::runtime(jnixx::env env) {
-  return GetCOMPILER_NATIVE_INTERFACE(env);
+  return GetJAVA_NATIVE_INTERFACE(env);
 }
 
 void

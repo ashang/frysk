@@ -1,3 +1,7 @@
+2008-06-02  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/Runtime.cxx (Runtime::runtime): Return JNI, not CNI.
+
 2008-06-01  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (static): Load the runtime.
