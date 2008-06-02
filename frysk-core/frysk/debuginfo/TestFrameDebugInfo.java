@@ -43,21 +43,23 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import javax.naming.NameNotFoundException;
+
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDieBias;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
+import frysk.scopes.Function;
 import frysk.scopes.LexicalBlock;
 import frysk.scopes.Scope;
-import frysk.scopes.Function;
+import frysk.scopes.Variable;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.testbed.TestLib;
-import frysk.scopes.Variable;
 
 public class TestFrameDebugInfo extends TestLib {
 
@@ -317,6 +319,26 @@ public class TestFrameDebugInfo extends TestLib {
     assertTrue("contains second", stringWriter.getBuffer().toString().contains("second"));
     assertTrue("contains third", stringWriter.getBuffer().toString().contains("third"));
     assertTrue("contains main", stringWriter.getBuffer().toString().contains("main"));
+  }
+  
+  public void testVirtualStackTraceWithLocals()
+  {
+    
+      Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
+    
+    PrintStackOptions options = new PrintStackOptions();
+    options.setNumberOfFrames(0); 
+    options.setPrintParams(true);
+    options.setPrintLocals(true);
+    options.setPrintFullPaths(true);
+    
+    DebugInfoFrame frame = DebugInfoStackFactory.createVirtualStackTrace(task);
+    frame = frame.getOuterDebugInfoFrame();
+    
+    StringWriter stringWriter = new StringWriter();
+    frame.printScopes(new PrintWriter(stringWriter));
+    
+    assertTrue("Contains var2", stringWriter.getBuffer().toString().contains("var2"));
   }
   
   public void testInlinedFunctionDerailment()

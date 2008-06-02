@@ -1,3 +1,9 @@
+2008-06-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (testVirtualStackTraceWithLocals): New test.
+	* DebugInfoFrame.java (printScope): Now prints 
+	all scopes (bug fix).
+
 2008-05-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObjectDeclarationSearchEngine.java

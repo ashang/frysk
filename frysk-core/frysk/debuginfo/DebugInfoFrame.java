@@ -40,6 +40,7 @@
 package frysk.debuginfo;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import lib.dwfl.DwarfDie;
@@ -221,17 +222,20 @@ public class DebugInfoFrame extends FrameDecorator {
         }
     }
     
-    void printScopes(PrintWriter writer) {
+    public void printScopes(PrintWriter writer) {
 	printScope(writer, getSubprogram(), " ");
     }
 
     private void printScope(PrintWriter writer, Scope scope, String indentString) {
-	
+
 	if (scope != null) {
-	    writer.print(indentString + "{");
+	    writer.print(indentString + "{"); 
 	    scope.toPrint(this, writer, indentString);
-	    if(!(scope.getInner() instanceof Function && ((Function)scope.getInner()).isInlined())){
-		printScope(writer, scope.getInner(), indentString+" ");
+
+	    Iterator innerScopes = scope.getScopes().iterator();
+	    while (innerScopes.hasNext()) {
+		Scope innerScope = (Scope) innerScopes.next(); 
+		printScope(writer, innerScope, indentString+" ");
 	    }
 	    writer.println(indentString+"}");
 	}

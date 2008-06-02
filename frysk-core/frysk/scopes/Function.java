@@ -43,6 +43,10 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import lib.dwfl.DwAt;
+import lib.dwfl.DwInl;
+import lib.dwfl.DwTag;
+import lib.dwfl.DwarfDie;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.LocationExpression;
 import frysk.debuginfo.PieceLocation;
@@ -52,10 +56,6 @@ import frysk.value.FunctionType;
 import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
-import lib.dwfl.DwAt;
-import lib.dwfl.DwInl;
-import lib.dwfl.DwTag;
-import lib.dwfl.DwarfDie;
 
 /**
  * In DWARF a subroutine is used to refer to an entity that can either be a
@@ -76,7 +76,16 @@ public class Function extends NamedScope {
 	locationExpression = new LocationExpression(die);
 	
 	parameters = new LinkedList();
-	die = die.getChild();
+	
+	DwarfDie tempDie = die.getOriginalDie();
+	if(tempDie != null){
+	    exploreDie(tempDie.getChild());
+	}
+	tempDie = die.getChild();
+	exploreDie(tempDie);
+    }
+
+    private void exploreDie(DwarfDie die){
 	while (die != null) {
 	    
 	    boolean artificial = die.hasAttribute(DwAt.ARTIFICIAL)
@@ -91,7 +100,6 @@ public class Function extends NamedScope {
 	}
 
     }
-
     public LinkedList getParameters ()
     {
       return parameters;

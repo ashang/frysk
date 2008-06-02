@@ -11,3 +11,4 @@ config.sub
 files.base
 files.jnixx
 *~
+*.class

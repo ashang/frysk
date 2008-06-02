@@ -104,20 +104,8 @@ public class Scope
   }
   
   public LinkedList getScopes(){
-
       if (this.scopes == null) {
-	  this.scopes = new LinkedList();
-	  DwarfDie die = this.die.getChild();
-	  
-	  while (die != null) {
-	      try{
-		  Scope scope = ScopeFactory.theFactory.getScope(die, typeFactory);
-		  this.scopes.add(scope);
-	      } catch (IllegalArgumentException e) {
-		  // not a scope
-	      }
-	      die = die.getSibling();
-	  }
+	  this.getObjectDeclarations();
       }
       return scopes;
   }
@@ -128,45 +116,61 @@ public class Scope
   
   public LinkedList getVariables() {
       if (this.variables == null) {
-	  this.variables = new LinkedList();
-	  DwarfDie die = this.die.getChild();
-	  
-	  while (die != null) {
-	      
-	      if (die.getTag().equals(DwTag.VARIABLE)) {
-		  Variable variable = new Variable(die);
-		  variables.add(variable);
-	      }
-	      die = die.getSibling();
-	  }
+	  this.getObjectDeclarations();
       }
       return variables;
   }
 
+  /**
+   * Searches for variables, scopes, and object declarations
+   * Variables are variable tags
+   * scopes are scope tags
+   * objectDeclarations are either variables or NamedScopes
+   * @return
+   */
   public LinkedList getObjectDeclarations() {
       if (this.objectDeclarations == null) {
-	  this.objectDeclarations = new LinkedList();
-	  DwarfDie die = this.die.getChild();
 	  
-	  while (die != null) {
-	      
-	      try{
-		  Scope scope = ScopeFactory.theFactory.getScope(die, typeFactory);
-		  if (scope instanceof NamedScope) {
-		      this.objectDeclarations.add(scope);
-		  }
-	      } catch (IllegalArgumentException e) {
-		    if (die.getTag().equals(DwTag.VARIABLE)) {
-			Variable variable = new Variable(die);
-			objectDeclarations.add(variable);
-		    }
-		}
-	      die = die.getSibling();
+	  this.objectDeclarations = new LinkedList();
+	  this.variables = new LinkedList();
+	  this.scopes = new LinkedList();
+	  
+	  DwarfDie die = this.die.getOriginalDie();
+	  if(die != null){
+	      exploreDie(die.getChild());
 	  }
+	  die = this.die.getChild();
+	  exploreDie(die);
       }
       return objectDeclarations;
   }
 
+  private void exploreDie(DwarfDie die){
+	  while (die != null) {
+
+	      try{
+		  Scope scope = ScopeFactory.theFactory.getScope(die, typeFactory);
+		  if (scope instanceof InlinedFunction) {
+		      // skip this and trust that it will be handled by
+		      // the virtual frame corresponding to this inlining.
+		  }else{
+		      scopes.add(scope);
+		  }
+		  if (scope instanceof NamedScope) {
+		      this.objectDeclarations.add(scope);
+		  }
+	      } catch (IllegalArgumentException e) {
+
+		    if (die.getTag().equals(DwTag.VARIABLE)) {
+			Variable variable = new Variable(die); 
+			objectDeclarations.add(variable);
+			variables.add(variable);
+		    }		    
+	      }
+	      die = die.getSibling();
+	  }
+  }
+  
   public SourceLocation getSourceLocation(){
       return this.sourceLocation;
   }
@@ -262,11 +266,10 @@ public class Scope
   }
   
   public void toPrint(DebugInfoFrame frame, PrintWriter writer, String indentString){
-  
     Iterator iterator = this.getVariables().iterator();
     while(iterator.hasNext()){
 	Variable variable = (Variable) iterator.next();
-	writer.println();
+	writer.println(); 
 	writer.print(indentString + " ");
 	variable.toPrint(writer, frame);
 	writer.print(" = ");
