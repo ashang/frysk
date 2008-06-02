@@ -24,6 +24,11 @@ Release 0.4, ????-??-??
    parameters.  Also, on subsequent runs, "-la" is always used unless
    other parameters are entered with the "run" or "start" command.
 
+-> Support was added for fully-qualified symbol notation using the
+   standard HPD "#" syntax (e.g. "#libc.so.6#malloc").  Ftrace now
+   uses this notation to communicate with the user in both directions,
+   FHPD recognizes the syntax although can't handle it yet.
+
 --
 
 Release 0.3, 2008-05-09
