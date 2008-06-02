@@ -173,38 +173,43 @@ public:
  * Convert convert to native and then spawn.
  */
 static int
-spawn(jnixx::env env, java::io::File exe,
+spawn(jnixx::env env, String exe,
       String in, String out, String err,
-      jnixx::array<String> args, jlong environ, tracing trace) {
+      jnixx::array<String> args,
+      jnixx::array<String> environ, tracing trace) {
   redirect_stdio io = redirect_stdio(env, in, out, err);
-  exec_program program = exec_program(env, exe.getPath(env), args, environ);
+  exec_program program = exec_program(env, exe, args, environ);
   return ::spawn(env, trace, io, program);
 }
 
 jint
-frysk::sys::Fork::spawn(jnixx::env env, java::io::File exe,
+frysk::sys::Fork::spawn(jnixx::env env, String exe,
 			String in, String out, String err,
-			jnixx::array<String> args, jlong environ) {
+			jnixx::array<String> args,
+			jnixx::array<String> environ) {
   return ::spawn(env, exe, in, out, err, args, environ, CHILD);
 }
 
 jint
-frysk::sys::Fork::ptrace(jnixx::env env, java::io::File exe,
+frysk::sys::Fork::ptrace(jnixx::env env, String exe,
 			 String in, String out, String err,
-			 jnixx::array<String> args, jlong environ) {
+			 jnixx::array<String> args,
+			 jnixx::array<String> environ) {
   return ::spawn(env, exe, in, out, err, args, environ, PTRACE);
 }
 
 jint
-frysk::sys::Fork::utrace(jnixx::env env, java::io::File exe,
+frysk::sys::Fork::utrace(jnixx::env env, String exe,
 			 String in, String out, String err,
-			 jnixx::array<String> args, jlong environ) {
+			 jnixx::array<String> args,
+			 jnixx::array<String> environ) {
   return ::spawn(env, exe, in, out, err, args, environ, UTRACE);
 }
 
 jint
-frysk::sys::Fork::daemon(jnixx::env env, java::io::File exe,
+frysk::sys::Fork::daemon(jnixx::env env, String exe,
 			 String in, String out, String err,
-			 jnixx::array<String> args, jlong environ) {
+			 jnixx::array<String> args,
+			 jnixx::array<String> environ) {
   return ::spawn(env, exe, in, out, err, args, environ, DAEMON);
 }

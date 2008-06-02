@@ -1,3 +1,17 @@
+2008-06-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java (spawn, ptrace, daemon, utrace): Change exe
+	parameter's type to String; change environ parameter's type to
+	String[]; replace lib with environ.
+	* jni/Fork.cxx: Update.
+	* cni/Fork.cxx: Update.
+	* cni/Fork.hxx: Update.
+	* jni/Fork.hxx: Update.
+	* Environ.java: Rewrite.
+	* cni/Environ.cxx (Environ::getenv): Update. New.
+	* jni/Environ.cxx (Environ::getenv): Update. New.
+	* TestEnviron.java: Re-implement.
+
 2008-05-25  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/FileDescriptor.cxx: Use jbyteArrayElements / jstringUTFChars.

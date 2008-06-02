@@ -44,6 +44,10 @@ package frysk.config;
  */
 
 public class Host {
+    static {
+	Runtime.load();
+    }
+
     /**
      * The word size of the host architecture (this is the
      * architecture for which the frysk executable built).

@@ -81,7 +81,8 @@ spawn(jnixx::env env, enum tracing trace, String exe,
       jint in_in, jint in_out,
       jint out_in, jint out_out) {
   redirect_inout inout = redirect_inout(in_in, in_out, out_in, out_out);
-  exec_program program = exec_program(env, exe, args, 0);
+  exec_program program = exec_program(env, exe, args,
+				      jnixx::array<String>(env, NULL));
   return ::spawn(env, trace, inout, program);
 }
 

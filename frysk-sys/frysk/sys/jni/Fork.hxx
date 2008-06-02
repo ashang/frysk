@@ -84,20 +84,23 @@ class exec_program : public exec {
   const char* exeElements;
   StringArrayChars argv;
   char** argvElements;
-  char** environ;
+  StringArrayChars environ;
+  char **environElements;
 public:
   exec_program(jnixx::env env, java::lang::String exe,
-	       jnixx::array<java::lang::String> args, jlong environ) {
+	       jnixx::array<java::lang::String> args,
+	       jnixx::array<java::lang::String> environ) {
     this->exe = jstringUTFChars(env, exe);
     this->argv = StringArrayChars(env, args);
-    this->environ = (char**)(long)environ;
+    this->environ = StringArrayChars(env, environ);
     // allocate the exec strings before the fork
     this->exeElements = this->exe.elements();
     this->argvElements = this->argv.elements();
+    this->environElements = this->environ.elements();
   }
   void execute() {
-    if (environ != NULL) {
-      ::execve(exeElements, argvElements, environ);
+    if (environElements != NULL) {
+      ::execve(exeElements, argvElements, environElements);
       ::perror("execve");
     } else {
       ::execv(exeElements, argvElements);
@@ -108,6 +111,7 @@ public:
   ~exec_program() {
     exe.release();
     argv.release();
+    environ.release();
   }
 };
 

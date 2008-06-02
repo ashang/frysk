@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,23 +37,49 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <unistd.h>
+package frysk.proc;
 
-#include "jni.hxx"
+import java.util.Arrays;
+import frysk.testbed.TestLib;
+import frysk.rsl.Log;
 
-#include "jnixx/elements.hxx"
+/**
+ * Test an Environment vector.
+ */
+public class TestEnviron extends TestLib {
+    private final Log fine = Log.fine(TestEnviron.class);
 
-using namespace java::lang;
-using namespace frysk::sys;
+    private void check(String test, String[] value, Environ environ) {
+	String[] strings = environ.toStringArray();
+	fine.log("check", value, "environ", environ, "strings", strings);
+	Arrays.sort(strings);
+	assertEquals(test, value, strings);
+    }
 
-jnixx::array<String>
-Environ::getenv(jnixx::env env) {
-  int size;
-  for (size = 0; ::environ[size]; size++);
-
-  jnixx::array<String> e = jnixx::array<String>::NewObjectArray(env, size);
-  for (int i = 0; i < size; i++) {
-    e.SetObjectArrayElement(env, i, String::NewStringUTF(env, ::environ[i]));
-  }
-  return e;
+    public void testEmpty() {
+	Environ environ = new Environ();
+	check("empty environ", new String[0], environ);
+    }
+    public void testFull() {
+	String[] strings = new String[] { "A=a", "B=b" };
+	Environ environ = new Environ(strings);
+	check("full environ", strings, environ);
+    }
+    public void testGet() {
+	String[] strings = new String[] { "A=a", "B=b" };
+	Environ environ = new Environ(strings);
+	assertEquals("get", "b", environ.get("B"));
+    }
+    public void testPut() {
+	String[] strings = new String[] { "A=a", "B=b" };
+	Environ environ = new Environ(strings);
+	environ.put("B", "bb");
+	check("put", new String[] { "A=a", "B=bb" }, environ);
+    }
+    public void testRemove() {
+	String[] strings = new String[] { "A=a", "B=b" };
+	Environ environ = new Environ(strings);
+	environ.remove("B");
+	check("remove", new String[] { "A=a" }, environ);
+    }
 }

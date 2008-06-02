@@ -39,90 +39,12 @@
 
 package frysk.sys;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
 /**
  * Interface to the process environment.
  */
-public class Environ
-{
-    private HashMap env;
-
-    public Environ ()
-    {
-	env = new HashMap();   
-	getEnvironment();
+public class Environ {
+    public static String[] get() {
+	return getenv();
     }
-    
-    /**
-     * Construct an environment hash given an existing environ.  Used for testing
-     */
-    Environ (long environ)
-    {
-	env = new HashMap();   
-	getEnvironment(environ);
-    }
-    
-    /**
-     * Get the environment hash.  Used for testing
-     * @return the array of environment values.
-     */
-    HashMap getEnvHash() {
-	return env;
-    }
-    
-    /**
-     * Get an environment variable.
-     * @param name is the environment variable name.
-     * @return the value of the variable.
-     */
-    String getEnv(String name) {
-	return (String)env.get(name);
-    }
-    
-    /**
-     * Set the value of an environment variable.
-     * @param name is the environment variable name.
-     * @param value is the environment variable value.
-     */
-    void setEnv(String name, String value) {
-	env.put(name, value);
-    }
-
-    /**
-     * Used by CNI code to add an environment variable.
-     * @param name is the variable=value pair.
-     */
-    void addEnviron(String name) {
-	if (name.length() != 0) {
-	    String envMember [] = name.split("=");
-	    env.put(envMember[0], envMember.length == 2 ? envMember[1] : "");
-	}
-    }
-
-    /**
-     * Put the environment variables in env into char **environ form.
-     * @return the environ.
-     */
-    long putEnviron() {
-        Set keys = env.keySet();
-        Collection values= env.values();
-        Iterator valueIter = values.iterator();
-        Iterator keyIter= keys.iterator();
-        int idx = 0;
-        String[] envs = new String[values.size()];
-
-        while (keyIter.hasNext()) {
-            envs[idx] = (String)keyIter.next() + "=" + valueIter.next();
-            idx += 1;
-        }
-        return putEnvironment(envs);
-    }
-
-    native void getEnvironment();
-    native void getEnvironment(long environ);
-    native long putEnvironment(String[] envs);
+    private static native String[] getenv();
 }

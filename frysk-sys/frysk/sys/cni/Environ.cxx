@@ -37,46 +37,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <unistd.h>
+
 #include <gcj/cni.h>
 
 #include "frysk/sys/Environ.h"
 
+using namespace java::lang;
 
-void
-frysk::sys::Environ::getEnvironment()
-{
-  extern char **environ;
-  int env_idx;
+jstringArray
+frysk::sys::Environ::getenv() {
+  int size;
+  for (size = 0; environ[size]; size++);
 
-  for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
-}
-
-void
-frysk::sys::Environ::getEnvironment(jlong environ_p)
-{
-  int env_idx;
-  char ** environ = (char **) environ_p;
-
-  for (env_idx = 0; environ[env_idx]; env_idx++) 
-    frysk::sys::Environ::addEnviron (JvNewStringUTF (environ[env_idx]));
-}
-
-char **new_environ;
-
-jlong
-frysk::sys::Environ::putEnvironment(jstringArray envs) {
-  jstring* env_member = elements(envs);
-  int envs_length = JvGetArrayLength(envs);
-  new_environ = (char**)JvMalloc(sizeof(void*) * (envs_length + 1));
-  for (int i = 0; i < envs_length; i++) 
-    {
-      int sym_len = env_member[i]->length ();
-      char *sym = (char*)JvMalloc(sym_len + 1);
-      JvGetStringUTFRegion (env_member[i], 0, sym_len, sym);
-      sym[sym_len] = '\0';
-      new_environ[i] = sym;
-    }
-  new_environ[envs_length] = NULL;
-  return (jlong)new_environ;
+  jstringArray env =
+    (jstringArray) JvNewObjectArray(size, &String::class$, NULL);
+  for (int i = 0; i < size; i++) {
+    elements(env)[i] = JvNewStringUTF(environ[i]);
+  }
+  return env;
 }

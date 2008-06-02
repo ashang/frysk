@@ -39,6 +39,7 @@
 
 package frysk.proc.live;
 
+import frysk.proc.Environ;
 import java.io.File;
 import java.util.HashSet;
 import frysk.event.EventLoop;
@@ -270,8 +271,21 @@ public class LinuxPtraceHost extends LiveHost {
 		    fine.log(LinuxPtraceHost.this,
 			     "execute - requestCreateAttachedProc",
 			     exe);
+		    // If there are libs, construct an environ.
+		    Environ environ = null;
+		    if (libs != null) {
+			environ = new Environ(frysk.sys.Environ.get());
+			String ldLibraryPath = environ.get("LD_LIBRARY_PATH");
+			if (ldLibraryPath != null) {
+			    environ.put("LD_LIBRARY_PATH",
+					libs + ":" + ldLibraryPath);
+			} else {
+			    environ.put("LD_LIBRARY_PATH", libs);
+			}
+		    }
 		    ProcessIdentifier pid
-			= Fork.ptrace(exe, stdin, stdout, stderr, args, libs);
+			= Fork.ptrace(exe, stdin, stdout, stderr,
+				      args, environ.toStringArray());
 		    // See if the Host knows about this task.
 		    ProcessIdentifier myTid = Tid.get();
 		    LinuxPtraceTask myTask = getTask(myTid);

@@ -169,7 +169,8 @@ frysk::sys::PseudoTerminal::child(jnixx::env env, String exe,
 				  jnixx::array<String> args,
 				  String name) {
   redirect_tty tty = redirect_tty(env, name);
-  exec_program program = exec_program(env, exe, args, 0);
+  exec_program program = exec_program(env, exe, args,
+				      jnixx::array<String>(env, NULL));
   return ::spawn(env, CHILD, tty, program);
 }
 
@@ -177,6 +178,7 @@ jint
 frysk::sys::PseudoTerminal::daemon(jnixx::env env, String exe,
 				   jnixx::array<String> args, String name) {
   redirect_tty tty = redirect_tty(env, name);
-  exec_program program = exec_program(env, exe, args, 0);
+  exec_program program = exec_program(env, exe, args,
+				      jnixx::array<String>(env, NULL));
   return ::spawn(env, DAEMON, tty, program);
 }

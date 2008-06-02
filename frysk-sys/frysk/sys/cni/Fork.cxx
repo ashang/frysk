@@ -166,37 +166,36 @@ public:
  * Convert convert to native and then spawn.
  */
 static int
-spawn(java::io::File* exe,
-      jstring in, jstring out, jstring err,
-      jstringArray args, jlong environ, tracing trace) {
+spawn(jstring exe, jstring in, jstring out, jstring err,
+      jstringArray args, jstringArray environ, tracing trace) {
   redirect_stdio io = redirect_stdio(in, out, err);
-  exec_program program = exec_program(exe->getPath(), args, environ);
+  exec_program program = exec_program(exe, args, environ);
   return ::spawn(trace, io, program);
 }
 
 jint
-frysk::sys::Fork::spawn(java::io::File* exe,
+frysk::sys::Fork::spawn(jstring exe,
 			jstring in, jstring out, jstring err,
-			jstringArray args, jlong environ) {
+			jstringArray args, jstringArray environ) {
   return ::spawn(exe, in, out, err, args, environ, CHILD);
 }
 
 jint
-frysk::sys::Fork::ptrace(java::io::File* exe,
+frysk::sys::Fork::ptrace(jstring exe,
 			jstring in, jstring out, jstring err,
-			jstringArray args, jlong environ) {
+			jstringArray args, jstringArray environ) {
   return ::spawn(exe, in, out, err, args, environ, PTRACE);
 }
 
 jint
-frysk::sys::Fork::utrace(java::io::File* exe,
+frysk::sys::Fork::utrace(jstring exe,
 			jstring in, jstring out, jstring err,
-			jstringArray args, jlong environ) {
+			jstringArray args, jstringArray environ) {
   return ::spawn(exe, in, out, err, args, environ, UTRACE);
 }
 
 jint
-frysk::sys::Fork::daemon (java::io::File* exe, jstring in, jstring out,
-			  jstring err, jstringArray args, jlong environ) {
+frysk::sys::Fork::daemon (jstring exe, jstring in, jstring out, jstring err,
+			  jstringArray args, jstringArray environ) {
   return ::spawn(exe, in, out, err, args, environ, DAEMON);
 }

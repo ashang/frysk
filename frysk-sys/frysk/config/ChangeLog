@@ -1,3 +1,7 @@
+2008-06-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (static): Load the runtime.
+
 2008-05-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Runtime.java (nativeCall): New.

@@ -84,10 +84,14 @@ class exec_program : public exec {
   char** argv;
   char** environ;
 public:
-  exec_program(jstring exe, jstringArray args, jlong environ) {
+  exec_program(jstring exe, jstringArray args, jstringArray environ) {
     this->exePath = MALLOC_STRING(exe);
     this->argv = MALLOC_ARGV(args);
-    this->environ = (char**)(long)environ;
+    if (environ == NULL) {
+      this->environ = NULL;
+    } else {
+      this->environ = MALLOC_ARGV(environ);
+    }
   }
   void execute() {
     if (environ != NULL) {
@@ -102,6 +106,7 @@ public:
   ~exec_program() {
     JvFree(exePath);
     JvFree(argv);
+    JvFree(environ);
   }
 };
 

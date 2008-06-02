@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,22 +37,93 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+package frysk.proc;
 
-import frysk.junit.TestCase;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
- * Test environ support
+ * The environment vector.
  */
-public class TestEnviron extends TestCase {
-    public void testEnvironContainsPath() {
-	String[] environ = Environ.get();
-	int paths = 0;
-	for (int i = 0; i < environ.length; i++) {
-	    if (environ[i].startsWith("PATH=")) {
-		paths++;
-	    }
+public class Environ {
+    private final HashMap environ;
+
+    /**
+     * Create a new empty environment.
+     */
+    public Environ() {
+	environ = new HashMap();   
+    }
+    /**
+     * Create a new environment populated by the existing environ.
+     */
+    public Environ(String[] environ) {
+	this();
+	put(environ);
+    }
+
+    /**
+     * Return the environ as a string array.
+     */
+    public String[] toStringArray() {
+        Set entries = environ.entrySet();
+	String[] env = new String[environ.size()];
+	int j = 0;
+	for (Iterator i = entries.iterator(); i.hasNext(); ) {
+	    Entry e = (Entry)i.next();
+            String name = (String)e.getKey();
+	    String value = (String)e.getValue();
+	    env[j++] = name + "=" + value;
 	}
-	assertEquals("count of PATH variables found", 1, paths);
+	return env;
+    }
+
+    /**
+     * Get an environment variable.
+     * @param name is the environment variable name.
+     * @return the value of the variable.
+     */
+    public String get(String name) {
+	return (String)environ.get(name);
+    }
+    
+    /**
+     * Put the variable into the environ set with the provided value.
+     * @param name is the environment variable name.
+     * @param value is the environment variable value.
+     */
+    public void put(String name, String value) {
+	environ.put(name, value);
+    }
+
+    /**
+     * Decode then add an environment variable.
+     * @param name is the variable=value pair.
+     */
+    public void put(String name) {
+	String[] member = name.split("=");
+	if (member.length == 2) {
+	    environ.put(member[0], member[1]);
+	} else {
+	    environ.put(member[0], "");
+	}
+    }
+
+    /**
+     * Put all elements of the the ENVIRON array into the ENVIRON set.
+     */
+    public void put(String[] environ) {
+	for (int i = 0; i < environ.length; i++) {
+	    put(environ[i]);
+	}
+    }
+
+    /**
+     * Delete the entry.
+     */
+    public void remove(String name) {
+	environ.remove(name);
     }
 }
