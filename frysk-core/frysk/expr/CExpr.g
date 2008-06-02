@@ -684,6 +684,8 @@ PARSE_FQIDENT
                     part = part.substring(0, m.end());
                 }
             }
+            else
+                throw new RecognitionException("Expected symbol name, got `" + part + "'.");
 
             if (!Character.isJavaIdentifierStart(part.charAt(0)))
                 throw new RecognitionException("Invalid symbol `" + part + "'.");
