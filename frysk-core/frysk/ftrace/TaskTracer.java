@@ -40,7 +40,9 @@
 package frysk.ftrace;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import frysk.dwfl.ObjectFile;
@@ -225,6 +227,8 @@ class TaskTracer
     {
 	private DwflSymbol sym = null;
 	private final boolean isPlt;
+	private SourceBreakpoint observing = null;
+	private boolean invalid = false;
 
 	public FunctionEnterObserver() {
 	    this.isPlt = false;
@@ -233,6 +237,22 @@ class TaskTracer
 	public FunctionEnterObserver(PLTEntry entry) {
 	    addSymbol(entry.getSymbol());
 	    this.isPlt = true;
+	}
+
+	// Frysk doesn't get rid of disabled breakpoints, and turns
+	// them back on when _dl_debug_state observer triggers.  In
+	// invalidated state, the observer turns the breakpoint back
+	// off everytime it's hit.
+	public void invalidate() {
+	    invalid = true;
+	}
+
+	public void setObserving(SourceBreakpoint breakpoint) {
+	    this.observing = breakpoint;
+	}
+
+	public SourceBreakpoint getObserving() {
+	    return this.observing;
 	}
 
 	public void addSymbol(DwflSymbol symbol) {
@@ -255,6 +275,12 @@ class TaskTracer
 	}
 
     	public void updateHit(SourceBreakpoint breakpoint, Task task, long address) {
+
+	    if (invalid) {
+		Ftrace.steppingEngine.continueExecution(task);
+		return;
+	    }
+
 	    if (!isPlt
 		&& (address < sym.getAddress()
 		    // Some symbols are reported with size 0, and for
@@ -339,6 +365,12 @@ class TaskTracer
     // Map<Task, Map<address, FunctionEnterObserver>>
     private final Map symbolObserversForTask = new HashMap();
 
+    private Long getAddress(DwflSymbol sym, PLTEntry entry) {
+	long addr = entry != null ? entry.getAddress() : sym.getAddress();
+	Long addrL = new Long(addr);
+	return addrL;
+    }
+
     private synchronized FunctionEnterObserver getObserver(Task task,
 							   DwflSymbol sym,
 							   PLTEntry entry) {
@@ -349,8 +381,7 @@ class TaskTracer
 	    symbolObserversForTask.put(task, symbolObservers);
 	}
 
-	long addr = entry != null ? entry.getAddress() : sym.getAddress();
-	Long addrL = new Long(addr);
+	Long addrL = getAddress(sym, entry);
 	FunctionEnterObserver ob
 	    = (FunctionEnterObserver)symbolObservers.get(addrL);
 	if (ob == null) {
@@ -371,6 +402,7 @@ class TaskTracer
 	    else
 		bp = bpManager.addSymbolBreakpoint(sym);
 	    bp.addObserver(ob);
+	    ob.setObserving(bp);
 	    bpManager.enableBreakpoint(bp, task);
 	}
 	return ob;
@@ -396,6 +428,41 @@ class TaskTracer
 	ob.addSymbol(entry.getSymbol());
 	fine.log("Request for tracing PLT", entry.getSymbol(),
 		 "at", entry.getSymbol().getAddress());
+    }
+
+    public void untrace(Task task, List traceables) {
+
+	fine.log("Request to retract multiple traceables:", traceables.size());
+	for (Iterator it = traceables.iterator(); it.hasNext(); ) {
+	    Object traceable = it.next();
+
+	    final DwflSymbol symbol;
+	    final PLTEntry entry;
+	    if (traceable instanceof PLTEntry) {
+		entry = (PLTEntry)traceable;
+		symbol = entry.getSymbol();
+	    } else {
+		entry = null;
+		symbol = (DwflSymbol)traceable;
+	    }
+
+	    Map symbolObservers = (Map)symbolObserversForTask.get(task);
+	    if (symbolObservers == null)
+		// Cool, we are not even tracing it.
+		return;
+
+	    Long addrL = getAddress(symbol, entry);
+	    Object orig;
+	    if ((orig = symbolObservers.remove(addrL)) != null) {
+		fine.log("Retracting", symbol, "at", addrL.longValue());
+		FunctionEnterObserver ob = (FunctionEnterObserver)orig;
+		SourceBreakpoint bp = ob.getObserving();
+		BreakpointManager bpManager
+		    = Ftrace.steppingEngine.getBreakpointManager();
+		bpManager.disableBreakpoint(bp, task);
+		ob.invalidate();
+	    }
+	}
     }
 
     public void traceAddress(Task task,

@@ -252,18 +252,27 @@ public class FtraceController
 	}
     }
 
-    public void fileMapped(final Task task, ObjectFile objf,
-			   DwflModule module,
-			   final Ftrace.Driver driver) {
+    private List traceablesForModule(DwflModule module) {
 
 	Map symbolTable = SymbolFactory.getSymbolTable(module);
 	if (symbolTable.size() == 0)
 	    // In that case we also know there are no PLT entries,
 	    // because each PLT entry is defined on a symbol.
-	    return;
+	    return null;
 
 	List traceables = new ArrayList(symbolTable.values());
 	traceables.addAll(SymbolFactory.getPLTEntries(module, symbolTable));
+
+	return traceables;
+    }
+
+    public void fileMapped(final Task task, ObjectFile objf,
+			   DwflModule module,
+			   final Ftrace.Driver driver) {
+
+	List traceables = traceablesForModule(module);
+	if (traceables == null)
+	    return;
 
 	try {
 	    applySymbolRules
@@ -287,4 +296,16 @@ public class FtraceController
 	    ee.printStackTrace();
 	}
     }
+
+    public void fileUnmapped(final Task task, ObjectFile objf,
+			     DwflModule module,
+			     final Ftrace.Driver driver) {
+
+	List traceables = traceablesForModule(module);
+	if (traceables == null)
+	    return;
+
+	driver.untrace(task, traceables);
+    }
+
 }

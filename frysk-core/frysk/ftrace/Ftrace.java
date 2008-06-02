@@ -41,6 +41,7 @@ package frysk.ftrace;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,8 +106,14 @@ public class Ftrace {
 	 * ltrace what to do.
 	 */
 	void fileMapped(Task task, ObjectFile objf,
-			DwflModule module,
-			Driver driver);
+			DwflModule module, Driver driver);
+
+	/**
+	 * New library FILE was unmapped from task TASK.  Use DRIVER
+	 * to tell ltrace what to do.
+	 */
+	void fileUnmapped(Task task, ObjectFile objf,
+			  DwflModule module, Driver driver);
     }
 
     /**
@@ -151,6 +158,7 @@ public class Ftrace {
 	void traceSymbol(Task task, DwflSymbol symbol);
 	void tracePLTEntry(Task task, PLTEntry entry);
 	void traceAddress(Task task, Long addrToken, long bias, ObjectFile objf);
+	void untrace(Task task, List traceables);
     }
 
     // Non-null if we're using ltrace.
@@ -608,39 +616,51 @@ public class Ftrace {
 	    return null;
 	}
 
-	public Action updateMappedFile(Task task, MemoryMapping mapping) {
+	private void reportMapUnmap(Task task, MemoryMapping mapping, String what) {
 
-	    if (traceMmapUnmap) {
-		MemoryMapping.Part part0
-		    = (MemoryMapping.Part)mapping.parts.get(0);
-		long addr = part0.addressLow;
-		String event
-		    = "map " + ArchFormatter.toHexString(task, addr)
-		    + " " + mapping.path;
-		reporter.eventSingle(task, event);
-	    }
+	    MemoryMapping.Part part0 = (MemoryMapping.Part)mapping.parts.get(0);
 
+	    long addr = part0.addressLow;
+	    String event = what
+		+ ' ' + ArchFormatter.toHexString(task, addr)
+		+ ' ' + mapping.path;
 
-	    if (this.tracingController == null)
-		return Action.CONTINUE;
+	    reporter.eventSingle(task, event);
+	}
 
-	    if (mapping.path.equals("/SYSV00000000 (deleted)")) {
+	private ObjectFile objectFileForMapping(MemoryMapping mapping) {
+	    if (mapping.path.equals("/SYSV00000000 (deleted)"))
 		// This is most probably artificial name of SYSV
 		// shared memory "file".
-		return Action.CONTINUE;
-	    }
+		return null;
 
-	    ObjectFile objf = ObjectFile.buildFromFile(mapping.path);
-	    if (objf == null)
-		return Action.CONTINUE;
+	    return ObjectFile.buildFromFile(mapping.path);
+	}
 
-	    DwflModule module = getModuleForFile(task, mapping.path);
-
+	private Map getDriversForTask(Task task) {
 	    Map drivers = (Map)driversForTask.get(task);
 	    if (drivers == null) {
 		drivers = new HashMap();
 		driversForTask.put(task, drivers);
 	    }
+	    return drivers;
+	}
+
+	public Action updateMappedFile(Task task, MemoryMapping mapping) {
+
+	    if (traceMmapUnmap)
+		reportMapUnmap(task, mapping, "map");
+
+	    if (this.tracingController == null)
+		return Action.CONTINUE;
+
+	    ObjectFile objf = objectFileForMapping(mapping);
+	    if (objf == null)
+		return Action.CONTINUE;
+
+	    DwflModule module = getModuleForFile(task, mapping.path);
+
+	    Map drivers = getDriversForTask(task);
 	    Driver driver = new TaskTracer(Ftrace.this, task);
 	    drivers.put(mapping.path, driver);
 	    this.tracingController.fileMapped(task, objf, module, driver);
@@ -652,8 +672,26 @@ public class Ftrace {
 	public Action updateUnmappedFile(frysk.proc.Task task,
 					 MemoryMapping mapping)	{
 	    if (traceMmapUnmap)
-		reporter.eventSingle(task, "unmap " + mapping.path);
-	    return Action.CONTINUE;
+		reportMapUnmap(task, mapping, "unmap");
+
+	    if (this.tracingController == null)
+		return Action.CONTINUE;
+
+	    ObjectFile objf = objectFileForMapping(mapping);
+	    if (objf == null)
+		return Action.CONTINUE;
+
+	    DwflModule module = getModuleForFile(task, mapping.path);
+
+	    Map drivers = getDriversForTask(task);
+	    Driver driver = (Driver)drivers.get(mapping.path);
+	    if (driver == null)
+		throw new AssertionError("There should be a driver for `" + mapping.path + "'.");
+
+	    this.tracingController.fileUnmapped(task, objf, module, driver);
+
+	    task.requestUnblock(this);
+	    return Action.BLOCK;
 	}
 
 	public Action updateMappedPart(Task task, MemoryMapping mapping,
