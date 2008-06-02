@@ -1,3 +1,7 @@
+2008-06-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* NEWS: Mention argument passing via load/start/run.
+
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* NEWS: Mention reduced memory footprint.

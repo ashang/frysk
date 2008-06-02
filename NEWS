@@ -16,6 +16,13 @@ Release 0.4, ????-??-??
 -> Smaller memory foot-print when generating stack backtraces.
    Frysk has been changed to more aggressively release memory
    allocated by the unwinder.
+   
+-> New capability to pass args via the "load" command and when
+   fhpd is first started i.e., "$[/home/xxx] fhpd ls -la".  The 
+   /bin/ls command is loaded and the parameter "-la" will be passed
+   when a "start" or "run" command is issued with no overriding
+   parameters.  Also, on subsequent runs, "-la" is always used unless
+   other parameters are entered with the "run" or "start" command.
 
 --
 
