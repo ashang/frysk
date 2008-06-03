@@ -228,7 +228,6 @@ class TaskTracer
 	private DwflSymbol sym = null;
 	private final boolean isPlt;
 	private SourceBreakpoint observing = null;
-	private boolean invalid = false;
 
 	public FunctionEnterObserver() {
 	    this.isPlt = false;
@@ -237,14 +236,6 @@ class TaskTracer
 	public FunctionEnterObserver(PLTEntry entry) {
 	    addSymbol(entry.getSymbol());
 	    this.isPlt = true;
-	}
-
-	// Frysk doesn't get rid of disabled breakpoints, and turns
-	// them back on when _dl_debug_state observer triggers.  In
-	// invalidated state, the observer turns the breakpoint back
-	// off everytime it's hit.
-	public void invalidate() {
-	    invalid = true;
 	}
 
 	public void setObserving(SourceBreakpoint breakpoint) {
@@ -275,11 +266,6 @@ class TaskTracer
 	}
 
     	public void updateHit(SourceBreakpoint breakpoint, Task task, long address) {
-
-	    if (invalid) {
-		Ftrace.steppingEngine.continueExecution(task);
-		return;
-	    }
 
 	    if (!isPlt
 		&& (address < sym.getAddress()
@@ -460,7 +446,6 @@ class TaskTracer
 		BreakpointManager bpManager
 		    = Ftrace.steppingEngine.getBreakpointManager();
 		bpManager.disableBreakpoint(bp, task);
-		ob.invalidate();
 	    }
 	}
     }

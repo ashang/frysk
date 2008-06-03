@@ -240,7 +240,7 @@ public abstract class SourceBreakpoint
         }
         procEntry.breakpoints.clear();
         userState = DISABLED;
-        taskStateMap.remove(task);
+        taskStateMap.put(task, DISABLED);
     }
 
     /**

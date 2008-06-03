@@ -2,6 +2,11 @@
 
 	* FunctionBreakpoint.java: Do not use InlinedSubroutine.
 
+2008-06-03  Petr Machata  <pmachata@redhat.com>
+
+	* SourceBreakpoint.java (disableBreakpoint): Put DISABLED state
+	into task map instead of removing the state.
+
 2008-05-29  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchObserverInstaller.java (WatchpointObserver.addedTo):
