@@ -130,26 +130,6 @@ dwfl_frysk_proc_find_elf(Dwfl_Module *mod,
 }
 
 jlong
-lib::dwfl::Dwfl::dwflBegin(jnixx::env env, String jsysroot, jint pid) {
-  jstringUTFChars sysroot = jstringUTFChars(env, jsysroot);
-  static char* flags;
-  if (asprintf (&flags, ".debug:%s", sysroot.elements()) < 0)
-    return 0;
-  static Dwfl_Callbacks callbacks = {
-    &::dwfl_linux_proc_find_elf,
-    &::dwfl_standard_find_debuginfo,
-    NULL,
-    &flags,
-  };
-  ::Dwfl* dwfl = ::dwfl_begin(&callbacks);
-  ::dwfl_report_begin(dwfl);
-  ::dwfl_linux_proc_report(dwfl, (pid_t) pid);
-  // FIXME: needs to re-build the module table.
-  ::dwfl_report_end(dwfl, NULL, NULL);
-  return (jlong)dwfl;
-}
-
-jlong
 lib::dwfl::Dwfl::dwflBegin(jnixx::env env, String jsysroot) {
   jstringUTFChars sysroot = jstringUTFChars(env, jsysroot);
   static char* flags;

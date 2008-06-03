@@ -45,7 +45,6 @@ import java.util.List;
 
 import frysk.junit.Runner;
 import frysk.junit.TestCase;
-import frysk.sys.Pid;
 import frysk.testbed.LocalMemory;
 
 public class TestDwfl
@@ -116,7 +115,7 @@ public class TestDwfl
   
   public void testGetLine ()
   {
-    Dwfl dwfl = new Dwfl(Pid.get(), "");
+    Dwfl dwfl = DwflTestbed.createFromSelf();
     assertNotNull("dwfl", dwfl);
     DwflLine line = dwfl.getSourceLine(LocalMemory.getCodeAddr());
     assertNotNull("line", line);
@@ -131,7 +130,7 @@ public class TestDwfl
 
   public void testGetDie ()
   {
-    Dwfl dwfl = new Dwfl(Pid.get(), "");
+    Dwfl dwfl = DwflTestbed.createFromSelf();
     assertNotNull(dwfl);
     
     DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
@@ -172,7 +171,7 @@ public class TestDwfl
   // should be there. 
   public void testGetModules() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get(), "");
+    Dwfl dwfl = DwflTestbed.createFromSelf();
     DwflModule[] modules = dwfl.getModules();
     assertNotNull(modules);
     // Look for some modules that should be there.
@@ -196,7 +195,7 @@ public class TestDwfl
   // in the DwflLine records returned for a line.
   public void testGetAddresses() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get(), "");
+    Dwfl dwfl = DwflTestbed.createFromSelf();
     assertNotNull(dwfl);
     long addr = LocalMemory.getCodeAddr();
     DwflLine line = dwfl.getSourceLine(addr);
@@ -220,7 +219,7 @@ public class TestDwfl
   
   public void testGetCompliationUnitModule() 
   {
-    Dwfl dwfl = new Dwfl(Pid.get(), "");
+    Dwfl dwfl = DwflTestbed.createFromSelf();
     assertNotNull(dwfl);
     long addr = LocalMemory.getCodeAddr();
 

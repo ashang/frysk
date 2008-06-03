@@ -1,5 +1,14 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Dwfl.java (mapBegin(long), mapEnd(), mapModule): New.
+	(Dwfl(ProcessIdentifier,String)): Delete.
+	(dwflBegin(String,int)): Delete.
+	* jni/Dwfl.cxx: Update.
+	* cni/Dwfl.cxx: Update.
+	* DwflTestbed.java: New.
+	* TestDwarfDie.java: Use DwflTestbed.
+	* TestDwfl.java: Use DwflTestbed.
+
 	* DwarfDie.java: Make non-abstract.
 	(accept(DieVisitor)): Delete.
 	* DwarfDieFactory.java: Simplify.

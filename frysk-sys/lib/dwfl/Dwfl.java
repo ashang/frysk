@@ -40,9 +40,10 @@
 package lib.dwfl;
 
 import java.util.LinkedList;
-import frysk.sys.ProcessIdentifier;
+import frysk.rsl.Log;
 
 public class Dwfl {
+    private static final Log fine = Log.fine(Dwfl.class);
 
     private long pointer;
 
@@ -52,10 +53,6 @@ public class Dwfl {
   
     public Dwfl(String sysroot) {
 	pointer = dwflBegin(sysroot);
-    }
-
-    Dwfl(ProcessIdentifier pid, String sysroot) {
-	pointer = dwflBegin(sysroot, pid.intValue());
     }
 
     /**
@@ -175,23 +172,96 @@ public class Dwfl {
     }
   
     private static native long dwflBegin (String s);
-    private static native long dwflBegin(String s, int pid);
   
+    /**
+     * Start a refresh of the address map.
+     */
     public void reportBegin() {
+	fine.log(this, "reportBegin");
 	reportBegin(pointer);
     }
     private static native void reportBegin(long pointer);
-
+    /**
+     * Finish a refresh of the address map.
+     */
     public void reportEnd() {
+	fine.log(this, "reportEnd");
 	reportEnd(pointer);
     }
     private static native void reportEnd(long pointer);
-
+    /**
+     * Report a mapped component.
+     */
     public void reportModule(String moduleName, long low, long high) {
+	fine.log(this, "reportModule", moduleName, "low", low, "high", high);
 	reportModule(pointer, moduleName, low, high);
     }
     private static native void reportModule(long pointer, String moduleName,
 					    long low, long high);
+
+
+    private String name;
+    private long low;
+    private long high;
+    private int inode;
+    private int devMajor;
+    private int devMinor;
+    private long vdso;
+    /**
+     * Start refreshing the address map using raw information
+     * extracted from /proc/pid/maps.
+     */
+    public void mapBegin(long vdso) {
+	reportBegin();
+	this.vdso = vdso;
+	name = null;
+    }
+    /**
+     * Report a single raw line from /proc/pid/maps.
+     */
+    public void mapModule(String name, long low, long high,
+			  int inode, int devMajor, int devMinor) {
+	if (this.name != null && this.name.equals(name)
+	    && this.inode == inode
+	    && this.devMajor == devMajor
+	    && this.devMinor == devMinor) {
+	    // A repeat of a previous map (but with more addresses)
+	    // extend the address range.
+	    this.high = high;
+	} else {
+	    if (this.name != null) {
+		// There's a previous map, report and flush it.
+		reportModule(this.name, this.low, this.high);
+		this.name = null;
+	    }
+	    if (name.equals("")
+		|| (inode == 0 && devMajor == 0 && devMinor == 0)) {
+		// An empty map, do nothing.
+	    } else if (this.vdso == low) {
+		// A vdso, report it immediatly.
+		reportModule(name, low, high);
+	    } else {
+		// A new map, save it.
+		this.name = name;
+		this.low = low;
+		this.high = high;
+		this.inode = inode;
+		this.devMajor = devMajor;
+		this.devMinor = devMinor;
+	    }
+	}
+    }
+    /**
+     * Finish reporting a raw address map.
+     */
+    public void mapEnd() {
+	if (this.name != null) {
+	    // Report any dangling old map.
+	    reportModule(this.name, this.low, this.high);
+	    this.name = null;
+	}
+	reportEnd();
+    }
 
     protected native void dwfl_end ();
 

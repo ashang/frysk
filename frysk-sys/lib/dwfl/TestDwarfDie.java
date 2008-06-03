@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,14 +40,13 @@
 package lib.dwfl;
 
 import frysk.junit.TestCase;
-import frysk.sys.Pid;
 import frysk.testbed.LocalMemory;
 
 public class TestDwarfDie extends TestCase {
 
     
     public void testHasAttribute() {
-	Dwfl dwfl = new Dwfl(Pid.get(), "");
+	Dwfl dwfl = DwflTestbed.createFromSelf();
 	assertNotNull(dwfl);
 
 	// get CUDIE
@@ -65,7 +64,7 @@ public class TestDwarfDie extends TestCase {
     
     public void testGetCompilationUnit(){
 	long pc = LocalMemory.getCodeAddr();
-	Dwfl dwfl = new Dwfl(Pid.get(), "");
+	Dwfl dwfl = DwflTestbed.createFromSelf();
 	assertNotNull(dwfl);
 
 	// get CUDIE
@@ -87,7 +86,7 @@ public class TestDwarfDie extends TestCase {
 
     public void testGetModule(){
 	
-	Dwfl dwfl = new Dwfl(Pid.get(), "");
+	Dwfl dwfl = DwflTestbed.createFromSelf();
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
@@ -103,7 +102,7 @@ public class TestDwarfDie extends TestCase {
 
     public void testGetOffset(){
 
-	Dwfl dwfl = new Dwfl(Pid.get(), "");
+	Dwfl dwfl = DwflTestbed.createFromSelf();
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
