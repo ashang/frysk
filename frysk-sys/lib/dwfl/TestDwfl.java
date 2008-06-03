@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -62,9 +62,9 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
-    dwfl.dwfl_report_begin();
-    dwfl.dwfl_report_module("module", 0, 1);
-    dwfl.dwfl_report_end();
+    dwfl.reportBegin();
+    dwfl.reportModule("module", 0, 1);
+    dwfl.reportEnd();
   }
   
   public void testDwflModule()
@@ -74,9 +74,9 @@ public class TestDwfl
     
     String moduleName = "module";
     
-    dwfl.dwfl_report_begin();    
-    dwfl.dwfl_report_module(moduleName, 0, 1);
-    dwfl.dwfl_report_end();
+    dwfl.reportBegin();    
+    dwfl.reportModule(moduleName, 0, 1);
+    dwfl.reportEnd();
     
     DwflModule module = dwfl.getModule(0);
     assertNotNull("dwflModule", module);
@@ -89,10 +89,10 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
-    dwfl.dwfl_report_begin();
-    dwfl.dwfl_report_module("module1", 0, 1);
-    dwfl.dwfl_report_module("module2", 1, 3);
-    dwfl.dwfl_report_end();
+    dwfl.reportBegin();
+    dwfl.reportModule("module1", 0, 1);
+    dwfl.reportModule("module2", 1, 3);
+    dwfl.reportEnd();
     
     DwflModule module = dwfl.getModule(2);
     assertNotNull("dwflModule", module);
@@ -105,10 +105,10 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl("");
     assertNotNull("dwfl", dwfl);
     
-    dwfl.dwfl_report_begin();
-    dwfl.dwfl_report_module("module1", 0, 1);
-    dwfl.dwfl_report_module("module2", 1, 3);
-    dwfl.dwfl_report_end();
+    dwfl.reportBegin();
+    dwfl.reportModule("module1", 0, 1);
+    dwfl.reportModule("module2", 1, 3);
+    dwfl.reportEnd();
     
     DwflModule[] modules = dwfl.getModules();
     assertEquals("Two modules", 2, modules.length);

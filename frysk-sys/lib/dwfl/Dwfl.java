@@ -177,9 +177,21 @@ public class Dwfl {
     private static native long dwflBegin (String s);
     private static native long dwflBegin(String s, int pid);
   
-    public native void dwfl_report_begin();
-    public native void dwfl_report_end();
-    public native void dwfl_report_module(String moduleName, long low, long high);
+    public void reportBegin() {
+	reportBegin(pointer);
+    }
+    private static native void reportBegin(long pointer);
+
+    public void reportEnd() {
+	reportEnd(pointer);
+    }
+    private static native void reportEnd(long pointer);
+
+    public void reportModule(String moduleName, long low, long high) {
+	reportModule(pointer, moduleName, low, high);
+    }
+    private static native void reportModule(long pointer, String moduleName,
+					    long low, long high);
 
     protected native void dwfl_end ();
 

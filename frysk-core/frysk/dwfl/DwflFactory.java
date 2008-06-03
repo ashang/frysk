@@ -108,7 +108,7 @@ public class DwflFactory {
 	
 	Proc proc = task.getProc();
 	MemoryMap[] maps = proc.getMaps();
-	dwfl.dwfl_report_begin();
+	dwfl.reportBegin();
 
 	int count = 0;
 	String name = null;
@@ -133,8 +133,8 @@ public class DwflFactory {
 	// If map represents the vdso section, report vdso.
 	if (isVDSO(proc, maps[count])) {
 	    fine.log("Found the vdso!");
-	    dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
-				    maps[count].addressHigh);
+	    dwfl.reportModule(maps[count].name, maps[count].addressLow,
+			      maps[count].addressHigh);
 	} else {
 	    // If map represents an elf mapping store its data..
 	    name = maps[count].name;
@@ -151,16 +151,16 @@ public class DwflFactory {
 	    // if vdso report old (if old), flush old, then report vdso.
 	    if (isVDSO(proc, maps[count])) {
 		if (name != null)
-		    dwfl.dwfl_report_module(name, low, high);
+		    dwfl.reportModule(name, low, high);
 		
 		name = null;
-		dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
-					maps[count].addressHigh);
+		dwfl.reportModule(maps[count].name, maps[count].addressLow,
+				  maps[count].addressHigh);
 		continue;
 	    } else if (isEmptyMap(maps[count])) {
 		// if empty, report old (if old), flush old.
 		if (name != null)
-		    dwfl.dwfl_report_module(name, low, high);
+		    dwfl.reportModule(name, low, high);
 		
 		name = null;
 		continue;
@@ -173,7 +173,7 @@ public class DwflFactory {
 	    } else {
 		// if new elf, report old, store new
 		if (name != null) {
-		    dwfl.dwfl_report_module(name, low, high);
+		    dwfl.reportModule(name, low, high);
 		}
 		name = maps[count].name;
 		low = maps[count].addressLow;
@@ -187,10 +187,10 @@ public class DwflFactory {
 	// if last is elf, report elf.
 	if (! isEmptyMap(maps[maps.length - 1])
 	    && ! isVDSO(proc, maps[maps.length - 1])) {
-	    dwfl.dwfl_report_module(name, low, high);
+	    dwfl.reportModule(name, low, high);
 	}
 
-	dwfl.dwfl_report_end();
+	dwfl.reportEnd();
 	DwflModule module = dwfl.getModule(VDSOAddressLow(proc));
 
 	fine.log("updateDwfl main task", proc.getMainTask(),

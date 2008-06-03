@@ -62,7 +62,12 @@ extern "C" {
 							       size_t maxread),
 				       void *arg);
 }
-#define DWFL_POINTER ((::Dwfl *)GetPointer(env))
+
+// Grub the pointer out of the object; replace this with ...
+#define DWFL_POINTER_FIXME ((::Dwfl *)GetPointer(env))
+
+// Assume the method was parameterised with POINTER.
+#define DWFL_POINTER ((::Dwfl *)pointer)
 
 struct proc_memory_context {
   jnixx::env env;
@@ -160,19 +165,19 @@ lib::dwfl::Dwfl::dwflBegin(jnixx::env env, String jsysroot) {
 }
 
 void
-lib::dwfl::Dwfl::dwfl_report_begin(jnixx::env env) {
+lib::dwfl::Dwfl::reportBegin(jnixx::env env, jlong pointer) {
   ::dwfl_report_begin(DWFL_POINTER);
 }
 
 void
-lib::dwfl::Dwfl::dwfl_report_end(jnixx::env env) {
+lib::dwfl::Dwfl::reportEnd(jnixx::env env, jlong pointer) {
   ::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
 
 
 void
-lib::dwfl::Dwfl::dwfl_report_module(jnixx::env env, String jmoduleName,
-				    jlong low, jlong high) {
+lib::dwfl::Dwfl::reportModule(jnixx::env env, jlong pointer,
+			      String jmoduleName, jlong low, jlong high) {
   jstringUTFChars moduleName = jstringUTFChars(env, jmoduleName);
   ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
 		       (::Dwarf_Addr) low, (::Dwarf_Addr) high);  
@@ -180,7 +185,7 @@ lib::dwfl::Dwfl::dwfl_report_module(jnixx::env env, String jmoduleName,
 
 void
 lib::dwfl::Dwfl::dwfl_end(jnixx::env env) {
-  ::dwfl_end(DWFL_POINTER);
+  ::dwfl_end(DWFL_POINTER_FIXME);
 }
 
 
@@ -225,23 +230,23 @@ moduleAdder(Dwfl_Module *module, void **, const char *name,
 void
 lib::dwfl::Dwfl::dwfl_getmodules(jnixx::env env) {
   int numModules = 0;
-  ::dwfl_getmodules(DWFL_POINTER, ::moduleCounter, &numModules, 0);
+  ::dwfl_getmodules(DWFL_POINTER_FIXME, ::moduleCounter, &numModules, 0);
   module_adder_context adderData
     = module_adder_context(env, *this,
 			   DwflModuleArray::NewObjectArray(env, numModules));
-  ::dwfl_getmodules(DWFL_POINTER, moduleAdder, &adderData, 0);
+  ::dwfl_getmodules(DWFL_POINTER_FIXME, moduleAdder, &adderData, 0);
   SetModules(env, adderData.moduleArray);
 }
 
 jlong
 lib::dwfl::Dwfl::dwfl_getsrc(jnixx::env env, jlong addr){
-  return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
+  return (jlong) ::dwfl_getsrc(DWFL_POINTER_FIXME, (::Dwarf_Addr) addr);
 }
 
 lib::dwfl::DwflDieBias
 lib::dwfl::Dwfl::dwfl_addrdie(jnixx::env env, jlong addr){
   Dwarf_Addr bias;
-  Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
+  Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER_FIXME, (::Dwarf_Addr) addr, &bias);
   if(die == NULL)
     return lib::dwfl::DwflDieBias(env, NULL);
   lib::dwfl::DwflModule module = lib::dwfl::Dwfl::getModule(env, addr);
@@ -251,12 +256,12 @@ lib::dwfl::Dwfl::dwfl_addrdie(jnixx::env env, jlong addr){
 
 jlong
 lib::dwfl::Dwfl::dwfl_addrmodule(jnixx::env env, jlong addr) {
-  return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
+  return (jlong) ::dwfl_addrmodule(DWFL_POINTER_FIXME, (Dwarf_Addr) addr);	
 }
 
 lib::dwfl::DwflModule
 lib::dwfl::Dwfl::getModule(jnixx::env env, jlong addr) {
-  Dwfl_Module *module = ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);
+  Dwfl_Module *module = ::dwfl_addrmodule(DWFL_POINTER_FIXME, (Dwarf_Addr) addr);
   if (!module) {
     return lib::dwfl::DwflModule(env, NULL);
   } else {

@@ -72,7 +72,7 @@ extern "C"
 								size_t maxread),
 					void *arg);
 }
-#define DWFL_POINTER (::Dwfl *) this->pointer
+#define DWFL_POINTER ((::Dwfl *) pointer)
 
 static ssize_t
 read_proc_memory (void *arg, void *data, GElf_Addr address,
@@ -174,21 +174,19 @@ lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
 }
 
 void
-lib::dwfl::Dwfl::dwfl_report_begin()
-{
+lib::dwfl::Dwfl::reportBegin(jlong pointer) {
   ::dwfl_report_begin(DWFL_POINTER);
 }
 
 void
-lib::dwfl::Dwfl::dwfl_report_end()
-{
+lib::dwfl::Dwfl::reportEnd(jlong pointer) {
   ::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
 
 
 void
-lib::dwfl::Dwfl::dwfl_report_module(jstring moduleName, jlong low, jlong high)
-{
+lib::dwfl::Dwfl::reportModule(jlong pointer, jstring moduleName,
+			      jlong low, jlong high) {
   jsize len = JvGetStringUTFLength(moduleName);
   char modName[len+1]; 
 	

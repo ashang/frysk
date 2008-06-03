@@ -1,3 +1,12 @@
+2008-06-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Dwfl.java (reportBegin): Replace dwfl_report_begin.
+	(reportEnd): Replace dwfl_report_end.
+	(reportModule): Replace dwfl_report_module.
+	* TestDwfl.java: Update.
+	* jni/Dwfl.cxx: Update.
+	* cni/Dwfl.cxx: Update.
+
 2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestDwfl.java: Removed bad imports.
