@@ -1,4 +1,4 @@
-2008-05-03  Teresa Thomas  <tthomas@redhat.com>
+2008-06-03  Teresa Thomas  <tthomas@redhat.com>
 
 	* Expression.java(getType): Use CTypeEvaluator.type().
 	* CTypeEvaluator.g (typeCast): Delete,
