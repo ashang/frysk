@@ -607,7 +607,7 @@ public class Ftrace {
 
 	private DwflModule getModuleForFile(Task task, String path) {
 	    Dwfl dwfl = frysk.dwfl.DwflCache.getDwfl(task);
-	    DwflModule[] modules = dwfl.getModulesForce();
+	    DwflModule[] modules = dwfl.getModules();
 	    for (int i = 0; i < modules.length; ++i) {
 		String name = modules[i].getName();
 		if (name.equals(path))

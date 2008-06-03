@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,36 +44,51 @@ import java.util.LinkedList;
 /**
  * A wrapper object around the libdwfl Dwfl_Module structure.
  */
-public class DwflModule
-{
+public class DwflModule {
 
     protected LinkedList pubNames;
     protected LinkedList symbolTable;
     
-    private long pointer;
+    private final long pointer;
+    private final Dwfl parent;
+    private final String name;
+    private final long low;
+    private final long high;
 
-    protected final Dwfl parent;
+    DwflModule(long val, Dwfl parent, String name, long low, long high) {
+	this.pointer = val;
+	this.parent = parent;
+	this.name = name;
+	this.low = low;
+	this.high = high;
+    }
 
-    protected String name;
   
     public String toString() {
 	return name + " pointer: 0x" + Long.toHexString(pointer);
     }
-    public DwflModule(long val, Dwfl parent) {
-	this(val, parent, null);
-    }
-  
-    DwflModule (long val, Dwfl parent, String name) {
-	this.pointer = val;
-	this.parent = parent;
-	this.name = name;
+
+    public long lowAddress() {
+	return low;
     }
 
+    public long highAddress() {
+	return high;
+    }
 
     protected long getPointer () {
 	return pointer;
     }
 
+    /**
+     * Get the name of the module.
+     *
+     * @return the name
+     */
+    public String getName() {
+	return name;
+    }
+  
     protected Dwfl getParent () {
 	return this.parent;
     }
@@ -101,13 +116,6 @@ public class DwflModule
     private native DwarfDie offdie(long die, long offset);
 
     
-    /**
-     * Get the name of the module.
-     *
-     * @return the name
-     */
-    public native String getName();
-  
     public native void getSymbol(long address, SymbolBuilder symbolBuilder);
   
     private native ModuleElfBias module_getelf();

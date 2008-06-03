@@ -177,61 +177,13 @@ lib::dwfl::Dwfl::reportEnd(jnixx::env env, jlong pointer) {
 }
 
 
-void
+jlong
 lib::dwfl::Dwfl::reportModule(jnixx::env env, jlong pointer,
 			      String jmoduleName, jlong low, jlong high) {
   jstringUTFChars moduleName = jstringUTFChars(env, jmoduleName);
-  ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
-		       (::Dwarf_Addr) low, (::Dwarf_Addr) high);  
-}
-
-static int
-moduleCounter(Dwfl_Module *, void **, const char *,
-	      Dwarf_Addr, void *arg) {
-  int *iarg = (int *)arg;
-  (*iarg)++;
-  return DWARF_CB_OK;
-}
-
-typedef jnixx::array<lib::dwfl::DwflModule> DwflModuleArray;
-struct module_adder_context {
-  jnixx::env env;
-  lib::dwfl::Dwfl dwfl;
-  DwflModuleArray moduleArray;
-  int index;
-  module_adder_context(jnixx::env env, lib::dwfl::Dwfl dwfl,
-		       DwflModuleArray moduleArray) {
-    this->env = env;
-    this->dwfl = dwfl;
-    this->moduleArray = moduleArray;
-    this->index = 0;
-  }
-};
-
-static int
-moduleAdder(Dwfl_Module *module, void **, const char *name,
-	    Dwarf_Addr, void *arg) {
-  module_adder_context *context = (module_adder_context *)arg;
-  String jname = String::NewStringUTF(context->env, name);
-  lib::dwfl::DwflModule m = lib::dwfl::DwflModule::New(context->env,
-						       (jlong)module,
-						       context->dwfl,
-						       jname);
-  context->moduleArray.SetObjectArrayElement(context->env, context->index++, m);
-  m.DeleteLocalRef(context->env);
-  jname.DeleteLocalRef(context->env);
-  return DWARF_CB_OK;
-}
-
-void
-lib::dwfl::Dwfl::dwfl_getmodules(jnixx::env env) {
-  int numModules = 0;
-  ::dwfl_getmodules(DWFL_POINTER_FIXME, ::moduleCounter, &numModules, 0);
-  module_adder_context adderData
-    = module_adder_context(env, *this,
-			   DwflModuleArray::NewObjectArray(env, numModules));
-  ::dwfl_getmodules(DWFL_POINTER_FIXME, moduleAdder, &adderData, 0);
-  SetModules(env, adderData.moduleArray);
+  return (jlong) ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
+				      (::Dwarf_Addr) low,
+				      (::Dwarf_Addr) high);  
 }
 
 jlong
@@ -248,21 +200,6 @@ lib::dwfl::Dwfl::dwfl_addrdie(jnixx::env env, jlong addr){
   lib::dwfl::DwflModule module = lib::dwfl::Dwfl::getModule(env, addr);
   lib::dwfl::DwarfDie dwdie = GetFactory(env).makeDie(env, (jlong) die, module);
   return lib::dwfl::DwflDieBias::New(env, dwdie, (jlong)bias);
-}
-
-jlong
-lib::dwfl::Dwfl::dwfl_addrmodule(jnixx::env env, jlong addr) {
-  return (jlong) ::dwfl_addrmodule(DWFL_POINTER_FIXME, (Dwarf_Addr) addr);	
-}
-
-lib::dwfl::DwflModule
-lib::dwfl::Dwfl::getModule(jnixx::env env, jlong addr) {
-  Dwfl_Module *module = ::dwfl_addrmodule(DWFL_POINTER_FIXME, (Dwarf_Addr) addr);
-  if (!module) {
-    return lib::dwfl::DwflModule(env, NULL);
-  } else {
-    return lib::dwfl::DwflModule::New(env, (jlong)module, *this);
-  }
 }
 
 jlong

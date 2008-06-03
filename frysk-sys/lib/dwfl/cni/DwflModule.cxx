@@ -64,15 +64,6 @@
 
 #define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
 
-jstring
-lib::dwfl::DwflModule::getName()
-{
-  if (!name)
-    name = JvNewStringUTF(dwfl_module_info(DWFL_MODULE_POINTER,
-					   0, 0, 0, 0, 0, 0, 0));
-  return name;
-}
-
 lib::dwfl::ModuleElfBias*
 lib::dwfl::DwflModule::module_getelf()
 {
@@ -393,10 +384,12 @@ lib::dwfl::DwflModule::getDebuginfo()
 namespace {
   struct each_pubname_context {
     lib::dwfl::DwflModule* const dwflModule;
+    lib::dwfl::Dwfl* parent;
     Dwarf_Addr const bias;
 
-    each_pubname_context(lib::dwfl::DwflModule* m, Dwarf_Addr b)
-      : dwflModule(m), bias(b)
+    each_pubname_context(lib::dwfl::DwflModule* m, lib::dwfl::Dwfl* p,
+			 Dwarf_Addr b)
+      : dwflModule(m), parent(p), bias(b)
     {}
   };
 
@@ -404,7 +397,7 @@ namespace {
   each_pubname (Dwarf *dwarf, Dwarf_Global *gl, void* data)
   {
     each_pubname_context const* context = static_cast<each_pubname_context*>(data);
-    lib::dwfl::Dwfl* dwfl = context->dwflModule->parent;
+    lib::dwfl::Dwfl* dwfl = context->parent;
 
     Dwarf_Die* die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
 
@@ -428,7 +421,7 @@ lib::dwfl::DwflModule::get_pubnames()
 
   if (dwarf != NULL)
     {
-      ::each_pubname_context ctx(this, bias);
+      ::each_pubname_context ctx(this, parent, bias);
       ::dwarf_getpubnames(dwarf, each_pubname, &ctx, 0);
     }
 }

@@ -1,3 +1,8 @@
+2008-06-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Use DwflModule.getModules() and not
+	.getModulesForce.
+
 2008-06-02  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java, FtraceController.java, TaskTracer.java: Retract

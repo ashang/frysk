@@ -173,7 +173,7 @@ lib::dwfl::Dwfl::reportEnd(jlong pointer) {
 }
 
 
-void
+jlong
 lib::dwfl::Dwfl::reportModule(jlong pointer, jstring moduleName,
 			      jlong low, jlong high) {
   jsize len = JvGetStringUTFLength(moduleName);
@@ -182,8 +182,9 @@ lib::dwfl::Dwfl::reportModule(jlong pointer, jstring moduleName,
   JvGetStringUTFRegion(moduleName, 0, len, modName);
   modName[len] = '\0';
 	
-  ::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
-		       (::Dwarf_Addr) high);  
+  return (jlong) ::dwfl_report_module(DWFL_POINTER, modName,
+				      (::Dwarf_Addr) low, 
+				      (::Dwarf_Addr) high);  
 }
 
 extern "C" int moduleCounter(Dwfl_Module *, void **, const char *,
@@ -201,43 +202,6 @@ struct ModuleAdderData
   DwflModuleArray *moduleArray;
   int index;
 };
-
-extern "C" int moduleAdder(Dwfl_Module *module, void **, const char *name,
-			   Dwarf_Addr, void *arg)
-{
-  ModuleAdderData *adderData = (ModuleAdderData *)arg;
-  
-  elements(adderData->moduleArray)[adderData->index++]
-    = new lib::dwfl::DwflModule((jlong)module, adderData->dwfl, JvNewStringUTF(name));
-  return DWARF_CB_OK;
-}
-
-typedef JArray<lib::dwfl::DwflModule *> DwflModuleArray;
-void
-lib::dwfl::Dwfl::dwfl_getmodules()
-{
-  int numModules = 0;
-  
-  ::dwfl_getmodules(DWFL_POINTER, moduleCounter, &numModules, 0);
-  ModuleAdderData adderData
-    = {this,
-       (DwflModuleArray *)JvNewObjectArray(numModules,
-					   &lib::dwfl::DwflModule::class$,
-					   0),
-       0};
-  ::dwfl_getmodules(DWFL_POINTER, moduleAdder, &adderData, 0);
-  this->modules = adderData.moduleArray;
-}
-
-//jlong[]
-//lib::dwfl::Dwfl::dwfl_get_modules(){
-//	
-//}
-
-//jlong[]
-//lib::dwfl::Dwfl::dwfl_getdwarf(){
-//	
-//}
 
 jlong
 lib::dwfl::Dwfl::dwfl_getsrc(jlong addr){
@@ -261,16 +225,6 @@ lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
 jlong
 lib::dwfl::Dwfl::dwfl_addrmodule(jlong addr){
   return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
-}
-
-lib::dwfl::DwflModule*
-lib::dwfl::Dwfl::getModule(jlong addr)
-{
-  Dwfl_Module *module = ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);
-
-  if (!module)
-    return 0;
-  return new lib::dwfl::DwflModule((jlong)module, this);
 }
 
 jlong

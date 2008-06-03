@@ -1,5 +1,18 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Dwfl.java (modules, modulesArray, reportBegin, reportModule):
+	Maintain a list of modules.
+	(getModules()): Re-implement.
+	(getModule(long)): Re-implement.
+	(getModulesForce()): Delete.
+	(dwfl_getmodules()): Delete.
+	(dwfl_addr_module(long)): Delete.
+	* DwflModule.java (DwflModule(long,Dwfl)): Delete.
+	(getName()): Re-implement.
+	(lowAddress(), highAddress()): New.
+	* cni/DwflModule.cxx: Update.
+	* jni/DwflModule.cxx: Update.
+	
 	* DwflModule.java (bias): Delete.
 
 	* Dwfl.java (callbackBegin, callbackEnd): New.

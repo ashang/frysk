@@ -1,3 +1,8 @@
+2008-06-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFrame.java: Use DwflModule.getModules() and not
+	.getModulesForce().
+
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* LibunwindAddressSpace.java (findProcInfo): Return

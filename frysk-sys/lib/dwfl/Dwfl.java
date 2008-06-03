@@ -39,16 +39,16 @@
 
 package lib.dwfl;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import frysk.rsl.Log;
+import inua.eio.ULong;
 
 public class Dwfl {
     private static final Log fine = Log.fine(Dwfl.class);
 
     private long pointer;
     private long callbacks;
-
-    private DwflModule[] modules;
 
     protected final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
@@ -79,41 +79,9 @@ public class Dwfl {
     private static native void dwflEnd(long pointer);
     private static native void callbacksEnd(long callbacks);
 
-
-    /**
-     * Get all the DwflModule objects associated with this Dwfl. Use a
-     * cached array if possible.
-     *
-     * @return an array of DwflModule.
-     */
-    public DwflModule[] getModules() {
-	if (modules == null) {
-	    dwfl_getmodules();
-	}
-	return modules;
-    }
-
-    /**
-     * Get new all the DwflModule objects associated with this
-     * Dwfl. This requests a new array from libdwfl and stores it as
-     * the cached list for return by getModules.
-     *
-     * @return an array of DwflModule.
-     */
-    public DwflModule[] getModulesForce()    {
-	dwfl_getmodules();
-	return modules;
-    }
-  
-    /**
-     * Get the DwflModule associated with an address.
-     *
-     * @return The module
-     */
-    public native DwflModule getModule(long addr);
-    
-    public DwflModule getCompliationUnitModule(DwarfDie cuDie){
-	return new DwflModule(dwfl_cumodule(cuDie.getPointer()), this);
+    public DwflModule getCompliationUnitModule(DwarfDie cuDie) {
+	long key = dwfl_cumodule(cuDie.getPointer());
+	return (DwflModule) modules.get(new Long(key));
     }
     
     private native long dwfl_cumodule(long cuDie);
@@ -186,11 +154,20 @@ public class Dwfl {
     }
   
     /**
+     * Maintain a set of known modules, it is rebuilt each time
+     * there's a report begin/end.
+     */
+    private final LinkedHashMap modules = new LinkedHashMap();
+    private DwflModule[] modulesArray;
+
+    /**
      * Start a refresh of the address map.
      */
     public void reportBegin() {
 	fine.log(this, "reportBegin");
 	reportBegin(pointer);
+	modules.clear();
+	modulesArray = null;
     }
     private static native void reportBegin(long pointer);
     /**
@@ -206,11 +183,15 @@ public class Dwfl {
      */
     public void reportModule(String moduleName, long low, long high) {
 	fine.log(this, "reportModule", moduleName, "low", low, "high", high);
-	reportModule(pointer, moduleName, low, high);
+	// XXX: Can elfutils be trusted to return identical module
+	// addresss across map rebuilds; and not recycle addresses?
+	// For moment assume not.
+	long module = reportModule(pointer, moduleName, low, high);
+	modules.put(new Long(module), new DwflModule(module, this,
+						     moduleName, low, high));
     }
-    private static native void reportModule(long pointer, String moduleName,
+    private static native long reportModule(long pointer, String moduleName,
 					    long low, long high);
-
 
     private String name;
     private long low;
@@ -276,6 +257,37 @@ public class Dwfl {
 	reportEnd();
     }
 
+    /**
+     * Return all the DwflModule objects associated with this
+     * Dwfl. Use a the cached array if possible.
+     *
+     * @return an array of DwflModule.
+     */
+    public DwflModule[] getModules() {
+	if (modulesArray == null) {
+	    modulesArray = new DwflModule[modules.size()];
+	    modules.values().toArray(modulesArray);
+	}
+	return modulesArray;
+    }
+
+    /**
+     * Get the DwflModule associated with an address.
+     *
+     * @return The module
+     */
+    public DwflModule getModule(long addr) {
+	getModules();
+	for (int i = 0; i < modulesArray.length; i++) {
+	    DwflModule module = modulesArray[i];
+	    if (ULong.GE(addr, module.lowAddress())
+		&& ULong.LT(addr, module.highAddress())) {
+		return module;
+	    }
+	}
+	return null;
+    }
+
     // protected native long[] dwfl_get_modules();
     // protected native long[] dwfl_getdwarf();
     protected native long dwfl_getsrc (long addr);
@@ -283,6 +295,4 @@ public class Dwfl {
     protected native DwflDieBias dwfl_addrdie (long addr);
   
     protected native long dwfl_addrmodule (long addr);
-
-    protected native void dwfl_getmodules();
 }

@@ -49,17 +49,6 @@ using namespace java::lang;
 
 #define DWFL_MODULE_POINTER ((Dwfl_Module *) GetPointer(env))
 
-String
-lib::dwfl::DwflModule::getName(jnixx::env env) {
-  String name = GetName(env);
-  if (name == NULL) {
-    name = String::NewStringUTF(env, dwfl_module_info(DWFL_MODULE_POINTER,
-						      0, 0, 0, 0, 0, 0, 0));
-    SetName(env, name);
-  }
-  return name;
-}
-
 lib::dwfl::ModuleElfBias
 lib::dwfl::DwflModule::module_getelf(jnixx::env env) {
   Dwarf_Addr bias = 0;
