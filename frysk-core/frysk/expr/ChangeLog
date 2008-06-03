@@ -1,3 +1,12 @@
+2008-05-03  Teresa Thomas  <tthomas@redhat.com>
+
+	* Expression.java(getType): Use CTypeEvaluator.type().
+	* CTypeEvaluator.g (typeCast): Delete,
+	Rename expr to type.
+	(MINUS): Remove ambiguity.
+	* CExprEvaluator.g (typeCast): Delete.
+	* CExpr.g (typeCast): Delete.
+	
 2008-05-30  Petr Machata  <pmachata@redhat.com>
 
 	* FQIdentifier.java: Implement soname expansion and soname
@@ -20,7 +29,7 @@
 
 	* CExpr.g (PARSE_FQIDENT): Forbid empty string as symbol name.
 	* FqIdentToken.java (wantPlt): Publish.
-
+	
 2008-05-28  Petr Machata  <pmachata@redhat.com>
 
 	* FqIdentToken.java: New file.

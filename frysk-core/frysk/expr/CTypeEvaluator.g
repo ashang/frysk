@@ -132,80 +132,82 @@ primitiveType
     |   "long"
     |   "float"
     |   "double"
-    ;
-        
-typeCast
-    :   primitiveType (STAR)?
-    ;        
+    ;  
 
 identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
-expr returns [Type returnVar=null] 
-{ Type t1, t2; String s1;}
+type returns [Type returnVar=null] 
+{ Type t1, t2, t3; String s1;}
 
-    :   (   #(PLUS t1=expr t2=expr)
-          | #(MINUS t1=expr t2=expr)
-          | #(STAR t1=expr t2=expr)
-          | #(DIVIDE t1=expr t2=expr)
-          | #(MOD t1=expr t2=expr)
+    :   (   #(PLUS t1=type t2=type)
+          | #(STAR t1=type t2=type)
+          | #(DIVIDE t1=type t2=type)
+          | #(MOD t1=type t2=type)
         ) {	
              returnVar = t1.getALU(t2,
                          exprSymTab.getWordSize())
                          .getResultType();  
         }
-    |   (   #(SHIFTLEFT  t1=expr t2=expr) 
-          | #(SHIFTRIGHT  t1=expr t2=expr)
-          | #(AMPERSAND  t1=expr t2=expr)
-          | #(BITWISEXOR  t1=expr t2=expr)
-          | #(BITWISEOR  t1=expr t2=expr)
+    |   ( #(MINUS type type) )=> #(MINUS t1=type t2=type)  {
+            returnVar = t1.getALU(t2,
+                         exprSymTab.getWordSize())
+                         .getResultType();   
+        }       
+    |   #(MINUS t1=type ) {
+            returnVar = t1;
+        }        
+    |   (   #(SHIFTLEFT  t1=type t2=type) 
+          | #(SHIFTRIGHT  t1=type t2=type)
+          | #(AMPERSAND  t1=type t2=type)
+          | #(BITWISEXOR  t1=type t2=type)
+          | #(BITWISEOR  t1=type t2=type)
         ) {
              returnVar = t1.getALU(t2, 
                          exprSymTab.getWordSize())
                          .getResultType();  
         }
-    |   (   #(AND  t1=expr t2=expr) 
-          | #(OR  t1=expr t2=expr)   
-          | #(NOT  t1=expr )
+    |   (   #(AND  t1=type t2=type) 
+          | #(OR  t1=type t2=type)   
+          | #(NOT  t1=type )
         ) {
             returnVar = t1.getALU(exprSymTab.getWordSize())
                         .getIntResultType(); 
         }
-    |   (   #(LESSTHAN  t1=expr t2=expr) 
-          | #(GREATERTHAN  t1=expr t2=expr)
-          | #(LESSTHANOREQUALTO  t1=expr t2=expr)
-          | #(GREATERTHANOREQUALTO  t1=expr t2=expr)
-          | #(EQUAL  t1=expr t2=expr)
-          | #(NOTEQUAL  t1=expr t2=expr)
+    |   (   #(LESSTHAN  t1=type t2=type) 
+          | #(GREATERTHAN  t1=type t2=type)
+          | #(LESSTHANOREQUALTO  t1=type t2=type)
+          | #(GREATERTHANOREQUALTO  t1=type t2=type)
+          | #(EQUAL  t1=type t2=type)
+          | #(NOTEQUAL  t1=type t2=type)
         ) {
              returnVar = t1.getALU(t2, 
                          exprSymTab.getWordSize())
                          .getIntResultType();  
         }
-   |    #(ADDRESS_OF t1=expr ) {
+   |    #(ADDRESS_OF t1=type ) {
             PointerType pointerType = new PointerType
                                          ("*", ByteOrder.LITTLE_ENDIAN, 
                                           exprSymTab.getWordSize(), t1);
             returnVar = pointerType;
         }
-    |   #(MEMORY t1=expr ) {
+    |   #(MEMORY t1=type ) {
             returnVar = ((PointerType)t1).getType();
         } 
-    |   (   #(TILDE t1=expr) 
-          | #(ARITHMETIC_PLUS  t1=expr)
-          | #(ARITHMETIC_MINUS  t1=expr)
-          | #(MINUS t1=expr )
+    |   (   #(TILDE t1=type) 
+          | #(ARITHMETIC_PLUS  t1=type)
+          | #(ARITHMETIC_MINUS  t1=type)
         ) {
             returnVar = t1;
         }
-    |   (   #(PREINCREMENT t1=expr)  
-          | #(PREDECREMENT  t1=expr)
-          | #(POSTINCREMENT  t1=expr)
-          | #(POSTDECREMENT  t1=expr) 
+    |   (   #(PREINCREMENT t1=type)  
+          | #(PREDECREMENT  t1=type)
+          | #(POSTINCREMENT  t1=type)
+          | #(POSTDECREMENT  t1=type) 
         ) {
             returnVar = t1; 
         }
-    |   #(COND_EXPR expr t1=expr t2=expr) {
+    |   #(COND_EXPR t3=type t1=type t2=type) {
             // FIXME: Is this a good enough estimate of result
             // type without actually evaluating conditional
             // expressions?
@@ -226,21 +228,21 @@ expr returns [Type returnVar=null]
     |   DOUBLE  {
             returnVar = doubleType;
         }
-    |   (   #(ASSIGNEQUAL t1=expr t2=expr) 
-          | #(PLUSEQUAL t1=expr t2=expr)
-          | #(MINUSEQUAL t1=expr t2=expr)
-          | #(TIMESEQUAL t1=expr t2=expr)
-          | #(DIVIDEEQUAL t1=expr t2=expr)
-          | #(MODEQUAL t1=expr t2=expr)
-          | #(SHIFTLEFTEQUAL t1=expr t2=expr) 
-          | #(SHIFTRIGHTEQUAL t1=expr t2=expr) 
-          | #(BITWISEANDEQUAL t1=expr t2=expr) 
-          | #(BITWISEXOREQUAL t1=expr t2=expr) 
-          | #(BITWISEOREQUAL t1=expr t2=expr) 
+    |   (   #(ASSIGNEQUAL t1=type t2=type) 
+          | #(PLUSEQUAL t1=type t2=type)
+          | #(MINUSEQUAL t1=type t2=type)
+          | #(TIMESEQUAL t1=type t2=type)
+          | #(DIVIDEEQUAL t1=type t2=type)
+          | #(MODEQUAL t1=type t2=type)
+          | #(SHIFTLEFTEQUAL t1=type t2=type) 
+          | #(SHIFTRIGHTEQUAL t1=type t2=type) 
+          | #(BITWISEANDEQUAL t1=type t2=type) 
+          | #(BITWISEXOREQUAL t1=type t2=type) 
+          | #(BITWISEOREQUAL t1=type t2=type) 
         ) {
             returnVar = t1;
         }
-    |   #(CAST pt:typeCast t2=expr) { 	
+    |   #(CAST pt:primitiveType t2=type) { 	
   	      if(pt.getText().compareTo("long") == 0) {
 	        returnVar = longType;
 	      }
@@ -263,19 +265,19 @@ expr returns [Type returnVar=null]
 	        }
           }
         }
-    |   #(EXPR_LIST t1=expr) {
-            returnVar = t1;
+    |   #(EXPR_LIST t3=type) {
+            returnVar = t3;
         }  
-    |   #(SIZEOF t1=expr) {
+    |   #(SIZEOF t1=type) {
            returnVar = longType; 
         }    
-    |   #(INDEX t1=expr t2=expr) {
+    |   #(INDEX t1=type t2=type) {
             returnVar = t1.getType();
         }  
-    |   #(SLICE t1=expr t2=expr expr) {
+    |   #(SLICE t1=type t2=type t3=type) {
             returnVar = t1.getSliceType();
         }
-    |   #(MEMBER t1=expr s1=identifier) {
+    |   #(MEMBER t1=type s1=identifier) {
             returnVar = ((CompositeType)t1).getMemberType(s1);
         } 
     |   ident:IDENT  {

@@ -81,7 +81,7 @@ public class Expression {
      */
     public Type getType() {
 	try {
-	    return new CTypeEvaluator(symTab).expr(ast);
+	    return new CTypeEvaluator(symTab).type(ast);
 	} catch (antlr.RecognitionException r) {    
 	    throw new RuntimeException(r);
 	}  

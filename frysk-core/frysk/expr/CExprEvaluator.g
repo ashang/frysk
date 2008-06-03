@@ -132,18 +132,14 @@ primitiveType
     |   "long"
     |   "float"
     |   "double"
-    ;
-        
-typeCast
-    :   primitiveType (STAR)?
-    ;        
+    ;      
 
 identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
 expr returns [Value returnVar=null] 
 { Value v1, v2, v3, log_expr; String s1; }
-    :   #(PLUS  v1=expr v2=expr)  {	
+    :   #(PLUS v1=expr v2=expr)  { 
             returnVar = v1.getType().getALU(v2.getType(), 
                         exprSymTab.getWordSize())
                         .add(v1, v2);  
@@ -396,7 +392,7 @@ expr returns [Value returnVar=null]
                         exprSymTab.getWordSize())
                         .bitWiseOrEqual(v1, v2);
         }
-    |   #(CAST pt:typeCast v2=expr) { 	         
+    |   #(CAST pt:primitiveType v2=expr) {
 	    if(pt.getText().compareTo("long") == 0) {
 	      returnVar = longType.createValue(0);
               returnVar.assign(v2);

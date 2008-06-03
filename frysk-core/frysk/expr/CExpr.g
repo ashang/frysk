@@ -313,11 +313,11 @@ prefix_expression
         // new operators 
         // delete operators
     |   cast_expression
-    |   postfix_expression 
+    |   postfix_expression
     ;
     
 cast_expression! 
-    :  LPAREN tc:typeCast RPAREN expr:prefix_expression
+    :  LPAREN tc:primitiveType (STAR)? RPAREN expr:prefix_expression
        { ## = #([CAST, "Cast"], #tc, #expr);}
     ;
   
@@ -388,10 +388,6 @@ primitiveType
     |   "float"
     |   "double"
     ;
-    
-typeCast
-    :   primitiveType (STAR)?
-    ;   
 
 constant
     :   OCTALINT
