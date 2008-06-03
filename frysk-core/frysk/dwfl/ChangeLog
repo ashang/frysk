@@ -1,5 +1,8 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflFactory.java (updateDwfl): Simplify by using Dwfl.mapBegin,
+	.mapModule, and .mapEnd.
+	
 	* DwflFactory.java: Use Dwfl.reportBegin .reportModule, and
 	.reportEnd.
 

@@ -90,109 +90,21 @@ public class DwflFactory {
     }
 
     /**
-     * Check if a given {@link frysk.proc.MemoryMap} does not refer to
-     * an elf image.
-     * 
-     * @param map the given {@link frysk.proc.MemoryMap}.
-     * @return true if the map section does not refer to an elf image.
-     */
-    private static boolean isEmptyMap (MemoryMap map) {
-	return map.name.equals("")
-	    || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
-    }
-    
-    /**
-     * Refresh an existing dwfl. Package private, use DwflCache.getDwfl().
+     * Refresh an existing dwfl.  Package private, use
+     * DwflCache.getDwfl().
      */
     static Dwfl updateDwfl(Dwfl dwfl, Task task) {
-	
 	Proc proc = task.getProc();
 	MemoryMap[] maps = proc.getMaps();
-	dwfl.reportBegin();
-
-	int count = 0;
-	String name = null;
-	long low = 0, high = 0, devMinor = 0, devMajor = 0;
-	int inode = 0;
-
-	// Creating Dwfl_Modules for each elf image and the vdso section.
-	// Condensing elf mappings into a single Dwfl_Module per elf image.
-
-	// Base case:
-	// While the map is empty skip
-
-	// XXX: Add an explicit if count == maps.length -1 break. What is the 
-	// failure case for not finding a [vdso]?
-        while (! isVDSO(proc, maps[count]) && isEmptyMap(maps[count]))
-        {
-            if (count == (maps.length-1))
-                break;
-            count++;
-        }
-
-	// If map represents the vdso section, report vdso.
-	if (isVDSO(proc, maps[count])) {
-	    fine.log("Found the vdso!");
-	    dwfl.reportModule(maps[count].name, maps[count].addressLow,
-			      maps[count].addressHigh);
-	} else {
-	    // If map represents an elf mapping store its data..
-	    name = maps[count].name;
-	    low = maps[count].addressLow;
-	    high = maps[count].addressHigh;
-	    inode = maps[count].inode;
-	    devMinor = maps[count].devMinor;
-	    devMajor = maps[count].devMajor;
+	long vdso = VDSOAddressLow(proc);
+	dwfl.mapBegin(vdso);
+	for (int i = 0; i < maps.length; i++) {
+	    MemoryMap map = maps[i];
+	    dwfl.mapModule(map.name, map.addressLow, map.addressHigh,
+			   map.devMajor, map.devMinor, map.inode);
 	}
-
-	// Induction Step:
-	while (++count < maps.length) {
-	    
-	    // if vdso report old (if old), flush old, then report vdso.
-	    if (isVDSO(proc, maps[count])) {
-		if (name != null)
-		    dwfl.reportModule(name, low, high);
-		
-		name = null;
-		dwfl.reportModule(maps[count].name, maps[count].addressLow,
-				  maps[count].addressHigh);
-		continue;
-	    } else if (isEmptyMap(maps[count])) {
-		// if empty, report old (if old), flush old.
-		if (name != null)
-		    dwfl.reportModule(name, low, high);
-		
-		name = null;
-		continue;
-	    } else if (maps[count].name.equals(name)
-		       && maps[count].inode == inode
-		       && maps[count].devMinor == devMinor
-		       && maps[count].devMajor == devMajor) {
-		// if old elf, increase highAddress.
-		high = maps[count].addressHigh;
-	    } else {
-		// if new elf, report old, store new
-		if (name != null) {
-		    dwfl.reportModule(name, low, high);
-		}
-		name = maps[count].name;
-		low = maps[count].addressLow;
-		high = maps[count].addressHigh;
-		inode = maps[count].inode;
-		devMinor = maps[count].devMinor;
-		devMajor = maps[count].devMajor;
-	    }
-	}
-
-	// if last is elf, report elf.
-	if (! isEmptyMap(maps[maps.length - 1])
-	    && ! isVDSO(proc, maps[maps.length - 1])) {
-	    dwfl.reportModule(name, low, high);
-	}
-
-	dwfl.reportEnd();
-	DwflModule module = dwfl.getModule(VDSOAddressLow(proc));
-
+	dwfl.mapEnd();
+	DwflModule module = dwfl.getModule(vdso);
 	fine.log("updateDwfl main task", proc.getMainTask(),
 		 "memory", proc.getMainTask().getMemory(),
 		 "dwfl module", module);
@@ -201,7 +113,6 @@ public class DwflFactory {
 	if (module != null) {
 	    module.setUserData(task.getMemory());
 	}
-
 	return dwfl;
     }
 }

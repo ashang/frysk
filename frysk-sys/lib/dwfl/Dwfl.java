@@ -203,9 +203,9 @@ public class Dwfl {
     private String name;
     private long low;
     private long high;
-    private int inode;
     private int devMajor;
     private int devMinor;
+    private int inode;
     private long vdso;
     /**
      * Start refreshing the address map using raw information
@@ -220,11 +220,12 @@ public class Dwfl {
      * Report a single raw line from /proc/pid/maps.
      */
     public void mapModule(String name, long low, long high,
-			  int inode, int devMajor, int devMinor) {
+			  int devMajor, int devMinor, int inode) {
 	if (this.name != null && this.name.equals(name)
-	    && this.inode == inode
 	    && this.devMajor == devMajor
-	    && this.devMinor == devMinor) {
+	    && this.devMinor == devMinor
+	    && this.inode == inode
+	    ) {
 	    // A repeat of a previous map (but with more addresses)
 	    // extend the address range.
 	    this.high = high;
@@ -235,7 +236,7 @@ public class Dwfl {
 		this.name = null;
 	    }
 	    if (name.equals("")
-		|| (inode == 0 && devMajor == 0 && devMinor == 0)) {
+		|| (devMajor == 0 && devMinor == 0 && inode == 0)) {
 		// An empty map, do nothing.
 	    } else if (this.vdso == low) {
 		// A vdso, report it immediatly.

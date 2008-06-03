@@ -1,5 +1,7 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Dwfl.java (mapModule): Fix parameter order.
+
 	* Dwfl.java (mapBegin(long), mapEnd(), mapModule): New.
 	(Dwfl(ProcessIdentifier,String)): Delete.
 	(dwflBegin(String,int)): Delete.
