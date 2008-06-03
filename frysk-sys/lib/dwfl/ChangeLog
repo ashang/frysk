@@ -1,5 +1,7 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflModule.java (bias): Delete.
+
 	* Dwfl.java (callbackBegin, callbackEnd): New.
 	(Dwfl(String), close()): Use.
 	* cni/Dwfl.cxx: Update.

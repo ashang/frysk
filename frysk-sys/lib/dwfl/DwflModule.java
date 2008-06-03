@@ -50,8 +50,6 @@ public class DwflModule
     protected LinkedList pubNames;
     protected LinkedList symbolTable;
     
-    protected long bias;
-  
     private long pointer;
 
     protected final Dwfl parent;
@@ -68,7 +66,6 @@ public class DwflModule
     DwflModule (long val, Dwfl parent, String name) {
 	this.pointer = val;
 	this.parent = parent;
-	this.bias = 0;
 	this.name = name;
     }
 
