@@ -46,14 +46,39 @@ public class Dwfl {
     private static final Log fine = Log.fine(Dwfl.class);
 
     private long pointer;
+    private long callbacks;
 
     private DwflModule[] modules;
 
     protected final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
-    public Dwfl(String sysroot) {
-	pointer = dwflBegin(sysroot);
+    /**
+     * Create a dwfl with the specified debug-info search path.
+     */
+    public Dwfl(String debugInfoPath) {
+	callbacks = callbacksBegin(debugInfoPath);
+	pointer = dwflBegin(callbacks);
     }
+    private static native long callbacksBegin(String debugInfoSearchPath);
+    private static native long dwflBegin(long callbacks);
+
+    protected void finalize () {
+	if (this.pointer != 0) {
+	    fine.log(this, "finalize doing close");
+	    close();
+	}
+    }
+    public void close() {
+	if (this.pointer != 0) {
+	    dwflEnd(pointer);
+	    this.pointer = 0;
+	    callbacksEnd(callbacks);
+	    this.callbacks = 0;
+	}
+    }
+    private static native void dwflEnd(long pointer);
+    private static native void callbacksEnd(long callbacks);
+
 
     /**
      * Get all the DwflModule objects associated with this Dwfl. Use a
@@ -114,10 +139,6 @@ public class Dwfl {
 	return pointer;
     }
 
-    protected void finalize () {
-	close();
-    }
-
     /**
      * Get all the DwflLine objects associated with a line in a source file.
      */
@@ -163,15 +184,6 @@ public class Dwfl {
     public DwarfDieFactory getFactory() {
 	return factory;
     }
-  
-    public void close() {
-	if (this.pointer != 0) {
-	    dwfl_end();
-	    this.pointer = 0;
-	}
-    }
-  
-    private static native long dwflBegin (String s);
   
     /**
      * Start a refresh of the address map.
@@ -263,8 +275,6 @@ public class Dwfl {
 	}
 	reportEnd();
     }
-
-    protected native void dwfl_end ();
 
     // protected native long[] dwfl_get_modules();
     // protected native long[] dwfl_getdwarf();

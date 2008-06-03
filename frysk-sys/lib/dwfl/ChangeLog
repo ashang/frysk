@@ -1,5 +1,10 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Dwfl.java (callbackBegin, callbackEnd): New.
+	(Dwfl(String), close()): Use.
+	* cni/Dwfl.cxx: Update.
+	* jni/Dwfl.cxx: Update.
+	
 	* Dwfl.java (mapModule): Fix parameter order.
 
 	* Dwfl.java (mapBegin(long), mapEnd(), mapModule): New.

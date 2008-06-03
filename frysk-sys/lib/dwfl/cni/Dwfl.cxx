@@ -73,6 +73,7 @@ extern "C"
 					void *arg);
 }
 #define DWFL_POINTER ((::Dwfl *) pointer)
+#define DWFL_CALLBACKS ((::Dwfl_Callbacks *) callbacks)
 
 static ssize_t
 read_proc_memory (void *arg, void *data, GElf_Addr address,
@@ -128,23 +129,37 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 }
 
 jlong
-lib::dwfl::Dwfl::dwflBegin(jstring jsysroot)
-{
-  int len = jsysroot->length ();
-  char sysroot[len+1]; 
-  JvGetStringUTFRegion(jsysroot, 0, len, sysroot);
-  sysroot[len] = '\0';
-  static char* flags;
-  if (asprintf (&flags, ".debug:%s", sysroot) < 0)
-    return (jlong) NULL;
+lib::dwfl::Dwfl::callbacksBegin(jstring debugInfoPath) {
+  char** path = (char**) JvMalloc(sizeof (char*));
+  int len = JvGetStringUTFLength(debugInfoPath);
+  *path = (char*)JvMalloc(len + 1);
+  JvGetStringUTFRegion(debugInfoPath, 0, len, *path);
+  (*path)[len] = '\0';
+  jlong callbacks = (jlong) JvMalloc(sizeof(Dwfl_Callbacks));
+  if (DWFL_CALLBACKS == 0) {
+    return 0;
+  }
+  DWFL_CALLBACKS->find_elf = &::dwfl_frysk_proc_find_elf;
+  DWFL_CALLBACKS->find_debuginfo = &::dwfl_standard_find_debuginfo;
+  DWFL_CALLBACKS->debuginfo_path = path;
+  return callbacks;
+}
 
-  static Dwfl_Callbacks callbacks = {
-    &::dwfl_frysk_proc_find_elf,
-    &::dwfl_standard_find_debuginfo,
-    NULL,
-    &flags,
-  };
-  return (jlong) ::dwfl_begin(&callbacks);
+void
+lib::dwfl::Dwfl::callbacksEnd(jlong callbacks) {
+  JvFree(*DWFL_CALLBACKS->debuginfo_path);
+  JvFree(DWFL_CALLBACKS->debuginfo_path);
+  JvFree(DWFL_CALLBACKS);
+}
+
+jlong
+lib::dwfl::Dwfl::dwflBegin(jlong callbacks) {
+  return (jlong) ::dwfl_begin(DWFL_CALLBACKS);
+}
+
+void
+lib::dwfl::Dwfl::dwflEnd(jlong pointer){
+  ::dwfl_end(DWFL_POINTER);
 }
 
 void
@@ -170,12 +185,6 @@ lib::dwfl::Dwfl::reportModule(jlong pointer, jstring moduleName,
   ::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
 		       (::Dwarf_Addr) high);  
 }
-
-void
-lib::dwfl::Dwfl::dwfl_end(){
-  ::dwfl_end(DWFL_POINTER);
-}
-
 
 extern "C" int moduleCounter(Dwfl_Module *, void **, const char *,
 			     Dwarf_Addr, void *arg)

@@ -43,6 +43,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
 #include "jni.hxx"
 
@@ -68,6 +69,9 @@ extern "C" {
 
 // Assume the method was parameterised with POINTER.
 #define DWFL_POINTER ((::Dwfl *)pointer)
+
+// Ditto for callbacks pointer.
+#define DWFL_CALLBACKS ((::Dwfl_Callbacks*)callbacks)
 
 struct proc_memory_context {
   jnixx::env env;
@@ -130,18 +134,36 @@ dwfl_frysk_proc_find_elf(Dwfl_Module *mod,
 }
 
 jlong
-lib::dwfl::Dwfl::dwflBegin(jnixx::env env, String jsysroot) {
-  jstringUTFChars sysroot = jstringUTFChars(env, jsysroot);
-  static char* flags;
-  if (asprintf (&flags, ".debug:%s", sysroot.elements()) < 0)
+lib::dwfl::Dwfl::callbacksBegin(jnixx::env env, String jdebugInfoPath) {
+  jstringUTFChars debugInfoPath = jstringUTFChars(env, jdebugInfoPath);
+  char** path = (char**) ::malloc(sizeof (char*));
+  if (path == NULL) {
     return 0;
-  static Dwfl_Callbacks callbacks = {
-    &::dwfl_frysk_proc_find_elf,
-    &::dwfl_standard_find_debuginfo,
-    NULL,
-    &flags,
-  };
-  return (jlong) ::dwfl_begin(&callbacks);
+  }
+  *path = ::strdup(debugInfoPath.elements());
+  jlong callbacks = (jlong) ::malloc(sizeof(Dwfl_Callbacks));
+  ::memset(DWFL_CALLBACKS, 0, sizeof(Dwfl_Callbacks));
+  DWFL_CALLBACKS->find_elf = &::dwfl_frysk_proc_find_elf;
+  DWFL_CALLBACKS->find_debuginfo = &::dwfl_standard_find_debuginfo;
+  DWFL_CALLBACKS->debuginfo_path = path;
+  return callbacks;
+}
+
+void
+lib::dwfl::Dwfl::callbacksEnd(jnixx::env env, jlong callbacks) {
+  ::free(*DWFL_CALLBACKS->debuginfo_path);
+  ::free(DWFL_CALLBACKS->debuginfo_path);
+  ::free(DWFL_CALLBACKS);
+}
+
+jlong
+lib::dwfl::Dwfl::dwflBegin(jnixx::env env, jlong callbacks) {
+  return (jlong) ::dwfl_begin(DWFL_CALLBACKS);
+}
+
+void
+lib::dwfl::Dwfl::dwflEnd(jnixx::env env, jlong pointer) {
+  ::dwfl_end(DWFL_POINTER);
 }
 
 void
@@ -162,12 +184,6 @@ lib::dwfl::Dwfl::reportModule(jnixx::env env, jlong pointer,
   ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
 		       (::Dwarf_Addr) low, (::Dwarf_Addr) high);  
 }
-
-void
-lib::dwfl::Dwfl::dwfl_end(jnixx::env env) {
-  ::dwfl_end(DWFL_POINTER_FIXME);
-}
-
 
 static int
 moduleCounter(Dwfl_Module *, void **, const char *,
