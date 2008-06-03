@@ -57,9 +57,6 @@ inline void verifyBounds(::jnixx::env env, ::jnixx::jbyteArray data,
   if (start < 0) {
     ::java::lang::ArrayIndexOutOfBoundsException::New(env, start).Throw(env);
   }
-  if (start >= data.GetArrayLength(env)) {
-    ::java::lang::ArrayIndexOutOfBoundsException::New(env, start).Throw(env);
-  }
   if (length < 0) {
     ::java::lang::ArrayIndexOutOfBoundsException::New(env, length).Throw(env);
   }
