@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-abstract public class DwarfDie {
+public class DwarfDie {
 
     private long pointer;
     private DwarfDie[] scopes;
@@ -464,8 +464,6 @@ abstract public class DwarfDie {
 	return get_entrypc();
     }
     
-    abstract public void accept(DieVisitor visitor);
-
     public native ArrayList getEntryBreakpoints();
 
     public native boolean isInlineDeclaration();

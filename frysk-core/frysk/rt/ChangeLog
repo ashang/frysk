@@ -1,3 +1,7 @@
+2008-06-03  Andrew Cagney  <cagney@redhat.com>
+
+	* FunctionBreakpoint.java: Do not use InlinedSubroutine.
+
 2008-05-29  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchObserverInstaller.java (WatchpointObserver.addedTo):

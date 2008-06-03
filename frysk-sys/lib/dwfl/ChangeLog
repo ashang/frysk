@@ -1,5 +1,11 @@
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
+	* DwarfDie.java: Make non-abstract.
+	(accept(DieVisitor)): Delete.
+	* DwarfDieFactory.java: Simplify.
+	* DieVisitor.java: Delete.
+	* die/: Delete.
+	
 	* Dwfl.java (reportBegin): Replace dwfl_report_begin.
 	(reportEnd): Replace dwfl_report_end.
 	(reportModule): Replace dwfl_report_module.

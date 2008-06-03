@@ -45,9 +45,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
+import lib.dwfl.DwarfDie;
 import lib.dwfl.DwflDieBias;
-import lib.dwfl.die.InlinedSubroutine;
 import frysk.proc.Task;
 import frysk.scopes.ConcreteInlinedFunction;
 import frysk.scopes.Function;
@@ -117,10 +116,10 @@ public class FunctionBreakpoint
 	    else
 		addrs = new LinkedList(entryAddrs);
 	    if (inlineDies != null) {
-                ListIterator iterator = inlineDies.listIterator();
-                while (iterator.hasNext()) {
-                    addrs.add(new Long(((InlinedSubroutine)iterator.next())
-                                       .getLowPC()));
+		for (ListIterator i = inlineDies.listIterator();
+		     i.hasNext(); ) {
+		    DwarfDie inlinedSubroutine = (DwarfDie)i.next();
+                    addrs.add(new Long(inlinedSubroutine.getLowPC()));
                 }
 		containsInlineInstances = true;
 	    }
