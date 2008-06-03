@@ -64,6 +64,21 @@ public class TestFerror extends TestLib {
 	TearDownExpect e = new TearDownExpect(new String[] {
 		Prefix.binFile("ferror").getAbsolutePath(),
 		"-e",
+		"cloneXX",
+		"--",
+		Integer.toString(task.getProc().getPid())});
+	e.expect("Tracing");
+	child.assertSendAddCloneWaitForAcks();
+	Task clone = child.findTaskUsingRefresh(false);
+	e.expect("Tracing " + clone.getProc().getPid()+"."+clone.getTid() );
+    }
+
+    public void testFerrorTracesPID_MissingSignal () {
+	SlaveOffspring child = SlaveOffspring.createChild();
+	Task task = child.findTaskUsingRefresh(true);
+	TearDownExpect e = new TearDownExpect(new String[] {
+		Prefix.binFile("ferror").getAbsolutePath(),
+		"-e",
 		"clone",
 		"--",
 		Integer.toString(task.getProc().getPid())});
