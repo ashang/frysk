@@ -1,3 +1,9 @@
+2008-06-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Dwfl.java (dwfl_addrmodule): Delete.
+	(reportModule): Try to re-use existing modules.
+	* TestDwfl.java (testModuleReuse()): New.
+
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Dwfl.java (modules, modulesArray, reportBegin, reportModule):

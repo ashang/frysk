@@ -106,6 +106,9 @@ public final class Log {
     public static Log fine(Class klass) {
 	return LogFactory.fine(klass);
     }
+    public static Log finest(Class klass) {
+	return LogFactory.finest(klass);
+    }
 
     // Static?
     private static Printer out = new Printer(new PrintWriter(System.out));

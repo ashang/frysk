@@ -83,6 +83,21 @@ public class TestDwfl
                module.getName().equals(moduleName));
   }
   
+    public void testModuleReuse() {
+	Dwfl dwfl = new Dwfl("");
+	assertNotNull("dwfl", dwfl);
+	dwfl.reportBegin();
+	dwfl.reportModule("module", 0, 1);
+	dwfl.reportEnd();
+	DwflModule module = dwfl.getModule(0);
+	assertEquals("module name", "module", module.getName());
+	// now refresh the info; should get the _same_ module.
+	dwfl.reportBegin();
+	dwfl.reportModule("module", 0, 1);
+	dwfl.reportEnd();
+	assertSame("refreshed module", module, dwfl.getModule(0));
+    }
+
   public void testDwflGetModule2()
   {
     Dwfl dwfl = new Dwfl("");

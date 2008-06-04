@@ -223,11 +223,6 @@ lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
 }
 
 jlong
-lib::dwfl::Dwfl::dwfl_addrmodule(jlong addr){
-  return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
-}
-
-jlong
 lib::dwfl::Dwfl::dwfl_cumodule(jlong cudie)
 {
   Dwfl_Module* module = ::dwfl_cumodule((Dwarf_Die*)cudie);

@@ -46,6 +46,7 @@ import inua.eio.ULong;
 
 public class Dwfl {
     private static final Log fine = Log.fine(Dwfl.class);
+    private static final Log finest = Log.finest(Dwfl.class);
 
     private long pointer;
     private long callbacks;
@@ -166,29 +167,48 @@ public class Dwfl {
     public void reportBegin() {
 	fine.log(this, "reportBegin");
 	reportBegin(pointer);
+	// fill modulesArray with the current modules and then clear
+	// the set.  Will iterate over the old modules so that they
+	// are re-used.
+	getModules();
 	modules.clear();
-	modulesArray = null;
     }
     private static native void reportBegin(long pointer);
+
     /**
      * Finish a refresh of the address map.
      */
     public void reportEnd() {
 	fine.log(this, "reportEnd");
 	reportEnd(pointer);
+	// Finished; scrub references to old modules.
+	modulesArray = null;
     }
     private static native void reportEnd(long pointer);
+
     /**
      * Report a mapped component.
      */
     public void reportModule(String moduleName, long low, long high) {
 	fine.log(this, "reportModule", moduleName, "low", low, "high", high);
-	// XXX: Can elfutils be trusted to return identical module
-	// addresss across map rebuilds; and not recycle addresses?
-	// For moment assume not.
-	long module = reportModule(pointer, moduleName, low, high);
-	modules.put(new Long(module), new DwflModule(module, this,
-						     moduleName, low, high));
+	long modulePointer = reportModule(pointer, moduleName, low, high);
+	for (int i = 0; i < modulesArray.length; i++) {
+	    DwflModule module = modulesArray[i];
+	    if (module.getName().equals(moduleName)
+		&& module.lowAddress() == low
+		&& module.highAddress() == high
+		&& module.getPointer() == modulePointer) {
+		// Could the pointer be changed; will the pointer
+		// change?
+		finest.log(this, "reportModule reusing", module);
+		modules.put(new Long(modulePointer), module);
+		return;
+	    }
+	}
+	DwflModule module = new DwflModule(modulePointer, this, moduleName,
+					   low, high);
+	finest.log(this, "reportModule creating", module);
+	modules.put(new Long(modulePointer), module);
     }
     private static native long reportModule(long pointer, String moduleName,
 					    long low, long high);
@@ -293,6 +313,4 @@ public class Dwfl {
     protected native long dwfl_getsrc (long addr);
   
     protected native DwflDieBias dwfl_addrdie (long addr);
-  
-    protected native long dwfl_addrmodule (long addr);
 }
