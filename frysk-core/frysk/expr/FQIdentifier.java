@@ -54,6 +54,9 @@ public class FQIdentifier {
     final public String symbol;
     final public String version;
     final public boolean wantPlt;
+    final public Long processId;
+    final public Long threadId;
+    final public Long frameNumber;
 
     final private int metasoname;
     final private static int soname_null = -1;
@@ -69,6 +72,16 @@ public class FQIdentifier {
 	this.symbol = tok.symbol;
 	this.version = tok.version;
 	this.wantPlt = tok.wantPlt;
+
+	if (tok.processId != null) {
+	    if (tok.threadId == null || tok.frameNumber == null)
+		throw new AssertionError("Either I need a pid, a tid, AND a " +
+					 "frame number, or neither of them.");
+	    this.processId = new Long(Long.parseLong(tok.processId, 10));
+	    this.threadId = new Long(Long.parseLong(tok.threadId, 10));
+	    this.frameNumber = new Long(Long.parseLong(tok.frameNumber, 10));
+	} else
+	    this.processId = this.threadId = this.frameNumber = null;
 
 	if (tok.line != null)
 	    this.line = new Long(Long.parseLong(tok.line, 10));

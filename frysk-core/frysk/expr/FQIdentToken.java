@@ -43,7 +43,8 @@ public class FQIdentToken
     extends antlr.CommonToken
 {
     public String dso = null, file = null, line = null,
-		  proc = null, symbol = null, version = null;
+	proc = null, symbol = null, version = null,
+	processId = null, threadId = null, frameNumber = null;
     public boolean wantPlt = false;
 
     public FQIdentToken(int t, String txt) {
@@ -58,6 +59,9 @@ public class FQIdentToken
 	    + (proc != null ? ", proc:" + proc : "")
 	    + (wantPlt ? ", pltref" : "")
 	    + (symbol != null ? ", symbol:" + symbol : "")
-	    + (version != null ? ", version:" + symbol : "") + "]";
+	    + (version != null ? ", version:" + symbol : "")
+	    + (processId != null ? (", dynamic:" + processId
+				    + "." + threadId + "#" + frameNumber) : "")
+	    + "]";
     }
 }

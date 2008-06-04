@@ -1,3 +1,15 @@
+2008-06-04  Petr Machata  <pmachata@redhat.com>
+
+	* FQIdentToken.java (processId, threadId, frameNumber): New fields.
+	* FQIdentifier.java: The same.
+	* CExpr.g:
+	(PARSE_FQIDENT): Move to the procedure of its own...
+	(parseFqIdent): ... that is here.
+	(LSQUARE): Dispatch to parseFqIdent, and if it succeeds, the token
+	was FQ identifier.  If it doesn't succeed, just answer '['.
+	(IDENT): Rewrite to call parseFqIdent.
+	(NUM): Likewise.
+
 2008-06-03  Teresa Thomas  <tthomas@redhat.com>
 
 	* Expression.java(getType): Use CTypeEvaluator.type().
