@@ -57,6 +57,11 @@ public class TestFstep extends TestLib {
      * the stepped program.
      */
     public void testFirstStep() throws Exception {
+	
+	if(unresolved(3364)){
+	    return;
+	}
+	
 	Elf e = new Elf(new File("/bin/true"), ElfCommand.ELF_C_READ);
     try {
 	ElfEHeader h = e.getEHeader();
@@ -79,6 +84,10 @@ public class TestFstep extends TestLib {
   }
     
     public void testFstepAcceptsPIDArgument() {
+	
+	if(unresolved(3364)){
+	    return;
+	}
 	
 	// Create an unattached child process.
 	SlaveOffspring child = SlaveOffspring.createChild();
