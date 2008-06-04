@@ -40,10 +40,10 @@
 package frysk.bindir;
 
 import frysk.config.Prefix;
-import frysk.testbed.TearDownExpect;
-import frysk.testbed.TestLib;
 import frysk.proc.Task;
 import frysk.testbed.SlaveOffspring;
+import frysk.testbed.TearDownExpect;
+import frysk.testbed.TestLib;
 
 public class TestFerror extends TestLib {
 
@@ -74,6 +74,9 @@ public class TestFerror extends TestLib {
     }
 
     public void testFerrorTracesPID_MissingSignal () {
+	if(unresolved(6587)){
+	    return;
+	}
 	SlaveOffspring child = SlaveOffspring.createChild();
 	Task task = child.findTaskUsingRefresh(true);
 	TearDownExpect e = new TearDownExpect(new String[] {

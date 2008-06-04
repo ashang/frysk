@@ -1,7 +1,13 @@
+2008-06-03  Sami Wagiaalla  <swagiaal@redhat.com> 
+ 
+	* TestFerror.java (testFerrorTracesPID_MissingSignal): 
+	Marked as unresolved. 
+ 
 2008-06-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFerror.java (testFerrorTracesPID_MissingSignal): New test.
 	(testFerrorTracesPID): Fixed test.
+	(testFerrorTracesPID_MissingSignal): Marked as unresolved.
 
 2008-05-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
