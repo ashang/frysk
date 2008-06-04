@@ -79,13 +79,6 @@ public class Dwfl {
     }
     private static native void dwflEnd(long pointer);
     private static native void callbacksEnd(long callbacks);
-
-    public DwflModule getCompliationUnitModule(DwarfDie cuDie) {
-	long key = dwfl_cumodule(cuDie.getPointer());
-	return (DwflModule) modules.get(new Long(key));
-    }
-    
-    private native long dwfl_cumodule(long cuDie);
     
     public DwflLine getSourceLine (long addr) {
 	long val = 0;

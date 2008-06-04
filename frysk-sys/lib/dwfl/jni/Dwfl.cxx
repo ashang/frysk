@@ -201,9 +201,3 @@ lib::dwfl::Dwfl::dwfl_addrdie(jnixx::env env, jlong addr){
   lib::dwfl::DwarfDie dwdie = GetFactory(env).makeDie(env, (jlong) die, module);
   return lib::dwfl::DwflDieBias::New(env, dwdie, (jlong)bias);
 }
-
-jlong
-lib::dwfl::Dwfl::dwfl_cumodule(jnixx::env env, jlong cudie) {
-  Dwfl_Module* module = ::dwfl_cumodule((Dwarf_Die*)cudie);
-  return (jlong)module;
-}

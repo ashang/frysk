@@ -231,19 +231,4 @@ public class TestDwfl
       }
     assertTrue(foundAddress);
   }
-  
-  public void testGetCompliationUnitModule() 
-  {
-    Dwfl dwfl = DwflTestbed.createFromSelf();
-    assertNotNull(dwfl);
-    long addr = LocalMemory.getCodeAddr();
-
-    DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
-    assertNotNull(cuDie);
-    
-    DwflModule dwflModule = dwfl.getCompliationUnitModule(cuDie);
-
-    assertTrue("Found correct module", dwflModule.getName().contains("TestRunner"));
-  }
-
 }

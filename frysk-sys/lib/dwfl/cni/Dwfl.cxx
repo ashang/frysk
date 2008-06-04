@@ -221,11 +221,3 @@ lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
 
   return new lib::dwfl::DwflDieBias(dwdie, (jlong)bias);
 }
-
-jlong
-lib::dwfl::Dwfl::dwfl_cumodule(jlong cudie)
-{
-  Dwfl_Module* module = ::dwfl_cumodule((Dwarf_Die*)cudie);
-  return (jlong)module;
-}
-
