@@ -55,6 +55,11 @@ public class Host {
     public static native int wordSize();
 
     /**
+     * The host is big endian?
+     */
+    public static native boolean bigEndian();
+
+    /**
      * Return the <tt>autoconf</tt> <tt>target_cpu</tt> specified when
      * building frysk.
      *

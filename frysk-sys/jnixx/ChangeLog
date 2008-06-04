@@ -1,3 +1,8 @@
+2008-06-04  Andrew Cagney  <cagney@redhat.com>
+
+	* elements.cxx (slurp): Don't count the terminating NUL in the
+	buffer's length.
+
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
 	* bounds.hxx (verifyBounds): Allow bound to reach array end.

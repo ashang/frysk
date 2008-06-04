@@ -42,10 +42,17 @@
 #include "jni.hxx"
 
 using namespace java::lang;
+using namespace frysk::config;
 
 jint 
 frysk::config::Host::wordSize(::jnixx::env env) {
   return sizeof(long) * 8;
+}
+
+bool
+Host::bigEndian(::jnixx::env env) {
+  int i = 1;
+  return *(char*)&i == 0;
 }
 
 String

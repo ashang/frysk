@@ -43,13 +43,20 @@
 
 #include "frysk/config/Host.h"
 
+using namespace frysk::config;
 
 jint
-frysk::config::Host::wordSize() {
+Host::wordSize() {
   return sizeof(long) * 8;
 }
 
+jboolean
+Host::bigEndian() {
+  int i = 1;
+  return *(char*)&i == 0;
+}
+
 jstring
-frysk::config::Host::cpuXXX() {
+Host::cpuXXX() {
   return JvNewStringUTF("@host_cpu@");
 }

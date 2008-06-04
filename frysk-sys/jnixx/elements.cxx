@@ -110,7 +110,7 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
     errnoException(env, errno, "open", "file %s", file);
   }
 
-  // Initially allocate space for two BUFSIZE reads (and an extra
+  // Initially allocate space for two BUFSIZE reads (and an extra NUL
   // char).  It appears that when reading /proc/<pid>/maps, and the
   // like, the reads are limited to at most a transfer of BUFSIZE
   // bytes (i.e., a short read does not indicate EOF).  Hence two
@@ -159,7 +159,7 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
 
   ::close(fd);
 
-  // Null terminate the buffer.
+  // Guarentee that the buffer is NUL terminated; but don't count that
+  // as part of the buffer.
   buf[len] = '\0';
-  len++; // count the trailing NUL
 }
