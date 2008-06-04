@@ -13,6 +13,12 @@ multi-process, and multi-threaded systems while they are running.
 
 Release 0.4, ????-??-??
 
+-> Added support for watching values that are bigger than the 
+   maximum number of bytes a single watchpoint can watch. For example, 
+   types double or long long on IA32; an array of size 32 on X86_64. 
+   In these cases, frysk allocates multiple debug registers to watch 
+   over the same expression. 
+
 -> Smaller memory foot-print when generating stack backtraces.
    Frysk has been changed to more aggressively release memory
    allocated by the unwinder.
