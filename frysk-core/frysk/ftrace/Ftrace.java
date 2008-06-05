@@ -73,6 +73,7 @@ import lib.dwfl.DwflModule;
 public class Ftrace {
     static private final Log fine = LogFactory.fine(Ftrace.class);
     static private final Log finest = LogFactory.finest(Ftrace.class);
+    static private final Log warning = LogFactory.warning(Ftrace.class);
 
     private final PrintStackOptions stackPrintOptions;
 
@@ -233,38 +234,55 @@ public class Ftrace {
 	Manager.eventLoop.run();
     }
 
+    class TaskObservations {
+	boolean locked = false;
+	int counter = 1;
+    }
+
     private HashMap observationCounters = new HashMap();
 
-    synchronized private void observationRequested(Task task) {
-	Integer i = (Integer)observationCounters.get(task);
-	if (i == null)
-	    i = new Integer(1);
+    synchronized private void observationRequested(Task task, String what) {
+	fine.log("Observation requested", what);
+	TaskObservations to = (TaskObservations)observationCounters.get(task);
+	if (to == null)
+	    observationCounters.put(task, new TaskObservations());
+	else if (to.locked)
+	    warning.log("Attempt to add new observation to locked task.");
 	else
-	    i = new Integer(i.intValue() + 1);
-	observationCounters.put(task, i);
+	    to.counter++;
     }
 
-    synchronized private void observationRealized(Task task) {
-	Integer i = (Integer)observationCounters.get(task);
-	// must be non-null
-	int j = i.intValue();
-	if (j == 1) {
-	    // Store a dummy into the map to detect errors.
-	    observationCounters.put(task, new Object());
-	    task.requestUnblock(attachedObserver);
+    synchronized private void observationRealized(Task task, String what) {
+	fine.log("Observation realized", what);
+	TaskObservations to = (TaskObservations)observationCounters.get(task);
+	if (to == null || to.counter < 0)
+	    warning.log("Observation realization for invalid task.");
+	else {
+	    to.counter--;
+	    if (to.counter == 0 && to.locked)
+		task.requestUnblock(attachedObserver);
 	}
-	else
-	    observationCounters.put(task, new Integer(--j));
     }
 
-    synchronized void handleTask (Task task)
-    {
+    synchronized private void noMoreObservations(Task task) {
+	TaskObservations to = (TaskObservations)observationCounters.get(task);
+	if (to == null || to.locked || to.counter < 0)
+	    warning.log("Attempt to lock invalid or locked task.");
+	else {
+	    to.locked = true;
+	    if (to.counter == 0)
+		task.requestUnblock(attachedObserver);
+	}
+    }
+
+    synchronized void handleTask(Task task) {
+
 	Proc proc = task.getProc();
 
 	if (tracedSyscallProvider != null) {
 	    finest.log("requesting syscall observer");
 	    task.requestAddSyscallsObserver(new MySyscallObserver(reporter));
-	    observationRequested(task);
+	    observationRequested(task, "syscall");
 	    Map workingSet
 		= tracedSyscallProvider.computeSyscallWorkingSet(task);
 	    syscallSetForTask.put(task, workingSet);
@@ -273,20 +291,20 @@ public class Ftrace {
 	if (tracedSignalProvider != null) {
 	    finest.log("requesting signal observer");
 	    task.requestAddSignaledObserver(new MySignaledObserver());
-	    observationRequested(task);
+	    observationRequested(task, "signal");
 	    Map workingSet
 		= tracedSignalProvider.computeSignalWorkingSet(task);
 	    signalSetForTask.put(task, workingSet);
 	}
 
 	task.requestAddForkedObserver(forkedObserver);
-	observationRequested(task);
+	observationRequested(task, "forked");
 
 	task.requestAddClonedObserver(clonedObserver);
-	observationRequested(task);
+	observationRequested(task, "cloned");
 
 	task.requestAddTerminatingObserver(new MyTerminatingObserver());
-	observationRequested(task);
+	observationRequested(task, "terminating");
 
 	if (ftraceController != null || traceMmapUnmap) {
 	    MyMappingObserver o = new MyMappingObserver(ftraceController);
@@ -298,11 +316,12 @@ public class Ftrace {
 		MappingGuard.requestAddSyscallBasedMappingObserver(task, o);
 	    else
 		MappingGuard.requestAddMappingObserver(task, o);
-	    observationRequested(task);
+	    observationRequested(task, "mapping");
 	}
 
 	new ProcRemovedObserver(proc);
 
+	noMoreObservations(task);
 	reporter.eventSingle(task, "attached " + proc.getExeFile().getSysRootedPath());
 	++numProcesses;
     }
@@ -394,11 +413,11 @@ public class Ftrace {
 			public void run() {
 			    finest.log("Attaching breakpoint manager");
 			    steppingEngine.getBreakpointManager().manageProcess(proc);
-			    observationRealized(task);
+			    observationRealized(task, "breakpoint manager");
 			}
 		    }
 		    Manager.eventLoop.add(new AddProcToBreakpointManager());
-		    observationRequested(task);
+		    observationRequested(task, "breakpoint manager");
 		}
 
 		addProc(task.getProc());
@@ -471,9 +490,8 @@ public class Ftrace {
 
 	public void addedTo (Object observable)
 	{
-	    finest.log("syscall observer realized");
 	    Task task = (Task) observable;
-	    observationRealized(task);
+	    observationRealized(task, "syscall");
 	}
 
 	public void addFailed (Object observable, Throwable w)
@@ -494,7 +512,7 @@ public class Ftrace {
 	public void addedTo (Object observable)
 	{
 	    Task task = (Task) observable;
-	    observationRealized(task);
+	    observationRealized(task, "clone");
 	}
 
 	public void deletedFrom (Object observable)
@@ -560,7 +578,7 @@ public class Ftrace {
 
 	public void addedTo (Object observable) {
 	    Task task = (Task) observable;
-	    observationRealized(task);
+	    observationRealized(task, "terminating");
 	}
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
@@ -584,9 +602,8 @@ public class Ftrace {
 	}
 
 	public void addedTo (Object observable) {
-	    finest.log("signal observer realized for " + observable);
 	    Task task = (Task) observable;
-	    observationRealized(task);
+	    observationRealized(task, "signal");
 	}
 	public void deletedFrom (Object observable) {
 	    finest.log("signal observer deleted from " + observable);
@@ -706,7 +723,7 @@ public class Ftrace {
 
 	public void addedTo (Object observable) {
 	    Task task = (Task) observable;
-	    observationRealized(task);
+	    observationRealized(task, "mapping");
 	}
 	public void deletedFrom (Object observable) { }
 	public void addFailed (Object observable, Throwable w) { }
