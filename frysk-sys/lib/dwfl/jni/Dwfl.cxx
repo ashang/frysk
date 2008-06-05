@@ -190,14 +190,3 @@ jlong
 lib::dwfl::Dwfl::dwfl_getsrc(jnixx::env env, jlong addr){
   return (jlong) ::dwfl_getsrc(DWFL_POINTER_FIXME, (::Dwarf_Addr) addr);
 }
-
-lib::dwfl::DwflDieBias
-lib::dwfl::Dwfl::dwfl_addrdie(jnixx::env env, jlong addr){
-  Dwarf_Addr bias;
-  Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER_FIXME, (::Dwarf_Addr) addr, &bias);
-  if(die == NULL)
-    return lib::dwfl::DwflDieBias(env, NULL);
-  lib::dwfl::DwflModule module = lib::dwfl::Dwfl::getModule(env, addr);
-  lib::dwfl::DwarfDie dwdie = GetFactory(env).makeDie(env, (jlong) die, module);
-  return lib::dwfl::DwflDieBias::New(env, dwdie, (jlong)bias);
-}

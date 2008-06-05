@@ -146,4 +146,34 @@ public class DwflModule {
 	return get_cu_dies();
     }
     private native LinkedList get_cu_dies();
+
+    public DwflDieBias getCompilationUnit(long addr) {
+	// Find the die, grab the bias as it flies by.
+	long diePointer = dwflModuleAddrdie(pointer, addr);
+	DwarfDie die = parent.factory.makeDie(diePointer, this);
+	// XXX: Should just pass the module.
+	return new DwflDieBias(die, getBias());
+    }
+    private static native long dwflModuleAddrdie(long pointer, long addr);
+
+    public Dwarf getDwarf() {
+	if (dwarf == null) {
+	    long dwarfPointer = dwflModuleGetDwarf(pointer);
+	    if (dwarfPointer != 0) {
+		dwarf = new Dwarf(dwarfPointer);
+	    }
+	}
+	return dwarf;
+    }
+    private Dwarf dwarf;
+    private static native long dwflModuleGetDwarf(long pointer);
+
+    public long getBias() {
+	if (bias == -1) {
+	    bias = dwflModuleGetBias(pointer);
+	}
+	return bias;
+    }
+    private long bias = -1;
+    private static native long dwflModuleGetBias(long pointer);
 }

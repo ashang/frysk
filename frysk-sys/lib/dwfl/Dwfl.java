@@ -94,7 +94,11 @@ public class Dwfl {
     }
 
     public DwflDieBias getCompilationUnit (long addr) {
-	return dwfl_addrdie(addr);
+	DwflModule module = getModule(addr);
+	if (module == null) {
+	    return null;
+	}
+	return module.getCompilationUnit(addr);
     }
 
     long getPointer () {
@@ -304,6 +308,4 @@ public class Dwfl {
     // protected native long[] dwfl_get_modules();
     // protected native long[] dwfl_getdwarf();
     protected native long dwfl_getsrc (long addr);
-  
-    protected native DwflDieBias dwfl_addrdie (long addr);
 }

@@ -53,7 +53,8 @@
 using namespace java::lang;
 using namespace java::util;
 
-#define DWARF_POINTER ((::Dwarf *) GetPointer(env))
+#define DWARF_POINTER_FIXME ((::Dwarf *) GetPointer(env))
+#define DWARF_POINTER ((::Dwarf *) pointer)
 
 void
 lib::dwfl::Dwarf::dwarf_begin_elf(jnixx::env env, jlong elf, jint command,
@@ -83,10 +84,10 @@ lib::dwfl::Dwarf::get_cu_by_name(jnixx::env env, String name) {
   Dwarf_Die cudie_mem;
   size_t hsize;
 	  
-  while (dwarf_nextcu(DWARF_POINTER, old_offset = offset,
+  while (dwarf_nextcu(DWARF_POINTER_FIXME, old_offset = offset,
 		      &offset, &hsize, NULL, NULL, NULL) == 0) {
 		
-      Dwarf_Die *cudie = dwarf_offdie(DWARF_POINTER, old_offset + hsize,
+      Dwarf_Die *cudie = dwarf_offdie(DWARF_POINTER_FIXME, old_offset + hsize,
 				      &cudie_mem);
       const char *die_name = dwarf_diename (cudie);
       String die_name_string = String::NewStringUTF(env, die_name);
@@ -118,7 +119,7 @@ lib::dwfl::Dwarf::get_source_files(jnixx::env env) {
   
   // Allocate Dwarf_Files for each compile unit
   cu_cnt = 0;
-  while (dwarf_nextcu(DWARF_POINTER, old_offset = offset, &offset, 
+  while (dwarf_nextcu(DWARF_POINTER_FIXME, old_offset = offset, &offset, 
 		      &hsize, NULL, NULL, NULL) == 0) {
     cu_cnt += 1;
   }
@@ -128,10 +129,10 @@ lib::dwfl::Dwarf::get_source_files(jnixx::env env) {
   // Fill Dwarf_Files
   cu_cnt = 0;
   offset = 0;
-  while (dwarf_nextcu(DWARF_POINTER, old_offset = offset, &offset, 
+  while (dwarf_nextcu(DWARF_POINTER_FIXME, old_offset = offset, &offset, 
 		      &hsize, NULL, NULL, NULL) == 0) {
       size_t fcnt = 0;
-      Dwarf_Die *cudie = dwarf_offdie (DWARF_POINTER, old_offset + hsize, &cudie_mem);
+      Dwarf_Die *cudie = dwarf_offdie (DWARF_POINTER_FIXME, old_offset + hsize, &cudie_mem);
       if (dwarf_getsrcfiles (cudie, &files[cu_cnt], &fcnt) != 0)
 	continue;
       nfiles[cu_cnt] = fcnt;
@@ -161,6 +162,6 @@ lib::dwfl::Dwarf::get_source_files(jnixx::env env) {
 }
 
 jint 
-lib::dwfl::Dwarf::dwarf_end(jnixx::env env){
+lib::dwfl::Dwarf::dwarfEnd(jnixx::env env, long pointer){
   return ::dwarf_end(DWARF_POINTER);
 }

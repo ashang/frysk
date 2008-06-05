@@ -43,42 +43,22 @@ import java.util.LinkedList;
 
 public class Dwarf {
 	
+    private final boolean owner;
     private long pointer;
 	
     public Dwarf(Elf elf, DwarfCommand cmd, ElfSection section){
 	dwarf_begin_elf(elf.getPointer(), cmd.getValue(), (section == null) ? 0 : section.getPointer());
+	owner = true;
     }
 	
     public Dwarf(String file, DwarfCommand cmd){
 	dwarf_begin(file, cmd.getValue());
+	owner = true;
     }
 	
-    //	public DwarfDie[] getFunctions(){
-    //		long[] vals = dwarf_get_functions();
-    //		if(vals == null || vals.length == 0)
-    //			return new DwarfDie[0];
-    //		
-    //		DwarfDie[] dwarfs = new DwarfDie[vals.length];
-    //		for(int i = 0; i < vals.length; i++){
-    //			if(vals[i] == 0)
-    //				dwarfs[i] = null;
-    //			else
-    //				dwarfs[i] = new DwarfDie(vals[i]);
-    //		}
-    //		
-    //		return dwarfs;
-    //	}
-    //	
-    //	public DwarfDie getDIEByAddr(long address){
-    //		long val = dwarf_addrdie(address);
-    //		if(val == 0)
-    //			return null;
-    //		
-    //		return new DwarfDie(val);
-    //	}
-	
-    protected Dwarf(long pointer){
+    Dwarf(long pointer){
 	this.pointer = pointer;
+	owner = false;
     }
 	
     protected long getPointer(){
@@ -86,8 +66,12 @@ public class Dwarf {
     }
 	
     protected void finalize(){
-	dwarf_end();
+	if (owner && pointer != 0) {
+	    dwarfEnd(pointer);
+	    pointer = 0;
+	}
     }
+    private static native int dwarfEnd(long pointer);
 	
     public String[] getSourceFiles(){
 	return get_source_files();
@@ -110,7 +94,4 @@ public class Dwarf {
     protected native void dwarf_begin(String file, int command);
     protected native String[] get_source_files();
     protected native LinkedList get_cu_by_name(String name);
-    protected native int dwarf_end();
-    //	protected native long[] dwarf_get_functions();
-    //	protected native long dwarf_addrdie(long addr);
 }

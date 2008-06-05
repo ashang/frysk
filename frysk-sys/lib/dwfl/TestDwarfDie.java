@@ -90,8 +90,10 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
-	DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
-	assertNotNull(cuDie);
+	DwflDieBias dwflDie = dwfl.getCompilationUnit(addr);
+	assertNotNull("dwflDie", dwflDie);
+	DwarfDie cuDie = dwflDie.die;
+	assertNotNull("cuDie", cuDie);
 	    
 	DwarfDie die = cuDie.getScopes(addr)[0];
 	DwflModule dwflModule = die.getModule();

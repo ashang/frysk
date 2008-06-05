@@ -207,17 +207,3 @@ jlong
 lib::dwfl::Dwfl::dwfl_getsrc(jlong addr){
   return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
 }
-
-lib::dwfl::DwflDieBias *
-lib::dwfl::Dwfl::dwfl_addrdie(jlong addr){
-  Dwarf_Addr bias;
-  Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
-
-  if(die == NULL)
-    return NULL;
-
-  lib::dwfl::DwflModule *module = lib::dwfl::Dwfl::getModule(addr);
-  lib::dwfl::DwarfDie *dwdie = factory->makeDie((jlong) die, module);
-
-  return new lib::dwfl::DwflDieBias(dwdie, (jlong)bias);
-}

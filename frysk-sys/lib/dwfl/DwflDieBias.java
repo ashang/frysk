@@ -42,8 +42,7 @@ package lib.dwfl;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class DwflDieBias
-{
+public class DwflDieBias {
     public final DwarfDie die;
     public final long bias;
 
