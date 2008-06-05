@@ -49,7 +49,6 @@
 #include <gnu/gcj/RawData.h>
 
 #include "lib/dwfl/Dwfl.h"
-#include "lib/dwfl/DwflDieBias.h"
 #include "lib/dwfl/DwarfDie.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/DwflModule.h"
