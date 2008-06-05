@@ -1,5 +1,8 @@
 2008-06-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestMaps.java (testNative()): New.
+	* jni/MapsBuilder.cxx (construct): Don't require the NUL.
+
 	* AuxvBuilder.java (buildAuxv(byte[])): Delete.
 	* cni/AuxvBuilder.cxx (AuxvBuilder::construct): Update.
 	* TestAuxv.java: Update.

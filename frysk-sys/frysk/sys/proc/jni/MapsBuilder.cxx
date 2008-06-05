@@ -96,8 +96,7 @@ construct(jnixx::env env, frysk::sys::proc::MapsBuilder* builder, Bytes& buf) {
 			pathnameOffset, pathnameLength);
     }
   }
-  runtimeException(env, "missing NUL");
-  return false;
+  return true;
 }
 
 bool
