@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 // Copyright 2007 (C) IBM
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -90,7 +90,7 @@ RAISE_FUNCTION_START(term_sig_hup)
         LOAD_BYTE_IMMED(REG0, SYS_gettid)
 	SYSCALL
 	LOAD_BYTE_IMMED(REG1,0)
-	ADD(REG0,REG1)
+	ADD(REG1,REG0)
 	LOAD_BYTE_IMMED(REG2,SIGHUP)
         LOAD_BYTE_IMMED(REG0, SYS_tkill)
 term_sig_hup_label:
@@ -102,7 +102,7 @@ RAISE_FUNCTION_START(ign_sig_urg)
         LOAD_BYTE_IMMED(REG0, SYS_gettid)
 	SYSCALL
 	LOAD_BYTE_IMMED(REG1,0)
-	ADD(REG0,REG1)
+	ADD(REG1,REG0)
 	LOAD_BYTE_IMMED(REG2,SIGURG)
         LOAD_BYTE_IMMED(REG0, SYS_tkill)
 ign_sig_urg_label:	

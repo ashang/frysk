@@ -339,31 +339,31 @@
 //   foo:
 
 #if defined __i386__
-#  define ADD(DEST_REG, SOURCE_REG) addl DEST_REG, SOURCE_REG
+#  define ADD(DEST_REG, CONST_REG) addl CONST_REG, DEST_REG
 #elif defined __x86_64__
-#  define ADD(DEST_REG, SOURCE_REG) addq DEST_REG, SOURCE_REG
+#  define ADD(DEST_REG, CONST_REG) addq CONST_REG, DEST_REG
 #elif defined __powerpc__
-#  define ADD(DEST_REG, SOURCE_REG) add DEST_REG, DEST_REG, SOURCE_REG
+#  define ADD(DEST_REG, CONST_REG) add DEST_REG, DEST_REG, CONST_REG
 #else
 #  warning "No register-add instruction defined"
 #endif
 
 #if defined __i386__
-#  define SUB(DEST_REG, SOURCE_REG) subl DEST_REG, SOURCE_REG
+#  define SUB(DEST_REG, CONST_REG) subl CONST_REG, DEST_REG
 #elif defined __x86_64__
-#  define SUB(DEST_REG, SOURCE_REG) subq DEST_REG, SOURCE_REG
+#  define SUB(DEST_REG, CONST_REG) subq CONST_REG, DEST_REG
 #elif defined __powerpc__
-#  define SUB(DEST_REG, SOURCE_REG) subf DEST_REG, SOURCE_REG, DEST_REG
+#  define SUB(DEST_REG, CONST_REG) subf DEST_REG, CONST_REG, DEST_REG
 #else
 #  warning "No register-subtract instruction defined"
 #endif
 
 #if defined __i386__
-#  define MOVE(SOURCE_REG, DEST_REG) movl SOURCE_REG, DEST_REG
+#  define MOVE(CONST_REG, DEST_REG) movl CONST_REG, DEST_REG
 #elif defined __x86_64__
-#  define MOVE(SOURCE_REG, DEST_REG) movq SOURCE_REG, DEST_REG
+#  define MOVE(CONST_REG, DEST_REG) movq CONST_REG, DEST_REG
 #elif defined __powerpc__
-#  define MOVE(SOURCE_REG, DEST_REG) mr DEST_REG, SOURCE_REG
+#  define MOVE(CONST_REG, DEST_REG) mr DEST_REG, CONST_REG
 #else
 #  warning "No register-move instruction defined"
 #endif

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -93,10 +93,41 @@
 	FUNCTION_EPILOGUE(first, 0)
 	FUNCTION_RETURN(first, 0)
 	FUNCTION_END(first, 0)
+
+
+	// A function that contains multiple function calls on a
+	// single line.
+	FUNCTION_BEGIN(multi,0)
+	FUNCTION_PROLOGUE(multi,0)
+	FUNCTION_CALL(fifth)			// _multi_Call
+	NO_OP ; FUNCTION_CALL(fifth)		// _multi_NopCall
+	FUNCTION_CALL(fifth) ; NO_OP		// _multi_CallNop
+	NO_OP ; FUNCTION_CALL(fifth) ; NO_OP	// _multi_NopCallNop
+	FUNCTION_CALL(fifth); FUNCTION_CALL(fifth)  // _multi_CallCall
+	FUNCTION_EPILOGUE(multi,0)
+	FUNCTION_RETURN(multi,0)
+	FUNCTION_END(multi,0)
+	
+	// A function making recursive calls til R0 reaches 0, next
+	// shouldn't get confused by recursion.
+	FUNCTION_BEGIN(recursive,0)
+	FUNCTION_PROLOGUE(recursive,0)
+	LOAD_REGISTER_IMMED(REG1,0)
+	COMPARE(REG0, REG1)
+	JUMP_EQ(1f)
+	LOAD_REGISTER_IMMED(REG1,1)
+	SUB(REG0, REG1)
+	FUNCTION_CALL(recursive)                // _recursive
+1:
+	FUNCTION_EPILOGUE(recursive,0)
+	FUNCTION_RETURN(recursive,0)
+	FUNCTION_END(recursive,0)
 
 	FUNCTION_BEGIN(main, 0)
 	MAIN_PROLOGUE(0)
 	FUNCTION_CALL(first)
+	FUNCTION_CALL(multi)
+	LOAD_REGISTER_IMMED(REG0, 2) ; FUNCTION_CALL(recursive)
 	MAIN_EPILOGUE(0)
 	FUNCTION_RETURN(main,0)
 	FUNCTION_END(main,0)

@@ -1,3 +1,7 @@
+2008-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-raise.S: Fix ADD parameter order.
+
 2007-05-23 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-ctypes.c: New file.
