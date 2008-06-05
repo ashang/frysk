@@ -162,6 +162,6 @@ lib::dwfl::Dwarf::get_source_files(jnixx::env env) {
 }
 
 jint 
-lib::dwfl::Dwarf::dwarfEnd(jnixx::env env, long pointer){
+lib::dwfl::Dwarf::dwarfEnd(jnixx::env env, jlong pointer){
   return ::dwarf_end(DWARF_POINTER);
 }
