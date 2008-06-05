@@ -185,8 +185,3 @@ lib::dwfl::Dwfl::reportModule(jnixx::env env, jlong pointer,
 				      (::Dwarf_Addr) low,
 				      (::Dwarf_Addr) high);  
 }
-
-jlong
-lib::dwfl::Dwfl::dwfl_getsrc(jnixx::env env, jlong addr){
-  return (jlong) ::dwfl_getsrc(DWFL_POINTER_FIXME, (::Dwarf_Addr) addr);
-}

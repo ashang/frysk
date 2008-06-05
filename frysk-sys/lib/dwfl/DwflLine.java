@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,70 +37,49 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.dwfl;
 
-public class DwflLine
-{
+public class DwflLine {
 
-  private long pointer;
+    private long pointer;
+    private DwflModule parent;
 
-  private Dwfl parent;
+    DwflLine(long pointer, DwflModule parent) {
+	this.pointer = pointer;
+	this.parent = parent;
+    }
 
-  DwflLine (long pointer, Dwfl parent)
-  {
-    this.pointer = pointer;
-    this.parent = parent;
-  }
+    DwflModule getParent() {
+	return parent;
+    }
 
-  public String toString()
-  {
-    return "DwflLine[0x" + Long.toHexString(getAddress())
-      + " " + getSourceFile() + ":" + getLineNum() + ":" + getColumn() + "]";
-  }
+    public String toString() {
+	return "DwflLine[0x" + Long.toHexString(getAddress())
+	    + " " + getSourceFile() + ":" + getLineNum() + ":" + getColumn() + "]";
+    }
 
-  public String getSourceFile ()
-  {
-    return dwfl_lineinfo_source();
-  }
+    public String getSourceFile() {
+	return dwfl_lineinfo_source(pointer);
+    }
+    private static native String dwfl_lineinfo_source(long pointer);
 
-  public long getAddress ()
-  {
-    return dwfl_lineinfo_addr();
-  }
+    public long getAddress() {
+	return dwfl_lineinfo_addr(pointer);
+    }
+    private static native long dwfl_lineinfo_addr(long pointer);
 
-  public int getLineNum ()
-  {
-    return dwfl_lineinfo_linenum();
-  }
+    public int getLineNum() {
+	return dwfl_lineinfo_linenum(pointer);
+    }
+    private static native int dwfl_lineinfo_linenum(long pointer);
 
-  public int getColumn ()
-  {
-    return dwfl_lineinfo_col();
-  }
+    public int getColumn() {
+	return dwfl_lineinfo_col(pointer);
+    }
+    private native int dwfl_lineinfo_col(long pointer);
 
-  public String getCompilationDir ()
-  {
-    return dwfl_linecomp_dir();
-  }
-
-  protected long getPointer ()
-  {
-    return pointer;
-  }
-
-  protected Dwfl getParent ()
-  {
-    return this.parent;
-  }
-
-  protected native String dwfl_lineinfo_source ();
-
-  protected native long dwfl_lineinfo_addr ();
-
-  protected native int dwfl_lineinfo_linenum ();
-
-  protected native int dwfl_lineinfo_col ();
-
-  protected native String dwfl_linecomp_dir ();
+    public String getCompilationDir() {
+	return dwfl_line_comp_dir(pointer);
+    }
+    private native String dwfl_line_comp_dir(long pointer);
 }

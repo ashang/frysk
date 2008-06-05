@@ -202,8 +202,3 @@ struct ModuleAdderData
   DwflModuleArray *moduleArray;
   int index;
 };
-
-jlong
-lib::dwfl::Dwfl::dwfl_getsrc(jlong addr){
-  return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
-}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,47 +36,48 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <libdwfl.h>
 #include <alloca.h>
 #include <gcj/cni.h>
 
 #include "lib/dwfl/DwflLine.h"
 
-#define DWFL_LINE_POINTER (::Dwfl_Line *) this->pointer
+#define DWFL_LINE_POINTER ((::Dwfl_Line *) pointer)
 
 jstring
-lib::dwfl::DwflLine::dwfl_lineinfo_source(){
-	const char* str = ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, NULL, NULL, NULL);
-	return JvNewStringUTF(str);
+lib::dwfl::DwflLine::dwfl_lineinfo_source(jlong pointer) {
+  const char* str = ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, NULL, NULL, NULL);
+  return JvNewStringUTF(str);
 }
 
 jlong
-lib::dwfl::DwflLine::dwfl_lineinfo_addr(){
-	Dwarf_Addr addr;
-	::dwfl_lineinfo(DWFL_LINE_POINTER, &addr, NULL, NULL, NULL, NULL);
-	return (jlong) addr;
+lib::dwfl::DwflLine::dwfl_lineinfo_addr(jlong pointer) {
+  Dwarf_Addr addr;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, &addr, NULL, NULL, NULL, NULL);
+  return (jlong) addr;
 }
 
 jint
-lib::dwfl::DwflLine::dwfl_lineinfo_linenum(){
-	int lineNum;
-	::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, &lineNum, NULL, NULL, NULL);
-	return (jint) lineNum;
+lib::dwfl::DwflLine::dwfl_lineinfo_linenum(jlong pointer) {
+  int lineNum;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, &lineNum, NULL, NULL, NULL);
+  return (jint) lineNum;
 }
 
 
 jint
-lib::dwfl::DwflLine::dwfl_lineinfo_col(){
-	int col;
-	::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, &col, NULL, NULL);
-	return (jint) col;
+lib::dwfl::DwflLine::dwfl_lineinfo_col(jlong pointer) {
+  int col;
+  ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, &col, NULL, NULL);
+  return (jint) col;
 }
 
 jstring
-lib::dwfl::DwflLine::dwfl_linecomp_dir(){
-	const char *dir = ::dwfl_line_comp_dir(DWFL_LINE_POINTER);	
-	if(dir == NULL){
-	  return JvNewStringUTF("");
-	}
-	return JvNewStringUTF(dir);
+lib::dwfl::DwflLine::dwfl_line_comp_dir(jlong pointer) {
+  const char *dir = ::dwfl_line_comp_dir(DWFL_LINE_POINTER);	
+  if(dir == NULL){
+    return JvNewStringUTF("");
+  }
+  return JvNewStringUTF(dir);
 }

@@ -81,16 +81,11 @@ public class Dwfl {
     private static native void callbacksEnd(long callbacks);
     
     public DwflLine getSourceLine (long addr) {
-	long val = 0;
-	try {
-	    val = dwfl_getsrc(addr);
-	} catch (NullPointerException npe) {
-	    System.out.println(npe.getMessage());
-	    val = 0;
-	}
-	if (val == 0)
+	DwflModule module = getModule(addr);
+	if (module == null) {
 	    return null;
-	return new DwflLine(val, this);
+	}
+	return module.getSourceLine(addr);
     }
 
     public DwflDie getCompilationUnit (long addr) {
@@ -304,8 +299,4 @@ public class Dwfl {
 	}
 	return null;
     }
-
-    // protected native long[] dwfl_get_modules();
-    // protected native long[] dwfl_getdwarf();
-    protected native long dwfl_getsrc (long addr);
 }

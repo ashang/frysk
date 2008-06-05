@@ -44,23 +44,23 @@
 
 using namespace java::lang;
 
-#define DWFL_LINE_POINTER ((::Dwfl_Line *) GetPointer(env))
+#define DWFL_LINE_POINTER ((::Dwfl_Line *) pointer)
 
 String
-lib::dwfl::DwflLine::dwfl_lineinfo_source(jnixx::env env) {
+lib::dwfl::DwflLine::dwfl_lineinfo_source(jnixx::env env, jlong pointer) {
   const char* str = ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, NULL, NULL, NULL);
   return String::NewStringUTF(env, str);
 }
 
 jlong
-lib::dwfl::DwflLine::dwfl_lineinfo_addr(jnixx::env env) {
+lib::dwfl::DwflLine::dwfl_lineinfo_addr(jnixx::env env, jlong pointer) {
   Dwarf_Addr addr;
   ::dwfl_lineinfo(DWFL_LINE_POINTER, &addr, NULL, NULL, NULL, NULL);
   return (jlong) addr;
 }
 
 jint
-lib::dwfl::DwflLine::dwfl_lineinfo_linenum(jnixx::env env) {
+lib::dwfl::DwflLine::dwfl_lineinfo_linenum(jnixx::env env, jlong pointer) {
   int lineNum;
   ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, &lineNum, NULL, NULL, NULL);
   return (jint) lineNum;
@@ -68,14 +68,14 @@ lib::dwfl::DwflLine::dwfl_lineinfo_linenum(jnixx::env env) {
 
 
 jint
-lib::dwfl::DwflLine::dwfl_lineinfo_col(jnixx::env env) {
+lib::dwfl::DwflLine::dwfl_lineinfo_col(jnixx::env env, jlong pointer) {
   int col;
   ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, &col, NULL, NULL);
   return (jint) col;
 }
 
 String
-lib::dwfl::DwflLine::dwfl_linecomp_dir(jnixx::env env) {
+lib::dwfl::DwflLine::dwfl_line_comp_dir(jnixx::env env, jlong pointer) {
   const char *dir = ::dwfl_line_comp_dir(DWFL_LINE_POINTER);	
   if(dir == NULL){
     return String::NewStringUTF(env, "");

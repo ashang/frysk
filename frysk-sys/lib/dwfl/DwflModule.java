@@ -174,4 +174,23 @@ public class DwflModule {
     }
     private long bias = -1;
     private static native long dwflModuleGetBias(long pointer);
+
+
+    /**
+     * Return line information for the specified address.
+     */
+    public DwflLine getSourceLine(long addr) {
+	try {
+	    long dwflLinePointer = dwfl_module_getsrc(pointer, addr);
+	    if (dwflLinePointer == 0) {
+		return null;
+	    } else {
+		return new DwflLine(dwflLinePointer, this);
+	    }
+	} catch (NullPointerException npe) {
+	    System.out.println(npe.getMessage());
+	    return null;
+	}
+    }
+    private static native long dwfl_module_getsrc(long pointer, long addr);
 }

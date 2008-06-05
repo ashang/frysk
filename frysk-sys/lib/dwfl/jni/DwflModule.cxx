@@ -80,7 +80,7 @@ lib::dwfl::DwflModule::getLines(jnixx::env env, String jfilename,
   DwflLineArray array = DwflLineArray::NewObjectArray(env, nsrcs);
   for (size_t i = 0; i < nsrcs; i++) {
     lib::dwfl::DwflLine line = lib::dwfl::DwflLine::New(env, (jlong)srcsp[i],
-							getParent(env));
+							*this);
     array.SetObjectArrayElement(env, i, line);
     line.DeleteLocalRef(env);
   }
@@ -420,4 +420,10 @@ lib::dwfl::DwflModule::dwflModuleGetBias(jnixx::env env, jlong pointer) {
     return (jlong) bias;
   else
     return -1;
+}
+
+jlong
+lib::dwfl::DwflModule::dwfl_module_getsrc(jnixx::env env, jlong pointer,
+					  jlong addr) {
+  return (jlong) ::dwfl_module_getsrc(DWFL_MODULE_POINTER, (Dwarf_Addr)addr);
 }

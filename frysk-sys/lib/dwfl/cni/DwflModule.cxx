@@ -101,7 +101,7 @@ lib::dwfl::DwflModule::getLines(jstring filename, jint lineno, jint column)
       for (size_t i = 0; i < nsrcs; i++)
 	{
 	  lib::dwfl::DwflLine *line = new lib::dwfl::DwflLine((jlong)srcsp[i],
-							  getParent());
+							      this);
 	  elements(array)[i] = line;
 	}
       std::free(srcsp);
@@ -497,4 +497,9 @@ lib::dwfl::DwflModule::dwflModuleGetBias(jlong pointer) {
     return (jlong) bias;
   else
     return -1;
+}
+
+jlong
+lib::dwfl::DwflModule::dwfl_module_getsrc(jlong pointer, jlong addr) {
+  return (jlong) ::dwfl_module_getsrc(DWFL_MODULE_POINTER, (Dwarf_Addr)addr);
 }

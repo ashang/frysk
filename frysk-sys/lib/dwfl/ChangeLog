@@ -1,5 +1,19 @@
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflLine.java: Pass pointer to native methods.
+	(DwflLine(long,DwflModule)): Replace DwflLine(long,Dwfl).
+	(getPointer()): Delete.
+	* cni/DwflLine.cxx: Update.
+	* jni/DwflLine.cxx: Update.
+	* DwflModule.java (getSourceLine()): New.
+	(dwfl_module_getsrc): New.
+	* jni/DwflModule.cxx: Update.
+	* cni/DwflModule.cxx: Update.
+	* Dwfl.java (getSourceLine()): Call DwflModule.getSourceLine.
+	(dwfl_getsrc): Delete.
+	* cni/Dwfl.cxx: Update.
+	* jni/Dwfl.cxx: Update.
+	
 	* DwflDie.java: Replace DwflDieBias.java; extends DwarfDie.
 	* DwarfDieFactory.java (makeDwflDie(long,DwflModule)): New.
 	* DwarfDie.java: Simplify.
