@@ -277,4 +277,14 @@ public class TestCase
 	    }
 	}
     }
+    
+    /**
+     * Override JUnit's long == with one that prints failing values in hex.
+     */
+    public static void assertEquals(String what, long correct, long test) {
+	if (correct != test) {
+	    fail(what + " expected:<0x" + Long.toHexString(correct)
+		 + "> but was:<0x" + Long.toHexString(test) + ">");
+	}
+    }
 }

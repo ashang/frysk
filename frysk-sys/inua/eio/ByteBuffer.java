@@ -751,38 +751,90 @@ public abstract class ByteBuffer
     byteOrdered.pokeDouble(this, lowWater + index, v);
   }
   
-  public final long getWord ()
-  {
-    return wordSized.getWord(this);
-  }
+    public final long getWord() {
+	return wordSized.getWord(this);
+    }
+    public final long getUWord() {
+	return wordSized.getUWord(this);
+    }
 
-  public final long getUWord ()
-  {
-    return wordSized.getUWord(this);
-  }
+    public final void putWord(long w) {
+	wordSized.putWord(this, w);
+    }
+    public final void putUWord(long w) {
+	wordSized.putUWord(this, w);
+    }
 
-  public final void putWord (long w)
-  {
-    wordSized.putWord(this, w);
-  }
+    /**
+     * Get word at word at byte offset INDEX.
+     */
+    public final long getWord(long index) {
+	return wordSized.getWord(this, index);
+    }
+    /**
+     * Get unsigned word at byte offset INDEX.
+     */
+    public final long getUWord(long index) {
+	return wordSized.getUWord(this, index);
+    }
+    /**
+     * Put WORD at byte offset INDEX.
+     */
+    public final void putWord(long index, long w) {
+	wordSized.putWord(this, index, w);
+    }
+    /**
+     * Put the unsigned WORD at byte offset INDEX.
+     */
+    public final void putUWord(long index, long w) {
+	wordSized.putUWord(this, index, w);
+    }
 
-  public final void putUWord (long w)
-  {
-    wordSized.putUWord(this, w);
-  }
+    /**
+     * Get word at word (and not byte) offset INDEX.  Arguably this
+     * should be provided with a separate WordBuffer class.
+     */
+    public final long getWordSized(long index) {
+	return wordSized.getWord(this, index * wordSize());
+    }
+    /**
+     * Get unsigned word at word (and not byte) offset INDEX.
+     * Arguably this should be provided with a separate WordBuffer
+     * class.
+     */
+    public final long getUWordSized(long index) {
+	return wordSized.getUWord(this, index * wordSize());
+    }
+    /**
+     * Put WORD at word (and not byte) offset INDEX.  Arguably this
+     * should be provided with a separate WordBuffer class.
+     */
+    public final void putWordSized(long index, long w) {
+	wordSized.putWord(this, index * wordSize(), w);
+    }
+    /**
+     * Put WORD at unsigned word (and not byte) offset INDEX.  Arguably
+     * this should be provided with a separate WordBuffer class.
+     */
+    public final void putUWordSized(long index, long w) {
+	wordSized.putUWord(this, index * wordSize(), w);
+    }
 
   protected WordSized wordSized;
 
-  public ByteBuffer wordSize (int w)
-  {
-    wordSized = WordSized.wordSize(w);
-    return this;
-  }
-
-  public int wordSize ()
-  {
-    return wordSized.wordSize;
-  }
+    public ByteBuffer wordSize(int w) {
+	wordSized = WordSized.wordSize(w);
+	return this;
+    }
+    public int wordSize() {
+	return wordSized.wordSize;
+    }
+    /**
+     * Return the length of the ByteBuffer as words.
+     */
+    public long wordLength() {
+	return capacity() / wordSize();
+    }
 
   public ByteBuffer get (StringBuffer string)
   {

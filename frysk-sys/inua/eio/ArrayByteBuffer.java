@@ -68,6 +68,13 @@ public class ArrayByteBuffer
 	this (bytes, 0, bytes.length);
     }
 
+    /**
+     * Return the byte array backing the byte buffer.
+     */
+    public byte[] toArray() {
+	return array;
+    }
+
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
 				    long upperExtreem)
     {

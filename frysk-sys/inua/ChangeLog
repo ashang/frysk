@@ -1,3 +1,9 @@
+2008-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/ByteBuffer.java: Add missing indexed word get/put methods.
+	* eio/TestWordSize.java: Test.
+	* eio/WordSized.java: Ditto.
+
 2008-04-11  Andrew Cagney  <cagney@redhat.com>
 
 	* eio/TestMmap.java: Delete.

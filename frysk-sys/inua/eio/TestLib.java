@@ -36,7 +36,7 @@
 // exception.
 package inua.eio;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 public class TestLib
     extends TestCase

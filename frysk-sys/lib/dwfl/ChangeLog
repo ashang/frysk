@@ -1,3 +1,7 @@
+2008-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestElf.java (checkAuxv): Use indexed word accessors.
+
 2008-06-04  Andrew Cagney  <cagney@redhat.com>
 
 	* ElfPrAuxv.java: Make the ByteBuffer available.

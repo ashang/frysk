@@ -38,98 +38,113 @@
 
 package inua.eio;
 
-abstract class WordSized
-{
-  WordSized (int wordSize)
-  {
-    this.wordSize = wordSize;
-  }
-
-  int wordSize;
-
-  abstract long getWord (ByteBuffer b);
-
-  abstract long getUWord (ByteBuffer b);
-
-  abstract void putWord (ByteBuffer b, long w);
-
-  abstract void putUWord (ByteBuffer b, long w);
-
-  private static final WordSized[] wordSizes = { new WordSized(2)
-  {
-    long getWord (ByteBuffer b)
-    {
-      return b.getShort();
+abstract class WordSized{
+    WordSized(int wordSize) {
+	this.wordSize = wordSize;
     }
 
-    long getUWord (ByteBuffer b)
-    {
-      return b.getUShort();
-    }
+    int wordSize;
 
-    void putWord (ByteBuffer b, long w)
-    {
-      b.putShort((short) w);
-    }
+    abstract long getWord(ByteBuffer b);
+    abstract long getUWord(ByteBuffer b);
 
-    void putUWord (ByteBuffer b, long w)
-    {
-      b.putUShort((int) w);
-    }
-  }, new WordSized(4)
-  {
-    long getWord (ByteBuffer b)
-    {
-      return b.getInt();
-    }
+    abstract long getWord(ByteBuffer b, long index);
+    abstract long getUWord(ByteBuffer b, long index);
 
-    long getUWord (ByteBuffer b)
-    {
-      return b.getUInt();
-    }
+    abstract void putWord(ByteBuffer b, long w);
+    abstract void putUWord(ByteBuffer b, long w);
 
-    void putWord (ByteBuffer b, long w)
-    {
-      b.putInt((int) w);
-    }
+    abstract void putWord(ByteBuffer b, long index, long w);
+    abstract void putUWord(ByteBuffer b, long index, long w);
 
-    void putUWord (ByteBuffer b, long w)
-    {
-      b.putUInt(w);
-    }
-  }, new WordSized(8)
-  {
-    long getWord (ByteBuffer b)
-    {
-      return b.getLong();
-    }
+    private static final WordSized[] wordSizes = {
+	new WordSized(2) {
+	    long getWord(ByteBuffer b) {
+		return b.getShort();
+	    }
+	    long getUWord(ByteBuffer b) {
+		return b.getUShort();
+	    }
+	    long getWord(ByteBuffer b, long index) {
+		return b.getShort(index);
+	    }
+	    long getUWord(ByteBuffer b, long index) {
+		return b.getUShort(index);
+	    }
+	    void putWord(ByteBuffer b, long w) {
+		b.putShort((short) w);
+	    }
+	    void putUWord(ByteBuffer b, long w) {
+		b.putUShort((int) w);
+	    }
+	    void putWord(ByteBuffer b, long index, long w) {
+		b.putShort(index, (short) w);
+	    }
+	    void putUWord(ByteBuffer b, long index, long w) {
+		b.putUShort(index, (int) w);
+	    }
+	},
+	new WordSized(4) {
+	    long getWord(ByteBuffer b) {
+		return b.getInt();
+	    }
+	    long getUWord(ByteBuffer b) {
+		return b.getUInt();
+	    }
+	    long getWord(ByteBuffer b, long index) {
+		return b.getInt(index);
+	    }
+	    long getUWord(ByteBuffer b, long index) {
+		return b.getUInt(index);
+	    }
+	    void putWord(ByteBuffer b, long w) {
+		b.putInt((int) w);
+	    }
+	    void putUWord(ByteBuffer b, long w) {
+		b.putUInt(w);
+	    }
+	    void putWord(ByteBuffer b, long index, long w) {
+		b.putInt(index, (int) w);
+	    }
+	    void putUWord(ByteBuffer b, long index, long w) {
+		b.putUInt(index, w);
+	    }
+	},
+	new WordSized(8) {
+	    long getWord(ByteBuffer b) {
+		return b.getLong();
+	    }
+	    long getUWord(ByteBuffer b) {
+		return b.getULong();
+	    }
+	    long getWord(ByteBuffer b, long index) {
+		return b.getLong(index);
+	    }
+	    long getUWord(ByteBuffer b, long index) {
+		return b.getULong(index);
+	    }
+	    void putWord(ByteBuffer b, long w) {
+		b.putLong(w);
+	    }
+	    void putUWord(ByteBuffer b, long w) {
+		b.putULong(w);
+	    }
+	    void putWord(ByteBuffer b, long index, long w) {
+		b.putLong(index, w);
+	    }
+	    void putUWord(ByteBuffer b, long index, long w) {
+		b.putULong(index, w);
+	    }
+	}
+    };
 
-    long getUWord (ByteBuffer b)
-    {
-      return b.getULong();
+    static WordSized wordSize(int w) {
+	for (int i = 0; i < wordSizes.length; i++) {
+	    if (w == wordSizes[i].wordSize) {
+		return wordSizes[i];
+	    }
+	}
+	throw new RuntimeException("Bad word size " + w);
     }
-
-    void putWord (ByteBuffer b, long w)
-    {
-      b.putLong(w);
-    }
-
-    void putUWord (ByteBuffer b, long w)
-    {
-      b.putULong(w);
-    }
-  } };
-
-  static WordSized wordSize (int w)
-  {
-    for (int i = 0; i < wordSizes.length; i++)
-      {
-        if (w == wordSizes[i].wordSize)
-          {
-            return wordSizes[i];
-          }
-      }
-    throw new RuntimeException("Bad word size " + w);
-  }
 
 }

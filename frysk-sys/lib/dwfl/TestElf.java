@@ -528,10 +528,9 @@ public class TestElf extends TestCase {
 	ElfPrAuxv prAuxv = ElfPrAuxv.decode(noteData);
 	ByteBuffer auxv = prAuxv.getByteBuffer();
 	assertEquals("wordSize", wordSize, auxv.wordSize());
-	int i = 0;
-	while (auxv.position() < auxv.capacity()) {
-	    assertEquals("type " + i, types[i], auxv.getUWord());
-	    assertEquals("value " + i, values[i], auxv.getUWord());
+	for (int i = 0; i < auxv.wordLength() / 2 ; i++) {
+	    assertEquals("type " + i, types[i], auxv.getUWordSized(i * 2 + 0));
+	    assertEquals("value " + i, values[i], auxv.getUWordSized(i * 2 + 1));
 	    i++;
 	}
     }
