@@ -134,7 +134,6 @@ frysk::sys::proc::AuxvBuilder::construct (jint pid)
   jbyteArray buf = slurp (pid, "auxv");
   if (buf == NULL)
     return false;
-  buildBuffer (buf);
   return construct (buf);
 }
 

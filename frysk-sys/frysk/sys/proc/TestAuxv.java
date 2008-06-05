@@ -74,8 +74,6 @@ public class TestAuxv extends TestCase {
 		this.vec = vec;
 		this.bigEndian = bigEndian;
 	    }
-	    public void buildBuffer(byte[] auxv) {
-	    }
 	    public void buildDimensions(int wordSize, boolean bigEndian,
 					int length) {
 		assertEquals("word size", this.wordSize, wordSize);
@@ -346,8 +344,6 @@ public class TestAuxv extends TestCase {
 
     public void testNative() {
 	AuxvBuilder auxv = new AuxvBuilder() {
-		public void buildBuffer(byte[] auxv) {
-		}
 		public void buildDimensions(int wordSize, boolean bigEndian,
 					    int length) {
 		    assertEquals("wordSize", Host.wordSize(), wordSize * 8);

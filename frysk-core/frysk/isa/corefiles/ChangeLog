@@ -1,3 +1,11 @@
+2008-06-04  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxElfCorefile.java (writeNoteAuxVec): Make concrete.
+	* X8664LinuxElfCorefile.java (writeNoteAuxVec): Delete.
+	* PPC64LinuxElfCorefile.java (writeNoteAuxVec): Delete.
+	* PPC32LinuxElfCorefile.java (writeNoteAuxVec): Delete.
+	* IA32LinuxElfCorefile.java (writeNoteAuxVec): Delete.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* IA32LinuxElfCorefile.java (buildBuffer(byte[])): Delete.

@@ -39,18 +39,16 @@
 
 package lib.dwfl;
 
+import inua.eio.ByteBuffer;
 import frysk.config.Prefix;
 import frysk.junit.TestCase;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
-import frysk.sys.proc.AuxvBuilder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashSet;
 
-public class TestElf
-    extends TestCase
-{
+public class TestElf extends TestCase {
 
     public void testCore_x8664() {
 	Elf testElf = new Elf (Prefix.pkgDataFile("test-core-x8664"),
@@ -522,68 +520,52 @@ public class TestElf
       }
   }
 
+    private void checkAuxv(Elf testElf, int wordSize,
+			   long[] types, long[] values) {
+	assertEquals("kind", testElf.getKind(), ElfKind.ELF_K_ELF);
+	assertEquals("base", testElf.getBase(), 0);
+	ElfData noteData = findNoteSegment(testElf);
+	ElfPrAuxv prAuxv = ElfPrAuxv.decode(noteData);
+	ByteBuffer auxv = prAuxv.getByteBuffer();
+	assertEquals("wordSize", wordSize, auxv.wordSize());
+	int i = 0;
+	while (auxv.position() < auxv.capacity()) {
+	    assertEquals("type " + i, types[i], auxv.getUWord());
+	    assertEquals("value " + i, values[i], auxv.getUWord());
+	    i++;
+	}
+    }
+
     /**
      * Test 64 bit PrAuxv note info. Read the note data segment, pass
      * it to ElfPrAuxv to find the relative pstatus data, and parse.
      */
     public void testElfCorePrAuxvNotes_x8664() {
-	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x8664"),
-			       ElfCommand.ELF_C_READ);
-    assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
-    assertEquals(testElf.getBase(), 0);
-
-    ElfData noteData = findNoteSegment(testElf);
-
-    final ElfPrAuxv prAuxv = ElfPrAuxv.decode(noteData);
-
-    final int[] expectedIndex = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    final int[] expectedType = {16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
-    final long[] expectedVal = {0xbfebfbffL,
-				0x1000L,
-				0x64L,
-				0x400040L,
-				0x38L,
-				0x8L,
-				0x0L,
-				0x0L,
-				0x400510L,
-				0x1f4L,
-				0x1f4L,
-				0x1f4L,
-				0x1f4L,
-				0x0L,
-				0x7fffc1cb95d9L,
-				0x0L
-    };
-    
-
-				
-
-    AuxvBuilder builder = new AuxvBuilder()
-    {
-
-      int auxvIndex=0;
-      public void buildBuffer (byte[] auxv)
-      {
-      }
-
-      public void buildDimensions (int wordSize, boolean bigEndian, int length)
-      {
-      }
-
-      public void buildAuxiliary (int index, int type, long val)
-      {
-	// Test the entries in the core file against the entries
-	// stored in the arrays
-	assertEquals("AuxV Index "+auxvIndex,expectedIndex[auxvIndex],index);
-	assertEquals("AuxV Type "+auxvIndex,expectedType[auxvIndex],type);
-	assertEquals("AuxV Val "+auxvIndex,expectedVal[auxvIndex],val);
-	auxvIndex++;
-      }
-    };
-    builder.construct(prAuxv.getAuxvBuffer());
-
-  }
+	Elf testElf = new Elf(Prefix.pkgDataFile ("test-core-x8664"),
+			      ElfCommand.ELF_C_READ);
+	checkAuxv(testElf, 8,
+		  new long[] {
+		      16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0
+		  },
+		  new long[] {
+		      0xbfebfbffL,
+		      0x1000L,
+		      0x64L,
+		      0x400040L,
+		      0x38L,
+		      0x8L,
+		      0x0L,
+		      0x0L,
+		      0x400510L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x0L,
+		      0x7fffc1cb95d9L,
+		      0x0L
+		  });
+    }
 
     /**
      * Test 32 bit PrAuxv note info. Read the note data segment, pass
@@ -592,63 +574,31 @@ public class TestElf
     public void testElfCorePrAuxvNotes_x86() {
 	Elf testElf = new Elf (Prefix.pkgDataFile ("test-core-x86"),
 			       ElfCommand.ELF_C_READ);
-    assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
-    assertEquals(testElf.getBase(), 0);
-
-    ElfData noteData = findNoteSegment(testElf);
-
-    final ElfPrAuxv prAuxv = ElfPrAuxv.decode(noteData);
-
-    final int[] expectedIndex = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17};
-    final int[] expectedType = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
-    final long[] expectedVal = {0x62a400L,
-				 0x62a000L,
-				 0xafe9f1bfL,
-				 0x1000L,
-				 0x64L,
-				 0x8048034L,
-				 0x20L,
-				 0x8L,
-				 0x0L,
-				 0x0L,
-				 0x80483e0L,
-				 0x1f4L,
-				 0x1f4L,
-				 0x1f4L,
-				 0x1f4L,
-				 0x0L,
-				 0xbfcfee4bL,
-				 0x0
-    };
-    
-
-				
-
-    AuxvBuilder builder = new AuxvBuilder()
-    {
-
-      int auxvIndex=0;
-      public void buildBuffer (byte[] auxv)
-      {
-      }
-
-      public void buildDimensions (int wordSize, boolean bigEndian, int length)
-      {
-      }
-
-      public void buildAuxiliary (int index, int type, long val)
-      {
-	// Test the entries in the core file against the entries
-	// stored in the arrays
-	assertEquals("AuxV Index "+auxvIndex,expectedIndex[auxvIndex],index);
-	assertEquals("AuxV Type "+auxvIndex,expectedType[auxvIndex],type);
-	assertEquals("AuxV Val "+auxvIndex,expectedVal[auxvIndex],val);
-	auxvIndex++;
-      }
-    };
-    builder.construct(prAuxv.getAuxvBuffer());
-
-  }
+	checkAuxv(testElf, 4,
+		  new long[] {
+		      32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0
+		  },
+		  new long[] {
+		      0x62a400L,
+		      0x62a000L,
+		      0xafe9f1bfL,
+		      0x1000L,
+		      0x64L,
+		      0x8048034L,
+		      0x20L,
+		      0x8L,
+		      0x0L,
+		      0x0L,
+		      0x80483e0L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x1f4L,
+		      0x0L,
+		      0xbfcfee4bL,
+		      0x0
+		  });
+    }
 
 
   public void testXFPRegSet () throws ElfException, ElfFileException

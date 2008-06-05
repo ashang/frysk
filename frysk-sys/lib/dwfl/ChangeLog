@@ -1,5 +1,14 @@
 2008-06-04  Andrew Cagney  <cagney@redhat.com>
 
+	* ElfPrAuxv.java: Make the ByteBuffer available.
+	(getEntrySize()): Make non-native.
+	(fillMemRegion): Make non-native.
+	* cni/ElfPrAuxv.cxx: Update.
+	* jni/ElfPrAuxv.cxx: Update.
+	* TestElf.java: Delete AuxvBuilder.buildBuffer.
+	(checkAuxv): New, doesn't use sys.AuxvBuilder.
+	(testElfCorePrAuxvNotes_x86, testElfCorePrAuxvNotes_x8664): Use.
+
 	* Dwfl.java (getCompilationUnitModule(DwarfDie)): Delete.
 	* TestDwfl.java: Update.
 	* jni/Dwfl.cxx: Update.

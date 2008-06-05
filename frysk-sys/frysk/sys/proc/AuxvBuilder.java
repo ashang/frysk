@@ -71,12 +71,6 @@ public abstract class AuxvBuilder {
     public final native boolean construct (byte[] auxv);
 
     /**
-     * Called with the raw byte buffer slurped by {@link
-     * #construct(ProcessIdentifier)}.
-     */
-    public abstract void buildBuffer (byte[] auxv);
-
-    /**
      * Called with the wordSize, byte order, and number of elements.
      */
     public abstract void buildDimensions (int wordSize, boolean bigEndian,

@@ -39,6 +39,10 @@
 
 package frysk.isa.corefiles;
 
+import inua.eio.ByteBuffer;
+import lib.dwfl.ElfPrAuxv;
+import lib.dwfl.ElfNhdrType;
+import frysk.proc.Auxv;
 import frysk.sys.ProcessIdentifierFactory;
 import frysk.isa.ISA;
 import java.util.ArrayList;
@@ -283,10 +287,21 @@ public abstract class LinuxElfCorefile {
      * contained within the task.
      * 
      * @param nhdrEntry - the note header entry this function is to populate.
-     * @param task - the frysk.proc.live.Taskthat provides seed info to
+     * @param Proc - the frysk.proc.Proc that provides seed info to
      * populate the note header.
      */ 
-    protected abstract void writeNoteAuxVec(ElfNhdr nhdrEntry, Proc process);
+    void writeNoteAuxVec(ElfNhdr nhdrEntry, Proc process) {
+	ISA isa = process.getMainTask().getISA();
+	Auxv[] auxv = process.getAuxv();
+	ElfPrAuxv prAuxv = new ElfPrAuxv(auxv.length, isa.wordSize(),
+					 isa.order());
+	ByteBuffer byteArray = prAuxv.getByteBuffer();
+	for (int i = 0; i < auxv.length; i++) {
+	    byteArray.putWord(auxv[i].type);
+	    byteArray.putWord(auxv[i].val);
+	}
+	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
+    }
 
     /**
      * 

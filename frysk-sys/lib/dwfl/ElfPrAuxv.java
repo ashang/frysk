@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, 2007 Red Hat Inc.
+// Copyright 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,80 +41,80 @@ package lib.dwfl;
 
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
-
+import inua.eio.ByteOrder;
 
 /**
- * Java Representation of the the NT_AUXV notes secion
- * found in core files
+ * Java Representation of the the NT_AUXV notes secion found in core
+ * files
  **/
-public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
-{
+public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry {
 
-  byte[] auxBuffer;
+    private byte[] noteData;
+    private ByteBuffer noteBuffer;
 
-  public ElfPrAuxv()
-  {
-  }
+    public ElfPrAuxv(int length, int wordSize, ByteOrder byteOrder) {
+	noteData = new byte[length * 2 * wordSize];
+	noteBuffer = new ArrayByteBuffer(noteData);
+	noteBuffer.order(byteOrder);
+	noteBuffer.wordSize(wordSize);
+    }
 
-    private ElfPrAuxv(byte[] noteData, Elf elf) {
-	ByteBuffer noteBuffer = new ArrayByteBuffer(noteData);
+    private ElfPrAuxv(Elf elf, byte[] noteData) {
+	this.noteData = noteData;
+	noteBuffer = new ArrayByteBuffer(noteData);
 	ElfEHeader header = elf.getEHeader();
 	noteBuffer.order(header.getByteOrder());
-    
-    switch (header.machine)
-      {
-      case ElfEMachine.EM_386:
-      case ElfEMachine.EM_PPC:
-	noteBuffer.wordSize(4);
-	break;
-      case ElfEMachine.EM_X86_64:
-      case ElfEMachine.EM_PPC64:
-	noteBuffer.wordSize(8);
-	break;
-      default:
-	return;
-      }
+	switch (header.machine) {
+	case ElfEMachine.EM_386:
+	case ElfEMachine.EM_PPC:
+	    noteBuffer.wordSize(4);
+	    break;
+	case ElfEMachine.EM_X86_64:
+	case ElfEMachine.EM_PPC64:
+	    noteBuffer.wordSize(8);
+	    break;
+	default:
+	    return;
+	}
+    }
 
-    auxBuffer = new byte[noteData.length];
-    noteBuffer.get(auxBuffer);
-  }
+    public static ElfPrAuxv decode(ElfData noteData) {
+	final byte data[] = getNoteData(noteData);
+	ElfPrAuxv auxData = new ElfPrAuxv(noteData.getParent(), data);
+	return auxData;
+    }
 
-  public static ElfPrAuxv decode(ElfData noteData)
-  {
-    final byte data[] = getNoteData(noteData);
-    ElfPrAuxv auxData = new ElfPrAuxv(data,noteData.getParent());
-    return auxData;
-  }
+    /**
+     *
+     * Return auxv data, in raw form
+     *
+     * @return: buffer - byte[] array containing buffer
+     *
+     */
+    public ByteBuffer getByteBuffer() {
+	return noteBuffer;
+    }
 
-  /**
-   *
-   * Setting auxv in notes is just a matter of copying the auxv
-   * structure and dumping it wholesale in the notes section
-   *
-   * So get byte[] buffer representing auxv buffer
-   *
-   * @param: buffer - byte[] array containing buffer
-   *
-   */
-  public void setAuxvBuffer(byte[] buffer)
-  {
-    this.auxBuffer = buffer;
-  }
+    public byte[] getByteArray() {
+	return noteData;
+    }
 
-  /**
-   *
-   * Return auxv data, in raw form
-   *
-   * @return: buffer - byte[] array containing buffer
-   *
-   */
-  public byte[] getAuxvBuffer()
-  {
-    return this.auxBuffer;
-  }
+    /**
+     * Returns the entry size associated with this notes buffer.
+     */
+    public long getEntrySize() {
+	return noteData.length;
+    }
 
+    /**
+     * This is called when the notes section is filled.  Fill the
+     * passed buffer with your own data, starting at startAddress
+     */
+    public long fillMemRegion(byte[] buffer, long startAddress) {
+	System.arraycopy(noteData, 0, buffer, (int)startAddress,
+			 noteData.length);
+	return noteData.length;
+    }
 
-  public native long getEntrySize();
-  public native long fillMemRegion(byte[] buffer, long startAddress);
-  public native static byte[] getNoteData(ElfData data);
+    private native static byte[] getNoteData(ElfData data);
 }

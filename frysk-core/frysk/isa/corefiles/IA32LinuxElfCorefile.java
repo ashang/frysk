@@ -39,7 +39,6 @@
 
 package frysk.isa.corefiles;
 
-import frysk.sys.ProcessIdentifier;
 import frysk.sys.ProcessIdentifierFactory;
 import inua.eio.ArrayByteBuffer;
 import java.util.Iterator;
@@ -47,7 +46,6 @@ import lib.dwfl.ElfEHeader;
 import lib.dwfl.ElfEMachine;
 import lib.dwfl.ElfNhdr;
 import lib.dwfl.ElfNhdrType;
-import lib.dwfl.ElfPrAuxv;
 import lib.dwfl.ElfPrFPRegSet;
 import lib.dwfl.ElfPrXFPRegSet;
 import lib.dwfl.ElfPrpsinfo;
@@ -58,7 +56,6 @@ import frysk.isa.registers.IA32Registers;
 import frysk.isa.registers.Register;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Stat;
 
@@ -278,31 +275,6 @@ public class IA32LinuxElfCorefile extends LinuxElfCorefile {
 	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRXFPREG, xfpRegSet);
 	
 	return true;
-    }
-
-    /* (non-Javadoc)
-     * @see frysk.util.LinuxElfCorefile#writeNoteAuxVec(lib.dwfl.ElfNhdr, frysk.proc.Proc)
-     */
-    protected void writeNoteAuxVec(ElfNhdr nhdrEntry, Proc proc) {
-	final ElfPrAuxv prAuxv = new ElfPrAuxv();
-
-	// Build Process Auxilliary
-	AuxvBuilder builder = new AuxvBuilder() {
-
-	    public void buildBuffer(byte[] auxv) {
-		prAuxv.setAuxvBuffer(auxv);
-	    }
-
-	    public void buildDimensions(int wordSize, boolean bigEndian,
-		    int length) {
-	    }
-
-	    public void buildAuxiliary(int index, int type, long val) {
-	    }
-	};
-	ProcessIdentifier pid = ProcessIdentifierFactory.create(proc.getPid());
-	builder.construct(pid);
-	nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
     }
 
     /* (non-Javadoc)

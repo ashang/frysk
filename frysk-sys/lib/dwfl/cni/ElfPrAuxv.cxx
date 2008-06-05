@@ -50,31 +50,6 @@
 #include "elf.h"
 #include "gelf.h"
 
-// Returns the entry size associated with this notes buffer
-
-jlong
-lib::dwfl::ElfPrAuxv::getEntrySize()
-{  
-  return JvGetArrayLength(this->auxBuffer);
-}
-
-
-// This is called when the notes section is filled. 
-// Fill the passed buffer with your own data, 
-// starting at startAddress
-
-jlong 
-lib::dwfl::ElfPrAuxv::fillMemRegion(jbyteArray buffer, jlong startAddress)
-{
-  jbyte *bs = elements(buffer);
-  jbyte *aux_buff = elements(this->auxBuffer);
-
-  memcpy(bs + startAddress, aux_buff, JvGetArrayLength(this->auxBuffer));
-
-  return JvGetArrayLength(this->auxBuffer);
-}
-
-
 jbyteArray
 lib::dwfl::ElfPrAuxv::getNoteData(ElfData *data)
 {

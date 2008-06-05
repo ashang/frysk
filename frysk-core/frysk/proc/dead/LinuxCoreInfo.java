@@ -39,6 +39,7 @@
 
 package frysk.proc.dead;
 
+import inua.eio.ByteBuffer;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.File;
@@ -56,7 +57,6 @@ import lib.dwfl.ElfPHeader;
 import lib.dwfl.ElfPrpsinfo;
 import frysk.rsl.Log;
 import frysk.proc.Auxv;
-import frysk.sys.proc.AuxvBuilder;
 import frysk.sysroot.SysRoot;
 import frysk.proc.MemoryMap;
 import frysk.solib.LinkMapFactory;
@@ -103,6 +103,7 @@ class LinuxCoreInfo {
 		throw new RuntimeException("'" + coreParam
 					   + "' is not a corefile.");
 	    }
+	    this.isa = ElfMap.getISA(eHeader);
 	
 	    // Find the note section that contains all the notes;
 	    // there is only ever one note section and it must be
@@ -150,7 +151,6 @@ class LinuxCoreInfo {
 	    this.elfTasks = ElfPrstatus.decode(noteSection);
 	    this.elfFPRegs = ElfPrFPRegSet.decode(noteSection);
 	    this.elfXFPRegs = ElfPrXFPRegSet.decode(noteSection);
-	    this.isa = ElfMap.getISA(eHeader);
 	} finally { 
 	    if (coreElf != null)
 		coreElf.close();
@@ -243,24 +243,19 @@ class LinuxCoreInfo {
     /**
      * Extract the AUXV .note from the notSection.
      */
-    private static Auxv[] constructAuxv(ElfData noteSection) {
+    private Auxv[] constructAuxv(ElfData noteSection) {
 	fine.log("constructAuxv");
 	final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(noteSection);
-	class BuildAuxv extends AuxvBuilder {
-	    Auxv[] vec;
-	    public void buildBuffer(byte[] auxv) {
-	    }
-	    public void buildDimensions(int wordSize, boolean bigEndian,
-					int length) {
-		vec = new Auxv[length];
-	    }
-	    public void buildAuxiliary(int index, int type, long val) {
-		vec[index] = new Auxv(type, val);
-	    }
+	ByteBuffer bytes = prAuxv.getByteBuffer();
+	Auxv[] auxv = new Auxv[(int) bytes.capacity() / 2 / isa.wordSize()];
+	int i = 0;
+	while (bytes.position() < bytes.capacity()) {
+	    int type = (int) bytes.getUWord();
+	    long value = bytes.getUWord();
+	    auxv[i] = new Auxv(type, value);
+	    i++;
 	}
-	BuildAuxv auxv = new BuildAuxv();
-	auxv.construct(prAuxv.getAuxvBuffer());
-	return auxv.vec;
+	return auxv;
     }
 
     /**

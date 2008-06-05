@@ -133,8 +133,6 @@ public class LinuxPtraceProc extends LiveProc {
 	if (auxv == null) {
 	    class BuildAuxv extends AuxvBuilder {
 		Auxv[] vec;
-		public void buildBuffer (byte[] auxv) {
-		}
 		public void buildDimensions (int wordSize, boolean bigEndian,
 					     int length) {
 		    vec = new Auxv[length];

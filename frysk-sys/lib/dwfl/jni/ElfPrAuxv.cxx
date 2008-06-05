@@ -50,31 +50,6 @@
 
 #include "jnixx/elements.hxx"
 
-// Returns the entry size associated with this notes buffer
-
-jlong
-lib::dwfl::ElfPrAuxv::getEntrySize(jnixx::env env) {  
-  return GetAuxBuffer(env).GetArrayLength(env);
-}
-
-
-// This is called when the notes section is filled. 
-// Fill the passed buffer with your own data, 
-// starting at startAddress
-
-jlong 
-lib::dwfl::ElfPrAuxv::fillMemRegion(jnixx::env env, jnixx::jbyteArray jbuffer,
-				    jlong startAddress) {
-  jbyteArrayElements buffer = jbyteArrayElements(env, jbuffer);
-  jbyte *bs = buffer.elements();
-  jnixx::jbyteArray jauxBuffer = GetAuxBuffer(env);
-  jbyteArrayElements auxBuffer = jbyteArrayElements(env, jauxBuffer);
-  jbyte *aux_buff = auxBuffer.elements();
-  memcpy(bs + startAddress, aux_buff, auxBuffer.length());
-  return auxBuffer.length();
-}
-
-
 jnixx::jbyteArray
 lib::dwfl::ElfPrAuxv::getNoteData(jnixx::env env, ElfData data) {
   void *elf_data = ((Elf_Data*)data.getPointer(env))->d_buf;
