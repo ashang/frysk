@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import lib.dwfl.DwarfDie;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import frysk.proc.Task;
 import frysk.scopes.ConcreteInlinedFunction;
 import frysk.scopes.Function;
@@ -57,7 +57,7 @@ import frysk.value.ObjectDeclaration;
 public class FunctionBreakpoint
   extends SourceBreakpoint {
     protected final String name;
-    protected final DwflDieBias die;
+    protected final DwflDie die;
 
     private boolean containsInlineInstances = false;
     private Function function;
@@ -65,7 +65,7 @@ public class FunctionBreakpoint
     /**
      * Set a breakpoint based on a DwarfDie or just a name.
      */
-    public FunctionBreakpoint(int id, String name, DwflDieBias die) {
+    public FunctionBreakpoint(int id, String name, DwflDie die) {
         super(id);
         this.name = name;
         this.die = die;
@@ -105,10 +105,10 @@ public class FunctionBreakpoint
 	//XXX: this code should be removed
 	// die is not used any more
 	if (die != null) {
-	    ArrayList entryAddrs = die.getEntryBreakpoints();
+	    ArrayList entryAddrs = die.getBiasedEntryBreakpoints();
 	    ArrayList inlineDies = null;
-	    if (die.die.isInlineDeclaration()) {
-		inlineDies = die.die.getInlinedInstances();
+	    if (die.isInlineDeclaration()) {
+		inlineDies = die.getInlinedInstances();
 	    }
 	    LinkedList addrs;
 	    if (entryAddrs == null)

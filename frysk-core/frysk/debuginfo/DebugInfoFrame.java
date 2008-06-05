@@ -45,7 +45,7 @@ import java.util.LinkedList;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import frysk.dwfl.DwflCache;
 import frysk.rt.LineXXX;
 import frysk.scopes.Function;
@@ -87,11 +87,11 @@ public class DebugInfoFrame extends FrameDecorator {
 	
 	if (scope == null) {
 	    Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-	    DwflDieBias bias = dwfl.getCompilationUnit(getAdjustedAddress());
+	    DwflDie bias = dwfl.getCompilationUnit(getAdjustedAddress());
 
 	    if (bias != null) {
 
-		DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+		DwarfDie[] scopes = bias.getScopes(getAdjustedAddress());
 		
 		if (scopes.length == 0) {
 		    return null;
@@ -133,11 +133,11 @@ public class DebugInfoFrame extends FrameDecorator {
 	  this.inlinedSubprograms = new LinkedList();
 	  
         Dwfl dwfl = DwflCache.getDwfl(this.getTask());
-        DwflDieBias bias = dwfl.getCompilationUnit(getAdjustedAddress());
+        DwflDie bias = dwfl.getCompilationUnit(getAdjustedAddress());
 
         if (bias != null) {
 
-            DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+            DwarfDie[] scopes = bias.getScopes(getAdjustedAddress());
             
             if(scopes.length == 0){
         	return inlinedSubprograms;

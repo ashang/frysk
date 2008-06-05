@@ -361,13 +361,10 @@ each_pubname(Dwarf *dwarf, Dwarf_Global *gl, void* data) {
     lib::dwfl::DwarfException::ThrowNew(context->env,
 					"failed to get object die");
   } else {
-    lib::dwfl::DwarfDie dwdie = dwfl.GetFactory(context->env)
-      .makeDie(context->env, (jlong)die, context->dwflModule);
-    lib::dwfl::DwflDieBias bias = lib::dwfl::DwflDieBias::New(context->env,
-							      dwdie,
-							      context->bias);
-    context->dwflModule.GetPubNames(context->env) .add(context->env, bias);
-    bias.DeleteLocalRef(context->env);
+    lib::dwfl::DwflDie dwdie = dwfl.GetFactory(context->env)
+      .makeDwflDie(context->env, (jlong)die, context->dwflModule);
+    context->dwflModule.GetPubNames(context->env).add(context->env, dwdie);
+    dwdie.DeleteLocalRef(context->env);
   }
 
   return DWARF_CB_OK;

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ package frysk.scopes;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import frysk.debuginfo.TypeFactory;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
@@ -59,8 +59,8 @@ public class TestScopeFactory
       Frame frame = StackFactory.createFrame(task);
       
       Dwfl dwfl = DwflCache.getDwfl(task);
-      DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-      DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+      DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
+      DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
 
       TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
       
@@ -78,7 +78,7 @@ public class TestScopeFactory
 
       // test scopes from outer frame
       frame = frame.getOuter();
-      scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+      scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
 
       Scope scope7 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
       Scope scope8 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);

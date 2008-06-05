@@ -148,19 +148,15 @@ public class TestDwfl
     Dwfl dwfl = DwflTestbed.createFromSelf();
     assertNotNull(dwfl);
     
-    DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
-    assertNotNull(bias);
-    
-    assertEquals(0, bias.bias);
-    
-    DwarfDie die = bias.die;
-    assertNotNull(die);
+    DwflDie die = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
+    assertNotNull("die", die);
+    assertEquals("bias", 0, die.getBias());
     
     assertEquals("file",
 		 new File(LocalMemory.getCodeFile()).getName(),
 		 new File(die.getName()).getName());
 
-    DwarfDie[] allDies = die.getScopes(LocalMemory.getCodeAddr() - bias.bias);
+    DwarfDie[] allDies = die.getScopes(LocalMemory.getCodeAddr() - die.getBias());
     assertNotNull(allDies);
 
     String[] names = {

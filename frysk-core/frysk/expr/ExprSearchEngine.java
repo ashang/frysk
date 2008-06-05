@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ import java.util.List;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
@@ -106,9 +106,9 @@ public class ExprSearchEngine extends ObjectDeclarationSearchEngine implements E
     public void complete(String incomplete, List candidates) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	DwarfDie die = bias.die;
-	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
+	DwflDie bias = dwfl.getCompilationUnit(pc);
+	DwarfDie die = bias;
+	DwarfDie[] allDies = die.getScopes(pc - bias.getBias());
 	List candidates_p = die.getScopeVarNames(allDies, incomplete);
 	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
             String sNext = (String) i.next();

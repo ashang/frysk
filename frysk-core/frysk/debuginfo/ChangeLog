@@ -1,3 +1,10 @@
+2008-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoFrame.java: Use DwflDie.
+	* gen-type-expect-tests.py: Ditto.
+	* TestFrameDebugInfo.java: Ditto.
+	* DebugInfo.java: Ditto.
+
 2008-06-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testVirtualStackTraceWithLocals): New test.

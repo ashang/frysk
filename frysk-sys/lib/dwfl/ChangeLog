@@ -1,5 +1,14 @@
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflDie.java: Replace DwflDieBias.java; extends DwarfDie.
+	* DwarfDieFactory.java (makeDwflDie(long,DwflModule)): New.
+	* DwarfDie.java: Simplify.
+	* Dwfl.java: Update.
+	* TestDwarfDie.java: Update.
+	* TestDwfl.java: Update.
+	* jni/DwflModule.cxx: Update.
+	* cni/DwflModule.cxx: Update.
+
 	* Dwarf.java (Dwarf(long)): Remember that the pointer isn't owned.
 	(finalize()): Check that the pointer is owned.
 	* Dwfl.java (dwfl_addrdie(long)): Delete.

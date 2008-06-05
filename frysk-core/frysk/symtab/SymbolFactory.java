@@ -1,7 +1,7 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007, 2008, Red Hat Inc.
 // Copyright 2007 Oracle Corporation.
-// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ import frysk.rsl.LogFactory;
 
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
 
@@ -118,8 +118,8 @@ public class SymbolFactory
     private static Map getPublicTable(final DwflModule module) {
 	final Map dwSymbols = new HashMap();
 	for (Iterator it = module.getPubNames().iterator(); it.hasNext(); ) {
-	    DwflDieBias dieBias = (DwflDieBias)it.next();
-	    dwSymbols.put(dieBias.die.getName(), dieBias);
+	    DwflDie dieBias = (DwflDie)it.next();
+	    dwSymbols.put(dieBias.getName(), dieBias);
 	}
 	return dwSymbols;
     }
@@ -136,8 +136,8 @@ public class SymbolFactory
 				   lib.dwfl.ElfSymbolVisibility visibility,
 				   boolean defined)
 		{
-		    DwflDieBias dieBias = publicTable == null ? null
-			: (DwflDieBias)publicTable.get(name);
+		    DwflDie dieBias = publicTable == null ? null
+			: (DwflDie)publicTable.get(name);
 		    int index;
 		    if ((index = name.indexOf('@')) != -1)
 			name = name.substring(0, index);
@@ -157,8 +157,8 @@ public class SymbolFactory
 	    Map.Entry entry = (Map.Entry)it.next();
 	    String name = (String)entry.getKey();
 	    if (!table.containsKey(name)) {
-		DwflDieBias dieBias = (DwflDieBias)entry.getValue();
-		DwarfDie die = dieBias.die;
+		DwflDie dieBias = (DwflDie)entry.getValue();
+		DwarfDie die = dieBias;
 		ArrayList entries = die.getEntryBreakpoints();
 		if (entries != null) {
 		    long addr = ((Long)entries.get(0)).longValue();

@@ -57,7 +57,7 @@
 #include "lib/dwfl/ElfSymbolVisibility.h"
 #include "lib/dwfl/DwarfDieFactory.h"
 #include "lib/dwfl/Dwfl.h"
-#include "lib/dwfl/DwflDieBias.h"
+#include "lib/dwfl/DwflDie.h"
 #include "lib/dwfl/DwException.h"
 
 #include "java/util/LinkedList.h"
@@ -405,8 +405,8 @@ namespace {
       throw new lib::dwfl::DwarfException(JvNewStringUTF("failed to get object die"));
     else
       {
-	lib::dwfl::DwarfDie *dwdie = dwfl->factory->makeDie((jlong)die, context->dwflModule);
-	context->dwflModule->pubNames->add(new lib::dwfl::DwflDieBias(dwdie, context->bias));
+	lib::dwfl::DwflDie *dwdie = dwfl->factory->makeDwflDie((jlong)die, context->dwflModule);
+	context->dwflModule->pubNames->add(dwdie);
       }
 
     return DWARF_CB_OK;

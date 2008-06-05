@@ -50,7 +50,8 @@ public class DwarfDie {
     private long pointer;
     private DwarfDie[] scopes;
     private int scopeIndex;
-    private DwflModule module;
+    // XXX: Belongs in DwflDie.
+    DwflModule module;
 
     protected boolean manageDie = false;
   
@@ -444,9 +445,8 @@ public class DwarfDie {
 	// try to find the definition 
 	// try using pubnames
 	LinkedList pubnames = this.getModule().getPubNames();
-	Iterator iterator = pubnames.iterator();
-	while (iterator.hasNext()) {
-	    DwarfDie die = ((DwflDieBias) iterator.next()).die;
+	for (Iterator i = pubnames.iterator(); i.hasNext(); ) {
+	    DwarfDie die = (DwarfDie) i.next();
 	    DwarfDie originalDie = die.getOriginalDie();
 	    if(originalDie != null && originalDie.getModule().getName().equals(this.getModule().getName()) &&
 		    originalDie.getOffset() == this.getOffset()){

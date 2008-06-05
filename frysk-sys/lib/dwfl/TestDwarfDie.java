@@ -50,11 +50,10 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 
 	// get CUDIE
-	DwflDieBias bias = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
-	assertNotNull(bias);
-	DwarfDie die = bias.die;
-	assertEquals("Die has the correct tag", DwTag.COMPILE_UNIT, die
-		.getTag());
+	DwflDie die = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
+	assertNotNull("die", die);
+	assertEquals("Die has the correct tag", DwTag.COMPILE_UNIT,
+		     die.getTag());
 
 	assertTrue("Has name attribute", die.hasAttribute(DwAt.NAME));
 	assertFalse("Does not have location attribute", die
@@ -68,11 +67,8 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 
 	// get CUDIE
-	DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	assertNotNull(bias);
-	
-	DwarfDie cuDie = bias.die;
-	assertNotNull(cuDie);
+	DwflDie cuDie = dwfl.getCompilationUnit(pc);
+	assertNotNull("cuDie", cuDie);
 	
 	DwarfDie die = cuDie;
 	
@@ -90,9 +86,7 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
-	DwflDieBias dwflDie = dwfl.getCompilationUnit(addr);
-	assertNotNull("dwflDie", dwflDie);
-	DwarfDie cuDie = dwflDie.die;
+	DwarfDie cuDie = dwfl.getCompilationUnit(addr);
 	assertNotNull("cuDie", cuDie);
 	    
 	DwarfDie die = cuDie.getScopes(addr)[0];
@@ -108,8 +102,8 @@ public class TestDwarfDie extends TestCase {
 	assertNotNull(dwfl);
 	long addr = LocalMemory.getCodeAddr();
 
-	DwarfDie cuDie = dwfl.getCompilationUnit(addr).die;
-	assertNotNull(cuDie);
+	DwflDie cuDie = dwfl.getCompilationUnit(addr);
+	assertNotNull("cuDie", cuDie);
 	    
 	DwarfDie die = cuDie.getScopes(addr)[0];
 	

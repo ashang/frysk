@@ -58,7 +58,7 @@ package frysk.debuginfo;
 import java.io.*;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.testbed.DaemonBlockedAtSignal;
@@ -84,9 +84,9 @@ public class %s extends TestLib {
             frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	    long pc = frame.getAdjustedAddress();
 	    Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	    DwflDieBias bias = dwfl.getCompilationUnit(pc);
-	    die = bias.die;
-	    allDies = die.getScopes(pc - bias.bias);
+	    DwflDie bias = dwfl.getCompilationUnit(pc);
+	    die = bias;
+	    allDies = die.getScopes(pc - bias.getBias());
 	    typeFactory = new TypeFactory(frame.getTask().getISA());
 	    this.testName = testName;
 	}

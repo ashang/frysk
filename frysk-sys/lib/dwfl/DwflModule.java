@@ -147,12 +147,10 @@ public class DwflModule {
     }
     private native LinkedList get_cu_dies();
 
-    public DwflDieBias getCompilationUnit(long addr) {
+    public DwflDie getCompilationUnit(long addr) {
 	// Find the die, grab the bias as it flies by.
 	long diePointer = dwflModuleAddrdie(pointer, addr);
-	DwarfDie die = parent.factory.makeDie(diePointer, this);
-	// XXX: Should just pass the module.
-	return new DwflDieBias(die, getBias());
+	return parent.factory.makeDwflDie(diePointer, this);
     }
     private static native long dwflModuleAddrdie(long pointer, long addr);
 

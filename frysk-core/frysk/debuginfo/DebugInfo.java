@@ -52,7 +52,7 @@ import lib.dwfl.DwarfException;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwAt;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import lib.dwfl.Elf;
 import lib.dwfl.ElfCommand;
 import java.io.File;
@@ -85,14 +85,14 @@ public class DebugInfo {
     public String what(DebugInfoFrame frame, String sInput) {
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	DwflDieBias bias = dwfl.getCompilationUnit(pc);
+	DwflDie bias = dwfl.getCompilationUnit(pc);
 	TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
 	if (bias == null)
 	    throw new RuntimeException("No symbol table is available.");
-	DwarfDie die = bias.die;
+	DwarfDie die = bias;
 	StringBuffer result = new StringBuffer();
 
-	DwarfDie[] allDies = die.getScopes(pc - bias.bias);
+	DwarfDie[] allDies = die.getScopes(pc - bias.getBias());
 	DwarfDie varDie = die.getScopeVar(allDies, sInput);
 	if (varDie == null) {
 	    varDie = DwarfDie.getDecl(dwarf, sInput);

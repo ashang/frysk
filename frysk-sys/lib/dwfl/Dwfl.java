@@ -93,7 +93,7 @@ public class Dwfl {
 	return new DwflLine(val, this);
     }
 
-    public DwflDieBias getCompilationUnit (long addr) {
+    public DwflDie getCompilationUnit (long addr) {
 	DwflModule module = getModule(addr);
 	if (module == null) {
 	    return null;

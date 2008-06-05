@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,19 +45,19 @@ package frysk.symtab;
  */
 
 import lib.dwfl.ElfSymbolType;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import lib.dwfl.DwflModule;
 
 public class DwflSymbol
     extends Symbol
 {
-    private final DwflDieBias dieBias;
+    private final DwflDie dieBias;
     private final DwflModule dwflModule;
     private final boolean defined;
 
     // package private constructor.
     DwflSymbol(long address, long size, String name,
-	       ElfSymbolType type, DwflDieBias dieBias, DwflModule module,
+	       ElfSymbolType type, DwflDie dieBias, DwflModule module,
 	       boolean defined)
     {
 	super (address, size, name, type);
@@ -70,7 +70,7 @@ public class DwflSymbol
 	return this.dwflModule;
     }
 
-    public DwflDieBias getDie() {
+    public DwflDie getDie() {
 	return this.dieBias;
     }
 

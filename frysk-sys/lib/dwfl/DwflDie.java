@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,30 +42,31 @@ package lib.dwfl;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class DwflDieBias {
-    public final DwarfDie die;
-    public final long bias;
-
-    public DwflDieBias(DwarfDie die, long bias) {
-	this.die = die;
-	this.bias = bias;
+public class DwflDie extends DwarfDie {
+    DwflDie(long diePointer, DwflModule module) {
+	// FIXME: A DwarfDie should have no clue about modules.
+	super(diePointer, module);
     }
 
-    public ArrayList getEntryBreakpoints() {
-	ArrayList bps = die.getEntryBreakpoints();
+    public ArrayList getBiasedEntryBreakpoints() {
+	ArrayList bps = getEntryBreakpoints();
 	ArrayList biased = new ArrayList();
 	for (Iterator it = bps.iterator(); it.hasNext(); ) {
 	    Long l = (Long)it.next();
-	    biased.add(new Long(l.longValue() + bias));
+	    biased.add(new Long(l.longValue() + module.getBias()));
 	}
 	return biased;
     }
 
-    public long getLowPC () {
-	return die.getLowPC() + bias;
+    public long getBias() {
+	return module.getBias();
     }
 
-    public long getHighPC () {
-	return die.getHighPC() + bias;
+    public long getBiasedLowPC () {
+	return getLowPC() + module.getBias();
+    }
+
+    public long getBiasedHighPC () {
+	return getHighPC() + module.getBias();
     }
 }

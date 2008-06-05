@@ -61,7 +61,10 @@ public class DwarfDieFactory {
      * @param module Dwfl object associated with the DIE, if any
      * @return DwarfDie
      */
-    public DwarfDie makeDie(long pointer, DwflModule module) {
+    DwarfDie makeDie(long pointer, DwflModule module) {
 	return new DwarfDie(pointer, module);
+    }
+    DwflDie makeDwflDie(long pointer, DwflModule module) {
+	return new DwflDie(pointer, module);
     }
 }

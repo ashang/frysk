@@ -49,7 +49,7 @@ import javax.naming.NameNotFoundException;
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflDieBias;
+import lib.dwfl.DwflDie;
 import frysk.dwfl.DwflCache;
 import frysk.proc.Task;
 import frysk.scopes.Function;
@@ -183,8 +183,8 @@ public class TestFrameDebugInfo extends TestLib {
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
-    DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-    DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+    DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
+    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
     
     assertEquals("number of scopes", 3, scopes.length);
     
@@ -247,8 +247,8 @@ public class TestFrameDebugInfo extends TestLib {
     Frame frame = StackFactory.createFrame(task);
     
     Dwfl dwfl = DwflCache.getDwfl(task);
-    DwflDieBias bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-    DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+    DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
+    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
     scopes = scopes[0].getScopesDie();
     
     assertEquals("number of scopes", 4, scopes.length);
