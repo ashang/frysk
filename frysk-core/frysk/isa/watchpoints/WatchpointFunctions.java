@@ -54,6 +54,11 @@ public abstract class WatchpointFunctions  {
     // in a single hardware register
     protected int watchpointMaxLength = 0;
 
+    
+    // Mainimum length of a single watchpoint,
+    // in a single hardware register
+    protected int watchpointMinLength = 0;
+
    /**
     * Builds and sets a hardware watchpoint on a task.
     *
@@ -163,4 +168,15 @@ public abstract class WatchpointFunctions  {
     public final int getWatchpointMaxLength() {
 	return watchpointMaxLength;
     }
+    
+    /**
+     * Returns minimum length of a single watchpoint
+     * in a single hardware register
+     *
+     * @return int minimum length
+     */
+    public final int getWatchpointMinLength() {
+	return watchpointMaxLength;
+    }
+
 }

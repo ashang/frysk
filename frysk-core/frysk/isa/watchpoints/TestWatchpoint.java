@@ -220,6 +220,24 @@ public class TestWatchpoint extends TestLib {
 
     }
 
+    public void testGetMinWatchpointSize () {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	Proc proc = giveMeABlockedProc();
+	Task task = proc.getMainTask();
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpointFunctions(task.getISA());
+	assertTrue("Minimum Watchpoint size > 0", wp.getWatchpointMinLength() > 0);	
+    }
+
+    public void testGetMaxWatchpointSize () {
+	if (unresolvedOnPPC(5991)) 
+	    return;
+	Proc proc = giveMeABlockedProc();
+	Task task = proc.getMainTask();
+	WatchpointFunctions wp = WatchpointFunctionFactory.getWatchpointFunctions(task.getISA());
+	assertTrue("Minimum Watchpoint size > 0", wp.getWatchpointMaxLength() > 0);	
+    }
+
     public void testGetAllWatchpoints () {
 	// Set maximum number of watchpoints, then test them
 	// via getAll.

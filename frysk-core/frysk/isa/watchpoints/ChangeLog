@@ -1,3 +1,11 @@
+2008-06-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WatchpointFunctions.java (getWatchpointMinLength): New.	
+	* IA32WatchpointFunctions.java (IA32WatchpointFunctions): Set minimum size.
+	* X8664WatchpointFunctions.java (X8664WatchpointFunctions): Ditto.
+	* TestWatchpoint.java (testGetMaxWatchpointSize): New.
+	(testGetMinWatchpointSize): New.	
+
 2008-05-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WatchpointFunctions.java (getWatchpointMaxLength): New.

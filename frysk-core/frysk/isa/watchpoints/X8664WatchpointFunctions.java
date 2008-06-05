@@ -49,6 +49,7 @@ class X8664WatchpointFunctions extends WatchpointFunctions {
     public X8664WatchpointFunctions () {
 	noOfWatchpoints = 4;
 	watchpointMaxLength = 8;
+	watchpointMinLength = 1;
     }
    
     /**

@@ -49,6 +49,7 @@ class IA32WatchpointFunctions extends WatchpointFunctions {
     public IA32WatchpointFunctions () {
 	noOfWatchpoints = 4;
 	watchpointMaxLength = 4;
+	watchpointMinLength = 1;
     }
 
     /**
