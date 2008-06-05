@@ -58,4 +58,26 @@ public class TestUnloadCommand extends TestLib {
 	e.expect("Quitting\\.\\.\\.");
 	e.close();
     }
+    
+    public void testUnloadSingle() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-parameters").getPath() +
+		" abc def ghi", "\\[0\\.0\\] Loaded executable file.*");
+	e.sendCommandExpectPrompt("unload -t 0", "Removed Target set \\[0\\].*");
+	e.sendCommandExpectPrompt("load", "No loaded procs currently.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testUnloadError() {
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("unload -t 0", "Error: Trying to remove a proc that has not been loaded.*");
+	e.sendCommandExpectPrompt("unload", "No loaded procs currently.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    
 }

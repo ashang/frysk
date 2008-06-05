@@ -1,3 +1,8 @@
+2008-06-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* UnloadCommand.java: Fix errors for unloading processes.
+	* TestUnloadCommand.java: Add tests for above fix.
+
 2008-06-01  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestUnloadCommand.java: New.
