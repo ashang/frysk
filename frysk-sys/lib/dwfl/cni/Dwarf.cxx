@@ -53,7 +53,7 @@
 
 using namespace java::lang;
 
-#define DWARF_POINTER (::Dwarf *) this->pointer
+#define DWARF_POINTER ((::Dwarf *) pointer)
 
 void
 lib::dwfl::Dwarf::dwarf_begin_elf(jlong elf, jint command,
@@ -172,6 +172,6 @@ lib::dwfl::Dwarf::get_source_files()
 }
 
 jint 
-lib::dwfl::Dwarf::dwarf_end(){
+lib::dwfl::Dwarf::dwarfEnd(jlong pointer){
   return ::dwarf_end(DWARF_POINTER);
 }

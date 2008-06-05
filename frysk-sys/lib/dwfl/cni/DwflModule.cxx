@@ -62,7 +62,7 @@
 
 #include "java/util/LinkedList.h"
 
-#define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
+#define DWFL_MODULE_POINTER ((Dwfl_Module *) pointer)
 
 lib::dwfl::ModuleElfBias*
 lib::dwfl::DwflModule::module_getelf()
@@ -472,4 +472,29 @@ lib::dwfl::DwflModule::get_cu_dies()
     }
 	  
   return list;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleAddrdie(jlong pointer, jlong addr) {
+  Dwarf_Addr bias;
+  ::Dwarf_Die *die = ::dwfl_module_addrdie(DWFL_MODULE_POINTER,
+					   (Dwarf_Addr)addr, &bias);
+  return (jlong)die;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleGetDwarf(jlong pointer) {
+  Dwarf_Addr bias;
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER, &bias);
+  return (jlong)dwarf;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleGetBias(jlong pointer) {
+  Dwarf_Addr bias;
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER, &bias);
+  if (dwarf != NULL)
+    return (jlong) bias;
+  else
+    return -1;
 }

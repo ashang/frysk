@@ -1,5 +1,18 @@
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Dwarf.java (Dwarf(long)): Remember that the pointer isn't owned.
+	(finalize()): Check that the pointer is owned.
+	* Dwfl.java (dwfl_addrdie(long)): Delete.
+	(getCompilationUnit()): Use DwflModule.getCompilationUnit().
+	* jni/Dwfl.cxx: Update.
+	* cni/Dwfl.cxx: Update.
+	* DwflModule.java (getCompilationUnit()): New.
+	(getBias(), getDwarf()): New.
+	(dwflModuleAddrdie, dwflModuleGetDwarf, dwflModuleGetBias): New.
+	* cni/DwflModule.cxx: Update.
+	* jni/DwflModule.cxx: Update.
+	* TestDwarfDie.java: Add more logging.
+	
 	* TestElf.java (checkAuxv): Use indexed word accessors.
 
 2008-06-04  Andrew Cagney  <cagney@redhat.com>

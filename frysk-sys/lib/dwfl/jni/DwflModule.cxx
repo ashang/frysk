@@ -47,12 +47,13 @@
 
 using namespace java::lang;
 
-#define DWFL_MODULE_POINTER ((Dwfl_Module *) GetPointer(env))
+#define DWFL_MODULE_POINTER_FIXME ((Dwfl_Module *) GetPointer(env))
+#define DWFL_MODULE_POINTER ((Dwfl_Module *) pointer)
 
 lib::dwfl::ModuleElfBias
 lib::dwfl::DwflModule::module_getelf(jnixx::env env) {
   Dwarf_Addr bias = 0;
-  ::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
+  ::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER_FIXME, &bias);
   if(elf == NULL)
     return lib::dwfl::ModuleElfBias(env, NULL);
 		
@@ -70,7 +71,7 @@ lib::dwfl::DwflModule::getLines(jnixx::env env, String jfilename,
   jstringUTFChars filename = jstringUTFChars(env, jfilename);
   ::Dwfl_Line **srcsp = 0;
   size_t nsrcs = 0;
-  int result = ::dwfl_module_getsrc_file(DWFL_MODULE_POINTER,
+  int result = ::dwfl_module_getsrc_file(DWFL_MODULE_POINTER_FIXME,
 					 filename.elements(), lineno,
 					 column, &srcsp, &nsrcs);
   if (result < 0) {
@@ -111,7 +112,7 @@ lib::dwfl::DwflModule::getSymbol(jnixx::env env, jlong address,
   Dwarf_Addr addr = (Dwarf_Addr) address;
   GElf_Sym closest_sym;
 
-  const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr,
+  const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER_FIXME, addr,
 					     &closest_sym, NULL);
 
   String jMethodName;
@@ -126,13 +127,13 @@ lib::dwfl::DwflModule::getSymbol(jnixx::env env, jlong address,
 void
 lib::dwfl::DwflModule::getSymtab(jnixx::env env,
 				 lib::dwfl::SymbolBuilder symbolBuilder) {
-  int count = ::dwfl_module_getsymtab(DWFL_MODULE_POINTER);
+  int count = ::dwfl_module_getsymtab(DWFL_MODULE_POINTER_FIXME);
   if (count < 0)
     return;
 
   for (int i = 0; i < count; ++i) {
     ::GElf_Sym sym;
-    char const* name = ::dwfl_module_getsym(DWFL_MODULE_POINTER,
+    char const* name = ::dwfl_module_getsym(DWFL_MODULE_POINTER_FIXME,
 					    i, &sym, NULL);
     String jname = String::NewStringUTF(env, name);
     ::builder_callout(env, symbolBuilder, jname, &sym);
@@ -145,7 +146,7 @@ lib::dwfl::DwflModule::getPLTEntries(jnixx::env env,
 				     lib::dwfl::SymbolBuilder symbolBuilder) {
   GElf_Addr bias;
 
-  ::Elf *elf = ::dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
+  ::Elf *elf = ::dwfl_module_getelf(DWFL_MODULE_POINTER_FIXME, &bias);
   ::GElf_Ehdr ehdr;
   if (::gelf_getehdr (elf, &ehdr) == NULL)
     return;
@@ -288,10 +289,10 @@ void
 lib::dwfl::DwflModule::getSymbolByName(jnixx::env env, String jname,
 				       lib::dwfl::SymbolBuilder symbolBuilder) {
   jstringUTFChars name = jstringUTFChars(env, jname);
-  int numSymbols = dwfl_module_getsymtab(DWFL_MODULE_POINTER);
+  int numSymbols = dwfl_module_getsymtab(DWFL_MODULE_POINTER_FIXME);
   for (int i = 0; i < numSymbols; i++) {
     GElf_Sym sym;
-    const char *symName = dwfl_module_getsym(DWFL_MODULE_POINTER, i, &sym, 0);
+    const char *symName = dwfl_module_getsym(DWFL_MODULE_POINTER_FIXME, i, &sym, 0);
     if (!::strcmp(name.elements(), symName)) {
       String jsym = String::NewStringUTF(env, symName);
       ::builder_callout(env, symbolBuilder, jsym, &sym);
@@ -304,7 +305,7 @@ void
 lib::dwfl::DwflModule::setUserData(jnixx::env env, Object data) {
   void **userdata = NULL;
   fprintf(stderr, "user data is %p\n", userdata);
-  dwfl_module_info(DWFL_MODULE_POINTER, &userdata, NULL, NULL, NULL, NULL, NULL,
+  dwfl_module_info(DWFL_MODULE_POINTER_FIXME, &userdata, NULL, NULL, NULL, NULL, NULL,
                    NULL);
   *userdata = data._object;
 }
@@ -320,14 +321,14 @@ lib::dwfl::DwflModule::getDebuginfo(jnixx::env env) {
   }	
   Dwarf_Addr bias;
 
-  if (dwfl_module_getdwarf (DWFL_MODULE_POINTER, &bias) == NULL) {
+  if (dwfl_module_getdwarf (DWFL_MODULE_POINTER_FIXME, &bias) == NULL) {
     // Case where debuginfo not installed or available
     return String(env, NULL);
   }
   
   // Get the path to debuginfo file
   const char* debuginfo_fname = NULL;  
-  dwfl_module_info (DWFL_MODULE_POINTER, 
+  dwfl_module_info (DWFL_MODULE_POINTER_FIXME, 
                     NULL, NULL, NULL, NULL, NULL, NULL,
                     &debuginfo_fname);   
 
@@ -375,7 +376,7 @@ each_pubname(Dwarf *dwarf, Dwarf_Global *gl, void* data) {
 void
 lib::dwfl::DwflModule::get_pubnames(jnixx::env env) {
   Dwarf_Addr bias;
-  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER, &bias);
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER_FIXME, &bias);
 
   if (dwarf != NULL) {
     ::each_pubname_context ctx(env, *this, bias);
@@ -396,4 +397,30 @@ lib::dwfl::DwflModule::offdie(jnixx::env env, jlong die, jlong offset) {
   lib::dwfl::DwarfDie dwarfDie = GetParent(env).GetFactory(env).makeDie(env, (jlong)dwarf_die, *this);
    
   return dwarfDie;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleAddrdie(jnixx::env env, jlong pointer,
+					 jlong addr) {
+  Dwarf_Addr bias;
+  ::Dwarf_Die *die = ::dwfl_module_addrdie(DWFL_MODULE_POINTER,
+					   (Dwarf_Addr)addr, &bias);
+  return (jlong)die;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleGetDwarf(jnixx::env env, jlong pointer) {
+  Dwarf_Addr bias;
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER, &bias);
+  return (jlong)dwarf;
+}
+
+jlong
+lib::dwfl::DwflModule::dwflModuleGetBias(jnixx::env env, jlong pointer) {
+  Dwarf_Addr bias;
+  ::Dwarf* dwarf = ::dwfl_module_getdwarf(DWFL_MODULE_POINTER, &bias);
+  if (dwarf != NULL)
+    return (jlong) bias;
+  else
+    return -1;
 }
