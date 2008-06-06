@@ -42,14 +42,15 @@ package lib.dwfl;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-
+import frysk.rsl.Log;
 import frysk.junit.Runner;
 import frysk.junit.TestCase;
 import frysk.testbed.LocalMemory;
+import frysk.config.Runtime;
 
-public class TestDwfl
-    extends TestCase
-{
+public class TestDwfl extends TestCase {
+    public static final Log finest = Log.finest(TestDwfl.class);
+
   public void testDwfl()
   {
     Dwfl dwfl = new Dwfl("");
@@ -143,88 +144,92 @@ public class TestDwfl
     assertEquals("column", 0, line.getColumn());
   }
 
-  public void testGetDie ()
-  {
-    Dwfl dwfl = DwflTestbed.createFromSelf();
-    assertNotNull(dwfl);
+    public void testGetDie() {
+	Dwfl dwfl = DwflTestbed.createFromSelf();
+	assertNotNull("dwfl", dwfl);
     
-    DwflDie die = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
-    assertNotNull("die", die);
-    assertEquals("bias", 0, die.getBias());
-    
-    assertEquals("file",
-		 new File(LocalMemory.getCodeFile()).getName(),
-		 new File(die.getName()).getName());
+	DwflDie die = dwfl.getCompilationUnit(LocalMemory.getCodeAddr());
+	assertNotNull("die", die);
+	// assertEquals("bias", 0, die.getBias());
+	assertEquals("file",
+		     new File(LocalMemory.getCodeFile()).getName(),
+		     new File(die.getName()).getName());
 
-    DwarfDie[] allDies = die.getScopes(LocalMemory.getCodeAddr() - die.getBias());
-    assertNotNull(allDies);
+	DwarfDie[] allDies
+	    = die.getScopes(LocalMemory.getCodeAddr() - die.getBias());
+	assertNotNull("allDies", allDies);
+	String[] names = {
+	    LocalMemory.getCodeName(),
+	    new File(LocalMemory.getCodeFile()).getName()
+	};
+	for (int i = 0; i < allDies.length; i++) {
+	    assertNotNull("allDies[i]", allDies[i]);
+	    // Enable this line if you think that checking for inlined
+	    // code in a test suite is ok
+	    //        assertEquals(false, allDies[i].isInlinedFunction());        
+	    if (i == 1)
+		assertEquals("names " + i, names[i],
+			     new File(allDies[i].getName()).getName());
+	    else
+		assertEquals("names " + i, names[i], allDies[i].getName());
+	}
+    }
 
-    String[] names = {
-	"getCodeLine",
-	new File(LocalMemory.getCodeFile()).getName()
-    };
+    /**
+     * Get all the modules of the test application; look for some that
+     * should be there.
+     */
+    public void testGetModules() {
+	Dwfl dwfl = DwflTestbed.createFromSelf();
+	DwflModule[] modules = dwfl.getModules();
+	assertNotNull("modules", modules);
+	// Look for some modules that should be there.
+	boolean foundSelf = false;
+	boolean foundlibc = false;
+	for (int i = 0; i < modules.length; i++) {
+	    String modName = modules[i].getName();
+	    if (modName.lastIndexOf("libc") >= 0) {
+		foundlibc = true;
+		continue;
+	    }
+	    if (Runtime.get() == Runtime.JAVA_NATIVE_INTERFACE) {
+		if (modName.lastIndexOf("libfrysk-sys-jni.so") >= 0) {
+		    foundSelf = true;
+		}
+	    }
+	    if (Runtime.get() == Runtime.COMPILER_NATIVE_INTERFACE) {
+		if (modName.lastIndexOf (Runner.getProgramBasename ()) >= 0) {
+		    foundSelf = true;
+		}
+	    }
+	}
+	assertTrue("found libc", foundlibc);
+	assertTrue("found self", foundSelf);
+    }
 
-    for (int i = 0; i < allDies.length; i++)
-      {
-	  assertNotNull("allDies[i]", allDies[i]);
-	  // Enable this line if you think that checking for inlined
-	  // code in a test suite is ok
-//        assertEquals(false, allDies[i].isInlinedFunction());        
-	  if (i == 1)
-	      assertEquals("names[i]", names[i],
-			   new File(allDies[i].getName()).getName());
-	  else
-	      assertEquals(names[i], allDies[i].getName());
-      }
-  }
-
-  // Get all the modules of the test application; look for some that
-  // should be there. 
-  public void testGetModules() 
-  {
-    Dwfl dwfl = DwflTestbed.createFromSelf();
-    DwflModule[] modules = dwfl.getModules();
-    assertNotNull(modules);
-    // Look for some modules that should be there.
-    boolean foundTestRunner = false;
-    boolean foundlibc = false;
-    boolean foundlibgcj = false;
-    for (int i = 0; i < modules.length; i++) 
-      {
-	String modName = modules[i].getName();
-	if (modName.lastIndexOf (Runner.getProgramBasename ()) >= 0)
-	  foundTestRunner = true;
-	else if (modName.lastIndexOf("libc") >= 0)
-	  foundlibc = true;
-	else if (modName.lastIndexOf("libgcj") >= 0)
-	  foundlibgcj = true;
-      }
-    assertTrue(foundTestRunner && foundlibc && foundlibgcj);
-  }
-
-  // Get a line from an address, then see that the address is included
-  // in the DwflLine records returned for a line.
-  public void testGetAddresses() 
-  {
-    Dwfl dwfl = DwflTestbed.createFromSelf();
-    assertNotNull(dwfl);
-    long addr = LocalMemory.getCodeAddr();
-    DwflLine line = dwfl.getSourceLine(addr);
-    assertNotNull(line);
-    List lines = dwfl.getLineAddresses(line.getSourceFile(), 
-					 line.getLineNum(),
-					 0);
-    Iterator linesIterator = lines.iterator();
-    boolean foundAddress = false;
-    while (linesIterator.hasNext()) 
-      {
-	DwflLine addrLine = (DwflLine)linesIterator.next();
-	if (addrLine.getAddress() == addr) 
-	  {
-	    foundAddress = true;
-	    break;
-	  }
-      }
-    assertTrue(foundAddress);
-  }
+    /**
+     * Get a line from an address, then see that the address is
+     * included in the DwflLine records returned for a line.
+     */
+    public void testGetAddresses() {
+	Dwfl dwfl = DwflTestbed.createFromSelf();
+	assertNotNull("dwfl", dwfl);
+	long addr = LocalMemory.getCodeAddr();
+	finest.log("addr", addr);
+	DwflLine line = dwfl.getSourceLine(addr);
+	assertNotNull("line", line);
+	List lines = dwfl.getLineAddresses(line.getSourceFile(), 
+					   line.getLineNum(),
+					   0);
+	Iterator linesIterator = lines.iterator();
+	boolean foundAddress = false;
+	while (linesIterator.hasNext()) {
+	    DwflLine addrLine = (DwflLine)linesIterator.next();
+	    if (addrLine.getAddress() == addr) {
+		foundAddress = true;
+		break;
+	    }
+	}
+	assertTrue(foundAddress);
+    }
 }

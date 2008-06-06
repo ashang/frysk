@@ -1,5 +1,8 @@
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TestDwfl.java (testGetModules()): Allow for JNI.
+	(testGetDie()): Use LocalMemory.getCodeName.
+
 	* cni/Dwfl.cxx: Fix includes.
 	
 	* DwflLine.java: Pass pointer to native methods.

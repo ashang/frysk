@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -74,7 +74,19 @@ frysk::testbed::LocalMemory::getDataBytes() {
  * Function used by getCode*(), must be on a single line for __LINE__
  * to work correctly.
  */
-jint frysk::testbed::LocalMemory::getCodeLine () { return __LINE__; }
+extern "C" {
+  static jint codeLine() { return __LINE__; }
+}
+
+jstring
+frysk::testbed::LocalMemory::getCodeName() {
+  return JvNewStringUTF("codeLine");
+}
+
+jint
+frysk::testbed::LocalMemory::getCodeLine() {
+  return codeLine();
+}
 
 jstring
 frysk::testbed::LocalMemory::getCodeFile() {
@@ -84,11 +96,12 @@ frysk::testbed::LocalMemory::getCodeFile() {
 static void*
 codeAddr() {
 #ifdef __powerpc64__
-  return *((void**) frysk::testbed::LocalMemory::getCodeLine);
+  return *((void**) codeLine);
 #else
-  return (void*)&frysk::testbed::LocalMemory::getCodeLine;
+  return (void*)&codeLine;
 #endif
 }
+
 jlong
 frysk::testbed::LocalMemory::getCodeAddr() {
   return (jlong)codeAddr();

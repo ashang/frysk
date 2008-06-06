@@ -1,3 +1,9 @@
+2008-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* LocalMemory.java (getCodeName()): New.
+	* jni/LocalMemory.cxx: Update.
+	* cni/LocalMemory.cxx: Synchronise with JNI version.
+
 2008-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/LocalMemory.cxx: Update; byteArray -> jbyteArray.

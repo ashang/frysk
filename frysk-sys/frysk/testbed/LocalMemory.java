@@ -58,6 +58,11 @@ public class LocalMemory {
     public static native byte[] getDataBytes();
 
     /**
+     * Returns the name of the code function.
+     */
+    public static native String getCodeName();
+
+    /**
      * Returns the address of a function.
      */
     public static native long getCodeAddr();
