@@ -1,3 +1,7 @@
+2008-06-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* SlaveOffspring.java: Add methods to accept commandline args.
+
 2008-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* OffspringType.java: Pass File to Fork.daemon.

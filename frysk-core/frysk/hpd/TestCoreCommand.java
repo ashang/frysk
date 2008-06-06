@@ -41,6 +41,7 @@ package frysk.hpd;
 
 import java.io.File;
 import frysk.testbed.CorefileFactory;
+import frysk.testbed.SlaveOffspring;
 import frysk.config.Prefix;
 
 public class TestCoreCommand extends TestLib {
@@ -84,5 +85,25 @@ public class TestCoreCommand extends TestLib {
 				  "Attached to core file.*");
 	e.sendCommandExpectPrompt("run",
 				  "Attached to process.*");
+    }
+    
+    public void testCoreLoadedParams() {
+	
+	if (unresolved(6602))
+	    return;
+	String[] args = {"zzz", "yyy" };
+	SlaveOffspring newProc = SlaveOffspring.createDaemon(args);
+	int pid = newProc.getPid().intValue();
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("start", "starting.*zzz yyy.*" +
+		"Attached to process ([0-9]+).*");
+	e.sendCommandExpectPrompt("dump -a -o test_core." + pid, "Generating corefile.*");
+	e.sendCommandExpectPrompt("unload -t 0", "Removed Target set \\[0\\].*");
+	e.sendCommandExpectPrompt("core test_core." + pid, "Attached to core.*");
+	e.sendCommandExpectPrompt("run", "running.*zzz yyy.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
     }
 }

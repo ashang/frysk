@@ -109,6 +109,10 @@ public class SlaveOffspring
 	super(type, CHILD_ACK, funitSlaveCommand(false, null));
     }
 
+    /** Create an ack process with args. */
+    private SlaveOffspring (OffspringType type, String[] args) {
+	super(type, CHILD_ACK, funitSlaveCommand(false, args));
+    }
     /**
      * Create an SlaveOffspring; if BUSY, the process will use a
      * busy-loop, instead of suspending, when waiting for signal
@@ -262,6 +266,12 @@ public class SlaveOffspring
      */
     static public SlaveOffspring createDaemon() {
 	return new SlaveOffspring(OffspringType.DAEMON);
+    }
+    /**
+     * Create a slave-process that is a child of this process with args.
+     */
+    static public SlaveOffspring createDaemon(String[] args) {
+	return new SlaveOffspring(OffspringType.DAEMON, args);
     }
     /**
      * Create a slave-process that is a child of this process.

@@ -1,3 +1,8 @@
+2006-06-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* CoreCommand.java: Get args from commandline for run.
+	* TestCoreCommand.java: Add test for above.
+
 2008-06-05  Rick Moseley  <rmoseley@redhat.com>
 
 	* UnloadCommand.java: Fix errors for unloading processes.
