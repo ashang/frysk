@@ -1,3 +1,9 @@
+2008-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfo.java: Let DwflDie adjust for bias.
+	* TestFrameDebugInfo.java: Ditto.
+	* gen-type-expect-tests.py: Ditto.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfoFrame.java: Use DwflDie.

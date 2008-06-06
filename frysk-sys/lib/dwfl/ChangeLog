@@ -1,5 +1,9 @@
 2008-06-06  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflDie.java (getScopes()): New.
+	(getBias()): Delete.
+	* TestDwfl.java: Let DwflDie adjust for bias.
+	
 	* DwflDie.java (getLowPC, getHighPC): Drop bias in name.
 	* DwarfDie.java (getDwfl()): Delete.
 	(getPointer()): Delete.

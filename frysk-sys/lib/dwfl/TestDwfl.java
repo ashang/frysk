@@ -156,7 +156,7 @@ public class TestDwfl extends TestCase {
 		     new File(die.getName()).getName());
 
 	DwarfDie[] allDies
-	    = die.getScopes(LocalMemory.getCodeAddr() - die.getBias());
+	    = die.getScopes(LocalMemory.getCodeAddr());
 	assertNotNull("allDies", allDies);
 	String[] names = {
 	    LocalMemory.getCodeName(),

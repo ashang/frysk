@@ -184,7 +184,7 @@ public class TestFrameDebugInfo extends TestLib {
     
     Dwfl dwfl = DwflCache.getDwfl(task);
     DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
+    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress());
     
     assertEquals("number of scopes", 3, scopes.length);
     
@@ -248,7 +248,7 @@ public class TestFrameDebugInfo extends TestLib {
     
     Dwfl dwfl = DwflCache.getDwfl(task);
     DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
+    DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress());
     scopes = scopes[0].getScopesDie();
     
     assertEquals("number of scopes", 4, scopes.length);

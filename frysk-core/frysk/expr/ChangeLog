@@ -1,3 +1,7 @@
+2008-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* ExprSearchEngine.java: Let DwflDie adjust for module bias.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* ExprSearchEngine.java: Use DwflDie.

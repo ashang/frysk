@@ -89,11 +89,9 @@ public class DebugInfo {
 	TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
 	if (bias == null)
 	    throw new RuntimeException("No symbol table is available.");
-	DwarfDie die = bias;
 	StringBuffer result = new StringBuffer();
-
-	DwarfDie[] allDies = die.getScopes(pc - bias.getBias());
-	DwarfDie varDie = die.getScopeVar(allDies, sInput);
+	DwarfDie[] allDies = bias.getScopes(pc);
+	DwarfDie varDie = bias.getScopeVar(allDies, sInput);
 	if (varDie == null) {
 	    varDie = DwarfDie.getDecl(dwarf, sInput);
 	    if (varDie == null)

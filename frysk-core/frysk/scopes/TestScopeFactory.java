@@ -60,7 +60,7 @@ public class TestScopeFactory
       
       Dwfl dwfl = DwflCache.getDwfl(task);
       DwflDie bias = dwfl.getCompilationUnit(frame.getAdjustedAddress());
-      DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
+      DwarfDie[] scopes = bias.getScopes(frame.getAdjustedAddress());
 
       TypeFactory typeFactory = new TypeFactory(frame.getTask().getISA());
       
@@ -78,7 +78,7 @@ public class TestScopeFactory
 
       // test scopes from outer frame
       frame = frame.getOuter();
-      scopes = bias.getScopes(frame.getAdjustedAddress() - bias.getBias());
+      scopes = bias.getScopes(frame.getAdjustedAddress());
 
       Scope scope7 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);
       Scope scope8 = ScopeFactory.theFactory.getScope(scopes[0], typeFactory);

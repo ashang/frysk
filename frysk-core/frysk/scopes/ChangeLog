@@ -1,3 +1,7 @@
+2008-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestScopeFactory.java: Let DwflDie adjust for bias.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDie.java: Use DwflDie.

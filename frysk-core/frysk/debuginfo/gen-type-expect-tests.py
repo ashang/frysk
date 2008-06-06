@@ -74,7 +74,7 @@ public class %s extends TestLib {
     private class TypeTestbed {
 	DebugInfoFrame frame;
         Task task;
-	DwarfDie die;
+	DwflDie biasDie;
 	DwarfDie[] allDies;
 	TypeFactory typeFactory;
 	String testName;
@@ -84,9 +84,8 @@ public class %s extends TestLib {
             frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
 	    long pc = frame.getAdjustedAddress();
 	    Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
-	    DwflDie bias = dwfl.getCompilationUnit(pc);
-	    die = bias;
-	    allDies = die.getScopes(pc - bias.getBias());
+            biasDie = dwfl.getCompilationUnit(pc);
+	    allDies = biasDie.getScopes(pc);
 	    typeFactory = new TypeFactory(frame.getTask().getISA());
 	    this.testName = testName;
 	}
@@ -96,7 +95,7 @@ public class %s extends TestLib {
 	void checkType(String symbol, String expected) {
 	    Type varType;
 
-	    DwarfDie varDie = die.getScopeVar(allDies, symbol);
+	    DwarfDie varDie = biasDie.getScopeVar(allDies, symbol);
 	    if (varDie == null)
 		System.out.println("Error: Cannot find " + symbol);
 	    assertNotNull(varDie);
@@ -115,7 +114,7 @@ public class %s extends TestLib {
 	    if (expected.indexOf("&") >= 0 || symbol.indexOf("ptr") >= 0
 		|| expected.length() == 0)
 		return;
-	    DwarfDie varDie = die.getScopeVar(allDies, symbol);
+	    DwarfDie varDie = biasDie.getScopeVar(allDies, symbol);
 	    if (varDie == null)
 		System.out.println("Error: Cannot find " + symbol);
 	    assertNotNull(varDie);

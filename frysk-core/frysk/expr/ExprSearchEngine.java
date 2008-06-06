@@ -107,9 +107,8 @@ public class ExprSearchEngine extends ObjectDeclarationSearchEngine implements E
 	long pc = frame.getAdjustedAddress();
 	Dwfl dwfl = DwflCache.getDwfl(frame.getTask());
 	DwflDie bias = dwfl.getCompilationUnit(pc);
-	DwarfDie die = bias;
-	DwarfDie[] allDies = die.getScopes(pc - bias.getBias());
-	List candidates_p = die.getScopeVarNames(allDies, incomplete);
+	DwarfDie[] allDies = bias.getScopes(pc);
+	List candidates_p = bias.getScopeVarNames(allDies, incomplete);
 	for (Iterator i = candidates_p.iterator(); i.hasNext();) {
             String sNext = (String) i.next();
             candidates.add(sNext);
