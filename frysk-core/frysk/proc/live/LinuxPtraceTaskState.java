@@ -691,6 +691,7 @@ abstract class LinuxPtraceTaskState extends State {
 		}
 		LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 							Signal signal) {
+		    fine.log("handleStoppedEvent", task);
 		    if (signal == Signal.STOP || signal == Signal.TRAP) {
 			// Attempt an attached continue.
 			task.initializeAttachedState();
@@ -802,6 +803,7 @@ abstract class LinuxPtraceTaskState extends State {
 	}
 	LinuxPtraceTaskState handleStoppedEvent(LinuxPtraceTask task,
 						Signal signal) {
+	    fine.log("handleStoppedEvent", task);
 	    if (signal == Signal.STOP) {
 		Collection pendingObservations = task.pendingObservations;
 		if (pendingObservations.isEmpty()) {
