@@ -29,11 +29,14 @@ Release 0.4, ????-??-??
    when a "start" or "run" command is issued with no overriding
    parameters.  Also, on subsequent runs, "-la" is always used unless
    other parameters are entered with the "run" or "start" command.
+   (This was bz #6515/6536).
 
 -> Support was added for fully-qualified symbol notation using the
    standard HPD "#" syntax (e.g. "#libc.so.6#malloc").  Ftrace now
    uses this notation to communicate with the user in both directions,
    FHPD recognizes the syntax although can't handle it yet.
+   
+-> Fix Hover-over variable does not show variable value(bz #6484).
 
 --
 
