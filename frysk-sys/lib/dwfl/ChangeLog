@@ -1,3 +1,11 @@
+2008-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflDie.java (getLowPC, getHighPC): Drop bias in name.
+	* DwarfDie.java (getDwfl()): Delete.
+	(getPointer()): Delete.
+	* jni/DwarfDie.cxx: Update.
+	* cni/DwarfDie.cxx: Update.
+	
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDwfl.java (testGetModules()): Allow for JNI.

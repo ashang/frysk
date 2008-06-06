@@ -63,7 +63,7 @@ public class DwarfDie {
     protected DwflModule getModule(){
 	return module;
     }
-    
+
     protected DwarfDie getCompilationUnit(){
 	
 	if(this.getTag().equals(DwTag.COMPILE_UNIT)){
@@ -77,21 +77,28 @@ public class DwarfDie {
 	return scopes[scopes.length -1];
     }
     
-    protected Dwfl getDwfl () {
-	return this.module.getParent();
-    }
-
     public long getHighPC () {
-	return get_highpc();
+	return dwarf_highpc(pointer);
     }
+    private static native long dwarf_highpc(long pointer);
 
     public long getLowPC () {
-	return get_lowpc();
+	return dwarf_lowpc(pointer);
     }
+    private static native long dwarf_lowpc(long pointer);
+
+    /**
+     * @return entry pc or low pc if this die
+     */
+    public long getEntryPc(){
+	return dwarf_entrypc(pointer);
+    }
+    private static native long dwarf_entrypc(long pointer);
 
     public String getName () {
-	return get_diename();
+	return dwarf_diename(pointer);
     }
+    private static native String dwarf_diename(long pointer);
     
     public String getProducer () {
 	return getCompilationUnit().getAttrString(DwAt.PRODUCER);
@@ -100,7 +107,7 @@ public class DwarfDie {
     public File getDeclFile() {
 	File file = null;
 	try{
-	    file = new File(get_decl_file(this.getPointer()));
+	    file = new File(get_decl_file(pointer));
 	}catch (DwAttributeNotFoundException e) {
 	    if(isDefinitionOnly()){
 		file = getOriginalDie().getDeclFile();
@@ -113,7 +120,7 @@ public class DwarfDie {
 	int line = -1;
 	
 	try{
-	    line = get_decl_line(this.getPointer());
+	    line = get_decl_line(pointer);
 	}catch (DwAttributeNotFoundException e) {
 	    if(isDefinitionOnly()){
 		line = getOriginalDie().getDeclLine();
@@ -123,7 +130,7 @@ public class DwarfDie {
     }
 
     public int getDeclColumn() {
-	return get_decl_column(this.getPointer());
+	return get_decl_column(pointer);
     }
   
     public void setScopes(DwarfDie[] scopes) {
@@ -181,7 +188,7 @@ public class DwarfDie {
 	long[] vals = new long[scopes.length];
 	long[] die_and_scope = new long[2];
 	for(int i = 0; i < scopes.length; i++)
-	    vals[i] = scopes[i].getPointer();
+	    vals[i] = scopes[i].pointer;
 
 	DwarfDie die = null;
 	long val = get_scopevar(die_and_scope, vals, variable);
@@ -204,7 +211,7 @@ public class DwarfDie {
 	varNames = new ArrayList();    
 	long[] vals = new long[scopes.length];
 	for(int i = 0; i < scopes.length; i++)
-	    vals[i] = scopes[i].getPointer();
+	    vals[i] = scopes[i].pointer;
 
 	get_scopevar_names(vals, variable);
 	return varNames; 
@@ -243,7 +250,7 @@ public class DwarfDie {
     public List getAddr()
     {
 	DwarfOps = new ArrayList();
-	get_addr(this.getPointer(), 0);
+	get_addr(pointer, 0);
 	return DwarfOps;
     }
 
@@ -262,22 +269,22 @@ public class DwarfDie {
     }
     private DwarfDie getType(boolean followTypeDef) {
 	DwarfDie die = null;
-	long type = get_type(this.getPointer(), followTypeDef);
+	long type = get_type(pointer, followTypeDef);
 	if (type != 0)
 	    die = DwarfDieFactory.getFactory().makeDie(type, this.module);
 	return die;
     }
 
     public boolean getAttrBoolean(DwAt attr) {
-	return get_attr_boolean(this.getPointer(), attr.hashCode());
+	return get_attr_boolean(pointer, attr.hashCode());
     }
     
     public String getAttrString(DwAt attr) {
-	return get_attr_string(this.getPointer(), attr.hashCode());
+	return get_attr_string(pointer, attr.hashCode());
     }
   
     public DwTag getTag() {
-	return DwTag.valueOf(get_tag(this.getPointer()));
+	return DwTag.valueOf(get_tag(pointer));
     }
     
   
@@ -285,21 +292,21 @@ public class DwarfDie {
      * @return The upper bound for this subrange die.
      */
     public int getAttrConstant(DwAt attr) {
-	return get_attr_constant(this.getPointer(), attr.hashCode());
+	return get_attr_constant(pointer, attr.hashCode());
     }
 
     /**
      * @return The offset for this die.
      */
     public long getOffset() {
-	return get_offset(this.getPointer());
+	return get_offset(pointer);
     }
 
     /**
      * @return The child for the current die.
      */
     public DwarfDie getChild() {
-	long child = get_child(this.getPointer());
+	long child = get_child(pointer);
 	DwarfDie die = null;
 	if (child != 0)
 	    die = DwarfDieFactory.getFactory().makeDie(child, this.module);
@@ -310,17 +317,13 @@ public class DwarfDie {
      * @return The sibling for the current die.
      */
     public DwarfDie getSibling() {
-	long sibling = get_sibling(this.getPointer());
+	long sibling = get_sibling(pointer);
 	DwarfDie die = null;
 	if (sibling != 0)
 	    die = DwarfDieFactory.getFactory().makeDie(sibling, this.module);
 	return die;
     }
   
-    protected long getPointer() {
-	return this.pointer;
-    }
- 
     /**
      * @param pc Program Counter
      * @return DW_AT_frame_base for current die.
@@ -330,7 +333,7 @@ public class DwarfDie {
       
 	DwarfOps = new ArrayList();
 	for (int i = this.scopeIndex; i < this.scopes.length; i++) {
-	    get_framebase(this.getPointer(), this.scopes[i].pointer, pc);
+	    get_framebase(pointer, this.scopes[i].pointer, pc);
 	    if (DwarfOps.size() != 0)
 		break;
 	}
@@ -344,12 +347,12 @@ public class DwarfDie {
      */
     public List getFormData(long pc) {
 	DwarfOps = new ArrayList();
-	get_addr(this.getPointer(), pc);
+	get_addr(pointer, pc);
 	return DwarfOps;
     }
 
     public long getDataMemberLocation() {
-	return get_data_member_location(this.getPointer());
+	return get_data_member_location(pointer);
     }
   
     /**
@@ -361,7 +364,7 @@ public class DwarfDie {
     }
   
     public boolean hasAttribute(DwAt attr){
-	return hasattr(getPointer(), attr.hashCode());
+	return hasattr(pointer, attr.hashCode());
     }
     
     public String toString() {
@@ -403,7 +406,7 @@ public class DwarfDie {
      * @return die
      */
     public static DwarfDie getDeclCU(DwarfDie[] scopes, String sym) {
-	long result = get_decl_cu (scopes[0].getPointer(), sym);
+	long result = get_decl_cu (scopes[0].pointer, sym);
 	DwarfDie die = null;
 	if (result > 0) {
 	    die = DwarfDieFactory.getFactory().makeDie(result, null);
@@ -420,7 +423,7 @@ public class DwarfDie {
     public DwarfDie getOriginalDie() {
 	if(this.hasAttribute(DwAt.ABSTRACT_ORIGIN) ||
 		this.hasAttribute(DwAt.SPECIFICATION)){
-	    long original_die = get_original_die(this.getPointer());
+	    long original_die = get_original_die(pointer);
 	    DwarfDie die = null;
 	    if (original_die != 0)
 		die = DwarfDieFactory.getFactory().makeDie(original_die, this.module);
@@ -457,26 +460,11 @@ public class DwarfDie {
 	return null;
     }
 
-    /**
-     * @return entry pc or low pc if this die
-     */
-    public long getEntryPc(){
-	return get_entrypc();
-    }
-    
     public native ArrayList getEntryBreakpoints();
 
     public native boolean isInlineDeclaration();
 
     public native ArrayList getInlinedInstances();
-  
-    private native long get_lowpc ();
-
-    private native long get_highpc ();
-
-    protected native long get_entrypc();
-
-    private native String get_diename ();
   
     private native String get_decl_file (long var_die);
   

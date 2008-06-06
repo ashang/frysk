@@ -53,42 +53,36 @@
 #include "lib/dwfl/DwException.h"
 
 
-#define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
+#define DWARF_DIE_POINTER ((Dwarf_Die *) pointer)
 
 jlong
-lib::dwfl::DwarfDie::get_lowpc()
-{
-	Dwarf_Addr lowpc;
-	::dwarf_lowpc(DWARF_DIE_POINTER, &lowpc);
-	return (jlong) lowpc;
+lib::dwfl::DwarfDie::dwarf_lowpc(jlong pointer) {
+  Dwarf_Addr lowpc;
+  ::dwarf_lowpc(DWARF_DIE_POINTER, &lowpc);
+  return (jlong) lowpc;
 }
 
 jlong
-lib::dwfl::DwarfDie::get_highpc()
-{
-	Dwarf_Addr highpc;
-	::dwarf_highpc(DWARF_DIE_POINTER, &highpc);
-	return (jlong) highpc;
+lib::dwfl::DwarfDie::dwarf_highpc(jlong pointer) {
+  Dwarf_Addr highpc;
+  ::dwarf_highpc(DWARF_DIE_POINTER, &highpc);
+  return (jlong) highpc;
 }
 
 jlong
-lib::dwfl::DwarfDie::get_entrypc()
-{
-	Dwarf_Addr entrypc;
-	::dwarf_entrypc(DWARF_DIE_POINTER, &entrypc);
-	return (jlong) entrypc;
+lib::dwfl::DwarfDie::dwarf_entrypc(jlong pointer) {
+  Dwarf_Addr entrypc;
+  ::dwarf_entrypc(DWARF_DIE_POINTER, &entrypc);
+  return (jlong) entrypc;
 }
-
-
 
 jstring
-lib::dwfl::DwarfDie::get_diename()
-{
-  const char *name = dwarf_diename (DWARF_DIE_POINTER);
+lib::dwfl::DwarfDie::dwarf_diename(jlong pointer) {
+  const char *name = ::dwarf_diename(DWARF_DIE_POINTER);
   if (name != NULL)
-    return JvNewStringUTF (name);
+    return JvNewStringUTF(name);
   else
-    return JvNewStringUTF ("");
+    return JvNewStringUTF("");
 }
 
 jstring

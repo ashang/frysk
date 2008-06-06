@@ -62,11 +62,11 @@ public class DwflDie extends DwarfDie {
 	return module.getBias();
     }
 
-    public long getBiasedLowPC () {
-	return getLowPC() + module.getBias();
+    public long getLowPC () {
+	return super.getLowPC() + module.getBias();
     }
 
-    public long getBiasedHighPC () {
-	return getHighPC() + module.getBias();
+    public long getHighPC () {
+	return super.getHighPC() + module.getBias();
     }
 }

@@ -49,32 +49,33 @@
 
 using namespace java::lang;
 
-#define DWARF_DIE_POINTER ((Dwarf_Die *) GetPointer(env))
+#define DWARF_DIE_POINTER ((Dwarf_Die *) pointer)
+#define DWARF_DIE_POINTER_FIXME ((Dwarf_Die *) GetPointer(env))
 
 jlong
-lib::dwfl::DwarfDie::get_lowpc(jnixx::env env) {
+lib::dwfl::DwarfDie::dwarf_lowpc(jnixx::env env, jlong pointer) {
   Dwarf_Addr lowpc;
   ::dwarf_lowpc(DWARF_DIE_POINTER, &lowpc);
   return (jlong) lowpc;
 }
 
 jlong
-lib::dwfl::DwarfDie::get_highpc(jnixx::env env) {
+lib::dwfl::DwarfDie::dwarf_highpc(jnixx::env env, jlong pointer) {
   Dwarf_Addr highpc;
   ::dwarf_highpc(DWARF_DIE_POINTER, &highpc);
   return (jlong) highpc;
 }
 
 jlong
-lib::dwfl::DwarfDie::get_entrypc(jnixx::env env) {
+lib::dwfl::DwarfDie::dwarf_entrypc(jnixx::env env, jlong pointer) {
   Dwarf_Addr entrypc;
   ::dwarf_entrypc(DWARF_DIE_POINTER, &entrypc);
   return (jlong) entrypc;
 }
 
 String
-lib::dwfl::DwarfDie::get_diename(jnixx::env env) {
-  const char *name = dwarf_diename (DWARF_DIE_POINTER);
+lib::dwfl::DwarfDie::dwarf_diename(jnixx::env env, jlong pointer) {
+  const char *name = ::dwarf_diename(DWARF_DIE_POINTER);
   if (name != NULL)
     return String::NewStringUTF(env, name);
   else
@@ -122,7 +123,7 @@ lib::dwfl::DwarfDie::get_decl_column(jnixx::env env, jlong var_die) {
 jnixx::jlongArray
 lib::dwfl::DwarfDie::get_scopes(jnixx::env env, jlong addr) {
   Dwarf_Die *dies;
-  int count = dwarf_getscopes(DWARF_DIE_POINTER, (Dwarf_Addr) addr, &dies);
+  int count = dwarf_getscopes(DWARF_DIE_POINTER_FIXME, (Dwarf_Addr) addr, &dies);
   if (count == -1)
     count = 0;
   jnixx::jlongArray scopes = jnixx::jlongArray::NewLongArray(env, (jint) count);
@@ -136,7 +137,7 @@ lib::dwfl::DwarfDie::get_scopes(jnixx::env env, jlong addr) {
 jnixx::jlongArray
 lib::dwfl::DwarfDie::get_scopes_die(jnixx::env env) {
   Dwarf_Die *dies;
-  int count = dwarf_getscopes_die(DWARF_DIE_POINTER, &dies);
+  int count = dwarf_getscopes_die(DWARF_DIE_POINTER_FIXME, &dies);
   if (count == -1)
     count = 0;
   jnixx::jlongArray longs = jnixx::jlongArray::NewLongArray(env, (jint) count);
@@ -451,7 +452,7 @@ lib::dwfl::DwarfDie::get_data_member_location(jnixx::env env, jlong var_die) {
  */
 bool
 lib::dwfl::DwarfDie::is_inline_func(jnixx::env env) {
-  return dwarf_tag(DWARF_DIE_POINTER) == DW_TAG_inlined_subroutine;
+  return dwarf_tag(DWARF_DIE_POINTER_FIXME) == DW_TAG_inlined_subroutine;
 }
 
 /*
@@ -532,7 +533,7 @@ iterate_decl(Dwarf_Die *die_p, const char *sym, size_t nfiles) {
 java::util::ArrayList
 lib::dwfl::DwarfDie::getEntryBreakpoints(jnixx::env env) {
   Dwarf_Addr *bkpts = 0;
-  int count = ::dwarf_entry_breakpoints(DWARF_DIE_POINTER, &bkpts);
+  int count = ::dwarf_entry_breakpoints(DWARF_DIE_POINTER_FIXME, &bkpts);
   if (count > 0) {
     java::util::ArrayList alist = java::util::ArrayList::New(env);
     for (int i = 0; i < count; i++) {
@@ -549,7 +550,7 @@ lib::dwfl::DwarfDie::getEntryBreakpoints(jnixx::env env) {
 
 bool
 lib::dwfl::DwarfDie::isInlineDeclaration(jnixx::env env) {
-  return dwarf_func_inline(DWARF_DIE_POINTER) != 0;
+  return dwarf_func_inline(DWARF_DIE_POINTER_FIXME) != 0;
 }
 
 struct CallbackArgs {
@@ -583,7 +584,7 @@ lib::dwfl::DwarfDie::getInlinedInstances(jnixx::env env) {
   CallbackArgs cbArgs
     = CallbackArgs(env, java::util::ArrayList::New(env),
 		   lib::dwfl::DwarfDieFactory::getFactory(env));
-  if (dwarf_func_inline_instances(DWARF_DIE_POINTER, inlineInstanceCallback,
+  if (dwarf_func_inline_instances(DWARF_DIE_POINTER_FIXME, inlineInstanceCallback,
 				  &cbArgs) != 0) {
     lib::dwfl::DwarfException::ThrowNew(env, "Unknown error while searching for inline instances");
   } else {
@@ -600,5 +601,5 @@ lib::dwfl::DwarfDie::hasattr(jnixx::env env, jlong pointer, jint attr) {
 void
 lib::dwfl::DwarfDie::finalize(jnixx::env env) {
   if (GetManageDie(env))
-    ::free(DWARF_DIE_POINTER);
+    ::free(DWARF_DIE_POINTER_FIXME);
 }
