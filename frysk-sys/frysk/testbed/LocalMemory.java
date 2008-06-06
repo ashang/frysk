@@ -48,6 +48,12 @@ package frysk.testbed;
 
 public class LocalMemory {
     /**
+     * Return the basename of the shared library or executable that
+     * contains the LocalMemory.
+     */
+    public static native String getModuleName();
+
+    /**
      * Returns the address of a bunch of data.
      */
     public static native long getDataAddr();

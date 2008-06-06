@@ -1,3 +1,9 @@
+2008-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* LocalMemory.java (getModuleName()): New.
+	* jni/LocalMemory.cxx: Implement.
+	* cni/LocalMemory.cxx: Implement.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* LocalMemory.java (getCodeName()): New.

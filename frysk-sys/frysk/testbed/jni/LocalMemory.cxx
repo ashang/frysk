@@ -45,6 +45,7 @@
 #include "jnixx/exceptions.hxx"
 
 using namespace java::lang;
+using namespace frysk::testbed;
 
 static ::jnixx::jbyteArray
 getBytes(::jnixx::env env, void *addr, size_t length) {
@@ -61,12 +62,12 @@ struct m {
 } memory = { 43, 45, 42, 44 };
 
 jlong
-frysk::testbed::LocalMemory::getDataAddr(::jnixx::env) {
+LocalMemory::getDataAddr(::jnixx::env) {
   return (jlong) &memory;
 }
 
 ::jnixx::jbyteArray
-frysk::testbed::LocalMemory::getDataBytes(::jnixx::env env) {
+LocalMemory::getDataBytes(::jnixx::env env) {
   return getBytes(env, &memory, sizeof(memory));
 }
 
@@ -79,17 +80,17 @@ extern "C" {
 }
 
 String
-frysk::testbed::LocalMemory::getCodeName(jnixx::env env) {
+LocalMemory::getCodeName(jnixx::env env) {
   return String::NewStringUTF(env, "codeLine");
 }
 
 jint
-frysk::testbed::LocalMemory::getCodeLine(::jnixx::env) {
+LocalMemory::getCodeLine(::jnixx::env) {
   return codeLine();
 }
 
 String
-frysk::testbed::LocalMemory::getCodeFile(::jnixx::env env) {
+LocalMemory::getCodeFile(::jnixx::env env) {
   return String::NewStringUTF(env, __FILE__);
 }
 
@@ -103,21 +104,26 @@ codeAddr() {
 }
 
 jlong
-frysk::testbed::LocalMemory::getCodeAddr(::jnixx::env) {
+LocalMemory::getCodeAddr(::jnixx::env) {
   return (jlong)codeAddr();
 }
 
 ::jnixx::jbyteArray
-frysk::testbed::LocalMemory::getCodeBytes(::jnixx::env env) {
+LocalMemory::getCodeBytes(::jnixx::env env) {
   return getBytes(env, codeAddr(), sizeof(memory));
 }
 
 void
-frysk::testbed::LocalMemory::constructStack(::jnixx::env env,
-					    frysk::testbed::LocalMemory$StackBuilder builder) {
+LocalMemory::constructStack(::jnixx::env env,
+					    LocalMemory$StackBuilder builder) {
   // Copy known data onto the stack.
   uint8_t addr[sizeof(memory)];
   memcpy(addr, &memory, sizeof(memory));
   ::jnixx::jbyteArray bytes = getBytes(env, addr, sizeof(memory));
   builder.stack(env, (jlong)addr, bytes);
+}
+
+String
+LocalMemory::getModuleName(::jnixx::env env) {
+  return String::NewStringUTF(env, "libfrysk-sys-jni.so");
 }

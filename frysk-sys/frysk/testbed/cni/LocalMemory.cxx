@@ -46,6 +46,8 @@
 #include "frysk/testbed/LocalMemory.h"
 #include "frysk/testbed/LocalMemory$StackBuilder.h"
 
+using namespace frysk::testbed;
+
 static jbyteArray
 getBytes(void *addr, size_t length) {
   jbyteArray bytes = JvNewByteArray(length);
@@ -61,12 +63,12 @@ struct m {
 } memory = { 43, 45, 42, 44 };
 
 jlong
-frysk::testbed::LocalMemory::getDataAddr() {
+LocalMemory::getDataAddr() {
   return (jlong) &memory;
 }
 
 jbyteArray
-frysk::testbed::LocalMemory::getDataBytes() {
+LocalMemory::getDataBytes() {
   return getBytes(&memory, sizeof(memory));
 }
 
@@ -79,17 +81,17 @@ extern "C" {
 }
 
 jstring
-frysk::testbed::LocalMemory::getCodeName() {
+LocalMemory::getCodeName() {
   return JvNewStringUTF("codeLine");
 }
 
 jint
-frysk::testbed::LocalMemory::getCodeLine() {
+LocalMemory::getCodeLine() {
   return codeLine();
 }
 
 jstring
-frysk::testbed::LocalMemory::getCodeFile() {
+LocalMemory::getCodeFile() {
   return JvNewStringUTF (__FILE__);
 }
 
@@ -103,20 +105,28 @@ codeAddr() {
 }
 
 jlong
-frysk::testbed::LocalMemory::getCodeAddr() {
+LocalMemory::getCodeAddr() {
   return (jlong)codeAddr();
 }
 
 jbyteArray
-frysk::testbed::LocalMemory::getCodeBytes() {
+LocalMemory::getCodeBytes() {
   return getBytes(codeAddr(), sizeof(memory));
 }
 
 void
-frysk::testbed::LocalMemory::constructStack(frysk::testbed::LocalMemory$StackBuilder* builder) {
+LocalMemory::constructStack(LocalMemory$StackBuilder* builder) {
   // Copy known data onto the stack.
   uint8_t addr[sizeof(memory)];
   memcpy(addr, &memory, sizeof(memory));
   jbyteArray bytes = getBytes(addr, sizeof(memory));
   builder->stack((jlong)addr, bytes);
+}
+
+jstring
+LocalMemory::getModuleName() {
+  // XXX: Should account for build-tree TestRunner vs install tree
+  // funit, but not important as this CNI implementation will shortly
+  // be deleted.
+  return JvNewStringUTF("TestRunner");
 }

@@ -93,7 +93,8 @@ public class TestDwarfDie extends TestCase {
 	DwflModule dwflModule = die.getModule();
 	assertNotNull(dwflModule);
 	
-	assertTrue("Found correct module", dwflModule.getName().contains("TestRunner"));
+	assertTrue("Found correct module",
+		   dwflModule.getName().contains(LocalMemory.getModuleName()));
     }
 
     public void testGetOffset(){
