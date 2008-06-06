@@ -1,7 +1,11 @@
+2008-06-06   Teresa Thomas  <tthomas@redhat.com>
+
+	* Breakpoint.java (updateHit): Update log message.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* FunctionBreakpoint.java: Use DwflDie.
-
+	
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
 	* FunctionBreakpoint.java: Do not use InlinedSubroutine.

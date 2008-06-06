@@ -1,3 +1,9 @@
+2008-06-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* BreakpointCommand.java (*.updateHit): 
+	Use SteppingEngine.updateActionpointDoneEvent. 
+	* TestBreakpoints.java (testGoAfterSimultaneousBreaks): New.	
+
 2006-06-06  Rick Moseley  <rmoseley@redhat.com>
 
 	* CoreCommand.java: Get args from commandline for run.

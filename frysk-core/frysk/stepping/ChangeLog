@@ -1,4 +1,10 @@
-2008-05-23    Teresa Thomas  <tthomas@redhat.com>
+2008-06-06  Teresa Thomas  <tthomas@redhat.com>
+
+	* SteppingEngine.java (updateActionpointDoneEvent): New.
+	(blockedByActionPoint): Use updateActionpointDoneEvent.
+	(blockedByActionPoint(Task,TaskObserver)): Test if messages set empty.
+
+2008-05-23  Teresa Thomas  <tthomas@redhat.com>
 
 	* SteppingEngine.java (messages): New.
 	(blockedByActionPoint(Task,TaskObserver,String,PrintWriter)): New.

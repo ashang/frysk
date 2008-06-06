@@ -995,42 +995,7 @@ public class SteppingEngine {
      */    
     public void blockedByActionPoint(Task task, TaskObserver to) {
 
-	 // Requests the addition of the stepping observer to task if 
-	 // not inserted already.
-	if (!(task.isInstructionObserverAdded(this.steppingObserver))) {
-	    task.requestAddInstructionObserver(this.steppingObserver);
-	}
-	
-	// Add the observer to the task's blockers list
-	addBlocker(task, to);
-		
-	TaskStepEngine tse = null;
-	tse = (TaskStepEngine) this.taskStateMap.get(task);	
-	if (!tse.isStopped()) {
-	    // Set the state of task as stopped
-	    tse.setState(new StoppedState(task));	
-	    // Remove the task from the running tasks list      
-	    this.runningTasks.remove(task);
-	}
-    }
-    
-    /**
-     * Sets the stepping engine on being hit by an action point.  
-     * 
-     * to      - Observer that causes task to block.
-     * message - message describing the cause of program block
-     * writer  - writer to print message to
-     */    
-    public void blockedByActionPoint(Task task, TaskObserver to, 
-	                             String message, PrintWriter writer) {
-	
-	/* Set messages being empty implies the fist action point being hit.
-	 */
 	if (messages.isEmpty()) {
-	    
-	    // Schedule a done event on the first sight of an action point
-	    Event e = new ActionPointEvent(messages, writer);
-	    Manager.eventLoop.add(e);
 	    
 	    // Requests the addition of the stepping observer to task if 
 	    // not inserted already.
@@ -1050,8 +1015,40 @@ public class SteppingEngine {
 		this.runningTasks.remove(task);
 	    }
 	}
-	messages.add(message);
     }
+    
+    /**
+     * Sets the stepping engine on being hit by an action point.  
+     * 
+     * to      - Observer that causes task to block.
+     * message - message describing the cause of program block
+     * writer  - writer to print message to
+     */    
+    public void blockedByActionPoint(Task task, TaskObserver to, 
+	                             String message, PrintWriter writer) {		
+	blockedByActionPoint(task, to);
+	// Schedule a done event
+	updateActionpointDoneEvent(message, writer);
+    }
+    
+    /**
+     * Creates an actionpoint done event at the first sight of an
+     * action point. This event process the action point messages
+     * to be outputted.
+     * 
+     * @param message - Actionpoint information message to be added
+     * @param writer - writer to print message to
+     */
+    public void updateActionpointDoneEvent (String message, PrintWriter writer) {
+	
+	// Schedule event only for the first actionpoint hit.
+	// For others, just add message to the messages set.
+	if (messages.isEmpty()) {
+	    Event e = new ActionPointEvent(messages, writer);
+	    Manager.eventLoop.add(e);
+	}
+	messages.add(message);
+    }   
     
     /**
      * Adds the given Observer to this.steppingObserver's Observer list.

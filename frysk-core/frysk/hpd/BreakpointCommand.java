@@ -47,14 +47,13 @@ import java.util.List;
 import java.util.Map;
 
 import frysk.debuginfo.ObjectDeclarationSearchEngine;
-import frysk.event.Event;
-import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.FunctionBreakpoint;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
+import frysk.stepping.SteppingEngine;
 import frysk.value.ObjectDeclaration;
 
 class BreakpointCommand extends ParameterizedCommand {
@@ -100,6 +99,8 @@ class BreakpointCommand extends ParameterizedCommand {
 	BreakpointManager bpManager = cli.getSteppingEngine()
 		.getBreakpointManager();
 	final PrintWriter outWriter = cli.getPrintWriter();
+	final SteppingEngine ste = cli.getSteppingEngine();
+	
 	Iterator taskIter = ptset.getTasks();
 	// Map between tasks and breakpoints to enable.
 	HashMap bptMap = new HashMap();
@@ -118,20 +119,15 @@ class BreakpointCommand extends ParameterizedCommand {
 			final long address) {
                     // Output the message in an Event in order to
                     // allow all actions, fired by events currently in
-                    // the loop, to run.
-                    Manager.eventLoop.add(new Event() {
-                            public void execute() {
-                                LineBreakpoint lbpt = (LineBreakpoint) bpt;
-                                outWriter.print("Breakpoint ");
-                                outWriter.print(lbpt.getId());
-                                outWriter.print(" #");
-                                outWriter.print(lbpt.getFileName());
-                                outWriter.print("#");
-                                outWriter.print(lbpt.getLineNumber());
-                                outWriter.print(" 0x");
-                                outWriter.println(Long.toHexString(address));
-                            }
-                        });
+                    // the loop, to run.		    
+                    LineBreakpoint lbpt = (LineBreakpoint) bpt;
+                    String message = "Breakpoint " + lbpt.getId() +
+                                     " #" + lbpt.getFileName() + "#" + 
+                                     lbpt.getLineNumber() + " 0x" +
+                                     Long.toHexString(address) + "\n";
+                    ste.updateActionpointDoneEvent(message, outWriter);
+
+                    
 		}
 	    });
 	    while (taskIter.hasNext()) {
@@ -140,7 +136,8 @@ class BreakpointCommand extends ParameterizedCommand {
 	} else {
 	    while (taskIter.hasNext()) {
 		Task task = (Task) taskIter.next();
-		ObjectDeclarationSearchEngine declarationSearchEngine = new ObjectDeclarationSearchEngine(task);
+		ObjectDeclarationSearchEngine declarationSearchEngine = 
+		    new ObjectDeclarationSearchEngine(task);
 		
 		if (declarationSearchEngine != null) {
 		    
@@ -155,19 +152,14 @@ class BreakpointCommand extends ParameterizedCommand {
 			actionpoint.addObserver(new CLIBreakpointObserver() {
 			    public void updateHit(final SourceBreakpoint bpt,
 				    Task task, final long address) {
-				// See comment in case above.
-				Manager.eventLoop.add(new Event() {
-				    public void execute() {
-					FunctionBreakpoint fbpt
-                                        = (FunctionBreakpoint) bpt;
-                                    outWriter.print("Breakpoint ");
-                                    outWriter.print(fbpt.getId());
-                                    outWriter.print(" ");
-                                    outWriter.print(fbpt.getName());
-                                    outWriter.print(" 0x");
-                                    outWriter.println(Long.toHexString(address));
-				    }
-				});
+				// Output the message in an Event in order to
+				// allow all actions, fired by events currently in
+				// the loop, to run.				
+				FunctionBreakpoint fbpt = (FunctionBreakpoint) bpt;				
+				String message = "Breakpoint " + fbpt.getId() +
+				                 " " + fbpt.getName() + " 0x" + 
+				                 Long.toHexString(address) + "\n";
+				ste.updateActionpointDoneEvent(message, outWriter);
 			    }
 			});
 			bptMap.put(task, actionpoint);
@@ -177,19 +169,14 @@ class BreakpointCommand extends ParameterizedCommand {
 			actionpoint.addObserver(new CLIBreakpointObserver() {
 			    public void updateHit(final SourceBreakpoint bpt,
 				    Task task, final long address) {
-				// See comment in case above.
-				Manager.eventLoop.add(new Event() {
-				    public void execute() {
-					FunctionBreakpoint fbpt
-                                        = (FunctionBreakpoint) bpt;
-                                    outWriter.print("Breakpoint ");
-                                    outWriter.print(fbpt.getId());
-                                    outWriter.print(" ");
-                                    outWriter.print(fbpt.getName());
-                                    outWriter.print(" 0x");
-                                    outWriter.println(Long.toHexString(address));
-				    }
-				});
+				// Output the message in an Event in order to
+				// allow all actions, fired by events currently in
+				// the loop, to run.					
+				FunctionBreakpoint fbpt = (FunctionBreakpoint) bpt;
+				String message = "Breakpoint " + fbpt.getId() +
+				                 " " + fbpt.getName() + " 0x" + 
+				                 Long.toHexString(address) + "\n";
+				ste.updateActionpointDoneEvent(message, outWriter);                            
 			    }
 			});
 			bptMap.put(task, actionpoint);
