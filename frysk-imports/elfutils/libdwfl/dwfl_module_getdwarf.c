@@ -96,8 +96,9 @@ open_elf (Dwfl_Module *mod, struct dwfl_file *file)
 	  goto elf_error;
 	if (ph->p_type == PT_LOAD)
 	  {
-	    file->bias = ((mod->low_addr & -ph->p_align)
-			  - (ph->p_vaddr & -ph->p_align));
+	    // Align the vaddr.
+	    Dwarf_Addr vaddr = ph->p_vaddr & -ph->p_align;
+	    file->bias = (mod->low_addr - vaddr);
 	    break;
 	  }
       }
