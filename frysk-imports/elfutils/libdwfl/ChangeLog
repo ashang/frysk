@@ -1,3 +1,9 @@
+2008-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* dwfl_module_getsrc.c (dwfl_module_getsrc): Remove bias from
+	address.  Fix frysk/6600, redhat/450229.
+	
+
 2008-05-21  Petr Machata  <pmachata@redhat.com>
 
 	* dwfl_module_getdwarf.c (open_elf): Assume that debuginfo of EXEC

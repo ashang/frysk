@@ -63,6 +63,8 @@ dwfl_module_getsrc (Dwfl_Module *mod, Dwarf_Addr addr)
     error = __libdwfl_cu_getsrclines (cu);
   if (likely (error == DWFL_E_NOERROR))
     {
+      /* Remove bias.  */
+      addr = addr - bias;
       /* The lines are sorted by address, so we can use binary search.  */
       size_t l = 0, u = cu->die.cu->lines->nlines;
       while (l < u)
