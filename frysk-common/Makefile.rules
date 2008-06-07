@@ -393,25 +393,19 @@ Runner:
 	rm -f $@
 	echo "#!/bin/sh"					>> $@.tmp
 	echo "export LD_PRELOAD=\"\\"                           >> $@.tmp
+	echo "$(frysk_imports)/elfutils/libelf/libelf.so \\"	>> $@.tmp
+	echo "$(frysk_imports)/elfutils/libdw/libdw.so \\"	>> $@.tmp
+	echo "$(frysk_imports)/elfutils/libasm/libasm.so \\"	>> $@.tmp
+	echo "$(frysk_imports)/libunwind-i386/src/.libs/libunwind-x86.so \\" >> $@.tmp
+	echo "$(frysk_imports)/libunwind-ppc32/src/.libs/libunwind-ppc32.so \\" >> $@.tmp
+	echo "$(frysk_imports)/libunwind-ppc64/src/.libs/libunwind-ppc64.so \\" >> $@.tmp
+	echo "$(frysk_imports)/libunwind-x86_64/src/.libs/libunwind-x86_64.so \\" >> $@.tmp
 	echo "libstdc++.so.6 \\"                                >> $@.tmp
-	echo "libdw.so \\"					>> $@.tmp
-	echo "libelf.so \\"					>> $@.tmp
-	echo "libunwind-x86.so \\"				>> $@.tmp
-	echo "libunwind-ppc32.so \\"				>> $@.tmp
-	echo "libunwind-ppc64.so \\"				>> $@.tmp
-	echo "libunwind-x86_64.so \\"				>> $@.tmp
 	echo "\""		  			      	>> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"  >> $@.tmp
 	echo "export LD_LIBRARY_PATH=$(frysk_sys)\\"		>> $@.tmp
-	echo ":$(frysk_imports)/elfutils/libdw\\"		>> $@.tmp
-	echo ":$(frysk_imports)/elfutils/libelf\\"		>> $@.tmp
 	echo ":$(frysk_imports)/elfutils/backends\\"		>> $@.tmp
-	echo ":$(frysk_imports)/libunwind-i386/src/.libs\\"	>> $@.tmp
-	echo ":$(frysk_imports)/libunwind-ppc32/src/.libs\\"	>> $@.tmp
-	echo ":$(frysk_imports)/libunwind-ppc64/src/.libs\\" 	>> $@.tmp
-	echo ":$(frysk_imports)/libunwind-x86_64/src/.libs\\"	>> $@.tmp
-	echo ":/usr/lib64\\"					>> $@.tmp
-	echo ":/usr/lib"					>> $@.tmp
+	echo ":/usr/lib64:/usr/lib"				>> $@.tmp
 	echo "export CLASSPATH=\\"				>> $@.tmp
 	echo "$(CLASSPATH):$(GEN_DIRNAME).jar:TestRunner.jar"	>> $@.tmp
 	echo "JAVA=$${JAVA:-gij}"				>> $@.tmp

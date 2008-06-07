@@ -1,3 +1,8 @@
+2008-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (Runner): Specify absolute path to shared
+	libraries.
+
 2008-05-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (Runner): Add frysk-sys directory; let JAVA
