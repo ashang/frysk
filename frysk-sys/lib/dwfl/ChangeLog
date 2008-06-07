@@ -1,3 +1,8 @@
+2008-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/ElfSymbol.cxx (ElfSymbol::elf_load_verneed): Don't delete a
+	local ref before you're finished with it.
+
 2008-06-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDwarfDie.java (testGetModule()): Use LocalMemory

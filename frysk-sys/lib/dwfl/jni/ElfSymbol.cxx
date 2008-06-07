@@ -94,40 +94,44 @@ lib::dwfl::ElfSymbol::elf_load_verneed(jnixx::env env,
   int count = ret.GetArrayLength(env);
   int offset = 0;
   for (int i = 0; i < count; ++i) {
+    Need verneed;
+    jnixx::array<Aux> aux_elems;
     ::GElf_Verneed ver;
     if (::gelf_getverneed(data, offset, &ver) == NULL)
       return false;
 
-    Need verneed = Need::New(env);
+    verneed = Need::New(env);
     ret.SetObjectArrayElement(env, i, verneed);
     int auxcount = ver.vn_cnt;
 
     verneed.SetVersion(env, ver.vn_version);
     verneed.SetFilename(env, parent.getStringAtOffset(env, str_sect_index,
 						      ver.vn_file));
-    jnixx::array<Aux> aux_elems
-      = jnixx::array<Aux>::NewObjectArray(env, auxcount);
+    aux_elems = jnixx::array<Aux>::NewObjectArray(env, auxcount);
     verneed.SetAux(env, aux_elems);
 
     int aux_offset = offset + ver.vn_aux;
     offset += ver.vn_next;
     for (int j = 0; j < auxcount; ++j) {
+      String jname;
+      Aux vernaux;
       ::GElf_Vernaux aux;
       if (::gelf_getvernaux(data, aux_offset, &aux) == NULL)
 	return false;
 
-      Aux vernaux = Aux::New(env);
+      vernaux = Aux::New(env);
       vernaux.SetHash(env, (jint)aux.vna_hash);
       vernaux.SetWeak(env, (bool)((aux.vna_flags & VER_FLG_WEAK) == VER_FLG_WEAK));
-      String jname = parent.getStringAtOffset(env, str_sect_index,
-					      aux.vna_name);
+      jname = parent.getStringAtOffset(env, str_sect_index, aux.vna_name);
       vernaux.SetName(env, jname);
-      jname.DeleteLocalRef(env);
       vernaux.SetIndex(env, (jint)aux.vna_other);
-      vernaux.DeleteLocalRef(env);
       aux_elems.SetObjectArrayElement(env, j, vernaux);
       aux_offset += aux.vna_next;
+      vernaux.DeleteLocalRef(env);
+      jname.DeleteLocalRef(env);
     }
+    aux_elems.DeleteLocalRef(env);
+    verneed.DeleteLocalRef(env);
   }
   return true;
 }
@@ -145,11 +149,13 @@ lib::dwfl::ElfSymbol::elf_load_verdef(jnixx::env env,
   int count = ret.GetArrayLength(env);
   int offset = 0;
   for (int i = 0; i < count; ++i) {
+    jnixx::array<String> names_elems;
+    Def verdef;
     ::GElf_Verdef ver;
     if (::gelf_getverdef(data, offset, &ver) == NULL)
       return false;
 
-    Def verdef = Def::New(env);
+    verdef = Def::New(env);
     ret.SetObjectArrayElement(env, i, verdef);
     int auxcount = ver.vd_cnt;
 
@@ -157,23 +163,24 @@ lib::dwfl::ElfSymbol::elf_load_verdef(jnixx::env env,
     verdef.SetBase(env, (bool)((ver.vd_flags & VER_FLG_BASE) == VER_FLG_BASE));
     verdef.SetIndex(env, ver.vd_ndx);
     verdef.SetHash(env, ver.vd_hash);
-    jnixx::array<String> names_elems
-      = jnixx::array<String>::NewObjectArray(env, auxcount);
+    names_elems = jnixx::array<String>::NewObjectArray(env, auxcount);
     verdef.SetNames(env, names_elems);
     verdef.DeleteLocalRef(env);
 
     int aux_offset = offset + ver.vd_aux;
     offset += ver.vd_next;
     for (int j = 0; j < auxcount; ++j) {
+      String jname;
       ::GElf_Verdaux aux;
       if (::gelf_getverdaux(data, aux_offset, &aux) == NULL)
 	return false;
-      String jname = parent.getStringAtOffset(env, str_sect_index,
-					      aux.vda_name);
+      jname = parent.getStringAtOffset(env, str_sect_index, aux.vda_name);
       names_elems.SetObjectArrayElement(env, j, jname);
-      jname.DeleteLocalRef(env);
       aux_offset += aux.vda_next;
+      jname.DeleteLocalRef(env);
     }
+    verdef.DeleteLocalRef(env);
+    names_elems.DeleteLocalRef(env);
   }
   return true;
 }
