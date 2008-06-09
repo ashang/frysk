@@ -11,7 +11,11 @@ multi-process, and multi-threaded systems while they are running.
 
 --
 
-Release 0.4, ????-??-??
+Release 0.5, ????-??-??
+
+--
+
+Release 0.4, 2008-06-09
 
 -> Added support for watching values that are bigger than the 
    maximum number of bytes a single watchpoint can watch. For example, 
