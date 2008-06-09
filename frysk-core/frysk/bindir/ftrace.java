@@ -53,7 +53,7 @@ import gnu.classpath.tools.getopt.OptionGroup;
 import inua.util.PrintWriter;
 
 import frysk.debuginfo.PrintStackOptions;
-import frysk.expr.CExprLexer;
+import frysk.expr.FQIdentParser;
 import frysk.expr.FQIdentifier;
 import frysk.ftrace.AddrRule;
 import frysk.ftrace.Ftrace;
@@ -149,14 +149,14 @@ class ftrace {
 				 RuleOptions options, Collection rules) {
 
 		    try {
-			FQIdentifier fqid = CExprLexer.parseFQIdentifier(str);
+			FQIdentifier fqid = FQIdentParser.parseFQIdentifier(str);
 			rules.add(new SymbolRule(addition, options, fqid));
 		    }
-		    catch (CExprLexer.FQIdentExtraGarbageException exc) {
+		    catch (FQIdentParser.ExtraGarbageException exc) {
 			warning.log("Ignoring garbage after the end of the symbol rule",
 				    exc.getMessage());
 		    }
-		    catch (CExprLexer.FQIdentInvalidTokenException exc) {
+		    catch (FQIdentParser.InvalidTokenException exc) {
 			warning.log("Invalid symbol rule", exc.getMessage());
 		    }
 		}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007 Red Hat Inc.
+// Copyright 2005, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -79,10 +79,6 @@ header
 // version and license this file solely under the GPL without
 // exception.
     package frysk.expr;
-
-    import java.util.regex.Pattern;
-    import java.util.regex.Matcher;
-    import java.io.StringReader;
 }
 
 class CExprParser extends Parser;
@@ -419,272 +415,7 @@ tokens
 }
 
 {
-    private String fqinit;
-
-    private char fqLA(int i) throws CharStreamException {
-        if (i >= fqinit.length())
-            return LA(i - fqinit.length() + 1);
-        else
-            return fqinit.charAt(i);
-    }
-
-    private void fqmatch(String s) throws MismatchedCharException, CharStreamException {
-        while (fqinit.length() > 0) {
-            char c = s.charAt(0);
-            char d = fqinit.charAt(0);
-            if (c != d)
-                throw new MismatchedCharException(d, c, false, this);
-            s = s.substring(1);
-            fqinit = fqinit.substring(1);
-        }
-        super.match(s);
-    }
-
-    private Token parseFQIdentifier()
-        throws RecognitionException, CharStreamException, TokenStreamException
-    {
-
-        /*
-         * Funky HPD #-syntax doesn't map very well to LL-k type parser (for
-         * constant 'k').  When written directly, we get lots of lexical
-         * ambiguities.  We work around that by doing arbitrary manual
-         * look-ahead and just parsing the tokens ourselves.  Any whitespace
-         * or EOF stops the lookahead.
-         */
-
-        String matched = "";
-        String part = "";
-
-        String partDso = null;
-        String partFile = null;
-        String partProc = null;
-        String partLine = null;
-        String partProcessId = null;
-        String partThreadId = null;
-        String partFrameNum = null;
-
-        int i = 0;
-        char c;
-
-        // Automaton state is composed of following sub-states:
-        final int FILE = 1;
-        final int LINE = 2;
-        final int SYMB = 4;
-        int allowed = LINE | SYMB;
-
-        if ((c = fqLA(0)) == '#'
-            || c == '[') {
-
-            char term = (c == '[') ? ']' : '#';
-            String context = (c == '[') ? "dynamic context" : "DSO part";
-
-            matched += c;
-            i++;
-            while (true) {
-                c = fqLA(i++);
-                matched += c;
-                if (Character.isWhitespace(c) || c == EOF_CHAR)
-                    throw new RecognitionException("Nonterminated " + context
-                                                   + " `" + matched
-                                                   + "' in fully qualified notation.");
-                else if (c == term)
-                    break;
-                part += c;
-            }
-
-            if (part.length() == 0)
-                throw new RecognitionException("Empty " + context
-                                               + " `" + matched
-                                               + "' in fully qualified notation.");
-
-            if (term == ']') {
-                Matcher m = Pattern.compile("[0-9]+\\.[0-9]+#[0-9]+").matcher(part);
-                if (!m.matches())
-                    return null;
-
-                int hash = part.indexOf('#');
-                int dot = part.indexOf('.');
-                partProcessId = part.substring(0, dot);
-                partThreadId = part.substring(dot + 1, hash);
-                partFrameNum = part.substring(hash + 1);
-                part = "";
-                allowed = SYMB;
-
-            } else {
-                partDso = part;
-                part = "";
-            }
-
-        }
-
-        int state = allowed;
-
-        loop: while(true) {
-            c = fqLA(i++);
-            if (Character.isWhitespace(c) || c == EOF_CHAR)
-                break;
-
-            matched += c;
-            part += c;
-            switch (c) {
-                case '.': {
-                    state |= FILE;
-                    state &= ~SYMB;
-                    break;
-                }
-
-                case '#': {
-                    if (partLine == null && partProc == null
-                        && partProcessId == null) {
-
-                        if ((state & FILE) != 0 && partFile == null)
-                            partFile = part.substring(0, part.length() - 1);
-                        else if ((state & LINE) != 0)
-                            partLine = part.substring(0, part.length() - 1);
-                        else if ((state & SYMB) != 0) {
-                            partProc = part.substring(0, part.length() - 1);
-                            if (!Character.isJavaIdentifierStart(partProc.charAt(0)))
-                                throw new RecognitionException("Procedure part (`" + partProc + "') in fully "
-                                                               + "qualified notation has to be valid identifier.");
-                        } else
-                            // This # could belong to the next symbol.
-                            // Break out and try to match the initial sequence.
-                            break loop;
-                    } else
-                        throw new RecognitionException("Unexpected `#' after line or proc name was defined.");
-
-                    state = allowed & SYMB;
-                    if (partLine == null && partProc == null)
-                        state |= allowed & LINE;
-                    part = "";
-                    break;
-                }
-
-                default: {
-                    if (!(c >= '0' && c <= '9')) {
-                        state &= ~LINE;
-
-                        if (!(Character.isJavaIdentifierStart(c)
-                              || c == '@'
-                              || (c == ':' && part.length() == 4
-                                  && part.equals("plt:")))) {
-
-                            // Break out early if we are already
-                            // just waiting for symbol.
-                            if (partLine != null || partProc != null
-                                || partProcessId != null)
-                                break loop;
-                            else
-                                state &= ~SYMB;
-                        }
-                    }
-                }
-            }
-        }
-
-        // ((state & SYMB) == 0) here means that we've parsed more
-        // than a symbol name, in hope it would turn out to be a
-        // file name (e.g. hello-world.c#symbol as a symbol
-        // reference vs. hello-world.c as an expression involving
-        // subtraction and struct access).  In following, we take
-        // care not to consume anything that's not an identifier.
-        // E.g. when the user types "a+b", we want to match
-        // only identifier "a".
-
-        boolean wantPlt = false;
-        if (part.startsWith("plt:")) {
-            wantPlt = true;
-            part = part.substring(4);
-        }
-
-        int v = part.indexOf('@');
-        String version = null;
-        if (v >= 0) {
-            version = part.substring(v + 1);
-            part = part.substring(0, v);
-        }
-
-        // This is delibaretely simplified and ignores request for initial letter.
-        // This is for better error reporting below, we first snip off irrelevant
-        // parts before yelling at user that his identifier sucks.
-        Matcher m = Pattern.compile("[a-zA-Z0-9_$]+").matcher(part);
-        if (m.lookingAt()) {
-            int diff = part.length() - m.end();
-            if (diff > 0) {
-                matched = matched.substring(0, matched.length() - diff);
-                part = part.substring(0, m.end());
-            }
-        }
-        else
-            throw new RecognitionException("Expected symbol name, got `" + part + "'.");
-
-        if (!Character.isJavaIdentifierStart(part.charAt(0)))
-            throw new RecognitionException("Invalid symbol `" + part + "'.");
-
-        FQIdentToken tok = new FQIdentToken(IDENT, matched);
-        tok.dso = partDso;
-        tok.file = partFile;
-        tok.line = partLine;
-        tok.proc = partProc;
-        tok.symbol = part;
-        tok.version = version;
-        tok.wantPlt = wantPlt;
-        tok.processId = partProcessId;
-        tok.threadId = partThreadId;
-        tok.frameNumber = partFrameNum;
-        tok.setLine(getLine());
-
-        fqmatch(matched);
-        tok.setColumn(getColumn() - matched.length());
-
-        return tok;
-    }
-
-    public static class FQIdentException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-        public FQIdentException(String s) {
-            super(s);
-        }
-    }
-
-    public static class FQIdentExtraGarbageException extends FQIdentException {
-        private static final long serialVersionUID = 1L;
-        public FQIdentExtraGarbageException(String garbage) {
-            super(garbage);
-        }
-    }
-
-    public static class FQIdentInvalidTokenException extends FQIdentException {
-        private static final long serialVersionUID = 1L;
-        public FQIdentInvalidTokenException(String token) {
-            super(token);
-        }
-    }
-
-    public static FQIdentifier parseFQIdentifier(String str)
-        throws FQIdentExtraGarbageException, FQIdentInvalidTokenException
-    {
-        StringReader r = new StringReader(str);
-        CExprLexer lexer = new CExprLexer(r);
-        Token tok;
-
-        try {
-            tok = lexer.nextToken();
-
-            if (!(tok instanceof FQIdentToken))
-                throw new FQIdentInvalidTokenException(tok.getText());
-
-            FQIdentToken fqTok = (FQIdentToken)tok;
-
-            if ((tok = lexer.nextToken()).getType() != Token.EOF_TYPE)
-                throw new FQIdentExtraGarbageException(tok.getText());
-
-            return new FQIdentifier(fqTok);
-
-        } catch (antlr.TokenStreamException exc) {
-            throw new FQIdentInvalidTokenException(str);
-        }
-    }
+    final FQIdentParser fqIdParser = new FQIdentParser(this);
 }
 
 AMPERSAND       : '&' ;
@@ -710,9 +441,8 @@ LESSTHAN        : "<" ;
 LESSTHANOREQUALTO     : "<=" ;
 LPAREN          : '('   ;
 LSQUARE         : '[' (('0'..'9') {
-                      fqinit = $getText;
                       try {
-                          Token tok = parseFQIdentifier();
+                          Token tok = fqIdParser.parse($getText);
                           if (tok != null) {
                               $setToken(tok);
                               $setType(IDENT);
@@ -752,8 +482,7 @@ ELLIPSIS  : "..." ;
 protected
 IDENT
     : ('$'|'#'|'a'..'z'|'A'..'Z'|'_') {
-          fqinit = $getText;
-          $setToken(parseFQIdentifier());
+          $setToken(fqIdParser.parse($getText));
       } ;
 
 /**
@@ -905,9 +634,8 @@ NUM
 			)?
 		|	(('1'..'9') ('0'..'9')* {_ttype = DECIMALINT;})
              ( '#' {
-                   fqinit = $getText;
                    $setType(IDENT);
-                   $setToken(parseFQIdentifier());
+                   $setToken(fqIdParser.parse($getText));
                } )?
 		)
 		(	('l'|'L') { _ttype = DECIMALINT; }
