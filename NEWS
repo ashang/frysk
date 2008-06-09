@@ -38,6 +38,47 @@ Release 0.4, ????-??-??
    
 -> Fix Hover-over variable does not show variable value(bz #6484).
 
+-> Created a new command line utility:	fdebugdump. fdebugdump dumps
+   a hierarchical view of the debug info tags in an executable.	Future
+   improvements	could include dumping the debug   info live as libraries
+   are mapped in.
+
+-> Bugs fixed:
+
+   5254: stepping engine, fhpd, and breakpoints are not in sync
+   5557: testcase: watch 1 byte address
+   5558: testcase watch address and range
+   5559: testcase failure testcase (watch an address that has been umapped)
+   5560: Add frysk.proc.TaskObserver.Watch interface
+   5561: Add frysk.proc.ProcObserver.Watch interface
+   5562: Write Debug Status Register Builder
+   5563: Write Debug Register Set/Read Proxy.
+   5565: Task and Proc State need new watchpoint state transitions.
+   5566: Write watchpoint manager
+   5567: Add ISA specific functions to set debug registers via debug register
+         proxy
+   6390: testFerrorTracesPID(frysk.bindir.TestFerror) fails.
+   6512: Add function to provide the max length a debug register can watch
+   6515: fhpd command line args incorrect
+   6531: Low level hardware watchpoint support should check, and reject, 
+         incorrectly aligned addresses
+   6532: Do not check watchpoints in Running|Stepping.handleTrapped if software
+         /ISA does not support watchpoints
+   6533: Watchpoint addition failure should not raise an exception, but should
+         instead call .addFailed() callback
+   6535: fexe not working for scripts
+   6551: Watch support for variables bigger than max length of a single watch
+         register
+   6554: Separate watch observer(s) installer from hpd
+   6555: Notify if available h/w watchpoints not enough to watch complete value
+   6558: Handle watchpoint set error if expression has no legal address
+   6559: Multiple watchpoint set messages are displayed when multiple watch 
+         observers used
+   6576: Need to load process/params with HpdTestBed
+   6599: don't align the load-address
+   6600: dwfl_module_getsrc doesn't allow for bias
+   6603: Task does not resume after hitting multiple b.pts simultaneously
+
 --
 
 Release 0.3, 2008-05-09
