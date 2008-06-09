@@ -149,7 +149,7 @@ class ftrace {
 				 RuleOptions options, Collection rules) {
 
 		    try {
-			FQIdentifier fqid = FQIdentParser.parseFQIdentifier(str);
+			FQIdentifier fqid = FQIdentParser.parseFtraceIdentifier(str);
 			rules.add(new SymbolRule(addition, options, fqid));
 		    }
 		    catch (FQIdentParser.ExtraGarbageException exc) {

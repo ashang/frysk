@@ -49,15 +49,43 @@ import antlr.MismatchedCharException;
 import antlr.RecognitionException;
 import antlr.Token;
 import antlr.TokenStreamException;
+import antlr.InputBuffer;
+import antlr.CharBuffer;
 
 public class FQIdentParser {
 
     private int i;
     private String fqinit;
     private final CharScanner scanner;
+    private final boolean allowDynamic;
+    private final boolean allowGlobs;
+    private final boolean expectMoreTokens;
 
-    FQIdentParser(CharScanner scanner) {
+    /**
+     * @param allowDynamic Whether the [pid.tid#frame] portion of the
+     *        FQ syntax makes sense in given context.  For example it
+     *        doesn't for ftrace, but in general does for hpd.
+     *
+     * @param allowGlobs Whether globs should be allowed.  This
+     *        changes syntax of symbol portion of FQ identifier, which
+     *        becomes essentially unrestricted.  Note that is globs
+     *        are allowed, simple expressions as e.g. "a*b" are no
+     *        longer parsed as three tokens, but become one glob
+     *        symbol name.
+     *
+     * @param expectMoreTokens Whether whitespace terminates
+     *        lookahead.  When no more tokens are expected, it
+     *        doesn't.
+     */
+    FQIdentParser(CharScanner scanner,
+		  boolean allowDynamic,
+		  boolean allowGlobs,
+		  boolean expectMoreTokens) {
+
 	this.scanner = scanner;
+	this.allowDynamic = allowDynamic;
+	this.allowGlobs = allowGlobs;
+	this.expectMoreTokens = expectMoreTokens;
     }
 
     private char fqLA(int i) throws CharStreamException {
@@ -92,7 +120,8 @@ public class FQIdentParser {
 	while (true) {
 	    c = fqLA(i++);
 	    matched.append(c);
-	    if (Character.isWhitespace(c) || c == CharScanner.EOF_CHAR)
+	    if ((expectMoreTokens && Character.isWhitespace(c))
+		|| c == CharScanner.EOF_CHAR)
 		throw new RecognitionException("Nonterminated " + context
 					       + " `" + matched
 					       + "' in fully qualified notation.");
@@ -108,9 +137,18 @@ public class FQIdentParser {
 	return matched.toString();
     }
 
-    public Token parse(String initial)
+    /**
+     * @param initial Portion of the character stream that is part of
+     *        the identifier, but was already consumed by lexer.
+     */
+    public FQIdentToken parse(String initial)
         throws RecognitionException, CharStreamException, TokenStreamException
     {
+	if (allowGlobs)
+	    // XXX to fool java into thinking that we use allowGlobs
+	    // when we actually don't.
+	    System.out.print("");
+
 	fqinit = initial;
 	i = 0;
 
@@ -147,18 +185,20 @@ public class FQIdentParser {
         // qualification (except the symbol name) is superfluous, but
         // does allow the identifier to be fully qualified anyway.
 
-	part = maybeParsePrefix('[', ']', "dynamic context");
-	if (part != null) {
-	    matched += part;
-	    Matcher m = Pattern.compile("\\[[0-9]+\\.[0-9]+#[0-9]+\\]").matcher(part);
-	    if (!m.matches())
-		return null;
+	if (allowDynamic) {
+	    part = maybeParsePrefix('[', ']', "dynamic context");
+	    if (part != null) {
+		matched += part;
+		Matcher m = Pattern.compile("\\[[0-9]+\\.[0-9]+#[0-9]+\\]").matcher(part);
+		if (!m.matches())
+		    return null;
 
-	    int hash = part.indexOf('#');
-	    int dot = part.indexOf('.');
-	    partProcessId = part.substring(1, dot);
-	    partThreadId = part.substring(dot + 1, hash);
-	    partFrameNum = part.substring(hash + 1, part.length() - 1);
+		int hash = part.indexOf('#');
+		int dot = part.indexOf('.');
+		partProcessId = part.substring(1, dot);
+		partThreadId = part.substring(dot + 1, hash);
+		partFrameNum = part.substring(hash + 1, part.length() - 1);
+	    }
 	}
 
 	part = maybeParsePrefix('#', '#', "DSO part");
@@ -172,7 +212,8 @@ public class FQIdentParser {
 	part = "";
         loop: while(true) {
             c = fqLA(i++);
-            if (Character.isWhitespace(c) || c == CharScanner.EOF_CHAR)
+            if ((expectMoreTokens && Character.isWhitespace(c))
+		|| c == CharScanner.EOF_CHAR)
                 break;
 
             matched += c;
@@ -312,23 +353,29 @@ public class FQIdentParser {
         }
     }
 
-    public static FQIdentifier parseFQIdentifier(String str)
+    public static FQIdentifier
+    parseFQIdentifier(String str,
+		      boolean allowDynamic,
+		      boolean allowGlobs,
+		      boolean expectMoreTokens)
         throws ExtraGarbageException, InvalidTokenException
     {
-        CExprLexer lexer = new CExprLexer(new StringReader(str));
-
         try {
-	    Token tok = lexer.fqIdParser.parse("");
+	    InputBuffer ib = new CharBuffer(new StringReader(str));
+	    CharScanner scanner = new CharScanner(ib) {
+		    public Token nextToken() throws TokenStreamException {
+			return null;
+		    }
+		};
+	    FQIdentParser parser
+		= new FQIdentParser(scanner, allowDynamic,
+				    allowGlobs, expectMoreTokens);
+	    FQIdentToken tok = parser.parse("");
 
-            if (!(tok instanceof FQIdentToken))
-                throw new InvalidTokenException(tok.getText());
+	    if (scanner.LA(1) != CharScanner.EOF_CHAR)
+                throw new ExtraGarbageException(scanner.getText());
 
-            FQIdentToken fqTok = (FQIdentToken)tok;
-
-            if ((tok = lexer.nextToken()).getType() != Token.EOF_TYPE)
-                throw new ExtraGarbageException(tok.getText());
-
-	    return new FQIdentifier(fqTok);
+	    return new FQIdentifier(tok);
 
         } catch (TokenStreamException exc) {
             throw new InvalidTokenException(str);
@@ -337,5 +384,11 @@ public class FQIdentParser {
 	} catch (CharStreamException exc) {
 	    throw new InvalidTokenException(str);
 	}
+    }
+
+    public static FQIdentifier parseFtraceIdentifier(String str)
+        throws ExtraGarbageException, InvalidTokenException
+    {
+	return parseFQIdentifier(str, false, true, false);
     }
 }

@@ -1,5 +1,10 @@
 2008-06-09  Petr Machata  <pmachata@redhat.com>
 
+	* FQIdentParser.java: Introduce parsing options.
+	(static parseFQIdentifier): Don't create the lexer at all.
+
+2008-06-09  Petr Machata  <pmachata@redhat.com>
+
 	* CExpr.g: Cut FQ identifier parser out...
 	* FQIdentParser.java: ... and more here.
 

@@ -415,7 +415,8 @@ tokens
 }
 
 {
-    final FQIdentParser fqIdParser = new FQIdentParser(this);
+    final FQIdentParser fqIdParser
+        = new FQIdentParser(this, true, false, true);
 }
 
 AMPERSAND       : '&' ;
