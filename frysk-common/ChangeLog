@@ -1,3 +1,8 @@
+2008-06-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (Runner): (Really) Let JAVA be overwritten by an
+	environment variable.  Disable demangler and addr2line.
+
 2008-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (Runner): Specify absolute path to shared
