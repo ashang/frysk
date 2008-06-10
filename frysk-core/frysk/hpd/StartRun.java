@@ -168,11 +168,9 @@ abstract class StartRun extends ParameterizedCommand {
 		    cli.loadedProcs.remove(task.getProc());
 		}
 	    }
-	    // Take care of core procs
-	    // XXX: need to take care of parameters here that were passed into the
-	    //      process that created the core file    
+	    // Take care of core procs  
 	    else if (!cli.coreProcs.isEmpty() &&
-		    cli.coreProcs.containsKey(task.getProc())) {
+		    cli.coreProcs.containsKey(new Integer(taskData.getParentID()))) {
 		run(cli, cmd, task.getProc().getExeFile().getSysRootedPath(), 
 			runToBreak, taskData.getParentID());
 		synchronized (cli) {
@@ -265,8 +263,12 @@ abstract class StartRun extends ParameterizedCommand {
 	while (foo.hasNext()) {
 	    taskData = (TaskData) foo.next();
 	    Task task = taskData.getTask();
-	    if (task.getProc().getPid() != oldPid && 
-		    task.getProc().getPid() > 0) {
+	    // Kill a proc only once
+	    if (task.getProc().getPid() != oldPid &&
+		    // Don't kill loaded procs, don't have a PID assigned yet
+		    task.getProc().getPid() > 0 &&
+		    // Don't kill core procs either, they have the old PID number
+		    cli.coreProcs.get(new Integer(taskData.getParentID())) == null) {
 		cli.execCommand("kill " + task.getProc().getPid() + "\n");
 		oldPid = task.getProc().getPid();
 	    }

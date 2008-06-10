@@ -74,6 +74,21 @@ public class CorefileFactory extends TestLib {
 	    = new DaemonBlockedAtSignal(exeFile).getMainTask().getProc();
 	return constructCore(ackProc);
     }
+    
+    /**
+     * Given a path to an executable it will run it until it sigfaults
+     * then extracts a corefile at that point, and return a File
+     * representing that core file.
+     */
+    public static File constructCoreAtSignal(File exeFile, String[] args) {
+	String[] newargs = new String[args.length + 1];
+	newargs[0] = exeFile.getAbsolutePath();
+	for (int i = 0; i < args.length; i++)
+	    newargs[i+1] = args[i];
+	final Proc ackProc
+	    = new DaemonBlockedAtSignal(newargs).getMainTask().getProc();
+	return constructCore(ackProc);
+    }
 
     /**
      * Given a path to an executable it will run it until it sigfaults

@@ -1,3 +1,9 @@
+2008-06-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* StartRun.java: Do not kill core procs.
+	* CoreCommand.java: Redo hash keys for core proc HashMap.
+	* TestCoreCommand.java: Add test cases.
+
 2008-06-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFhpdThreads.java 

@@ -119,7 +119,7 @@ public class CoreCommand extends ParameterizedCommand {
     }
 
     public static void load(Proc coreProc, CLI cli) {
-    load(coreProc, cli, null);
+	load(coreProc, cli, null);
     }
 
     public static void load(Proc coreProc, CLI cli, String sysroot) {
@@ -139,7 +139,7 @@ public class CoreCommand extends ParameterizedCommand {
 	}
 	// Finally, done.
 	synchronized (cli) {
-	    cli.coreProcs.put(coreProc, new Integer(procID));
+	    cli.coreProcs.put(new Integer(procID), coreProc);
 	    cli.ptsetParams.put(new Integer(procID), coreProc.getCmdLine());
 	}
 	cli.outWriter.println("Attached to core file: "

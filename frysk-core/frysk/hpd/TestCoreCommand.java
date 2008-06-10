@@ -42,7 +42,9 @@ package frysk.hpd;
 import java.io.File;
 import frysk.testbed.CorefileFactory;
 import frysk.testbed.SlaveOffspring;
+//import frysk.testbed.DaemonBlockedAtSignal;
 import frysk.config.Prefix;
+//import frysk.proc.Proc;
 
 public class TestCoreCommand extends TestLib {
 
@@ -101,6 +103,23 @@ public class TestCoreCommand extends TestLib {
 	e.sendCommandExpectPrompt("unload -t 0", "Removed Target set \\[0\\].*");
 	e.sendCommandExpectPrompt("core test_core." + pid, "Attached to core.*");
 	e.sendCommandExpectPrompt("run", "running.*zzz yyy.*" +
+		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\.");
+	e.close();
+    }
+    
+    public void testCoreLoadedParamsTwo() {
+
+	if (unresolved(6614))
+	    return;
+//	File exe = new File("/bin/echo");
+	File exe = Prefix.pkgLibFile("funit-hello");
+	File core = CorefileFactory.constructCoreAtSignal(exe, new String[] {"abcd"});
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("core " + core.getPath(), "Attached to core.*");
+	e.sendCommandExpectPrompt("info args", "output");
+	e.sendCommandExpectPrompt("run", "running.*abcd.*" +
 		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	e.send("quit\n");
 	e.expect("Quitting\\.\\.\\.");
