@@ -75,7 +75,7 @@ abstract class StackCommands extends ParameterizedCommand {
 	printStackOptions.setNumberOfFrames(stopLevel);
 	printStackOptions.setPrintParameters(true);
 	printStackOptions.setPrintLocals(options.printLocals);
-	printStackOptions.setPrintFullPaths(true);
+	printStackOptions.setPrintPaths(true);
 	
 	DebugInfoStackFactory.printStackTrace(cli.outWriter, frame,
 					      printStackOptions);

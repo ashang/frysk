@@ -94,7 +94,7 @@ public class StackPrintUtil {
 		  ("print", "select the back-trace information to display\n"
 		   + "OPTION is:\n"
 		   + "debug-names: print debug-info names (e.g., DWARF)\n"
-		   + "full-path: include the full (untruncated) path to files\n"
+		   + "paths: include the full path to source files (src-paths) and libraries (lib-paths)e"
 		   + "inline: include inlined frames\n"
 		   + "locals: include each function's local variables\n"
 		   //+ "params: include function parameters\n"
@@ -114,8 +114,12 @@ public class StackPrintUtil {
 			}
 			if (name.equals("debug-names")) {
 			    options.setPrintDebugNames(val);
-			} else if (name.equals("full-path")) {
-			    options.setPrintFullPaths(val);
+			} else if (name.equals("paths")) {
+			    options.setPrintPaths(val);
+			} else if (name.equals("lib-paths")) {
+			    options.setPrintLibraryPaths(val);
+			} else if (name.equals("src-paths")) {
+			    options.setPrintSourcePaths(val);
 			} else if (name.equals("inline")) {
 			    options.setPrintInlineFunctions(val);
 			} else if (name.equals("locals")) {

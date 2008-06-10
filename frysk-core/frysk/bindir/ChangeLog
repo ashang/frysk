@@ -1,8 +1,10 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
-	* TestFstack.java (testBackTrace,
-	testBackTraceWithDebugNamesAndParams): Check for from <exe>.
-
+	* TestFstack.java (testBackTraceWithFullPath): Specify "paths",
+	not "full-path".
+	
+	* TestFstack.java (testBackTrace)
+	(testBackTraceWithDebugNamesAndParams): Check for from <exe>.
 	* TestFstack.java (testBackTraceWithRich()): Mark as unresolved;
 	bug 6616.
 	* ferror.java: Use PrintDebugInfoStackOptions; don't specify the

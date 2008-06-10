@@ -1,5 +1,10 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* PrintDebugInfoStackOptions.java (printSourcePaths): New.
+	(setPrintPaths(boolean)): New.
+	* DebugInfoFrame.java: Update.
+	* TestFrameDebugInfo.java: Use setPrintPaths.
+
 	* DebugInfoFrame.java (toPrint): Print the library using
 	Frame.printLibraryName.
 	

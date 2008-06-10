@@ -52,6 +52,7 @@ public class PrintDebugInfoStackOptions extends PrintStackOptions {
     private boolean printInlineFunctions;
     private boolean printDebugNames;
     private boolean printValues;
+    private boolean printSourcePaths;
     
     /**
      * Clear all options.
@@ -83,6 +84,14 @@ public class PrintDebugInfoStackOptions extends PrintStackOptions {
 	setPrintParameters(true);
 	setPrintInlineFunctions(true);
 	setPrintDebugNames(true);
+    }
+
+    /**
+     * Print the full path to any source file.
+     */
+    public void setPrintPaths(boolean printPaths) {
+	super.setPrintPaths(printPaths);
+	setPrintSourcePaths(printPaths);
     }
 
     /**
@@ -135,6 +144,17 @@ public class PrintDebugInfoStackOptions extends PrintStackOptions {
     }
     public void setPrintDebugNames(boolean printDebugNames) {
 	this.printDebugNames = printDebugNames;
+    }
+
+    /**
+     * Print the full path to source files (instead of just the file
+     * name).
+     */
+    public boolean printSourcePaths() {
+	return printSourcePaths;
+    }
+    public void setPrintSourcePaths(boolean printSourcePaths) {
+	this.printSourcePaths = printSourcePaths;
     }
 
     public boolean abiOnly() {

@@ -1,3 +1,7 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* StackCommands.java: Use setPrintPaths.
+
 2008-06-10  Rick Moseley  <rmoseley@redhat.com>
 
 	* StartRun.java: Do not kill core procs.

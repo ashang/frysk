@@ -1,5 +1,9 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStackTraceAction.java: Use setPrintPaths.
+	* stack-options.xml: Add paths, lib-paths, src-paths, values to
+	print options.
+	
 	* TestStackTraceAction.java: Use PrintDebugInfoStackOptions.
 	* StackPrintUtil.java: Ditto.
 	* StacktraceAction.java: Ditto.

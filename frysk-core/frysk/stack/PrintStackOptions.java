@@ -45,7 +45,7 @@ public class PrintStackOptions {
 
     private int numberOfFrames = 10;
 
-    private boolean printFullPaths;
+    private boolean printLibraryPaths;
     private boolean printLibraryNames;
     
     public PrintStackOptions() {
@@ -57,7 +57,7 @@ public class PrintStackOptions {
      * produced.
      */
     public void clear() {
-	printFullPaths = false;
+	printLibraryPaths = false;
 	printLibraryNames = false;
     }
     
@@ -67,8 +67,15 @@ public class PrintStackOptions {
      */
     public void setAbi() {
 	clear();
-	printFullPaths = false;
+	printLibraryPaths = false;
 	printLibraryNames = true;
+    }
+
+    /**
+     * Include the full path to any files.
+     */
+    public void setPrintPaths(boolean printPaths) {
+	setPrintLibraryPaths(printPaths);
     }
 
     /**
@@ -82,11 +89,11 @@ public class PrintStackOptions {
 	return numberOfFrames;
     }
 
-    public void setPrintFullPaths(boolean printFullPaths) {
-	this.printFullPaths = printFullPaths;
+    public void setPrintLibraryPaths(boolean printLibraryPaths) {
+	this.printLibraryPaths = printLibraryPaths;
     }
-    public boolean printFullPaths() {
-	return printFullPaths;
+    public boolean printLibraryPaths() {
+	return printLibraryPaths;
     }
 
     public void setPrintLibraryNames(boolean printLibraryNames) {

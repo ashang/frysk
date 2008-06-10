@@ -199,7 +199,7 @@ public class DebugInfoFrame extends FrameDecorator {
 	    }
 	    writer.print(") at ");
 	    SourceLocation line = this.getLine();
-	    if (options.printFullPaths()) {
+	    if (options.printSourcePaths()) {
 		writer.print(line.getFile().getPath());
 	    } else {
 		writer.print(line.getFile().getName());

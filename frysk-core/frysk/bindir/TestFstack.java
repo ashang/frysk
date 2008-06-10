@@ -94,9 +94,9 @@ public class TestFstack extends TestLib {
 	e.expect("\\#1");
     }
 
-    public void testBackTraceWithFullPath () {
+    public void testBackTraceWithFullPath() {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
-		"-rich", "-print", "full-path"
+		"-rich", "-print", "paths"
 	    });
         e.expect (getCanonicalRootSrcDir()
 		  + ".*"

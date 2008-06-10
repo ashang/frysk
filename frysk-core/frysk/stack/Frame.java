@@ -175,7 +175,7 @@ public abstract class Frame {
 		    writer.print(library);
 		} else {
 		    // Should there be separate libraryFullPath?
-		    if (options.printFullPaths()) {
+		    if (options.printLibraryPaths()) {
 			writer.print(library);
 		    } else {
 			// Discard the path

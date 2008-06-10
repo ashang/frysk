@@ -1,5 +1,9 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Frame.java (toPrint): Use printLibraryPaths.
+	* PrintStackOptions.java (printLibraryPaths): Replace printFullPaths.
+	(setPrintPaths(boolean)): New.
+
 	* Frame.java (printLibraryName(PrintWriter,PrintStackOptions)): New.
 	(toPrint(PrintWriter,PrintStackOptions)): Use.
 	

@@ -80,7 +80,7 @@ public class TestStackTraceAction extends TestLib {
 			      int numSecondaryThreads) {
 	PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
 	options.setNumberOfFrames(20);
-	options.setPrintFullPaths(true);
+	options.setPrintPaths(true);
 	options.setPrintLibraryNames(true);
 
 	StringWriter stringWriter = new StringWriter();

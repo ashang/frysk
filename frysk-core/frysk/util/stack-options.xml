@@ -74,19 +74,36 @@
     </varlistentry>
 
     <varlistentry>
-      <term><option>-print <replaceable>print-option</replaceable>,...</option></term>
+      <term>
+	<option>-print <replaceable>print-option</replaceable>,...</option>
+      </term>
       <listitem>
-	<para>Specify the level of detail to include in a stack
+	<para>
+	  Specify the level of detail to include in a stack
 	  back-trace.  <replaceable>print-option</replaceable> can be
-	  any of: debug-names - use debug information, such as DWARF,
-	  to determine the name of functions; full-path - do not
-	  truncate file paths; inline - include in-line function in
-	  back-trace; locals - to include local variables from each
-	  frame; params - include the values of any parameters.  To
-	  negate a <replaceable>print-option</replaceable> prefix it
-	  with "-".</para></listitem>
+	  any of:
+	</para>
+
+	<para>debug-names: use debug information, such as DWARF, to
+	determine the name of functions</para>
+
+	<para>paths: include the full path to source files and
+	libraries</para>
+
+	<para>inline: include in-line function in back-trace</para>
+
+	<para>locals: to include local variables from each
+	frame</para>
+
+	<para>params: include the function parameters</para>
+	
+	<para>
+	  To negate a <replaceable>print-option</replaceable> prefix
+	  it with "-".
+	</para>
+
+      </listitem>
     </varlistentry>
-    
   </variablelist>
 
 </refsect2>
