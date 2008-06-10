@@ -48,7 +48,7 @@ import org.gnu.gdk.GdkCairo;
 
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
@@ -225,8 +225,8 @@ public class Event extends GuiObject
      stringWriter.write(this.getName() + ": " + this.getToolTip() + "\n");
     
     if(frame != null){
-	PrintStackOptions options = new PrintStackOptions();
-	options.setPrintParams(true);
+	PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
+	options.setPrintParameters(true);
 	options.setNumberOfFrames(20);
 	DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame,options);
 	

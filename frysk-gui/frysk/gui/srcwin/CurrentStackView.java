@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.gui.srcwin;
 
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -80,6 +80,13 @@ public class CurrentStackView
 														new DataColumnString(),
 														new DataColumnObject() };
 
+    private static final PrintDebugInfoStackOptions STACK_OPTIONS;
+    static {
+	STACK_OPTIONS = new PrintDebugInfoStackOptions();
+	STACK_OPTIONS.setPrintParameters(true);
+    }
+
+
   private static DebugInfoFrame currentFrame;
 
   private LinkedList observers;
@@ -119,8 +126,7 @@ public class CurrentStackView
 	this.getSelection().addListener(this);
   }
 
-  public void refreshProc (DebugInfoFrame[] frames, int current)
-  {
+  public void refreshProc (DebugInfoFrame[] frames, int current) {
     TreeIter iter = null;
     TreePath path = ((TreeRowReference) this.stackArray[current]).getPath();
 
@@ -184,7 +190,7 @@ public class CurrentStackView
 
 	    StringWriter stringWriter = new StringWriter();
 	    stringWriter.write("# " + (++level) + " ");
-	    frame.toPrint(new PrintWriter(stringWriter),true,true);
+	    frame.toPrint(new PrintWriter(stringWriter), STACK_OPTIONS);
 	    row = stringWriter.toString();
 	    
 	    if (hasInlinedCode)
@@ -288,7 +294,7 @@ public class CurrentStackView
 
 		StringWriter stringWriter = new StringWriter();
 		stringWriter.write(row = "# " + (++level) + " ");
-		frame.toPrint(new PrintWriter(stringWriter),true,true);
+		frame.toPrint(new PrintWriter(stringWriter), STACK_OPTIONS);
 		row = stringWriter.toString();
 		
 		if (hasInlinedCode)

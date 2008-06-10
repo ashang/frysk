@@ -1,3 +1,8 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* CurrentStackView.java (STACK_OPTIONS): New.  Pass to
+	Frame.toPrint.
+
 2008-05-15  Tim Moore  <timoore@redhat.com>
 
 	* SourceBuffer.java (disassemblerFrame): Use lib.dwfl.Disassembler.
