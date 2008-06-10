@@ -1,3 +1,7 @@
+2008-06-10  Petr Machata  <pmachata@redhat.com>
+
+	* FQIdentParser.java: Implement glob parsing.
+
 2008-06-09  Petr Machata  <pmachata@redhat.com>
 
 	* FQIdentParser.java: Introduce parsing options.

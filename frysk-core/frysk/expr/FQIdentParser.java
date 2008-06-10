@@ -52,6 +52,15 @@ import antlr.TokenStreamException;
 import antlr.InputBuffer;
 import antlr.CharBuffer;
 
+/**
+ * Funky HPD #-syntax doesn't map very well to LL-k type parser (for
+ * constant 'k').  When written directly in antlr, we obviously get
+ * lots of lexical ambiguities.  We work around that by doing
+ * arbitrary manual look-ahead and just parsing the tokens ourselves.
+ * FQIdentParser is where that parsing takes place.  Besides
+ * supporting antlr lexical analyzer, the class can be used standalone
+ * to parse arbitrary strings.
+ */
 public class FQIdentParser {
 
     private int i;
@@ -60,6 +69,18 @@ public class FQIdentParser {
     private final boolean allowDynamic;
     private final boolean allowGlobs;
     private final boolean expectMoreTokens;
+
+    // This pattern deliberately doesn't check for initial letter.
+    // Relevant code checks this explicitly.  This way, if user makes
+    // a mistake and writes e.g. something#123+b, we recognize "123"
+    // as a typo, while leaving out the part after a "+", which is
+    // certainly irrelevant.
+    final static String symbolRe = "[a-zA-Z0-9_$]+";
+
+    private final static Pattern symbolPattern = Pattern.compile(symbolRe);
+    private final static Pattern globPattern
+	= Pattern.compile("(\\[(\\^?\\][^\\]]*|\\^[^\\]]+|[^^\\]][^\\]]*|\\^?\\[:[^:]+:\\])\\]|"
+			  + symbolRe + "|\\*)+");
 
     /**
      * @param allowDynamic Whether the [pid.tid#frame] portion of the
@@ -137,6 +158,12 @@ public class FQIdentParser {
 	return matched.toString();
     }
 
+    private boolean isGlobChar(char c) {
+	return c == '*' || c == '?' || c == '['
+	    || c == ']' || c == '^' || c == ':'
+	    || c == '-';
+    }
+
     /**
      * @param initial Portion of the character stream that is part of
      *        the identifier, but was already consumed by lexer.
@@ -144,21 +171,8 @@ public class FQIdentParser {
     public FQIdentToken parse(String initial)
         throws RecognitionException, CharStreamException, TokenStreamException
     {
-	if (allowGlobs)
-	    // XXX to fool java into thinking that we use allowGlobs
-	    // when we actually don't.
-	    System.out.print("");
-
 	fqinit = initial;
 	i = 0;
-
-        /*
-         * Funky HPD #-syntax doesn't map very well to LL-k type parser (for
-         * constant 'k').  When written directly, we get lots of lexical
-         * ambiguities.  We work around that by doing arbitrary manual
-         * look-ahead and just parsing the tokens ourselves.  Any whitespace
-         * or EOF stops the lookahead.
-         */
 
         String matched = "";
         String part;
@@ -259,7 +273,8 @@ public class FQIdentParser {
                         if (!(Character.isJavaIdentifierStart(c)
                               || c == '@'
                               || (c == ':' && part.length() == 4
-                                  && part.equals("plt:")))) {
+                                  && part.equals("plt:"))
+			      || (allowGlobs && isGlobChar(c)))) {
 
                             // Break out early if we are already
                             // just waiting for symbol.
@@ -296,22 +311,24 @@ public class FQIdentParser {
             part = part.substring(0, v);
         }
 
-        // This is delibaretely simplified and ignores request for initial letter.
-        // This is for better error reporting below, we first snip off irrelevant
-        // parts before yelling at user that his identifier sucks.
-        Matcher m = Pattern.compile("[a-zA-Z0-9_$]+").matcher(part);
-        if (m.lookingAt()) {
-            int diff = part.length() - m.end();
-            if (diff > 0) {
-                matched = matched.substring(0, matched.length() - diff);
-                part = part.substring(0, m.end());
-            }
-        }
-        else
-            throw new RecognitionException("Expected symbol name, got `" + part + "'.");
+	Matcher m = (allowGlobs ? globPattern : symbolPattern).matcher(part);
+	if (m.lookingAt()) {
+	    int diff = part.length() - m.end();
+	    if (diff > 0) {
+		matched = matched.substring(0, matched.length() - diff);
+		part = part.substring(0, m.end());
+	    }
+	} else
+	    throw new RecognitionException("Expected "
+					   + (allowGlobs ? "glob" : "symbol name")
+					   + ", got `" + part + "'.");
 
-        if (!Character.isJavaIdentifierStart(part.charAt(0)))
-            throw new RecognitionException("Invalid symbol `" + part + "'.");
+	c = part.charAt(0);
+	if (!(Character.isJavaIdentifierStart(c)
+	      || (allowGlobs && isGlobChar(c))))
+	    throw new RecognitionException("Invalid symbol"
+					   + (allowGlobs ? " glob" : "" )
+					   + " `" + part + "'.");
 
         FQIdentToken tok = new FQIdentToken(CExprParserTokenTypes.IDENT, matched);
         tok.dso = partDso;
