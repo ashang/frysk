@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -37,25 +37,67 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk.stack;
 
-import java.io.PrintWriter;
-import frysk.stack.Frame;
-import frysk.stack.FrameDecorator;
+public class PrintStackOptions {
 
-public class VirtualDebugInfoFrame extends DebugInfoFrame {
+    static final PrintStackOptions DEFAULT = new PrintStackOptions();
+
+    private int numberOfFrames = 10;
+
+    private boolean printFullPaths;
+    private boolean printLibraryNames;
+    
+    public PrintStackOptions() {
+	clear();
+    }
 
     /**
-     * Create a frame, outer to OUTER, and decorating frame.
+     * Clear all stack options, a very raw ABI stack trace will be
+     * produced.
      */
-    protected VirtualDebugInfoFrame(FrameDecorator inner, Frame decorated) {
-	super(inner, decorated);
+    public void clear() {
+	printFullPaths = false;
+	printLibraryNames = false;
+    }
+    
+    /**
+     * Generate an ABI backtrace using ELF symbols and shared library
+     * names.
+     */
+    public void setAbi() {
+	clear();
+	printFullPaths = false;
+	printLibraryNames = true;
     }
 
-    public void toPrint(PrintWriter writer,
-			PrintDebugInfoStackOptions options) {
-	super.toPrint(writer, options);
-	writer.print(" [inline]");
+    /**
+     * Specify the number of frames to include in the back-trace, 0 to
+     * include all frames.
+     */
+    public void setNumberOfFrames(int numberOfFrames) {
+	this.numberOfFrames = numberOfFrames;
+    }
+    public int numberOfFrames() {
+	return numberOfFrames;
     }
 
+    public void setPrintFullPaths(boolean printFullPaths) {
+	this.printFullPaths = printFullPaths;
+    }
+    public boolean printFullPaths() {
+	return printFullPaths;
+    }
+
+    public void setPrintLibraryNames(boolean printLibraryNames) {
+	this.printLibraryNames = printLibraryNames;
+    }
+    public boolean printLibraryNames() {
+	return printLibraryNames;
+    }
+
+    public boolean abiOnly() {
+	return true;
+    }
+    
 }

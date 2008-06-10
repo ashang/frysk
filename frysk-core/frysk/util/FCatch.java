@@ -43,7 +43,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.isa.signals.Signal;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -54,7 +54,8 @@ import gnu.classpath.tools.getopt.OptionGroup;
 public class FCatch {
     private static final Log fine = Log.fine(FCatch.class);
 
-    private final PrintStackOptions stackPrintOptions = new PrintStackOptions();
+    private final PrintDebugInfoStackOptions stackPrintOptions
+	= new PrintDebugInfoStackOptions();
 
     private PrintWriter printWriter = new PrintWriter(System.out);
     HashMap signaledTasks = new HashMap();

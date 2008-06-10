@@ -46,7 +46,6 @@ import java.io.StringWriter;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflModule;
 import frysk.dwfl.DwflCache;
-import frysk.dwfl.DwflFactory;
 import frysk.isa.registers.Register;
 import frysk.proc.Task;
 import frysk.rsl.Log;
@@ -150,15 +149,7 @@ public abstract class Frame {
      * Write a simple string representation of this stack frame.
      * @param printWriter
      */
-    public void toPrint (PrintWriter writer) {
-	toPrint(writer, true, true);
-    }
-
-    /**
-     * Write a simple string representation of this stack frame.
-     * @param printWriter
-     */
-    public void toPrint (PrintWriter writer, boolean printSource, boolean fullpath) {
+    public void toPrint(PrintWriter writer, PrintStackOptions options) {
 	writer.write(ArchFormatter.toHexString(getTask(), getAddress()));
 	// the symbol, if known append (), ..
 	Symbol symbol = getSymbol();
@@ -166,22 +157,22 @@ public abstract class Frame {
 	writer.write(symbol.getDemangledName());
 	if (symbol != SymbolFactory.UNKNOWN)
 	    writer.write(" ()");
-	
-	if(printSource){
+	if (options.printLibraryNames()){
 	    // the library if known ...
-	    File library = new File(getLibraryName());
+	    String library = getLibraryName();
+	System.err.println("library: " + library);
 	    if (library != null) {
 		writer.print(" from ");
-	
-		if(DwflFactory.isVDSO(this.getTask().getProc(), this.getTask().getProc().getMap(getAdjustedAddress()))
-			|| library.getName().contains("[stack]")){
-		    writer.print(library.getName());
-		}else{
-		
-		    if(fullpath){
-			writer.print(library.getPath());
-		    }else{
-			writer.print(".../"+library.getName());
+		if (library.startsWith("[")) {
+		    // Things like [vdso], [stack], ...
+		    writer.print(library);
+		} else {
+		    // Should there be separate libraryFullPath?
+		    if (options.printFullPaths()) {
+			writer.print(library);
+		    } else {
+			// Discard the path
+			writer.print(new File(library).getName());
 		    }
 		    
 		}
@@ -195,7 +186,7 @@ public abstract class Frame {
 	if (dwflModule != null) {
 	    return dwflModule.getName();
 	} else {
-	    return "Unknown";
+	    return null;
 	}
     }
 
@@ -209,7 +200,7 @@ public abstract class Frame {
          PrintWriter pw = new PrintWriter(sw);
          pw.print(this.getClass().getName());
          pw.print('[');
-         toPrint(pw, false, false);
+         toPrint(pw, PrintStackOptions.DEFAULT);
          pw.print(']');
          pw.flush();
          return sw.toString();

@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import frysk.rsl.Log;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -77,7 +77,7 @@ public abstract class StacktraceAction implements ProcBlockObserver {
 
   private Event event;
 
-  PrintStackOptions options;
+  PrintDebugInfoStackOptions options;
   
   /**
    * Runs a stacktrace on the given process.
@@ -97,14 +97,14 @@ public abstract class StacktraceAction implements ProcBlockObserver {
    *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (PrintWriter printWriter, Proc theProc, Event theEvent, PrintStackOptions options)
-  {
-     event = theEvent;
-     
-     this.options = options;
-     this.printWriter = printWriter;
-     Manager.eventLoop.add(new InterruptEvent(theProc));
-  }  
+    public StacktraceAction (PrintWriter printWriter, Proc theProc,
+			     Event theEvent,
+			     PrintDebugInfoStackOptions options) {
+	event = theEvent;
+	this.options = options;
+	this.printWriter = printWriter;
+	Manager.eventLoop.add(new InterruptEvent(theProc));
+    }
 
   public final void existingTask (Task task)
   {
@@ -126,27 +126,27 @@ public abstract class StacktraceAction implements ProcBlockObserver {
 	       "because", w);
   }
 
-  private final void printTasks ()
-  {
-    fine.log(this, "printTasks");
-    Iterator iter = sortedTasks.values().iterator();
-    while (iter.hasNext())
-      {
-	Task task =  (Task) iter.next();
-	
-	if(options.elfOnly()){
-	    StackFactory.printTaskStackTrace(printWriter,task,options);
-	}else{
-	    if(options.printInlineFunctions()){
-		DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,task,options);
-	    }else{
-		DebugInfoStackFactory.printTaskStackTrace(printWriter,task,options);
-	    }
+    private final void printTasks() {
+	fine.log(this, "printTasks");
+	Iterator iter = sortedTasks.values().iterator();
+	while (iter.hasNext()) {
+	    Task task =  (Task) iter.next();
+	    
+	    if (options.abiOnly()) {
+		StackFactory.printTaskStackTrace(printWriter,task,options);
+	    } else {
+		if (options.printInlineFunctions()) {
+		    DebugInfoStackFactory
+			.printVirtualTaskStackTrace(printWriter,task,options);
+		} else {
+		    DebugInfoStackFactory
+			.printTaskStackTrace(printWriter, task, options);
+		}
 	}
-	printWriter.println();
-      }
-    fine.log(this, "exiting printTasks");
-  }
+	    printWriter.println();
+	}
+	fine.log(this, "exiting printTasks");
+    }
 
   public void flush(){
       this.printWriter.flush();

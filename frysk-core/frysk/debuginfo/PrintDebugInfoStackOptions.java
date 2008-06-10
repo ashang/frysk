@@ -39,103 +39,109 @@
 
 package frysk.debuginfo;
 
-public class PrintStackOptions {
+import frysk.stack.PrintStackOptions;
 
-    private int numberOfFrames = 10;
+public class PrintDebugInfoStackOptions extends PrintStackOptions {
 
-    private boolean printFullPaths = false;
-
-    private boolean printParams = false;
-    private boolean printLocals = false;
-    private boolean printLibraries = false;
-    private boolean printInlineFunctions = false;
-    private boolean printDebugNames = false;
-    
-    public PrintStackOptions() {
+    public PrintDebugInfoStackOptions() {
+	// Note, the super calls clear.
     }
     
+    private boolean printParameters;
+    private boolean printLocals;
+    private boolean printInlineFunctions;
+    private boolean printDebugNames;
+    private boolean printValues;
+    
+    /**
+     * Clear all options.
+     */
+    public void clear() {
+	super.clear();
+	printParameters = false;
+	printLocals = false;
+	printInlineFunctions = false;
+	printDebugNames = false;
+	printValues = false;
+    }
+
     /**
      * Set things up for a light-weight, or low-cost, back-trace by
      * limiting things to just the elf information.
      */
-    public PrintStackOptions setLite() {
-	printParams = false;
-	printLocals = false;
-	printLibraries = true;
-	printInlineFunctions = false;
-	printDebugNames = true;
-	return this;
+    public void setLite() {
+	setAbi();
+	setPrintDebugNames(true);
     }
 
     /**
      * Set things up for a rich, or detailed, back-trace by including
      * inline frames and parameter information.
      */
-    public PrintStackOptions setRich() {
-	printParams = true;
-	printLocals = true;
-	printLibraries = true;
-	printInlineFunctions = true;
-	printDebugNames = true;
-	return this;
+    public void setRich() {
+	setAbi();
+	setPrintParameters(true);
+	setPrintInlineFunctions(true);
+	setPrintDebugNames(true);
     }
 
     /**
-     * Specify the number of frames to include in the back-trace, 0 to
-     * include all frames.
+     * Print the parameter list (see also printValues).
      */
-    public void setNumberOfFrames(int numberOfFrames) {
-	this.numberOfFrames = numberOfFrames;
+    public boolean printParameters() {
+	return printParameters;
     }
-    public int numberOfFrames() {
-	return numberOfFrames;
-    }
-
-    public void setPrintParams(boolean printParams) {
-	this.printParams = printParams;
-    }
-    public boolean printParams() {
-	return printParams;
+    public void setPrintParameters(boolean printParameters) {
+	this.printParameters = printParameters;
     }
 
-    public void setPrintLocals(boolean printLocals) {
-	this.printLocals = printLocals;
+    /**
+     * Print paramter and variable values (rather than just their
+     * names).
+     */
+    public boolean printValues() {
+	return printValues;
     }
+    public void setPrintValues(boolean printValues) {
+	this.printValues = printValues;
+    }
+
+    /**
+     * Print the function's local variables.
+     */
     public boolean printLocals() {
 	return printLocals;
     }
-
-    public void setPrintFullPaths(boolean printFullPaths) {
-	this.printFullPaths = printFullPaths;
-    }
-    public boolean printFullPaths() {
-	return printFullPaths;
+    public void setPrintLocals(boolean printLocals) {
+	this.printLocals = printLocals;
     }
 
-    public void setPrintLibraries(boolean printLibraries) {
-	this.printLibraries = printLibraries;
-    }
-    public boolean printLibraries() {
-	return printLibraries;
-    }
-
-    public void setPrintInlineFunctions(boolean printInlineFunctions) {
-	this.printInlineFunctions = printInlineFunctions;
-    }
+    /**
+     * Print inline function instances.
+     */
     public boolean printInlineFunctions() {
 	return printInlineFunctions;
     }
-
-    public void setPrintDebugNames(boolean printDebugNames) {
-	this.printDebugNames = printDebugNames;
+    public void setPrintInlineFunctions(boolean printInlineFunctions) {
+	this.printInlineFunctions = printInlineFunctions;
     }
+
+    /**
+     * Print function and variable names using debug, rather than ABI,
+     * information.
+     */
     public boolean printDebugNames() {
 	return printDebugNames;
     }
+    public void setPrintDebugNames(boolean printDebugNames) {
+	this.printDebugNames = printDebugNames;
+    }
 
-    public boolean elfOnly() {
-	return ! (printLocals || printInlineFunctions || printParams
+    public boolean abiOnly() {
+	return ! (printLocals
+		  || printInlineFunctions
+		  || printParameters
+		  || printValues
 		  || printDebugNames);
     }
-    
 }

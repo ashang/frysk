@@ -39,10 +39,10 @@
 
 package frysk.debuginfo;
 
+import frysk.util.ArchFormatter;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
 import lib.dwfl.DwflDie;
@@ -186,39 +186,31 @@ public class DebugInfoFrame extends FrameDecorator {
     }
     private LineXXX lineXXX;
     
-    public void toPrint(PrintWriter writer, boolean printParameters,
-		 boolean fullpath){
+    public void toPrint(PrintWriter writer,
+			PrintDebugInfoStackOptions options) {
         Function subprogram = this.getSubprogram();
-
         if (subprogram != null) {
-	    writer.print("0x");
-	    String addr = Long.toHexString(this.getAddress());
-	    int padding = 2 * this.getTask().getISA().wordSize() - addr.length();
-          
-	    for (int i = 0; i < padding; ++i)
-		writer.print('0');
-          
-	    writer.print(addr);
-	    writer.print(" in " + subprogram.getName() + "(");
-	    if (printParameters) {
-		subprogram.printParameters(writer, this);
+	    writer.write(ArchFormatter.toHexString(getTask(), getAddress()));
+	    writer.print(" in ");
+	    writer.print(subprogram.getName());
+	    writer.print("(");
+	    if (options.printParameters()) {
+		subprogram.printParameters(writer, this, options.printValues());
 	    }
-	    writer.print(") ");
-          
-	    if (fullpath) {
+	    writer.print(") at ");
+	    if (options.printFullPaths()) {
 		SourceLocation line = this.getLine();
 		writer.print(line.getFile().getPath());
 		writer.print("#");
 		writer.print(line.getLine());
 	    } else {
 		SourceLocation line = this.getLine();
-		writer.print(".../"+line.getFile().getName());
+		writer.print(line.getFile().getName());
 		writer.print("#");
 		writer.print(line.getLine());
 	    }
-          
         } else {
-            super.toPrint(writer, true, fullpath);
+            super.toPrint(writer, options);
         }
     }
     

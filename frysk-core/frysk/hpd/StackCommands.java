@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,10 +41,9 @@ package frysk.hpd;
 
 import java.util.Iterator;
 import java.util.List;
-
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.debuginfo.DebugInfoStackFactory;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.proc.Task;
 
 abstract class StackCommands extends ParameterizedCommand {
@@ -71,9 +70,10 @@ abstract class StackCommands extends ParameterizedCommand {
 
     static private void printStack(CLI cli, DebugInfoFrame frame,
 				   int stopLevel, Options options) {
-	PrintStackOptions printStackOptions = new PrintStackOptions();
+	PrintDebugInfoStackOptions printStackOptions
+	    = new PrintDebugInfoStackOptions();
 	printStackOptions.setNumberOfFrames(stopLevel);
-	printStackOptions.setPrintParams(true);
+	printStackOptions.setPrintParameters(true);
 	printStackOptions.setPrintLocals(options.printLocals);
 	printStackOptions.setPrintFullPaths(true);
 	

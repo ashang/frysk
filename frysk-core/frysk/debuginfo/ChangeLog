@@ -1,3 +1,13 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* DebugInfoFrame.java (toPrint(PrintWriter,boolean,boolean)): Delete.
+	(toPrint(PrintWriter,DebugInfoStackOptions)): New.
+	* PrintParameterOptions.java: New.
+	* VirtualDebugInfoFrame.java: Ditto.
+	* PrintDebugInfoStackOptions.java: Rename PrintStackOptions,
+	extend frysk.stack.PrintStackOptions.
+	* TestFrameDebugInfo.java: Update.
+
 2008-06-06  Andrew Cagney  <cagney@redhat.com>
 
 	* DebugInfo.java: Let DwflDie adjust for bias.

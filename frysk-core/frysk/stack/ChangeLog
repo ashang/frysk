@@ -1,3 +1,11 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java (toPrint(PrintWriter,PrintStackOptions)): Replace
+	toPrint(PrintWriter,boolean,boolean).
+	(toPrint(PrintWriter)): Delete.
+	* PrintStackOptions.java: New.
+	* StackFactory.java: Use.
+
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java: Use DwflModule.getModules() and not

@@ -51,9 +51,6 @@ import frysk.stack.StackFactory;
  */
 public class DebugInfoStackFactory {
 
-    public static final PrintStackOptions DEFAULT
-	= new PrintStackOptions().setRich();
-
     /**
      * Create an ABI stack backtrace, make the simpler debug-info
      * methods.
@@ -100,29 +97,31 @@ public class DebugInfoStackFactory {
 	return innermostFrame;
     }
 
-    public static final void printTaskStackTrace (PrintWriter printWriter, Task task, PrintStackOptions options)
-    {
-      if (task != null){
-        printWriter.println("Task #" + task.getTid());
-        DebugInfoFrame frame = createDebugInfoStackTrace(task);
-        printStackTrace(printWriter, frame, options);
-      }
-      printWriter.flush();
+    public static final void printTaskStackTrace(PrintWriter printWriter,
+						 Task task,
+						 PrintDebugInfoStackOptions options) {
+	if (task != null) {
+	    printWriter.println("Task #" + task.getTid());
+	    DebugInfoFrame frame = createDebugInfoStackTrace(task);
+	    printStackTrace(printWriter, frame, options);
+	}
+	printWriter.flush();
     }
 
-    public static final void printVirtualTaskStackTrace (PrintWriter printWriter, Task task, PrintStackOptions options)
-    {
-      if (task != null){
-        printWriter.println("Task #" + task.getTid());
-        DebugInfoFrame frame = createVirtualStackTrace(task);
-        printStackTrace(printWriter,frame, options);
-      }
-      printWriter.flush();
+    public static final void printVirtualTaskStackTrace(PrintWriter printWriter,
+							Task task,
+							PrintDebugInfoStackOptions options) {
+	if (task != null) {
+	    printWriter.println("Task #" + task.getTid());
+	    DebugInfoFrame frame = createVirtualStackTrace(task);
+	    printStackTrace(printWriter,frame, options);
+	}
+	printWriter.flush();
     }
 
     public static void printStackTrace(PrintWriter writer,
 				       DebugInfoFrame topFrame,
-				      PrintStackOptions options) {
+				       PrintDebugInfoStackOptions options) {
         
 	int count = 0;
         for (DebugInfoFrame frame = topFrame; frame != null;
@@ -142,8 +141,7 @@ public class DebugInfoStackFactory {
 
 	    frame.printLevel(writer);
 	    writer.print(" ");
-	    frame.toPrint(writer, options.printParams(),
-			  options.printFullPaths());
+	    frame.toPrint(writer, options);
 	    writer.println();
 	    if (options.printLocals()) {
 		frame.printScopes(writer);

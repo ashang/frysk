@@ -1,3 +1,8 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Function.java (printParameters): Add boolean printValues
+	parameter.
+
 2008-06-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestScopeFactory.java: Let DwflDie adjust for bias.

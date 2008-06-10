@@ -43,7 +43,7 @@ package frysk.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import frysk.rsl.Log;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -78,10 +78,10 @@ public class TestStackTraceAction extends TestLib {
 
     static void multiThreaded(SlaveOffspring ackProc,
 			      int numSecondaryThreads) {
-	PrintStackOptions options = new PrintStackOptions();
+	PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
 	options.setNumberOfFrames(20);
 	options.setPrintFullPaths(true);
-	options.setPrintLibraries(true);
+	options.setPrintLibraryNames(true);
 
 	StringWriter stringWriter = new StringWriter();
       

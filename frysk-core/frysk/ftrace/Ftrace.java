@@ -47,7 +47,7 @@ import java.util.Set;
 
 import inua.util.PrintWriter;
 
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.dwfl.ObjectFile;
 import frysk.event.Event;
 import frysk.isa.signals.Signal;
@@ -75,9 +75,9 @@ public class Ftrace {
     static private final Log finest = LogFactory.finest(Ftrace.class);
     static private final Log warning = LogFactory.warning(Ftrace.class);
 
-    private final PrintStackOptions stackPrintOptions;
+    private final PrintDebugInfoStackOptions stackPrintOptions;
 
-    public Ftrace(PrintStackOptions stackPrintOptions) {
+    public Ftrace(PrintDebugInfoStackOptions stackPrintOptions) {
 	this.stackPrintOptions = stackPrintOptions;
     }
 

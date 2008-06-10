@@ -50,7 +50,7 @@ import java.util.Iterator;
 import lib.dwfl.DwflModule;
 import lib.dwfl.SymbolBuilder;
 import frysk.config.Prefix;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.dwfl.DwflCache;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -111,7 +111,7 @@ public class TestLinuxCore extends TestLib {
 	// relative -> absolute converstion is occuring.
 	StacktraceAction coreStacktrace;
 	StringWriter coreStackOutput = new StringWriter();
-	PrintStackOptions options = new PrintStackOptions();
+	PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
 	options.setNumberOfFrames(20);
 
 	// Create a stackktrace of a the corefile process
@@ -211,7 +211,7 @@ public class TestLinuxCore extends TestLib {
     StacktraceAction coreStacktrace;
     StringWriter liveStackOutput = new StringWriter();
     StringWriter coreStackOutput = new StringWriter();
-    PrintStackOptions options = new PrintStackOptions();
+    PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
     options.setNumberOfFrames(20);
     
     // Create a Stacktrace of the blocked live process
@@ -263,7 +263,6 @@ public class TestLinuxCore extends TestLib {
     assertEquals("Compare stack traces",
 		 liveStackOutput.getBuffer().toString(),
 		 coreStackOutput.getBuffer().toString());
-
   }
 
   private static class PrintEvent implements Event

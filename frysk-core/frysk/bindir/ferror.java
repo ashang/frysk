@@ -43,7 +43,7 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.isa.syscalls.Syscall;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -58,8 +58,8 @@ import gnu.classpath.tools.getopt.OptionGroup;
 
 public class ferror {
     
-    private static final PrintStackOptions stackPrintOptions
-	= new PrintStackOptions().setRich();
+    private static final PrintDebugInfoStackOptions stackPrintOptions
+	= new PrintDebugInfoStackOptions();
     private static final PrintWriter printWriter = new PrintWriter(System.out);
     private static Pattern writePattern;
     private static OptionGroup[] options() {

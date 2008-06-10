@@ -1,3 +1,11 @@
+2008-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackTraceAction.java: Use PrintDebugInfoStackOptions.
+	* StackPrintUtil.java: Ditto.
+	* StacktraceAction.java: Ditto.
+	* FCatch.java: Ditto.
+	* StressTestStackTraceAction.java: Ditto.
+
 2008-05-20  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java (isCoreFile(String))

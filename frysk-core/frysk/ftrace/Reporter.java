@@ -43,7 +43,7 @@ import java.util.HashMap;
 
 import inua.util.PrintWriter;
 
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.proc.Task;
 import frysk.util.ArchFormatter;
 import frysk.util.StackPrintUtil;
@@ -54,10 +54,12 @@ class Reporter
     private Object lastItem = null;
     private Task lastTask = null;
     private HashMap levelMap = new HashMap();
-    private final PrintStackOptions stackPrintOptions;
+    private final PrintDebugInfoStackOptions stackPrintOptions;
     private final boolean showPC;
 
-    public Reporter(PrintWriter writer, PrintStackOptions stackPrintOptions, boolean show) {
+    public Reporter(PrintWriter writer,
+		    PrintDebugInfoStackOptions stackPrintOptions,
+		    boolean show) {
 	this.writer = writer;
 	this.stackPrintOptions = stackPrintOptions;
 	this.showPC = show;

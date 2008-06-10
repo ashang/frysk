@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 
 /**
  * Framework for printing stack backtraces; both providing a standard
@@ -58,7 +58,10 @@ public class StackPrintUtil {
      * Create, in a separate group, the standard set of stack-print
      * options provided by utilities.
      */
-    public static OptionGroup options(final PrintStackOptions options) {
+    public static OptionGroup options(final PrintDebugInfoStackOptions options) {
+	// Set the default, which matches the documentation; and is
+	// consistent across all utilities.
+	options.setAbi();
 	OptionGroup group = new OptionGroup("Stack print options");
 	group.add(new Option("number-of-frames",
 			     ("number of frames to print.  Specify '0' or"
@@ -90,11 +93,12 @@ public class StackPrintUtil {
 	group.add(new Option
 		  ("print", "select the back-trace information to display\n"
 		   + "OPTION is:\n"
-		   + "debug-names: use debug-info names (e.g., DWARF)\n"
+		   + "debug-names: print debug-info names (e.g., DWARF)\n"
 		   + "full-path: include the full (untruncated) path to files\n"
 		   + "inline: include inlined frames\n"
-		   + "locals: include each functions local variables\n"
-		   + "params: include function parameters\n"
+		   + "locals: include each function's local variables\n"
+		   //+ "params: include function parameters\n"
+		   + "values: include values of parameters and variables\n"
 		   + "OPTIONs can be negated by prefixing a '-'",
 		   "OPTION,...") {
 		public void parsed(String arg) throws OptionException {
@@ -117,7 +121,9 @@ public class StackPrintUtil {
 			} else if (name.equals("locals")) {
 			    options.setPrintLocals(val);
 			} else if (name.equals("params")) {
-			    options.setPrintParams(val);
+			    options.setPrintParameters(val);
+			} else if (name.equals("values")) {
+			    options.setPrintValues(val);
 			} else {
 			    throw new OptionException
 				("unknown -print OPTION: " + name);
@@ -132,9 +138,9 @@ public class StackPrintUtil {
      * Given a task, a writer, and the selected stack-print-options,
      * produce a stack back-trace.
      */
-    public static void print(Task task, PrintStackOptions options,
+    public static void print(Task task, PrintDebugInfoStackOptions options,
 			     PrintWriter printWriter) {
-          if (options.elfOnly()) {
+          if (options.abiOnly()) {
               StackFactory.printTaskStackTrace(printWriter, task, options);
           } else if (options.printInlineFunctions()) {
 	      DebugInfoStackFactory.printVirtualTaskStackTrace(printWriter,

@@ -43,7 +43,7 @@ package frysk.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import frysk.rsl.Log;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
@@ -80,9 +80,9 @@ public class StressTestStackTraceAction extends TestLib {
     FunitThreadsOffspring ackProc = new FunitThreadsOffspring(threads);
     final Proc proc = ackProc.assertRunToFindProc();
 
-    PrintStackOptions options = new PrintStackOptions();
+    PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
     options.setNumberOfFrames(20);
-    options.setPrintParams(true);
+    options.setPrintParameters(true);
     
     StacktraceAction stacker = new StacktraceAction(new PrintWriter(stringWriter),proc, new Event()
     {

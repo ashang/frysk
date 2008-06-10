@@ -90,7 +90,7 @@ public class TestFstack extends TestLib {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
 		"-print", "debug-names,params"
 	    });
-	e.expect("\\#0 .* in third\\(int arg3\\) .*\\/funit-stack-outlined\\.c#");
+	e.expect("\\#0 .* in third\\(int arg3\\) at funit-stack-outlined\\.c#");
 	e.expect("\\#1");
     }
 
@@ -136,11 +136,13 @@ public class TestFstack extends TestLib {
     }
 
     public void testBackTraceWithRich() {
+	if (unresolved(6616))
+	    return;
 	TearDownExpect e = fstack("funit-stack-inlined",
 				  new String[] { "-rich" });
-        e.expect("\\#0 .* third\\(int arg3.*\\)");
-        e.expect("\\#1 .* second\\(int arg2.*\\)");
-        e.expect("\\#2 .* first\\(int arg1.*\\)");
+        e.expect("\\#0 .* third\\(int arg3\\)");
+        e.expect("\\#1 .* second\\(int arg2\\)");
+        e.expect("\\#2 .* first\\(int arg1\\)");
         e.expect("\\#3 .* main\\(\\)");
     }
 

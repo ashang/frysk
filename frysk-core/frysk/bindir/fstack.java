@@ -42,7 +42,7 @@ package frysk.bindir;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.TreeMap;
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.event.Event;
 import frysk.event.ProcEvent;
 import frysk.proc.Proc;
@@ -55,8 +55,8 @@ import gnu.classpath.tools.getopt.OptionGroup;
 public final class fstack {
 
   private static PrintWriter printWriter = new PrintWriter(System.out);  
-    private static PrintStackOptions stackPrintOptions
-	= new PrintStackOptions();
+    private static PrintDebugInfoStackOptions stackPrintOptions
+	= new PrintDebugInfoStackOptions();
   private static final Log fine = Log.fine(fstack.class);
   
     public static void main(String[] args) {

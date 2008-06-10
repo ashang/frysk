@@ -52,7 +52,7 @@ import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
 import inua.util.PrintWriter;
 
-import frysk.debuginfo.PrintStackOptions;
+import frysk.debuginfo.PrintDebugInfoStackOptions;
 import frysk.expr.FQIdentParser;
 import frysk.expr.FQIdentifier;
 import frysk.ftrace.AddrRule;
@@ -94,8 +94,8 @@ class ftrace {
     private final FtraceController controller = new FtraceController();
     private boolean allowInterpTracing = false;
 
-    private final PrintStackOptions stackPrintOptions
-	= new PrintStackOptions();
+    private final PrintDebugInfoStackOptions stackPrintOptions
+	= new PrintDebugInfoStackOptions();
     private final Ftrace tracer = new Ftrace(stackPrintOptions);
 
     private interface RuleMatcher {

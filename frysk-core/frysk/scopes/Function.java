@@ -227,19 +227,17 @@ public class Function extends NamedScope {
 
     }
     
-    public void printParameters (PrintWriter writer, DebugInfoFrame frame)
-    {
-      
-      Iterator iterator = this.parameters.iterator();
-      while(iterator.hasNext()) {
-        Variable parameter = (Variable) iterator.next();
-	parameter.toPrint(writer, frame);
-	writer.flush();
-        if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
-            writer.print(",");
-        }
-      }
-      
+    public void printParameters(PrintWriter writer, DebugInfoFrame frame,
+				boolean printValues) {
+	Iterator iterator = this.parameters.iterator();
+	while(iterator.hasNext()) {
+	    Variable parameter = (Variable) iterator.next();
+	    parameter.toPrint(writer, frame);
+	    writer.flush();
+	    if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
+		writer.print(",");
+	    }
+	}
     }
     
 }

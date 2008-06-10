@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.naming.NameNotFoundException;
-
 import lib.dwfl.DwTag;
 import lib.dwfl.DwarfDie;
 import lib.dwfl.Dwfl;
@@ -85,9 +84,9 @@ public class TestFrameDebugInfo extends TestLib {
     
     StringWriter stringWriter = new StringWriter();
     DebugInfoFrame frame = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-    PrintStackOptions options = new PrintStackOptions();
+    PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
     options.setNumberOfFrames(20);
-    options.setPrintParams(true);
+    options.setPrintParameters(true);
     options.setPrintLocals(true);
     options.setPrintFullPaths(true);
     DebugInfoStackFactory.printStackTrace(new PrintWriter(stringWriter),frame, options);
@@ -307,9 +306,9 @@ public class TestFrameDebugInfo extends TestLib {
       Task task = (new DaemonBlockedAtSignal("funit-stack-inlined" + ext)).getMainTask();
     StringWriter stringWriter = new StringWriter();
     
-    PrintStackOptions options = new PrintStackOptions();
+    PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
     options.setNumberOfFrames(0);
-    options.setPrintParams(true);
+    options.setPrintParameters(true);
     options.setPrintLocals(true);
     options.setPrintFullPaths(true);
     DebugInfoStackFactory.printVirtualTaskStackTrace(new PrintWriter(stringWriter), task, options);
@@ -326,9 +325,9 @@ public class TestFrameDebugInfo extends TestLib {
     
       Task task = (new DaemonBlockedAtSignal("funit-stack-inlined")).getMainTask();
     
-    PrintStackOptions options = new PrintStackOptions();
+    PrintDebugInfoStackOptions options = new PrintDebugInfoStackOptions();
     options.setNumberOfFrames(0); 
-    options.setPrintParams(true);
+    options.setPrintParameters(true);
     options.setPrintLocals(true);
     options.setPrintFullPaths(true);
     
