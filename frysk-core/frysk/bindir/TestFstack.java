@@ -83,14 +83,14 @@ public class TestFstack extends TestLib {
     public void testBackTrace () {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[0]);
 	// Just look for main.
-	e.expect ("main");
+	e.expect ("main.* from funit-stack-outlined");
     }
     
     public void testBackTraceWithDebugNamesAndParams() {
 	TearDownExpect e = fstack("funit-stack-outlined", new String[] {
 		"-print", "debug-names,params"
 	    });
-	e.expect("\\#0 .* in third\\(int arg3\\) at funit-stack-outlined\\.c#");
+	e.expect("\\#0 .* in third\\(int arg3\\) at funit-stack-outlined\\.c#[0-9]+ from funit-stack-outlined");
 	e.expect("\\#1");
     }
 

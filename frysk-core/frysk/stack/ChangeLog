@@ -1,5 +1,8 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Frame.java (printLibraryName(PrintWriter,PrintStackOptions)): New.
+	(toPrint(PrintWriter,PrintStackOptions)): Use.
+	
 	* Frame.java (toPrint(PrintWriter,PrintStackOptions)): Replace
 	toPrint(PrintWriter,boolean,boolean).
 	(toPrint(PrintWriter)): Delete.

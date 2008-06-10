@@ -1,5 +1,8 @@
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* DebugInfoFrame.java (toPrint): Print the library using
+	Frame.printLibraryName.
+	
 	* DebugInfoFrame.java (toPrint(PrintWriter,boolean,boolean)): Delete.
 	(toPrint(PrintWriter,DebugInfoStackOptions)): New.
 	* PrintParameterOptions.java: New.

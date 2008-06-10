@@ -198,17 +198,19 @@ public class DebugInfoFrame extends FrameDecorator {
 		subprogram.printParameters(writer, this, options.printValues());
 	    }
 	    writer.print(") at ");
+	    SourceLocation line = this.getLine();
 	    if (options.printFullPaths()) {
-		SourceLocation line = this.getLine();
 		writer.print(line.getFile().getPath());
-		writer.print("#");
-		writer.print(line.getLine());
 	    } else {
-		SourceLocation line = this.getLine();
 		writer.print(line.getFile().getName());
-		writer.print("#");
-		writer.print(line.getLine());
 	    }
+	    writer.print("#");
+	    writer.print(line.getLine());
+	    if (line.getColumn() > 0) {
+		writer.print("#");
+		writer.print(line.getColumn());
+	    }
+	    printLibraryName(writer, options);
         } else {
             super.toPrint(writer, options);
         }
