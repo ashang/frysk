@@ -96,7 +96,7 @@ public class TestBreakpoints
 	e.send("go\n");
 	e.expect("go.*" + prompt + ".*Breakpoint.*sin.*");
 	e.send("where\n");
-	e.expect("where.*#0.* (__)?sin \\(\\).*" + prompt);
+	e.expect("where.*#0.* (__)?sin\\(\\).*" + prompt);
 	e.send("quit\n");
 	e.expect("Quitting...");
 	e.close();

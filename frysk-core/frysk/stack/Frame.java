@@ -155,8 +155,10 @@ public abstract class Frame {
 	Symbol symbol = getSymbol();
 	writer.write(" in ");
 	writer.write(symbol.getDemangledName());
-	if (symbol != SymbolFactory.UNKNOWN)
-	    writer.write(" ()");
+	if (symbol != SymbolFactory.UNKNOWN) {
+	    // XXX: Perhaps this should not print the ().
+	    writer.write("()");
+	}
 	printLibraryName(writer, options);
     }
 
@@ -164,7 +166,8 @@ public abstract class Frame {
      * If requrested by the stack options, print the library name
      * using the form " from LIBRARY".
      */
-    protected void printLibraryName(PrintWriter writer, PrintStackOptions options) {
+    protected void printLibraryName(PrintWriter writer,
+				    PrintStackOptions options) {
 	if (options.printLibraryNames()) {
 	    // the library if known ...
 	    String library = getLibraryName();

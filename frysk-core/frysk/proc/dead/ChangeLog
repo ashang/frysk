@@ -1,3 +1,7 @@
+2008-06-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Update to match stack trace output.
+
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Use PrintDebugInfoStackOptions.

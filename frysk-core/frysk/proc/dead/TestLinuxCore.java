@@ -132,10 +132,10 @@ public class TestLinuxCore extends TestLib {
 
 	String mainThread = "Task #\\d+\n" + 
 	    "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-	    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\).*\n"
-	    + "#[\\d]+ 0x[\\da-f]+ in main \\(\\).*\n"
-	    + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\).*\n"
-	    + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\).*\n\n";
+	    + "#[\\d]+ 0x[\\da-f]+ in server\\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in main\\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main\\(\\).*\n"
+	    + "#[\\d]+ 0x[\\da-f]+ in _start\\(\\).*\n\n";
 
 	String regex = new String();
 	regex += "(" + mainThread + ")";
@@ -143,7 +143,7 @@ public class TestLinuxCore extends TestLib {
 	String result = coreStackOutput.getBuffer().toString();
 	
 	assertTrue(result + "should match: " + regex + " threads",
-               result.matches(regex));
+		   result.matches(regex));
 	
     }
 

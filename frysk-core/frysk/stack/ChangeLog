@@ -1,3 +1,7 @@
+2008-06-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Frame.java: Drop space in "function ()".
+
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Frame.java (toPrint): Use printLibraryPaths.
