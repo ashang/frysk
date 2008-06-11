@@ -1,4 +1,9 @@
-2008-06-06   Teresa Thomas  <tthomas@redhat.com>
+2008-06-11  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchObserverInstaller.java (install): Use Location.length()
+	instead of Type.getSize().
+
+2008-06-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* Breakpoint.java (updateHit): Update log message.
 

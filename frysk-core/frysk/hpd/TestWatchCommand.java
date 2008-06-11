@@ -140,13 +140,26 @@ public class TestWatchCommand extends TestLib {
       e.close();
   }   
   
+  public void testWatchArraySlice() {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.sendCommandExpectPrompt("start", "Attached to process.*");
+      
+      e.send("watch array[ 0:1]\n"); 
+      e.expect(".*Uses [1-9]+ debug register.*");
+      
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();
+  }   
+  
   /*
    * Test to watch a data type whose size is larger than
    * that can be watched by all hardware watch registers
    * put together.
-   */
-  public void testWatchOversized()
-  {
+   */  
+  public void testWatchOversized() {
       e = new HpdTestbed();
       e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
                                 "Loaded executable file.*");
@@ -158,8 +171,8 @@ public class TestWatchCommand extends TestLib {
       
       e.send("quit\n");
       e.expect("Quitting\\.\\.\\.");
-      e.close();
-  }   
+      e.close();       
+  }
   
   /*
    * Test to watch a variable that is smaller than the max

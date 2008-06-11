@@ -1,3 +1,7 @@
+2008-06-11  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestWatchCommand.java (testWatchArraySlice): New test.
+
 2008-06-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java: Update to match backtrace output.

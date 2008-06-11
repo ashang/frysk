@@ -91,8 +91,8 @@ public class WatchObserverInstaller {
 	                      (task.getISA()).getWatchpointMaxLength();
 	
 	long variableAddress = expr.getLocation().getAddress();
-	int variableLength = expr.getType().getSize();
-
+	int variableLength = (int)expr.getLocation().length();
+	
 	if (variableLength > (watchpointCount-watchpointsInUse) * maxWatchLength ) {
 	    throw new RuntimeException ("Watch error: Available watchpoints not " +
 	    		                "sufficient to watch complete value.");
