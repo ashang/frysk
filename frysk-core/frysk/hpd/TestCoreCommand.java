@@ -111,14 +111,11 @@ public class TestCoreCommand extends TestLib {
     
     public void testCoreLoadedParamsTwo() {
 
-	if (unresolved(6614))
-	    return;
-//	File exe = new File("/bin/echo");
-	File exe = Prefix.pkgLibFile("funit-hello");
-	File core = CorefileFactory.constructCoreAtSignal(exe, new String[] {"abcd"});
+	File exe = new File("/bin/echo");
+	File core = CorefileFactory.constructCoreAtEntry(exe, new String[] {"abcd"});
 	e = new HpdTestbed();
 	e.sendCommandExpectPrompt("core " + core.getPath(), "Attached to core.*");
-	e.sendCommandExpectPrompt("info args", "output");
+	e.sendCommandExpectPrompt("info args", "abcd.*");
 	e.sendCommandExpectPrompt("run", "running.*abcd.*" +
 		"Attached to process ([0-9]+).*" + "Running process ([0-9]+).*");
 	e.send("quit\n");

@@ -80,13 +80,13 @@ public class CorefileFactory extends TestLib {
      * then extracts a corefile at that point, and return a File
      * representing that core file.
      */
-    public static File constructCoreAtSignal(File exeFile, String[] args) {
+    public static File constructCoreAtEntry(File exeFile, String[] args) {
 	String[] newargs = new String[args.length + 1];
 	newargs[0] = exeFile.getAbsolutePath();
 	for (int i = 0; i < args.length; i++)
 	    newargs[i+1] = args[i];
 	final Proc ackProc
-	    = new DaemonBlockedAtSignal(newargs).getMainTask().getProc();
+	    = new DaemonBlockedAtEntry(newargs).getMainTask().getProc();
 	return constructCore(ackProc);
     }
 
