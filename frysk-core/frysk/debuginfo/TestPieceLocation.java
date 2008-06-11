@@ -153,7 +153,7 @@ extends TestLib
 	Location simple = PieceLocation.createSimpleLoc (3, 5, 
 		new ArrayByteBuffer(new byte[] { 127,127,127, 5, 6, 7, 8, 9, 127, 127 }));
 	assertEquals ("Address", 3, simple.getAddress());
-	assertEquals ("Length", 5, ((PieceLocation)simple).length());
+	assertEquals ("Length", 5, simple.length());
     }
     
     private Task getStoppedTask ()

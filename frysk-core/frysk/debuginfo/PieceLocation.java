@@ -181,7 +181,7 @@ extends Location
     /**
      * Returns the number of bytes in location.
      */
-    protected long length() 
+    public long length() 
     {
 	long length = 0;
 	for (Iterator it=pieces.iterator(); it.hasNext(); )

@@ -106,7 +106,7 @@ public class ByteBufferLocation
 	buffer.putByte(offset, value);
     }
 
-    protected long length() {
+    public long length() {
 	return buffer.capacity();
     }
 }

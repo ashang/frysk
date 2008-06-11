@@ -170,9 +170,9 @@ public abstract class Location
 
     /**
      * The length of the location, in bytes.  This MUST be a long (or
-     * BigIneger) as a value's size could be bigger than 32-bits.
+     * BigInteger) as a value's size could be bigger than 32-bits.
      */
-    protected abstract long length();
+    public abstract long length();
     
     /**
      * Print this Location.

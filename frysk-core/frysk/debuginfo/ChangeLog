@@ -1,3 +1,7 @@
+2008-06-11  Teresa Thomas  <tthomas@redhat.com>
+	
+	* PieceLocation.java (length): Make public.
+	
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* PrintDebugInfoStackOptions.java (printSourcePaths): New.
