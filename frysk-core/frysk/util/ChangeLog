@@ -1,5 +1,7 @@
 2008-06-11  Andrew Cagney  <cagney@redhat.com>
 
+	* StackPrintUtil.java: Fix typo - missing \n.
+
 	* TestStackTraceAction.java: Update to match stack backtrace.
 
 2008-06-10  Andrew Cagney  <cagney@redhat.com>

@@ -94,7 +94,7 @@ public class StackPrintUtil {
 		  ("print", "select the back-trace information to display\n"
 		   + "OPTION is:\n"
 		   + "debug-names: print debug-info names (e.g., DWARF)\n"
-		   + "paths: include the full path to source files (src-paths) and libraries (lib-paths)e"
+		   + "paths: include the full path to source files (src-paths) and libraries (lib-paths)\n"
 		   + "inline: include inlined frames\n"
 		   + "locals: include each function's local variables\n"
 		   //+ "params: include function parameters\n"
