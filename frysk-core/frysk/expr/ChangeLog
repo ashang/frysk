@@ -1,5 +1,10 @@
 2008-06-12  Petr Machata  <pmachata@redhat.com>
 
+	* CExpr.g (LSQUARE): Don't use "('0'..'9')?" construct, instead
+	test the same in inline java code.
+
+2008-06-12  Petr Machata  <pmachata@redhat.com>
+
 	* FQIdentParser.java (containsGlobChar): New method.
 	* FQIdentPattern.java, FQIdentPatternAll.java: New files.
 	* FQIdentPatternExact.java, FQIdentPatternGlob.java: New files.

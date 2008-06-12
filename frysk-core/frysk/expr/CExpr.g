@@ -441,15 +441,20 @@ LCURLY          : '{' ;
 LESSTHAN        : "<" ;
 LESSTHANOREQUALTO     : "<=" ;
 LPAREN          : '('   ;
-LSQUARE         : '[' (('0'..'9') {
-                      try {
-                          Token tok = fqIdParser.parse($getText);
-                          if (tok != null) {
-                              $setToken(tok);
-                              $setType(IDENT);
-                          }
-                      } catch (RecognitionException exc) { }
-                  } )? ;
+LSQUARE         : '[' {
+                        // We can't use ('0'..'9')? here, because even
+                        // if there is 0..9, it still doesn't have to
+                        // parse correctly as [a.b#c] syntax.  But
+                        // antlr would already match the digit.
+                        if (((LA(1) >= '0' && LA(1) <= '9')))
+                            try {
+                                Token tok = fqIdParser.parse($getText);
+                                if (tok != null) {
+                                    $setToken(tok);
+                                    $setType(IDENT);
+                                }
+                            } catch (RecognitionException exc) { }
+                       } ;
 MINUS           : '-' ;
 MINUSEQUAL      : "-=" ;
 MINUSMINUS      : "--" ;
