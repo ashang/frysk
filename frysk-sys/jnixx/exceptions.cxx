@@ -150,3 +150,26 @@ runtimeException(::jnixx::env& env, const char *fmt, ...) {
     throw e;
   }
 }
+
+
+void
+userException(::jnixx::env& env, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  char *message = NULL;
+  if (::vasprintf(&message, fmt, ap) < 0) {
+    // If this fails things are pretty much stuffed.
+    int err = errno;
+    fprintf(stderr, "warning: vasprintf in runtimeException failed: %s",
+	    ::strerror(err));
+    RuntimeException::ThrowNew(env, "vasprintf in runtimeException failed");
+  }
+  va_end(ap);
+  try {
+    frysk::UserException::ThrowNew(env, message);
+  } catch (java::lang::Throwable e) {
+    // Always executed.
+    ::free(message);
+    throw e;
+  }
+}

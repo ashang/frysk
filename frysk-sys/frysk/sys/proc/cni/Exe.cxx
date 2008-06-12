@@ -48,22 +48,46 @@
 #include "frysk/sys/proc/Exe.h"
 
 jstring
-frysk::sys::proc::Exe::get (jint pid)
-{
+frysk::sys::proc::Exe::getName(jint pid) {
   char file[FILENAME_MAX];
   if (::snprintf (file, sizeof file, "/proc/%d/exe", (int) pid)
       >= FILENAME_MAX)
-    throwRuntimeException ("snprintf: buffer overflow");
+    throwRuntimeException("snprintf: buffer overflow");
 
   // /proc/$$/exe contains a soft-link specifying the name of the
   // executable, possibly with "(deleted)" appended.  That link's
   // upper bound is determined by FILENAME_MAX since that is the
-  // longest possible allowable file name.
-  const int maxLen = FILENAME_MAX + sizeof (" (deleted)") + 1;
+  // longest possible allowable file name.  Note that readlink doesn't
+  // NUL terminate so need to leave space for that.
+  const char deleted[] = " (deleted)";
+  const int maxLen = FILENAME_MAX + sizeof(deleted) + 1;
   char link[maxLen];
-  int len = ::readlink (file, link, sizeof (link));
+  int len = ::readlink(file, link, sizeof(link) - 1);
   if (len < 0 || len >= maxLen)
-    throwErrno (errno, "readlink");
+    throwErrno(errno, "readlink");
+  link[len] = '\0';
+
+  // Linux's /proc/$$/exe can get screwed up in several ways.  Detect
+  // each here and return null.
+  if ((int) strlen(link) != len) {
+    // Assume that an EXE that has somehow ended up with an embedded
+    // NUL character is invalid.  This happens when the kernel screws
+    // up "mv a-really-long-file $exe" leaving the updated EXE string
+    // with something like "$exe<NUL>ally-long-file (deleted)".
+    throwUserException("The link %s is corrupt", file);
+  }
+
+  if (strstr(link, deleted) + strlen(deleted) - link == len) {
+    // Assume (possibly incorrectly) that a trailing "(deleted)"
+    // always indicates a deleted file.
+    link[len - strlen(deleted)] = '\0';
+    throwUserException("The link %s points to the deleted file %s",
+		       file, link);
+  }
+
+  if (access(link, F_OK) != 0) {
+    throwErrno(errno, "file %s", link);
+  }
 
   // Note that some kernels have a "feature" where the link can become
   // corrupted.  Just retun that, the caller needs to decide if the

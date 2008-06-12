@@ -1,3 +1,7 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java (getExe()): Delete.
+
 2008-06-06  Teresa Thomas  <tthomas@redhat.com>
 
 	* LinuxPtraceTaskState.java: Additional logging messages.

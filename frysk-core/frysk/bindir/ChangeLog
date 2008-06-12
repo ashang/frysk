@@ -1,5 +1,9 @@
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFexe.java (testExeOfDeletedFile()): Enable.  Match expected
+	error.
+	* fexe.java: Use Exe.getName.
+
 	* TestFexe.java (testExeOfDeletedFile()): New; mark as unresolved
 	6621.
 

@@ -43,14 +43,11 @@ import frysk.sys.ProcessIdentifier;
 
 /**
  * The contents of <tt>/proc/PID/exe</tt>.
- *
- * XXX: Should this be more like a builder or like Stat where there's
- * a refresh method that detects that the contents actually changed?
  */
 
 public class Exe {
-    public static String get(ProcessIdentifier pid) {
-	return get(pid.intValue());
+    public static String getName(ProcessIdentifier pid) {
+	return getName(pid.intValue());
     }
-    private static native String get (int pid);
+    private static native String getName(int pid);
 }

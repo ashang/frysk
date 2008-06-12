@@ -89,8 +89,6 @@ public class TestFexe extends TestLib {
     }
 
     public void testExeOfDeletedFile() {
-	if (unresolved(6621))
-	    return;
 	TearDownExpect e = new TearDownExpect();
 	TearDownFile exe = TearDownFile.create();
 	// Create a copy of sleep that is executable.
@@ -111,6 +109,6 @@ public class TestFexe extends TestLib {
 	assertFalse("file exists", exe.stillExists());
 	// Try fexe with the executable deleted
 	e.send(Prefix.binFile("fexe").getPath() + " $pid\r");
-	e.expect(exe.getName() + " \\(deleted\\)\r\n\\$ ");
+	e.expect("The link /proc/[0-9]+/exe points to the deleted file .*" + exe.getName() + "\\r\n\\$ ");
     }
 }

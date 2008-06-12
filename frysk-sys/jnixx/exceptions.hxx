@@ -52,3 +52,7 @@ extern void errnoException(::jnixx::env& env, int error, const char *prefix,
 extern void runtimeException(::jnixx::env& env, const char *fmt, ...)
   __attribute__((noreturn))
   __attribute__((format (printf, 2, 3)));
+
+extern void userException(::jnixx::env& env, const char *fmt, ...)
+  __attribute__((noreturn))
+  __attribute__((format (printf, 2, 3)));

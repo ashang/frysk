@@ -84,11 +84,11 @@ public class fexe
 	    if (verbose) {
 		ProcessIdentifier pid
 		= ProcessIdentifierFactory.create(proc.getPid());
-		System.out.println(  proc.getPid()
+		System.out.println(proc.getPid()
 			           + " "
 			           + proc.getExeFile().getFile().getAbsolutePath()
 			           + " "
-			           + Exe.get(pid)
+			           + Exe.getName(pid)
 			           + " "
 			           + sysRootedPath);
 	    } else 

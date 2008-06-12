@@ -163,6 +163,14 @@ throwErrno (int err, const char *prefix)
   throwErrno (err, ajprintf ("%s: %s", prefix, strerror (err)));
 }
 
+void throwUserException(const char *format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  jstring message = vajprintf(format, ap);
+  va_end(ap);
+  throw new frysk::UserException(message);
+}
+
 void
 throwRuntimeException (const char *message)
 {

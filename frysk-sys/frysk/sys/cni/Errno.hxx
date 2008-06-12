@@ -47,6 +47,10 @@ extern void throwErrno (int err, const char *prefix)
 extern void throwErrno (int err, const char *prefix, const char *suffix, ...)
   __attribute__ ((noreturn)) __attribute__((format (printf, 3, 4)));
 
+// <<prefix>>: <<strerror(err)>> (<<suffix>> ...)
+extern void throwUserException(const char *format, ...)
+  __attribute__ ((noreturn)) __attribute__((format (printf, 1, 2)));
+
 // <<message>>
 extern void throwRuntimeException (const char *message)
   __attribute__ ((noreturn));

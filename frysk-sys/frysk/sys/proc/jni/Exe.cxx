@@ -49,7 +49,7 @@
 using namespace java::lang;
 
 String
-frysk::sys::proc::Exe::get(jnixx::env env, jint pid) {
+frysk::sys::proc::Exe::getName(jnixx::env env, jint pid) {
   // Get the name of the EXE in /proc.
   char file[FILENAME_MAX];
   if (::snprintf(file, sizeof file, "/proc/%d/exe", (int) pid)
@@ -60,12 +60,35 @@ frysk::sys::proc::Exe::get(jnixx::env env, jint pid) {
   // executable, possibly with "(deleted)" appended.  That link's
   // upper bound is determined by FILENAME_MAX since that is the
   // longest possible allowable file name.
-  const int maxLen = FILENAME_MAX + sizeof (" (deleted)") + 1;
+  const char deleted[] = " (deleted)";
+  const int maxLen = FILENAME_MAX + sizeof(deleted) + 1;
   char link[maxLen];
-  int len = ::readlink (file, link, sizeof (link) - 1);
+  int len = ::readlink (file, link, sizeof(link) - 1);
   if (len < 0 || len >= maxLen)
     errnoException(env, errno, "readlink");
   link[len] = '\0';
+
+  // Linux's /proc/$$/exe can get screwed up in several ways.  Detect
+  // each here and return null.
+  if ((int) strlen(link) != len) {
+    // Assume that an EXE that has somehow ended up with an embedded
+    // NUL character is invalid.  This happens when the kernel screws
+    // up "mv a-really-long-file $exe" leaving the updated EXE string
+    // with something like "$exe<NUL>ally-long-file (deleted)".
+    userException(env, "The link %s is corrupt", file);
+  }
+
+  if (strstr(link, deleted) + strlen(deleted) - link == len) {
+    // Assume (possibly incorrectly) that a trailing "(deleted)"
+    // always indicates a deleted file.
+    link[len - strlen(deleted)] = '\0';
+    userException(env, "The link %s points to the deleted file %s",
+		  file, link);
+  }
+
+  if (access(link, F_OK) != 0) {
+    errnoException(env, errno, "file %s", link);
+  }
 
   // Note that some kernels have a "feature" where the link can become
   // corrupted.  Just retun that, the caller needs to decide if the

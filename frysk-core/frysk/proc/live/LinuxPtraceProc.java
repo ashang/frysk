@@ -224,38 +224,13 @@ public class LinuxPtraceProc extends LiveProc {
      * and a second returning the exe as it should be (but possibly
      * isn't :-).  Better yet have utrace handle it :-)
      */
-    private String exe;
-    private String getExe() {
+    private SysRootFile exe;
+    public SysRootFile getExeFile() {
 	if (exe == null) {
-	    ProcessIdentifier pid
-		= ProcessIdentifierFactory.create(getPid());
-	    String exe = Exe.get(pid);
-	    // Linux's /proc/$$/exe can get screwed up in several
-	    // ways.  Detect each here and return null.
-	    if (exe.endsWith(" (deleted)"))
-		// Assume (possibly incorrectly) that a trailing
-		// "(deleted)" always indicates a deleted file.
-		return null;
-	    if (exe.indexOf((char)0) >= 0)
-		// Assume that an EXE that has somehow ended up with
-		// an embedded NUL character is invalid.  This happens
-		// when the kernel screws up "mv a-really-long-file
-		// $exe" leaving the updated EXE string with something
-		// like "$exe<NUL>ally-long-file (deleted)".
-		return null;
-	    if (!new File(exe).exists())
-		// Final sanity check; the above two should have covered
-		// all possible cases.  But one never knows.
-		return null;
-	    this.exe = exe;
+	    File exeFile = new File(Exe.getName(pid));
+	    return new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), exeFile);
 	}
 	return exe;
-    }
-
-    public SysRootFile getExeFile() {
-	String exe = getExe();
-	File exeFile = new File(exe);
-	return new SysRootFile(SysRootCache.getSysRoot(exeFile.getName()), exeFile);
     }
 
     /**

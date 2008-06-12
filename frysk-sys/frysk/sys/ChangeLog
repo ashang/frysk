@@ -1,5 +1,8 @@
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Errno.cxx (throwUserException): New.
+	* cni/Errno.hxx (throwUserException): New.
+
 	* Errno.java-sh: Extend ExternalException.
 	* cni/Errno.cxx: Update.
 
