@@ -74,7 +74,20 @@ public class TestArithmetics extends TestCase {
     public void testDecrement() {
 	checkVariableExpr("a.kappa-- + --a.kappa", 0); 
     }
-    
+
+    public void testArrayAccess() {
+	checkVariableExpr("arr[0]", 0x01020304);
+	checkVariableExpr("arr[1]", 0x05060708);
+    }
+
+    public void testArraySlice() {
+	checkVariableExpr("arr[1:2][0]", 0x05060708);
+	checkVariableExpr("arr[1:2][1]", 0x09101112);
+	checkVariableExpr("arr[0:2][0:1][0:0][0]", 0x01020304);
+	checkVariableExpr("arr[0:2][1:2][0:0][0]", 0x05060708);
+	checkVariableExpr("arr[0:2][1:2][0:1][1]", 0x09101112);
+    }
+
     private void checkErrorExpr(String input, String error) {
 	Throwable t = null;
 	try {
@@ -95,7 +108,6 @@ public class TestArithmetics extends TestCase {
     public void testTokenError() {
 	checkErrorExpr("1...2", "unexpected input: expecting '.', found '2'");
     }
-    
     // Testing types
     private void checkExprType (String expr, String resultType){
 	ExprSymTab symTab = new TestbedSymTab();

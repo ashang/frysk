@@ -42,19 +42,22 @@ package frysk.expr;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import frysk.config.Host;
 import frysk.debuginfo.DebugInfoFrame;
 import frysk.scopes.SourceLocation;
+import frysk.scopes.Variable;
+import frysk.value.ArrayType;
 import frysk.value.ClassType;
 import frysk.value.ObjectDeclaration;
 import frysk.value.ScratchLocation;
 import frysk.value.StandardTypes;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.scopes.Variable;
 
 class TestbedSymTab implements ExprSymTab {
     private final SourceLocation scratchSourceLocation = SourceLocation.UNKNOWN;
@@ -74,6 +77,20 @@ class TestbedSymTab implements ExprSymTab {
     };
     private Value c1 = new Value(classType, new ScratchLocation(buf));
 
+    private static ArrayList dims() {
+	final ArrayList a = new ArrayList();
+	a.add(new Integer(3));
+	return a;
+    }
+    private Type arrayType = new ArrayType(StandardTypes.INT32B_T, 12, dims());
+    private byte[] arrayBuf = {
+	0x01, 0x02, 0x03, 0x04,
+	0x05, 0x06, 0x07, 0x08,
+	0x09, 0x10, 0x11, 0x12
+    };
+    private ScratchLocation arrayScratch = new ScratchLocation(arrayBuf);
+    private Value arr = new Value(arrayType, arrayScratch);
+
     private HashMap symtab;
     TestbedSymTab () {
 	symtab = new HashMap();
@@ -81,6 +98,7 @@ class TestbedSymTab implements ExprSymTab {
 	symtab.put("b1", c1);
 	symtab.put("b2", c1);
 	symtab.put("c123", c1);
+	symtab.put("arr", arr);
     }
 
     /**
@@ -108,7 +126,7 @@ class TestbedSymTab implements ExprSymTab {
      * Return the task's memory buffer.
      */
     public ByteBuffer taskMemory() {
-	throw new RuntimeException("no memory");
+	return null;
     }
     /**
      * Return the variable's value.

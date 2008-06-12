@@ -1,5 +1,10 @@
 2008-06-12  Petr Machata  <pmachata@redhat.com>
 
+	* TestbedSymTab.java: Add "arr", an array variable
+	* TestArithmetics.java (testArrayAccess, testArraySlice): New tests.
+
+2008-06-12  Petr Machata  <pmachata@redhat.com>
+
 	* CExpr.g (LSQUARE): Don't use "('0'..'9')?" construct, instead
 	test the same in inline java code.
 
