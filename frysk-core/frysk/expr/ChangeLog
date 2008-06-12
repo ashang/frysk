@@ -1,3 +1,12 @@
+2008-06-12  Petr Machata  <pmachata@redhat.com>
+
+	* FQIdentParser.java (containsGlobChar): New method.
+	* FQIdentPattern.java, FQIdentPatternAll.java: New files.
+	* FQIdentPatternExact.java, FQIdentPatternGlob.java: New files.
+	* FQIdentToken.java (globs): New field.
+	* FQIdentifier.java (soname, file, proc, symbol, version): Changed
+	type from String to FQIdentPattern.
+
 2008-06-10  Petr Machata  <pmachata@redhat.com>
 
 	* FQIdentParser.java: Implement glob parsing.

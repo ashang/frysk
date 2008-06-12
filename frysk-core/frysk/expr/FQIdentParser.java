@@ -158,10 +158,26 @@ public class FQIdentParser {
 	return matched.toString();
     }
 
-    private boolean isGlobChar(char c) {
+    public static boolean isGlobChar(char c) {
 	return c == '*' || c == '?' || c == '['
 	    || c == ']' || c == '^' || c == ':'
 	    || c == '-';
+    }
+
+    public static boolean containsGlobChar(String str) {
+	// If anyone finds this code stupid, and the duplication to
+	// the isGlobChar outrageous, I've chosen to do so for
+	// performance reasons.  Other tested variants include:
+	//  * iterate the string and call isGlobChar for each char
+	//  * call Matcher.find over str and regexp "[*?etc]"
+	//  * and a couple more
+	return str.indexOf('*') != -1
+	    || str.indexOf('?') != -1
+	    || str.indexOf('[') != -1
+	    || str.indexOf(']') != -1
+	    || str.indexOf('^') != -1
+	    || str.indexOf(':') != -1
+	    || str.indexOf('-') != -1;
     }
 
     /**
@@ -342,6 +358,7 @@ public class FQIdentParser {
         tok.threadId = partThreadId;
         tok.frameNumber = partFrameNum;
         tok.setLine(scanner.getLine());
+	tok.globs = allowGlobs;
 
         fqmatch(matched);
         tok.setColumn(scanner.getColumn() - matched.length());

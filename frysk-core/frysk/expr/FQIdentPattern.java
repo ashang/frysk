@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,80 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.ftrace;
+package frysk.expr;
 
-import frysk.expr.FQIdentifier;
-import frysk.symtab.DwflSymbol;
-import frysk.symtab.PLTEntry;
+public interface FQIdentPattern {
+    /** Pattern will never match anything. */
+    public static final int CARD_NONE = 0;
+    /** Pattern will match at most one string. */
+    public static final int CARD_ONE = 1;
+    /** Pattern may match more than one string. */
+    public static final int CARD_MANY = 2;
+    /** Pattern will always match everything. */
+    public static final int CARD_ALL = 3;
 
-public class SymbolRule extends Rule {
+    /**
+     * Cardinality of this pattern.  See various CARD_ constants for
+     * possible values.
+     */
+    int cardinality();
 
-    // No globbing supported atm.
-    public final FQIdentifier fqid;
-
-    public SymbolRule(boolean addition, RuleOptions options, FQIdentifier fqid) {
-	super (addition, options);
-	this.fqid = fqid;
-    }
-
-    public String toString() {
-	return super.toString() + fqid;
-    }
-
-
-    protected boolean checkVersionMatches(final DwflSymbol symbol)
-    {
-	return true;
-
-	// XXX Version support didn't arrive yet.
-	/*
-	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
-	    ? (ElfSymbolVersion[])tp.symbol.verneeds
-	    : (ElfSymbolVersion[])tp.symbol.verdefs;
-
-	// When there is no version assigned to symbol, we pretend it has
-	// a version of ''.  Otherwise we require one of the versions to
-	// match the version pattern.
-	if (vers.length == 0) {
-	    if (this.versionPattern.matcher("").matches())
-		return true;
-	}
-	else
-	    for (int i = 0; i < vers.length; ++i)
-		if (this.versionPattern.matcher(vers[i].name).matches())
-		    return true;
-
-	return false;
-	*/
-    }
-
-    protected boolean checkNameMatches(final DwflSymbol symbol)
-    {
-	return fqid.symbol.matches(symbol.getName());
-
-	// XXX Alias support didn't arrive yet.
-	/*
-	if (symbol.aliases != null)
-	    for (int i = 0; i < symbol.aliases.size(); ++i) {
-		String alias = (String)symbol.aliases.get(i);
-		if (this.namePattern.matcher(alias).matches())
-		    return true;
-	    }
-	*/
-    }
-
-    public boolean matches(Object traceable) {
-	DwflSymbol sym = null;
-	if (fqid.wantPlt) {
-	    if (traceable instanceof PLTEntry)
-		sym = ((PLTEntry)traceable).getSymbol();
-	} else if (traceable instanceof DwflSymbol)
-		sym = (DwflSymbol)traceable;
-
-	if (sym != null)
-	    return checkNameMatches(sym)
-		&& checkVersionMatches(sym);
-	else
-	    return false;
-    }
+    /**
+     * Whether given string matches this pattern.  STR can be a symbol
+     * name, soname, etc.
+     */
+    boolean matches(String str);
 }

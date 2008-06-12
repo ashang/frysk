@@ -47,6 +47,9 @@ public class FQIdentToken
 	processId = null, threadId = null, frameNumber = null;
     public boolean wantPlt = false;
 
+    /** Whether the token may contain glob expressions. */
+    public boolean globs = false;
+
     public FQIdentToken(int t, String txt) {
 	super (t, txt);
     }

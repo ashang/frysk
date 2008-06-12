@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,80 +37,28 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.ftrace;
+package frysk.expr;
 
-import frysk.expr.FQIdentifier;
-import frysk.symtab.DwflSymbol;
-import frysk.symtab.PLTEntry;
+import java.util.regex.Pattern;
+import frysk.util.Glob;
 
-public class SymbolRule extends Rule {
-
-    // No globbing supported atm.
-    public final FQIdentifier fqid;
-
-    public SymbolRule(boolean addition, RuleOptions options, FQIdentifier fqid) {
-	super (addition, options);
-	this.fqid = fqid;
+/**
+ * Pattern for part of FQ identifier specified by a glob.
+ */
+class FQIdentPatternGlob implements FQIdentPattern {
+    private final Pattern pattern;
+    private final String glob;
+    public FQIdentPatternGlob(String glob) {
+	this.pattern = Glob.compile(glob);
+	this.glob = glob;
     }
-
+    public int cardinality() {
+	return CARD_MANY;
+    }
+    public boolean matches(String symbolName) {
+	return pattern.matcher(symbolName).matches();
+    }
     public String toString() {
-	return super.toString() + fqid;
-    }
-
-
-    protected boolean checkVersionMatches(final DwflSymbol symbol)
-    {
-	return true;
-
-	// XXX Version support didn't arrive yet.
-	/*
-	ElfSymbolVersion[] vers = (tp.origin == TracePointOrigin.PLT)
-	    ? (ElfSymbolVersion[])tp.symbol.verneeds
-	    : (ElfSymbolVersion[])tp.symbol.verdefs;
-
-	// When there is no version assigned to symbol, we pretend it has
-	// a version of ''.  Otherwise we require one of the versions to
-	// match the version pattern.
-	if (vers.length == 0) {
-	    if (this.versionPattern.matcher("").matches())
-		return true;
-	}
-	else
-	    for (int i = 0; i < vers.length; ++i)
-		if (this.versionPattern.matcher(vers[i].name).matches())
-		    return true;
-
-	return false;
-	*/
-    }
-
-    protected boolean checkNameMatches(final DwflSymbol symbol)
-    {
-	return fqid.symbol.matches(symbol.getName());
-
-	// XXX Alias support didn't arrive yet.
-	/*
-	if (symbol.aliases != null)
-	    for (int i = 0; i < symbol.aliases.size(); ++i) {
-		String alias = (String)symbol.aliases.get(i);
-		if (this.namePattern.matcher(alias).matches())
-		    return true;
-	    }
-	*/
-    }
-
-    public boolean matches(Object traceable) {
-	DwflSymbol sym = null;
-	if (fqid.wantPlt) {
-	    if (traceable instanceof PLTEntry)
-		sym = ((PLTEntry)traceable).getSymbol();
-	} else if (traceable instanceof DwflSymbol)
-		sym = (DwflSymbol)traceable;
-
-	if (sym != null)
-	    return checkNameMatches(sym)
-		&& checkVersionMatches(sym);
-	else
-	    return false;
+	return glob;
     }
 }
