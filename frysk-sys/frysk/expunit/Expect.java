@@ -91,6 +91,17 @@ public class Expect {
     }
 
     /**
+     * Create a bash shell sitting at a prompt.
+     */
+    public Expect() {
+	this(new String[] {
+		"/bin/bash", "-c",
+		"export PS1=$\\ ; export PS2=>\\ ; exec /bin/bash --norc --noprofile"
+	    });
+	expect("\\$ ");
+    }
+
+    /**
      * Clean up.
      *
      * XXX: This drains all outstanding WAITPID events, and SIGCHLD

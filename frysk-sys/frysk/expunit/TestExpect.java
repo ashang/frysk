@@ -151,4 +151,13 @@ public class TestExpect
 	    });
 	assertEquals ("brk mode", "-brkint", g.toString ());
     }
+
+    public void testShell() {
+	Expect e = new Expect();
+	// send a command, check that all, especially the prompt, are
+	// correct.
+	e.send("echo hi\r");
+	e.expect("echo hi\r\nhi\r\n\\$ ");
+    }
+
 }

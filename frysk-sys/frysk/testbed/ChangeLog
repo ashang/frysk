@@ -1,3 +1,7 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TearDownExpect.java (TearDownExpect()): Add.
+
 2008-06-06  Andrew Cagney  <cagney@redhat.com>
 
 	* LocalMemory.java (getModuleName()): New.

@@ -39,6 +39,7 @@
 
 package frysk.bindir;
 
+import frysk.testbed.TearDownFile;
 import frysk.testbed.TearDownExpect;
 import frysk.testbed.TestLib;
 import frysk.config.Prefix;
@@ -87,4 +88,29 @@ public class TestFexe extends TestLib {
 	e.expect("/bin/bash" + "\r\n");
     }
 
+    public void testExeOfDeletedFile() {
+	if (unresolved(6621))
+	    return;
+	TearDownExpect e = new TearDownExpect();
+	TearDownFile exe = TearDownFile.create();
+	// Create a copy of sleep that is executable.
+	e.send("cp /bin/sleep " + exe.getPath() + "\r");
+	e.expect("cp .*\\$ ");
+	e.send("chmod +x " + exe.getPath() + "\r");
+	e.expect("chmod .*\\$ ");
+	// Start sleep running; pid is in $!, save it.
+	e.send(exe.getAbsolutePath() + " 1000 &\r");
+	e.send("pid=$! ; echo pid=$pid\r");
+	e.expect("pid=[0-9]+\r\n\\$ ");
+	// Try fexe with the executable present.
+	e.send(Prefix.binFile("fexe").getPath() + " $pid\r");
+	e.expect(exe.getName() + "\r\n\\$ ");
+	// Delete the executable
+	e.send("rm -f " + exe.getPath() + "\r");
+	e.expect("\\$ ");
+	assertFalse("file exists", exe.stillExists());
+	// Try fexe with the executable deleted
+	e.send(Prefix.binFile("fexe").getPath() + " $pid\r");
+	e.expect(exe.getName() + " \\(deleted\\)\r\n\\$ ");
+    }
 }

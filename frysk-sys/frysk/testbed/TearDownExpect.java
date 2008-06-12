@@ -65,6 +65,10 @@ public class TearDownExpect extends Expect {
 	super(command);
 	add(this);
     }
+    public TearDownExpect() {
+	super();
+	add(this);
+    }
 
     /**
      * Collection of expect classes.
