@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,10 +39,12 @@
 
 package frysk.hpd;
 
+import frysk.UserException;
+
 /**
  * The command was invalid.
  */
-public class InvalidCommandException extends RuntimeException {
+public class InvalidCommandException extends UserException {
     static final long serialVersionUID = 1;
     InvalidCommandException(String message) {
 	super(message);

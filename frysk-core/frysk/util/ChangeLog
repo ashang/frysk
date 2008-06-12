@@ -1,3 +1,8 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* CommandlineParser.java: Catch UserException, not
+	RuntimeException.
+
 2008-06-11  Andrew Cagney  <cagney@redhat.com>
 
 	* StackPrintUtil.java: Fix typo - missing \n.

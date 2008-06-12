@@ -1,3 +1,9 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* ObjectDeclarationNotFoundException.java: Extend
+	UserException.
+	* PieceLocation.java: Throw UserException.
+
 2008-06-11  Teresa Thomas  <tthomas@redhat.com>
 	
 	* PieceLocation.java (length): Make public.

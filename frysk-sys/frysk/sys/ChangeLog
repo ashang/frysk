@@ -1,3 +1,8 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Errno.java-sh: Extend ExternalException.
+	* cni/Errno.cxx: Update.
+
 2008-06-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLeakingFileDescriptor.java: Mark as unsupported under JNI.

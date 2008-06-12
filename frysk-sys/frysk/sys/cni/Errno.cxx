@@ -52,6 +52,7 @@
 #include <java/lang/Thread.h>
 #include <java/lang/ArrayIndexOutOfBoundsException.h>
 
+#include "frysk/UserException.h"
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Ebadf.h"
 #include "frysk/sys/Errno$Enomem.h"

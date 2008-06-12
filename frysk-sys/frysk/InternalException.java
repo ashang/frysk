@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,13 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk;
 
-import frysk.UserException;
+/**
+ * An internal problem has occured; for instance, we got an event we
+ * have no idea what to do with.  This is different to a user or
+ * external exception in that the problem is occuring due to issues
+ * with the frysk code.  When displaying InternalExceptions they
+ * should include a backtrace.
+ *
+ * Main-loop code catching this class of problem should print a full
+ * stack back trace.  One way of doing this is:
+ *
+ * try {
+ *   ..
+ * } catch (UserException e) {
+ *   System.out.println(e.getMessage());
+ *   System.exit(1);
+ * } catch (RuntimeException e) {
+ *   e.printStackTrace(System.out);
+ *   System.exit(1);
+ * }
+ *
+ * The alternative is an internal, or runtime exception, where frysk's
+ * code base is internally getting things seriously wrong.
+ */
 
-public class ObjectDeclarationNotFoundException extends UserException {
-    public ObjectDeclarationNotFoundException(String name) {
-	super("Object "+ name + " was not found");
+public class InternalException extends RuntimeException {
+    static final long serialVersionUID = 0;
+    public InternalException(String what) {
+	super(what);
     }
-    private static final long serialVersionUID = 1L;
 }

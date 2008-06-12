@@ -39,6 +39,7 @@
 
 package frysk.hpd;
 
+import frysk.UserException;
 import frysk.expr.ExprSearchEngine;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -139,9 +140,9 @@ public class CLI {
 	try {
 	    return topLevelCommand.complete(this, new Input(buffer), cursor,
 					    candidates);
-	} catch (RuntimeException e) {
-	    if (nasty(e))
-		e.printStackTrace(outWriter);
+	} catch (UserException e) {
+	    // If anything user related fails, just give up on the
+	    // completion.
 	    return -1;
 	}
     }
@@ -296,33 +297,14 @@ public class CLI {
 	return null;
     }
     
-    /**
-     * Identify "nasty", or internal exceptions; these are the
-     * RuntimeExceptions thrown by the Java system.
-     */
-    private boolean nasty(Exception e) {
-	Throwable cause = e;
-	while (true) {
-	    Throwable c = cause.getCause();
-	    if (c == null)
-		break;
-	    cause = c;
-	}
-	return (cause instanceof NullPointerException
-		|| cause instanceof ArrayIndexOutOfBoundsException
-		|| cause instanceof ArrayStoreException
-		|| cause instanceof ClassCastException
-		|| e.getMessage() == null);
-    }
-
     void printError(Exception e) {
-	if (nasty(e)) {
+	if (e instanceof UserException) {
+	    outWriter.print("Error: ");
+	    outWriter.println(e.getMessage());
+	} else {
 	    outWriter.print("Internal Error: ");
 	    e.printStackTrace(outWriter);
 	    outWriter.println();
-	} else {
-	    outWriter.print("Error: ");
-	    outWriter.println(e.getMessage());
 	}
     }
 

@@ -48,43 +48,44 @@ import frysk.value.ObjectDeclaration;
 import frysk.value.Type;
 import frysk.value.Value;
 import frysk.scopes.Variable;
+import frysk.UserException;
 
 public class ScratchSymTab implements ExprSymTab {
     /**
      * Lookup S, assuming S is variable or constant.
      */
     public Value getValue(String s) {
-	throw new RuntimeException("no values");
+	throw new UserException("no values");
     }
     /**
      * Lookup S, assuming S is a variable.
      */
     public ObjectDeclaration getObjectInScope(DebugInfoFrame frame, String s) {
-	throw new RuntimeException("no variables");
+	throw new UserException("no variables");
     }
     /**
      * The byte order to use when creating new values.
      */
     public ByteOrder order() {
-	throw new RuntimeException("no byte-order");
+	throw new UserException("no byte-order");
     }
     /**
      * Return the task's memory buffer
      */
     public ByteBuffer taskMemory() {
-	throw new RuntimeException("no memory");
+	throw new UserException("no memory");
     }
     /**
      * Return the variable's value.
      */
     public Value getValue(Variable v) {
-	throw new RuntimeException("no values");
+	throw new UserException("no values");
     }
     /**
      * Given a variable, return its type.
      */
     public Type getType(Variable variable) {
-	throw new RuntimeException("no types");
+	throw new UserException("no types");
     }
     /**
      * Return the wordsize.

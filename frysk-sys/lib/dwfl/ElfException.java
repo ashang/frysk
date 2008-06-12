@@ -39,12 +39,14 @@
 
 package lib.dwfl;
 
+import frysk.UserException;
+
 /**
  * The Elf back-end detected a problem; it might be an invalid
  * operation; it might also be a corrupt part of an elf file.
  */
 
-public class ElfException extends RuntimeException {
+public class ElfException extends UserException {
     private static final long serialVersionUID = 400112389738713948L;
 
     ElfException(Throwable t) {

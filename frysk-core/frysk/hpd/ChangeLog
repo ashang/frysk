@@ -1,3 +1,9 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* CLI.java (nasty()): Delete.
+	(printError(Exception)): Check for UserException.
+	* InvalidCommandException.java: Extend UserException.
+	
 2008-06-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestCoreCommand.java: Fix bz #6614.

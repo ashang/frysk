@@ -1,3 +1,7 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* ElfException.java: Extend UserException.
+
 2008-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/ElfSymbol.cxx (ElfSymbol::elf_load_verneed): Don't delete a

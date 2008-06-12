@@ -1,3 +1,7 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* ExternalException.java: New.
+
 2008-03-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestConfig.java: Move to frysk.config.

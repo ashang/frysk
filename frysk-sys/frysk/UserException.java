@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, 2008, Red Hat Inc.
+// Copyright 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,13 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.debuginfo;
+package frysk;
 
-import frysk.UserException;
+/**
+ * An exception triggered by information tied to the user, for
+ * instance a missing or corrupt input file.  This can be considered,
+ * while still exceptional, a largely run-of-the-mill occurance and
+ * such exceptions should be displayed to the user as errors.
+ *
+ * Main-loop code catching this class of problem should just print the
+ * error message.  One way of doing this is:
+ *
+ * try {
+ *   ..
+ * } catch (UserException e) {
+ *   System.out.println(e.getMessage());
+ *   System.exit(1);
+ * } catch (RuntimeException e) {
+ *   e.printStackTrace(System.out);
+ *   System.exit(1);
+ * }
+ *
+ * The alternative is an internal, or runtime exception, where frysk's
+ * code base is internally getting things seriously wrong.
+ */
 
-public class ObjectDeclarationNotFoundException extends UserException {
-    public ObjectDeclarationNotFoundException(String name) {
-	super("Object "+ name + " was not found");
+public class UserException extends RuntimeException {
+    static final long serialVersionUID = 0;
+    public UserException(String message) {
+	super(message);
     }
-    private static final long serialVersionUID = 1L;
+    public UserException(String message, Throwable t) {
+	super(message, t);
+    }
 }

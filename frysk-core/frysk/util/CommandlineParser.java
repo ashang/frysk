@@ -39,6 +39,7 @@
 
 package frysk.util;
 
+import frysk.UserException;
 import frysk.config.FryskVersion;
 import java.io.File;
 import java.util.LinkedList;
@@ -160,12 +161,14 @@ public abstract class CommandlineParser {
 	    String[] result = doParse(args);
 	    validate();
 	    return result;
-	} catch (Exception e) {
+	} catch (OptionException e) {
 	    fine.log(this, "parse failed", e);
-	    if (e.getMessage() == null)
-		System.err.println("Error: " + e.toString());
-	    else
-		System.err.println("Error: " + e.getMessage());
+	    System.err.println("Error: " + e.getMessage());
+	    System.exit(1);
+	    return null; // To fool Java
+	} catch (UserException e) {
+	    fine.log(this, "external problem", e);
+	    System.err.println("Error: " + e.getMessage());
 	    System.exit(1);
 	    return null; // To fool Java
 	}

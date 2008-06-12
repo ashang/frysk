@@ -1,3 +1,7 @@
+2008-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* ScratchSymTab.java: Throw UserException.
+
 2008-06-12  Petr Machata  <pmachata@redhat.com>
 
 	* TestbedSymTab.java: Add "arr", an array variable

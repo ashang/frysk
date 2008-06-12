@@ -44,12 +44,14 @@ cat <<EOF
 
 package frysk.sys;
 
+import frysk.UserException;
+
 /**
  * Unix Host Errors.
  *
  * Do not confuse this with target errors and target error numbers.
  */
-public class Errno extends RuntimeException {
+public class Errno extends UserException {
     static final long serialVersionUID = 0;
 
     private final String message;
