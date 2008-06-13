@@ -7,6 +7,10 @@
 	* TestFexe.java (testExeOfDeletedFile()): New; mark as unresolved
 	6621.
 
+2008-06-13  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.xml-in: Update.
+
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFstack.java (testBackTraceWithFullPath): Specify "paths",
