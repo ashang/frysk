@@ -71,7 +71,7 @@ public class FQIdentifier {
     private FQIdentPattern getPatternFor(FQIdentToken tok, String str) {
 	if (str == null)
 	    return FQIdentPatternAll.instance;
-	else if (!tok.globs || !FQIdentParser.containsGlobChar(str))
+	else if (!tok.globs || !FQIdentParser.isWildcardPattern(str))
 	    return new FQIdentPatternExact(str);
 	else
 	    return new FQIdentPatternGlob(str);

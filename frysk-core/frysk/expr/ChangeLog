@@ -1,3 +1,10 @@
+2008-06-13  Petr Machata  <pmachata@redhat.com>
+
+	* FQIdentParser.java (containsGlobChar): Rename to
+	isWildcardPattern.  Only require *, ? or [ to consider
+	a string to be a wildcard pattern.
+	* FQIdentifier.java: Adapt to above.
+
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* ScratchSymTab.java: Throw UserException.

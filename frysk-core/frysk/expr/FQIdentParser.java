@@ -164,20 +164,12 @@ public class FQIdentParser {
 	    || c == '-';
     }
 
-    public static boolean containsGlobChar(String str) {
-	// If anyone finds this code stupid, and the duplication to
-	// the isGlobChar outrageous, I've chosen to do so for
-	// performance reasons.  Other tested variants include:
-	//  * iterate the string and call isGlobChar for each char
-	//  * call Matcher.find over str and regexp "[*?etc]"
-	//  * and a couple more
+    public static boolean isWildcardPattern(String str) {
+	// man 7 glob: """A string is a wildcard pattern if it
+	//  contains one of the characters "?", "*" or "["."""
 	return str.indexOf('*') != -1
 	    || str.indexOf('?') != -1
-	    || str.indexOf('[') != -1
-	    || str.indexOf(']') != -1
-	    || str.indexOf('^') != -1
-	    || str.indexOf(':') != -1
-	    || str.indexOf('-') != -1;
+	    || str.indexOf('[') != -1;
     }
 
     /**
