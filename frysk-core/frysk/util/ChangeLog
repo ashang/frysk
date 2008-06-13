@@ -1,3 +1,8 @@
+2008-06-13  Petr Machata  <pmachata@redhat.com>
+
+	* Glob.java: Support ! as character set negation operator.
+	* TestGlob.java: New class, suite of test cases for Glob compiler.
+
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* CommandlineParser.java: Catch UserException, not

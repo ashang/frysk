@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,53 +44,57 @@ import java.util.regex.PatternSyntaxException;
 
 public class Glob {
 
-    private static int matchCharacterClass(String glob, int from)
+    private static int matchCharacterClass(char[] glob, int from)
 	throws PatternSyntaxException
     {
 	int i = from + 2;
-	while (glob.charAt(++i) != ':' && i < glob.length())
+	while (glob[++i] != ':' && i < glob.length)
 	    continue;
-	if (i >= glob.length() || glob.charAt(++i) != ']')
+	if (i >= glob.length || glob[++i] != ']')
 	    throw new PatternSyntaxException
-		("Unmatched '['.", glob, from);
+		("Unmatched '['.", new String(glob), from);
 	return i;
     }
 
-    private static int matchBrack(String glob, int from)
+    private static int matchBrack(char[] glob, int from)
 	throws PatternSyntaxException
     {
 	int i = from + 1;
 
-	if (glob.charAt(i) == '^') // Complement operator.
+	// Complement operator.
+	if (glob[i] == '^')
 	    ++i;
+	else if (glob[i] == '!')
+	    glob[i++] = '^';
 
 	// On first character, both [ and ] are legal.  But when [ is
 	// foolowed with :, it's character class.
-	if (glob.charAt(i) == '[' && glob.charAt(i + 1) == ':')
+	if (glob[i] == '[' && glob[i + 1] == ':')
 	    i = matchCharacterClass(glob, i) + 1;
 	else
 	    ++i; // skip any character, including [ or ]
 	boolean escape = false;
-	for (; i < glob.length(); ++i) {
-	    char c = glob.charAt(i);
+	for (; i < glob.length; ++i) {
+	    char c = glob[i];
 	    if (escape) {
 		++i;
 		escape = false;
 	    }
-	    else if (c == '[' && glob.charAt(i + 1) == ':')
+	    else if (c == '[' && glob[i + 1] == ':')
 		i = matchCharacterClass(glob, i);
 	    else if (c == ']')
 		return i;
 	}
 	throw new PatternSyntaxException
-	    ("Unmatched '" + glob.charAt(from) + "'.", glob, from);
+	    ("Unmatched '" + glob[from] + "'.", new String(glob), from);
     }
 
-    private static String toRegex(String glob) {
+    // Package private so that TestGlob can access it.
+    static String toRegex(char[] glob) {
 	StringBuffer buf = new StringBuffer();
 	boolean escape = false;
-	for(int i = 0; i < glob.length(); ++i) {
-	    char c = glob.charAt(i);
+	for(int i = 0; i < glob.length; ++i) {
+	    char c = glob[i];
 	    if (escape) {
 		if (c == '\\')
 		    buf.append("\\\\");
@@ -107,7 +111,7 @@ public class Glob {
 		    escape = true;
 		else if (c == '[') {
 		    int j = matchBrack(glob, i);
-		    buf.append(glob.substring(i, j+1));
+		    buf.append(glob, i, j - i + 1);
 		    i = j;
 		}
 		else if (c == '*')
@@ -124,10 +128,10 @@ public class Glob {
     }
 
     public static Pattern compile(String glob) {
-	return Pattern.compile(toRegex(glob));
+	return Pattern.compile(toRegex(glob.toCharArray()));
     }
 
     public static Pattern compile(String glob, int flags) {
-	return Pattern.compile(toRegex(glob), flags);
+	return Pattern.compile(toRegex(glob.toCharArray()), flags);
     }
 }
