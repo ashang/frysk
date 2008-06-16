@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -165,10 +165,9 @@ lib::dwfl::DwarfDie::get_scopes_die()
 
 Dwarf_Die *var_die;
 
-jlong
-lib::dwfl::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
-				 jstring variable)
-{
+jint
+lib::dwfl::DwarfDie::get_scopevar(jlongArray die_scope, jlongArray scopes,
+				 jstring variable) {
   
   var_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
   int nscopes = JvGetArrayLength (scopes);
@@ -176,11 +175,10 @@ lib::dwfl::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
   Dwarf_Die *dies[nscopes];
   jlong* scopesp = elements(scopes);
 
-  for(int i = 0; i < nscopes; i++)
-    {
-      jlong dieptr = scopesp[i];
-      dies[i] = (Dwarf_Die*)dieptr;
-    }
+  for(int i = 0; i < nscopes; i++) {
+    jlong dieptr = scopesp[i];
+    dies[i] = (Dwarf_Die*)dieptr;
+  }
   
   int utf_variable_len = variable->length ();
   char utf_variable[utf_variable_len + 1];
@@ -190,16 +188,15 @@ lib::dwfl::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
   int code = dwarf_getscopevar (*dies, nscopes,
 				utf_variable,
 				0, NULL, 0, 0, var_die);
-  if (code >= 0)
-    {
-      if (dwarf_tag (var_die) != DW_TAG_variable)
-	return -1;
-      jlong* longp = elements(die_scope);
-      longp[0] = (jlong)var_die;    // Die for variable
-      longp[1] = code; // Die for scope
-    }
-  else if (dwarf_tag (var_die) != DW_TAG_variable)
-    return -1;
+  if (code >= 0) {
+    if (dwarf_tag(var_die) != DW_TAG_variable)
+      return -1;
+    jlong* longp = elements(die_scope);
+    longp[0] = (jlong)var_die;    // Die for variable
+    longp[1] = code; // Die for scope
+  } else {
+    ::free(var_die);
+  }
   return code;
 }
 

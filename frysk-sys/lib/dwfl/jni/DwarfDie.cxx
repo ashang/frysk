@@ -148,7 +148,7 @@ lib::dwfl::DwarfDie::get_scopes_die(jnixx::env env) {
   return longs;
 }
 
-jlong
+jint
 lib::dwfl::DwarfDie::get_scopevar(jnixx::env env, jnixx::jlongArray jdie_scope,
 				  jnixx::jlongArray jscopes, String jvariable) {
   // FIXME: This appears to be leaked?
@@ -169,8 +169,8 @@ lib::dwfl::DwarfDie::get_scopevar(jnixx::env env, jnixx::jlongArray jdie_scope,
     jlongArrayElements die_scope = jlongArrayElements(env, jdie_scope);
     die_scope.elements()[0] = (jlong)var_die;    // Die for variable
     die_scope.elements()[1] = code; // Die for scope
-  } else if (dwarf_tag (var_die) != DW_TAG_variable) {
-    return -1;
+  } else {
+    ::free(var_die);
   }
   return code;
 }

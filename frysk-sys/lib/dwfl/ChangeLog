@@ -1,3 +1,10 @@
+2008-06-15  Andrew Cagney  <cagney@redhat.com>
+
+	* DwarfDie.java (get_scopevar): Return an int.
+	* jni/DwarfDie.cxx (DwarfDie::get_scopevar): Only examine the die
+	when its valid.
+	* cni/DwarfDie.cxx (DwarfDie::get_scopevar): Ditto.
+
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* ElfException.java: Extend UserException.

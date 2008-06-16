@@ -94,15 +94,10 @@ public class %s extends TestLib {
         print('''
 	void checkType(String symbol, String expected) {
 	    Type varType;
-
 	    DwarfDie varDie = biasDie.getScopeVar(allDies, symbol);
-	    if (varDie == null)
-		System.out.println("Error: Cannot find " + symbol);
-	    assertNotNull(varDie);
+            assertNotNull("die for variable " + symbol, varDie);
 	    varType = typeFactory.getType(varDie.getType());
 	    assertNotNull(varType);
-	    // System.out.println("Expect: " + symbol + "\\n'" +
-	    //    expected + "'\\nGot:\\n'" + varType.toPrint());
 	    assertEquals(testName + symbol, expected, varType.toPrint());
 	}
 
@@ -115,19 +110,13 @@ public class %s extends TestLib {
 		|| expected.length() == 0)
 		return;
 	    DwarfDie varDie = biasDie.getScopeVar(allDies, symbol);
-	    if (varDie == null)
-		System.out.println("Error: Cannot find " + symbol);
-	    assertNotNull(varDie);
+            assertNotNull("die for variable " + symbol, varDie);
 	    DebugInfo debugInfo = new DebugInfo(frame);
 	    Value value =  debugInfo.print(symbol, frame);
 	    value.toPrint(pw, task.getMemory(), Format.NATURAL, 0);
 	    pw.flush();
 	    String valueString = baos.toString();
-	    // System.out.println("Expect: " + symbol +
-	    //     "\\n'" + expected + "'\\nGot:\\n'" +
-	    //     valueString + "'" + " " + value.getType());
 	    assertEquals(testName + symbol, expected, valueString);
-	    baos.reset();
 	}
     }
 ''')

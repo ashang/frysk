@@ -476,7 +476,8 @@ public class DwarfDie {
 
     private native long[] get_scopes_die ();
 
-    private native long get_scopevar (long[] die_scope, long[] scopes, String variable);
+    private native int get_scopevar(long[] die_scope, long[] scopes,
+				    String variable);
 
     private native long get_scopevar_names (long[] scopes, String variable);
   
