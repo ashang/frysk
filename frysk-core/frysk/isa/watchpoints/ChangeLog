@@ -1,3 +1,7 @@
+2008-06-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WatchpointFunctions.java (getTriggeredWatchpoints): New.
+
 2008-06-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WatchpointFunctions.java (getWatchpointMinLength): New.	

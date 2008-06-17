@@ -39,18 +39,20 @@
 
 package frysk.proc.live;
 
-import frysk.sys.SignalSet;
-import frysk.sys.proc.Status;
-import frysk.isa.watchpoints.WatchpointFunctionFactory;
-import frysk.isa.watchpoints.WatchpointFunctions;
-import frysk.proc.TaskObserver;
-import frysk.proc.Observer;
-import frysk.proc.Observable;
 import java.util.Collection;
 import java.util.Iterator;
-import frysk.sys.Signal;
+import java.util.List;
+
+import frysk.isa.watchpoints.WatchpointFunctionFactory;
+import frysk.isa.watchpoints.WatchpointFunctions;
+import frysk.proc.Observable;
+import frysk.proc.Observer;
+import frysk.proc.TaskObserver;
 import frysk.rsl.Log;
 import frysk.rsl.LogFactory;
+import frysk.sys.Signal;
+import frysk.sys.SignalSet;
+import frysk.sys.proc.Status;
 
 /**
  * A Linux Task's State tracked using PTRACE.
@@ -938,15 +940,15 @@ abstract class LinuxPtraceTaskState extends State {
 	    if (watchpointFunction == null) {
 		return blockers;
 	    }
-	    for (int i=0; i<watchpointFunction.getWatchpointCount();  i++) {
-		// Test if a watchpoint has fired
-		if (watchpointFunction.hasWatchpointTriggered(task, i)) {
-		    if (blockers == -1)
-			blockers = 0;
-		    frysk.isa.watchpoints.Watchpoint trigger = watchpointFunction.readWatchpoint(task, i);
-		    blockers += task.notifyWatchpoint(trigger.getAddress(), trigger.getRange(), trigger.isWriteOnly());
-		    watchpointFunction.resetWatchpoint(task, i);
-		}
+	    
+	    List triggeredWatchpoints = watchpointFunction.getTriggeredWatchpoints(task);
+	    Iterator i = triggeredWatchpoints.iterator();
+	    while (i.hasNext()) {
+		frysk.isa.watchpoints.Watchpoint wp = (frysk.isa.watchpoints.Watchpoint) i.next();
+		if (blockers == -1)
+		    blockers = 0;
+		blockers += task.notifyWatchpoint(wp.getAddress(), wp.getRange(), wp.isWriteOnly());
+		watchpointFunction.resetWatchpoint(task, wp.getRegister());
 	    }
 	    
 	    return blockers;
