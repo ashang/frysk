@@ -396,6 +396,24 @@ lib::dwfl::DwflModule::offdie(jnixx::env env, jlong die, jlong offset) {
   return dwarfDie;
 }
 
+void
+lib::dwfl::DwflModule::get_cu_dies(::jnixx::env env, jlong pointer,
+				   java::util::List list) {
+  Dwarf_Die* cu;
+  Dwarf_Addr bias;
+  cu = dwfl_module_nextcu(DWFL_MODULE_POINTER, NULL, &bias);
+    
+  while (cu != NULL) {
+    Dwarf_Die *die = (Dwarf_Die*)::malloc(sizeof(Dwarf_Die));
+    memcpy(die, cu, sizeof(*die));
+    lib::dwfl::DwarfDie cuDie
+      = lib::dwfl::DwarfDieFactory::getFactory(env).makeDie(env, (jlong)die, lib::dwfl::DwflModule(env, NULL));
+    cuDie.setManageDie(env, true);
+    list.add(env, cuDie);
+    cu = dwfl_module_nextcu(DWFL_MODULE_POINTER, cu, &bias);
+  }
+}
+
 jlong
 lib::dwfl::DwflModule::dwflModuleAddrdie(jnixx::env env, jlong pointer,
 					 jlong addr) {

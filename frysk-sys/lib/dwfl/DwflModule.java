@@ -40,6 +40,7 @@
 package lib.dwfl;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A wrapper object around the libdwfl Dwfl_Module structure.
@@ -142,10 +143,12 @@ public class DwflModule {
      */
     public native String getDebuginfo();
     
-    public LinkedList getCuDies(){
-	return get_cu_dies();
+    public List getCuDies(){
+	List list = new LinkedList();
+	get_cu_dies(pointer, list);
+	return list;
     }
-    private native LinkedList get_cu_dies();
+    private static native void get_cu_dies(long pointer, List list);
 
     public DwflDie getCompilationUnit(long addr) {
 	// Find the die, grab the bias as it flies by.

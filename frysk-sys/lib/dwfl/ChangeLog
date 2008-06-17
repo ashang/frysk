@@ -1,3 +1,9 @@
+2008-06-16  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflModule.java (get_cu_dies): Add pointer parameter.
+	* cni/DwflModule.cxx (DwflModule::get_cu_dies): Update.
+	* jni/DwflModule.cxx (DwflModule::get_cu_dies): Implement, missing.
+
 2008-06-15  Andrew Cagney  <cagney@redhat.com>
 
 	* DwarfDie.java (get_scopevar): Return an int.
