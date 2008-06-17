@@ -44,7 +44,7 @@
 
 int array[4];
 int bigArray[9];
-float float_ = 0.0;
+float float_ = 1.9;
 double double_ = 0.0;
 long long long_long = 111;
 char char_ = 'A';
@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
      array[k] = k;
 
   double_ = 12.0;
+  float_ = 1.9;
   long_long = 0x11223344aabbccddLL;
   char_ = 'B';
   	   

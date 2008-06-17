@@ -102,6 +102,11 @@ public class WatchObserverInstaller {
 	// to completely watch the variable.
 	int numberOfObservers = (int)Math.ceil((double)variableLength/
 	                           	       (double)maxWatchLength);
+	
+	if (numberOfObservers == 0) {
+	    throw new RuntimeException ("Error: Watchpoint cannot be installed");
+	}
+	
 	int observerNumber = 1;
 	
 	// Add watchpoint observers to task. 
@@ -156,11 +161,15 @@ public class WatchObserverInstaller {
 	public Action updateHit(Task task, long address, int length) {
 
 	    String newValue = expr.getValue().toPrint
-	    (Format.NATURAL, task.getMemory());
+	                        (Format.NATURAL, task.getMemory());
 
 	    String watchMessage = "Watchpoint hit: " + exprString + "\n" +
 	                          "   Value before hit = " + oldValue + "\n" +
 	                          "   Value after  hit = " + newValue + "\n";
+	    
+	    if (oldValue.equals(newValue)) {
+		watchMessage += "Note: Value unchanged before and after access\n";
+	    }
 	    // Remember the previous value
 	    oldValue = newValue;
 

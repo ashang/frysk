@@ -220,7 +220,30 @@ public class TestWatchCommand extends TestLib {
       e.close();     
   }
 
-  
+  /*
+   * Test to check if user notified when value being
+   * written to is the same as previous value.
+   */
+  public void testWritePrevValue() {
+      e = new HpdTestbed();
+      e.sendCommandExpectPrompt("load " + Prefix.pkgLibFile("funit-ctypes").getPath(),
+                                "Loaded executable file.*");
+      e.send("break main\n");	
+      e.expect("breakpoint.*" + prompt);
+      e.send("run\n");
+      e.expect("Attached to process ([0-9]+).*"); 
+      
+      e.send("watch float_\n"); 
+      e.expect(".*Watchpoint set: float_.*");
+      
+      e.send("go\n"); 
+      e.expect(".*Note: Value unchanged before and after access.*");
+      
+      e.send("quit\n");
+      e.expect("Quitting\\.\\.\\.");
+      e.close();        
+  }
+
   private Task getStoppedTask() {
       return this.getStoppedTask("funit-ctypes");
   }

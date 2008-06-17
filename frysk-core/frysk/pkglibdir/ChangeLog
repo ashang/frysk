@@ -1,3 +1,7 @@
+2008-06-17 Teresa Thomas <tthomas@redhat.com>
+
+	* funit-ctypes.c: Write to float_.
+	
 2008-06-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-2threads.c: New test program.
@@ -6,7 +10,7 @@
 
 	* funit-raise.S: Fix ADD parameter order.
 
-2007-05-23 Teresa Thomas <tthomas@redhat.com>
+2008-05-23 Teresa Thomas <tthomas@redhat.com>
 
 	* funit-ctypes.c: New file.
 	

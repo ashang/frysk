@@ -1,3 +1,11 @@
+2008-06-17  Teresa Thomas  <tthomas@redhat.com>
+
+	* WatchObserverInstaller.java 
+	(WatchpointObserver.updateHit): Print message if value 
+	unchanged before and after access.
+	(install): Throw exception if numberOfObservers 
+	calculated is 0.
+	
 2008-06-11  Teresa Thomas  <tthomas@redhat.com>
 
 	* WatchObserverInstaller.java (install): Use Location.length()
