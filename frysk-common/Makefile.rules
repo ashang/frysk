@@ -407,7 +407,8 @@ Runner:
 	echo "\$${libunwind}-ppc32/src/.libs/libunwind-ppc32.so\\ \\" >> $@.tmp
 	echo "\$${libunwind}-ppc64/src/.libs/libunwind-ppc64.so\\ \\" >> $@.tmp
 	echo "\$${libunwind}-x86_64/src/.libs/libunwind-x86_64.so\\ \\" >> $@.tmp
-	echo "libstdc++.so.6"					>> $@.tmp
+	echo "libstdc++.so.6\\ \\"				>> $@.tmp
+	echo "libaudit.so"					>> $@.tmp
 	echo ""	     						>> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"  >> $@.tmp
 	echo "export LD_LIBRARY_PATH=$(frysk_sys)\\"		>> $@.tmp
