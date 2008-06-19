@@ -71,6 +71,21 @@ lib/unwind/cni/Unwind%.cxx: lib/unwind/Unwind%.java lib/unwind/cni/UnwindH.hxx
 lib/unwind/Unwind%.java: lib/unwind/Unwind.java
 
 
+# Depend on these runtimes.
+JNI_LIBRARY_LIST += -lstdc++
+JNI_LIBRARY_LIST += -laudit
+# Bundle in the local elfutils code.
+JNI_ARCHIVE_LIST += ../frysk-imports/elfutils/libasm/libasm_pic.a
+JNI_ARCHIVE_LIST += ../frysk-imports/elfutils/libdwfl/libdwfl_pic.a
+JNI_ARCHIVE_LIST += ../frysk-imports/elfutils/libdw/libdw_pic.a
+JNI_ARCHIVE_LIST += ../frysk-imports/elfutils/libelf/libelf_pic.a
+JNI_ARCHIVE_LIST += ../frysk-imports/elfutils/libebl/libebl.a
+# Bundle in the local libunwind code.
+JNI_OBJECT_LIST += ../frysk-imports/libunwind-i386/src/{,dwarf/,mi/,x86/}.libs/*.o
+JNI_OBJECT_LIST += ../frysk-imports/libunwind-x86_64/src/{,dwarf/,mi/,x86_64/}.libs/*.o
+JNI_OBJECT_LIST += ../frysk-imports/libunwind-ppc32/src/{,dwarf/,mi/,ppc32/}.libs/*.o
+JNI_OBJECT_LIST += ../frysk-imports/libunwind-ppc64/src/{,dwarf/,mi/,ppc64/}.libs/*.o
+
 # jnixx's auto-detect algorithm misses hidden class references,
 # explicitly add them here.
 JNIXX_CLASSES += frysk.sys.ProcessIdentifierFactory

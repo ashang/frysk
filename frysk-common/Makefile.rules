@@ -94,6 +94,7 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
+comma=$(empty),$(empty)
 JAVAROOT = classes
 
 # The list of libraries for the GCJ programs is different to that of
@@ -465,6 +466,35 @@ SUFFIXES += .so
 		-Wl,--soname,$$soname,-z,-defs
 	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
 	mv $@.tmp $@
+
+# Build a JNI shared object from one or more archives and one or more
+# object files.  This lets frysk bundle up into a single somewhat
+# large shared object, all the native code it needs to drag around.
+# Over time it should become smaller.
+
+# A list of .a files that should be incorporated into the .so.
+JNI_ARCHIVE_LIST =
+
+# List of shared objects required by this code.  The link-loader will
+# automatically pull these in as part of the build.
+JNI_LIBRARY_LIST =
+
+# A list of extra object files that should be added to the .so.
+JNI_OBJECT_LIST =
+
+%-jni.so: %-jni.a
+	soname=`basename $@` ; \
+	$(CC) -shared -o $@.tmp \
+		-Wl,--whole-archive \
+		-Wl,$< \
+		$(JNI_ARCHIVE_LIST:%=-Wl,%) \
+		-Wl,--no-whole-archive \
+		-Wl,--soname,$$soname,-z,-defs \
+		$(JNI_OBJECT_LIST) \
+		$(JNI_LIBRARY_LIST)
+	if readelf -d $@.tmp | fgrep TEXTREL; then exit 1; fi
+	mv $@.tmp $@
+
 
 # Clueless automake: Use a phony DATA entry to convince AUTOMAKE that
 # it really should install a .so file into LIBDIR.  The obvious
