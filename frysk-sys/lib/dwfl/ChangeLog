@@ -1,5 +1,13 @@
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* DwflTestbed.java (createFromSelf()): Pass LocalMemory to the Dwfl.
+	* cni/DwflModule.cxx (DwflModule::setUserData): Delete.
+	* jni/DwflModule.cxx (DwflModule::setUserData): Delete.
+	* Dwfl.java (Dwfl(String,ByteBuffer)): New.
+	* DwflModule.java (setUserData(Object)): Delete.	
+	* jni/Dwfl.cxx: Update.
+	* cni/Dwfl.cxx: Update.
+
 	* Dwfl.java (mapModule): Correctly add maps such as [vdso].
 	* TestDwfl.java (testMapContainsVdso()): New.
 	* DwflTestbed.java (VdsoBuilder): Delete.

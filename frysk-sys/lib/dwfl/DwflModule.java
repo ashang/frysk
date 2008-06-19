@@ -66,7 +66,10 @@ public class DwflModule {
 
   
     public String toString() {
-	return name + " pointer: 0x" + Long.toHexString(pointer);
+	return name
+	    + " 0x" + Long.toHexString(low)
+	    + "..0x" + Long.toHexString(high)
+	    + " pointer=0x" + Long.toHexString(pointer);
     }
 
     public long lowAddress() {
@@ -133,8 +136,6 @@ public class DwflModule {
 
     public native void getSymbolByName(String name,
 				       SymbolBuilder symbolBuilder);
-  
-    public native void setUserData(Object data);
     
     /**
      * Get the debuginfo path for DwflModule

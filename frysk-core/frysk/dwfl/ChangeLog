@@ -1,3 +1,9 @@
+2008-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* DwflCache.java (getDwfl()): Pass the task's memory to the Dwfl
+	and down to the native code, don't pass the vdso address.
+	* DwflFactory.java (updateDwfl): Don't set the module's memory.
+
 2008-06-03  Andrew Cagney  <cagney@redhat.com>
 
 	* DwflFactory.java (updateDwfl): Simplify by using Dwfl.mapBegin,

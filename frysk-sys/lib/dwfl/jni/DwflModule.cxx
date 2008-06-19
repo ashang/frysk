@@ -301,15 +301,6 @@ lib::dwfl::DwflModule::getSymbolByName(jnixx::env env, String jname,
   }
 }
 
-void
-lib::dwfl::DwflModule::setUserData(jnixx::env env, Object data) {
-  void **userdata = NULL;
-  fprintf(stderr, "user data is %p\n", userdata);
-  dwfl_module_info(DWFL_MODULE_POINTER_FIXME, &userdata, NULL, NULL, NULL, NULL, NULL,
-                   NULL);
-  *userdata = data._object;
-}
-
 /* 
  * Get the DebugInfo paths if present
  */

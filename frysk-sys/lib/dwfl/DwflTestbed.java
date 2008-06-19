@@ -39,6 +39,7 @@
 
 package lib.dwfl;
 
+import frysk.testbed.LocalMemory;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.Pid;
 
@@ -75,7 +76,7 @@ public class DwflTestbed {
      * Create a dwfl from this process.
      */
     static Dwfl createFromSelf() {
-	Dwfl dwfl = new Dwfl("");
+	Dwfl dwfl = new Dwfl("", LocalMemory.getByteBuffer());
 	ModuleBuilder maps = new ModuleBuilder(dwfl);
 	dwfl.mapBegin();
 	maps.construct(Pid.get());

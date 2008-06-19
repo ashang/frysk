@@ -340,17 +340,6 @@ lib::dwfl::DwflModule::getSymbolByName(jstring name,
     }
 }
 
-void
-lib::dwfl::DwflModule::setUserData(jobject data)
-{
-  void **userdata = NULL;
-  dwfl_module_info(DWFL_MODULE_POINTER, &userdata, NULL, NULL, NULL, NULL, NULL,
-                   NULL);
-                   
-   *userdata = data;
-  
-}
-
 /* 
  * Get the DebugInfo paths if present
  */

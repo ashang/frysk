@@ -45,7 +45,6 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rsl.Log;
 import lib.dwfl.Dwfl;
-import lib.dwfl.DwflModule;
 
 /**
  * Factory for creating Dwfl objects for Procs and Tasks.
@@ -96,23 +95,15 @@ public class DwflFactory {
     static Dwfl updateDwfl(Dwfl dwfl, Task task) {
 	Proc proc = task.getProc();
 	MemoryMap[] maps = proc.getMaps();
-	long vdso = VDSOAddressLow(proc);
-	dwfl.mapBegin(vdso);
+	dwfl.mapBegin();
 	for (int i = 0; i < maps.length; i++) {
 	    MemoryMap map = maps[i];
 	    dwfl.mapModule(map.name, map.addressLow, map.addressHigh,
 			   map.devMajor, map.devMinor, map.inode);
 	}
 	dwfl.mapEnd();
-	DwflModule module = dwfl.getModule(vdso);
 	fine.log("updateDwfl main task", proc.getMainTask(),
-		 "memory", proc.getMainTask().getMemory(),
-		 "dwfl module", module);
-	// XXX: Should this method instead have this block of memory
-	// pre-fetched and passed in?
-	if (module != null) {
-	    module.setUserData(task.getMemory());
-	}
+		 "memory", proc.getMainTask().getMemory());
 	return dwfl;
     }
 }

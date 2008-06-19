@@ -43,25 +43,37 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import frysk.rsl.Log;
 import inua.eio.ULong;
+import inua.eio.ByteBuffer;
 
 public class Dwfl {
     private static final Log fine = Log.fine(Dwfl.class);
     private static final Log finest = Log.finest(Dwfl.class);
 
+    private long userdata;
     private long pointer;
     private long callbacks;
 
     protected final DwarfDieFactory factory = DwarfDieFactory.getFactory();
   
     /**
-     * Create a dwfl with the specified debug-info search path.
+     * Create a dwfl with the specified debug-info search path and
+     * memory.
+     */
+    public Dwfl(String debugInfoPath, ByteBuffer memory) {
+	callbacks = dwfl_callbacks_begin(debugInfoPath);
+	userdata = dwfl_userdata_begin(memory);
+	pointer = dwfl_begin(callbacks);
+    }
+    private static native long dwfl_callbacks_begin(String debugInfoSearchPath);
+    private static native long dwfl_userdata_begin(ByteBuffer memory);
+    private static native long dwfl_begin(long callbacks);
+    /**
+     * Create a dwfl with the specified debug-info search path and
+     * memory.
      */
     public Dwfl(String debugInfoPath) {
-	callbacks = callbacksBegin(debugInfoPath);
-	pointer = dwflBegin(callbacks);
+	this(debugInfoPath, null);
     }
-    private static native long callbacksBegin(String debugInfoSearchPath);
-    private static native long dwflBegin(long callbacks);
 
     protected void finalize () {
 	if (this.pointer != 0) {
@@ -71,14 +83,16 @@ public class Dwfl {
     }
     public void close() {
 	if (this.pointer != 0) {
-	    dwflEnd(pointer);
+	    dwfl_end(pointer);
 	    this.pointer = 0;
-	    callbacksEnd(callbacks);
+	    dwfl_userdata_end(userdata);
+	    dwfl_callbacks_end(callbacks);
 	    this.callbacks = 0;
 	}
     }
-    private static native void dwflEnd(long pointer);
-    private static native void callbacksEnd(long callbacks);
+    private static native void dwfl_end(long pointer);
+    private static native void dwfl_userdata_end(long userdata);
+    private static native void dwfl_callbacks_end(long callbacks);
     
     public DwflLine getSourceLine (long addr) {
 	DwflModule module = getModule(addr);
@@ -183,7 +197,8 @@ public class Dwfl {
      */
     public void reportModule(String moduleName, long low, long high) {
 	fine.log(this, "reportModule", moduleName, "low", low, "high", high);
-	long modulePointer = dwfl_report_module(pointer, moduleName, low, high);
+	long modulePointer = dwfl_report_module(pointer, moduleName, low, high,
+						userdata);
 	for (int i = 0; i < modulesArray.length; i++) {
 	    DwflModule module = modulesArray[i];
 	    if (module.getName().equals(moduleName)
@@ -204,7 +219,8 @@ public class Dwfl {
     }
     private static native long dwfl_report_module(long pointer,
 						  String moduleName,
-						  long low, long high);
+						  long low, long high,
+						  long userdata);
 
     private String name;
     private long low;

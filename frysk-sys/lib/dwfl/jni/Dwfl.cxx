@@ -70,34 +70,28 @@ extern "C" {
 // Assume the method was parameterised with POINTER.
 #define DWFL_POINTER ((::Dwfl *)pointer)
 
-// Ditto for callbacks pointer.
-#define DWFL_CALLBACKS ((::Dwfl_Callbacks*)callbacks)
+
 
-struct proc_memory_context {
-  jnixx::env env;
-  inua::eio::ByteBuffer memory;
-  proc_memory_context(jnixx::env env, inua::eio::ByteBuffer memory) {
-    this->env = env;
-    this->memory = memory;
-  }
-};
+// Our data associated with the dwfl (well actually the Dwfl_Module).
+// Need to make memory available so that, in the case of the vdso, it
+// can be slurped from memory.
 
 static ssize_t
-read_proc_memory(void *arg, void *data, GElf_Addr address,
+read_proc_memory(void *userdata, void *data, GElf_Addr address,
 		 size_t minread, size_t maxread) {
-  fprintf(stderr, "wft does data %p get set? - perhaps it isn't called\n",
-	  data);
-  proc_memory_context* context = (proc_memory_context*) arg;
-  jnixx::jbyteArray bytes
-    = jnixx::jbyteArray::NewByteArray(context->env, maxread);
-  ssize_t nread
-    = context->memory.safeGet(context->env, (off64_t) address, bytes, 0,
-			      maxread);
-  jbyteArrayElements bytesp = jbyteArrayElements(context->env, bytes);
+  // Get the current thread's ENV; can't save it in dwfl_userdata
+  // since can't determine, ahead of time, which thread will call this
+  // code.
+  ::jnixx::env env = Object::_env_();
+  ::inua::eio::ByteBuffer memory
+      = ::inua::eio::ByteBuffer(env, (jobject)userdata);
+  jnixx::jbyteArray bytes = jnixx::jbyteArray::NewByteArray(env, maxread);
+  ssize_t nread = memory.safeGet(env, (off64_t) address, bytes, 0, maxread);
+  jbyteArrayElements bytesp = jbyteArrayElements(env, bytes);
   memcpy(data, bytesp.elements(), nread);
   if (nread > 0 && (size_t) nread < minread)
     nread = 0;
-  bytes.DeleteLocalRef(context->env);
+  bytes.DeleteLocalRef(env);
   return nread;
 }
 
@@ -123,18 +117,31 @@ dwfl_frysk_proc_find_elf(Dwfl_Module *mod,
     }
     return fd;
   } else {
-    /* Special case for in-memory ELF image.  */
-    fprintf(stderr, "wft does userdata %p get set? - perhaps it isn't called\n", *userdata);
-    proc_memory_context* context = (proc_memory_context*) *userdata;
-    *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, context);
-    return -1;
+    // dwfl passes in the address of the Dwfl_Module user pointer
+    // contained within.  That pointer has been previously stuffed
+    // with our "userdata".
+    *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, *userdata);
+    return 0;
   }
-  //abort ();
-  return -1;
 }
 
 jlong
-lib::dwfl::Dwfl::callbacksBegin(jnixx::env env, String jdebugInfoPath) {
+lib::dwfl::Dwfl::dwfl_userdata_begin(jnixx::env env,
+				     inua::eio::ByteBuffer memory) {
+  return (jlong) env.NewGlobalRef(memory._object);
+}
+
+void
+lib::dwfl::Dwfl::dwfl_userdata_end(jnixx::env env, jlong userdata) {
+  env.DeleteGlobalRef((jobject)userdata);
+}
+
+
+
+#define DWFL_CALLBACKS ((::Dwfl_Callbacks*)callbacks)
+
+jlong
+lib::dwfl::Dwfl::dwfl_callbacks_begin(jnixx::env env, String jdebugInfoPath) {
   jstringUTFChars debugInfoPath = jstringUTFChars(env, jdebugInfoPath);
   char** path = (char**) ::malloc(sizeof (char*));
   if (path == NULL) {
@@ -150,19 +157,19 @@ lib::dwfl::Dwfl::callbacksBegin(jnixx::env env, String jdebugInfoPath) {
 }
 
 void
-lib::dwfl::Dwfl::callbacksEnd(jnixx::env env, jlong callbacks) {
+lib::dwfl::Dwfl::dwfl_callbacks_end(jnixx::env env, jlong callbacks) {
   ::free(*DWFL_CALLBACKS->debuginfo_path);
   ::free(DWFL_CALLBACKS->debuginfo_path);
   ::free(DWFL_CALLBACKS);
 }
 
 jlong
-lib::dwfl::Dwfl::dwflBegin(jnixx::env env, jlong callbacks) {
+lib::dwfl::Dwfl::dwfl_begin(jnixx::env env, jlong callbacks) {
   return (jlong) ::dwfl_begin(DWFL_CALLBACKS);
 }
 
 void
-lib::dwfl::Dwfl::dwflEnd(jnixx::env env, jlong pointer) {
+lib::dwfl::Dwfl::dwfl_end(jnixx::env env, jlong pointer) {
   ::dwfl_end(DWFL_POINTER);
 }
 
@@ -179,9 +186,20 @@ lib::dwfl::Dwfl::dwfl_report_end(jnixx::env env, jlong pointer) {
 
 jlong
 lib::dwfl::Dwfl::dwfl_report_module(jnixx::env env, jlong pointer,
-				    String jmoduleName, jlong low, jlong high) {
+				    String jmoduleName, jlong low, jlong high,
+				    jlong userdata) {
   jstringUTFChars moduleName = jstringUTFChars(env, jmoduleName);
-  return (jlong) ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
-				      (::Dwarf_Addr) low,
-				      (::Dwarf_Addr) high);  
+  Dwfl_Module *module = ::dwfl_report_module(DWFL_POINTER,
+					     moduleName.elements(),
+					     (::Dwarf_Addr) low,
+					     (::Dwarf_Addr) high);
+  if (userdata != 0) {
+    // Get the address of the module's userdata, and store a global
+    // reference to memory in there.  The global ref is detroyed along
+    // with the Dwfl.
+    void **userdatap;
+    ::dwfl_module_info(module, &userdatap, NULL, NULL, NULL, NULL, NULL, NULL);
+    *userdatap = (void*)userdata;
+  }
+  return (jlong)module;
 }

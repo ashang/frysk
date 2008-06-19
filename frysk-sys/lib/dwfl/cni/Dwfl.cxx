@@ -115,10 +115,7 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
     }
   else
     {
-      /* Special case for in-memory ELF image.  */
-      inua::eio::ByteBuffer * memory = (inua::eio::ByteBuffer *) *userdata;           
-      
-      *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, memory);
+      *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, *userdata);
      
       return -1;
     }
@@ -128,7 +125,16 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 }
 
 jlong
-lib::dwfl::Dwfl::callbacksBegin(jstring debugInfoPath) {
+lib::dwfl::Dwfl::dwfl_userdata_begin(inua::eio::ByteBuffer *memory) {
+  return (jlong)memory;
+}
+
+void
+lib::dwfl::Dwfl::dwfl_userdata_end(jlong userdata) {
+}
+
+jlong
+lib::dwfl::Dwfl::dwfl_callbacks_begin(jstring debugInfoPath) {
   char** path = (char**) JvMalloc(sizeof (char*));
   int len = JvGetStringUTFLength(debugInfoPath);
   *path = (char*)JvMalloc(len + 1);
@@ -145,19 +151,19 @@ lib::dwfl::Dwfl::callbacksBegin(jstring debugInfoPath) {
 }
 
 void
-lib::dwfl::Dwfl::callbacksEnd(jlong callbacks) {
+lib::dwfl::Dwfl::dwfl_callbacks_end(jlong callbacks) {
   JvFree(*DWFL_CALLBACKS->debuginfo_path);
   JvFree(DWFL_CALLBACKS->debuginfo_path);
   JvFree(DWFL_CALLBACKS);
 }
 
 jlong
-lib::dwfl::Dwfl::dwflBegin(jlong callbacks) {
+lib::dwfl::Dwfl::dwfl_begin(jlong callbacks) {
   return (jlong) ::dwfl_begin(DWFL_CALLBACKS);
 }
 
 void
-lib::dwfl::Dwfl::dwflEnd(jlong pointer){
+lib::dwfl::Dwfl::dwfl_end(jlong pointer){
   ::dwfl_end(DWFL_POINTER);
 }
 
@@ -174,16 +180,25 @@ lib::dwfl::Dwfl::dwfl_report_end(jlong pointer) {
 
 jlong
 lib::dwfl::Dwfl::dwfl_report_module(jlong pointer, jstring moduleName,
-				    jlong low, jlong high) {
+				    jlong low, jlong high, jlong userdata) {
   jsize len = JvGetStringUTFLength(moduleName);
   char modName[len+1]; 
 	
   JvGetStringUTFRegion(moduleName, 0, len, modName);
   modName[len] = '\0';
-	
-  return (jlong) ::dwfl_report_module(DWFL_POINTER, modName,
-				      (::Dwarf_Addr) low, 
-				      (::Dwarf_Addr) high);  
+  
+  Dwfl_Module* module = ::dwfl_report_module(DWFL_POINTER, modName,
+					     (::Dwarf_Addr) low, 
+					     (::Dwarf_Addr) high);
+  if (userdata != 0) {
+    // Get the address of the module's userdata, and store a global
+    // reference to memory in there.  The global ref is detroyed along
+    // with the Dwfl.
+    void **userdatap;
+    ::dwfl_module_info(module, &userdatap, NULL, NULL, NULL, NULL, NULL, NULL);
+    *userdatap = (void*)userdata;
+  }
+  return (jlong) module;
 }
 
 extern "C" int moduleCounter(Dwfl_Module *, void **, const char *,
