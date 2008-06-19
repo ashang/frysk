@@ -107,21 +107,20 @@ dwfl_frysk_proc_find_elf(Dwfl_Module *mod,
   // that path to an absolute path, causing the test below to fail and
   // consider the file ../foo/bar to be an in memory elf image.
   if (module_name[0] == '/') {
-    int fd = ::open64(module_name, O_RDONLY);
-    if (fd >= 0) {
-      *file_name = ::strdup(module_name);
-      if (*file_name == NULL) {
-	::close(fd);
-	return ENOMEM;
-      }
-    }
-    return fd;
+    // Return the file name, and then let elfutils decide what to do.
+    *file_name = ::strdup(module_name);
+    return -1;
   } else {
     // dwfl passes in the address of the Dwfl_Module user pointer
     // contained within.  That pointer has been previously stuffed
     // with our "userdata".
     *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, *userdata);
-    return 0;
+    if (*elfp != NULL) {
+      // Poke something into FILE_NAME so that the caller notices that
+      // we've done something to ELF.
+      *file_name = ::strdup(module_name);
+    }
+    return -1;
   }
 }
 

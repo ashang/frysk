@@ -266,10 +266,7 @@ public class Dwfl {
 		finest.log(this, "ignoring empty name");
 	    } else if (name.indexOf("(deleted") >= 0) {
 		finest.log(this, "ignoring deleted", name);
-	    } else if (!name.startsWith("/")) {
-		// XXX: This is too agressive, it ignores [vdso], on
-		// the other hand, if vdso is included this leads to
-		// segmentation faults.
+	    } else if (!name.startsWith("/") && !name.equals("[vdso]")) {
 		finest.log(this, "ignoring non-file", name);
 	    } else {
 		// A new map, save it, will be reported later.

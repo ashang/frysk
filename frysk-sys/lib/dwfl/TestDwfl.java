@@ -234,8 +234,6 @@ public class TestDwfl extends TestCase {
     }
 
     public void testMapContainsVdso() {
-	if (unresolved(6626))
-	    return;
 	Dwfl dwfl = DwflTestbed.createFromSelf();
 	DwflModule[] modules = dwfl.getModules();
 	DwflModule vdso = null;
@@ -248,5 +246,6 @@ public class TestDwfl extends TestCase {
 	    }
 	}
 	assertNotNull("vdso", vdso);
+	assertNotNull("elf", vdso.getElf());
     }
 }

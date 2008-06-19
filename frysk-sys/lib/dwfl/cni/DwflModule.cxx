@@ -68,18 +68,15 @@
 #define DWFL_MODULE_POINTER ((Dwfl_Module *) pointer)
 
 lib::dwfl::ModuleElfBias*
-lib::dwfl::DwflModule::module_getelf()
-{
-	Dwarf_Addr bias = 0;
-	::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
-	if(elf == NULL)
-		return NULL;
-		
-	lib::dwfl::ModuleElfBias *ret = new lib::dwfl::ModuleElfBias();
-	ret->elf = new lib::dwfl::Elf((jlong) elf);
-	ret->bias = (jlong) bias;
-		
-	return ret;	
+lib::dwfl::DwflModule::module_getelf() {
+  Dwarf_Addr bias = 0;
+  ::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
+  if(elf == NULL)
+    return NULL;
+  lib::dwfl::ModuleElfBias *ret = new lib::dwfl::ModuleElfBias();
+  ret->elf = new lib::dwfl::Elf((jlong) elf);
+  ret->bias = (jlong) bias;
+  return ret;	
 }
 
 typedef JArray<lib::dwfl::DwflLine *> DwflLineArray;

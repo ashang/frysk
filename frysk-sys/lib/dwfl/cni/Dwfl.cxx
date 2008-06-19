@@ -79,7 +79,6 @@ read_proc_memory (void *arg, void *data, GElf_Addr address,
 		  size_t minread, size_t maxread)
 {
   inua::eio::ByteBuffer* memory = (inua::eio::ByteBuffer *) arg;
-  
   jbyteArray bytes = JvNewByteArray(maxread);
   ssize_t nread = memory->safeGet((off64_t) address, bytes, 0, maxread);
   memcpy(data, elements(bytes), nread);
@@ -94,34 +93,24 @@ dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
 			  const char *module_name, Dwarf_Addr base,
 			  char **file_name, Elf **elfp)
 {	
-  // There is an edge case here that was tripped by a corefile case. In that case the
-  // specified executable was defined as a relative path (ie ../foo/bar). And that is
-  // perfectly valid path name. However when the corefile created its maps it did not
-  // convert that path to an absolute path, causing the test below to fail and consider
-  // the file ../foo/bar to be an in memory elf image.
-  if (module_name[0] == '/')
-    {
-      int fd = open64 (module_name, O_RDONLY);
-      if (fd >= 0)
-	{
-	  *file_name = strdup (module_name);
-	  if (*file_name == NULL)
-	    {
-	      close (fd);
-	      return ENOMEM;
-	    }
-	}
-      return fd;
-    }
-  else
-    {
+  // There is an edge case here that was tripped by a corefile
+  // case. In that case the specified executable was defined as a
+  // relative path (ie ../foo/bar). And that is perfectly valid path
+  // name. However when the corefile created its maps it did not
+  // convert that path to an absolute path, causing the test below to
+  // fail and consider the file ../foo/bar to be an in memory elf
+  // image.
+  if (module_name[0] == '/') {
+    // Pass back the file name and let dwfl take care of the rest.
+    *file_name = strdup (module_name);
+    return -1;
+  } else {
       *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, *userdata);
-     
+      if (*elfp != NULL) {
+	*file_name = ::strdup(module_name);
+      }
       return -1;
     }
-
-  //abort ();
-  return -1;
 }
 
 jlong

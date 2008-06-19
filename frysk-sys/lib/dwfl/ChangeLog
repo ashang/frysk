@@ -1,5 +1,11 @@
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Dwfl.cxx (dwfl_frysk_proc_find_elf): Always set file_name so
+	elfutils realises that the ELF was set.
+	* jni/Dwfl.cxx: Ditto.
+	* TestDwfl.java (testMapContainsVdso): Check the vdso's elf. 
+	* Dwfl.java (mapModule): Include segments starting with "[".
+	
 	* DwflTestbed.java (createFromSelf()): Pass LocalMemory to the Dwfl.
 	* cni/DwflModule.cxx (DwflModule::setUserData): Delete.
 	* jni/DwflModule.cxx (DwflModule::setUserData): Delete.
