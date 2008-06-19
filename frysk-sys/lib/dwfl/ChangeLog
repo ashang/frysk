@@ -1,3 +1,10 @@
+2008-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Dwfl.java (mapModule): Correctly add maps such as [vdso].
+	* TestDwfl.java (testMapContainsVdso()): New.
+	* DwflTestbed.java (VdsoBuilder): Delete.
+	(createFromSelf()): Don't pass in the vdso.
+
 2008-06-16  Andrew Cagney  <cagney@redhat.com>
 
 	* DwflModule.java (get_cu_dies): Add pointer parameter.

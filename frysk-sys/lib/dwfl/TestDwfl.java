@@ -232,4 +232,21 @@ public class TestDwfl extends TestCase {
 	}
 	assertTrue(foundAddress);
     }
+
+    public void testMapContainsVdso() {
+	if (unresolved(6626))
+	    return;
+	Dwfl dwfl = DwflTestbed.createFromSelf();
+	DwflModule[] modules = dwfl.getModules();
+	DwflModule vdso = null;
+	for (int i = 0; i < modules.length; i++) {
+	    DwflModule module = modules[i];
+	    finest.log("module", i, "name", module);
+	    if (module.getName().equals("[vdso]")) {
+		vdso = module;
+		break;
+	    }
+	}
+	assertNotNull("vdso", vdso);
+    }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -129,4 +129,9 @@ LocalMemory::getModuleName() {
   // funit, but not important as this CNI implementation will shortly
   // be deleted.
   return JvNewStringUTF("TestRunner");
+}
+
+jint
+LocalMemory::peek(jlong addr) {
+  return *(unsigned char*)addr;
 }

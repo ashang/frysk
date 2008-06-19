@@ -167,19 +167,19 @@ lib::dwfl::Dwfl::dwflEnd(jnixx::env env, jlong pointer) {
 }
 
 void
-lib::dwfl::Dwfl::reportBegin(jnixx::env env, jlong pointer) {
+lib::dwfl::Dwfl::dwfl_report_begin(jnixx::env env, jlong pointer) {
   ::dwfl_report_begin(DWFL_POINTER);
 }
 
 void
-lib::dwfl::Dwfl::reportEnd(jnixx::env env, jlong pointer) {
+lib::dwfl::Dwfl::dwfl_report_end(jnixx::env env, jlong pointer) {
   ::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
 
 
 jlong
-lib::dwfl::Dwfl::reportModule(jnixx::env env, jlong pointer,
-			      String jmoduleName, jlong low, jlong high) {
+lib::dwfl::Dwfl::dwfl_report_module(jnixx::env env, jlong pointer,
+				    String jmoduleName, jlong low, jlong high) {
   jstringUTFChars moduleName = jstringUTFChars(env, jmoduleName);
   return (jlong) ::dwfl_report_module(DWFL_POINTER, moduleName.elements(),
 				      (::Dwarf_Addr) low,

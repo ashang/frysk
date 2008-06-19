@@ -41,23 +41,8 @@ package lib.dwfl;
 
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.Pid;
-import frysk.sys.proc.AuxvBuilder;
 
 public class DwflTestbed {
-
-    private static class VdsoBuilder extends AuxvBuilder {
-	long address;
-	public void buildBuffer(byte[] auxv) {
-	}
-	public void buildDimensions(int wordSize, boolean bigEndian,
-				    int numberElements) {
-	}
-	public void buildAuxiliary(int index, int type, long value) {
-	    if (type == inua.elf.AT.SYSINFO_EHDR) {
-		address = value;
-	    }
-	}
-    }
 
     private static class ModuleBuilder extends MapsBuilder {
 	private final Dwfl dwfl;
@@ -92,9 +77,7 @@ public class DwflTestbed {
     static Dwfl createFromSelf() {
 	Dwfl dwfl = new Dwfl("");
 	ModuleBuilder maps = new ModuleBuilder(dwfl);
-	VdsoBuilder vdso = new VdsoBuilder();
-	vdso.construct(Pid.get());
-	dwfl.mapBegin(vdso.address);
+	dwfl.mapBegin();
 	maps.construct(Pid.get());
 	dwfl.mapEnd();
 	return dwfl;

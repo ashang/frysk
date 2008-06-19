@@ -158,32 +158,32 @@ public class Dwfl {
      */
     public void reportBegin() {
 	fine.log(this, "reportBegin");
-	reportBegin(pointer);
+	dwfl_report_begin(pointer);
 	// fill modulesArray with the current modules and then clear
 	// the set.  Will iterate over the old modules so that they
 	// are re-used.
 	getModules();
 	modules.clear();
     }
-    private static native void reportBegin(long pointer);
+    private static native void dwfl_report_begin(long pointer);
 
     /**
      * Finish a refresh of the address map.
      */
     public void reportEnd() {
 	fine.log(this, "reportEnd");
-	reportEnd(pointer);
+	dwfl_report_end(pointer);
 	// Finished; scrub references to old modules.
 	modulesArray = null;
     }
-    private static native void reportEnd(long pointer);
+    private static native void dwfl_report_end(long pointer);
 
     /**
      * Report a mapped component.
      */
     public void reportModule(String moduleName, long low, long high) {
 	fine.log(this, "reportModule", moduleName, "low", low, "high", high);
-	long modulePointer = reportModule(pointer, moduleName, low, high);
+	long modulePointer = dwfl_report_module(pointer, moduleName, low, high);
 	for (int i = 0; i < modulesArray.length; i++) {
 	    DwflModule module = modulesArray[i];
 	    if (module.getName().equals(moduleName)
@@ -202,8 +202,9 @@ public class Dwfl {
 	finest.log(this, "reportModule creating", module);
 	modules.put(new Long(modulePointer), module);
     }
-    private static native long reportModule(long pointer, String moduleName,
-					    long low, long high);
+    private static native long dwfl_report_module(long pointer,
+						  String moduleName,
+						  long low, long high);
 
     private String name;
     private long low;
@@ -211,14 +212,12 @@ public class Dwfl {
     private int devMajor;
     private int devMinor;
     private int inode;
-    private long vdso;
     /**
      * Start refreshing the address map using raw information
      * extracted from /proc/pid/maps.
      */
-    public void mapBegin(long vdso) {
+    public void mapBegin() {
 	reportBegin();
-	this.vdso = vdso;
 	name = null;
     }
     /**
@@ -226,28 +225,38 @@ public class Dwfl {
      */
     public void mapModule(String name, long low, long high,
 			  int devMajor, int devMinor, int inode) {
-	if (this.name != null && this.name.equals(name)
+	finest.log(this, "mapModule", name, "low", low, "high", high,
+		   "devMajor", devMajor, "devMinor", devMinor, "inode", inode);
+	if (this.name != null
+	    && this.name.equals(name)
 	    && this.devMajor == devMajor
 	    && this.devMinor == devMinor
 	    && this.inode == inode
 	    ) {
+	    finest.log(this, "extending to", high);
 	    // A repeat of a previous map (but with more addresses)
 	    // extend the address range.
 	    this.high = high;
 	} else {
 	    if (this.name != null) {
 		// There's a previous map, report and flush it.
+		finest.log(this, "reporting", this.name);
 		reportModule(this.name, this.low, this.high);
 		this.name = null;
 	    }
-	    if (name.equals("")
-		|| (devMajor == 0 && devMinor == 0 && inode == 0)) {
-		// An empty map, do nothing.
-	    } else if (this.vdso == low) {
-		// A vdso, report it immediatly.
-		reportModule(name, low, high);
+	    if (name == null) {
+		finest.log(this, "ignoring null name");
+	    } else if (name.equals("")) {
+		finest.log(this, "ignoring empty name");
+	    } else if (name.indexOf("(deleted") >= 0) {
+		finest.log(this, "ignoring deleted", name);
+	    } else if (!name.startsWith("/")) {
+		// XXX: This is too agressive, it ignores [vdso], on
+		// the other hand, if vdso is included this leads to
+		// segmentation faults.
+		finest.log(this, "ignoring non-file", name);
 	    } else {
-		// A new map, save it.
+		// A new map, save it, will be reported later.
 		this.name = name;
 		this.low = low;
 		this.high = high;

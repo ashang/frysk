@@ -421,6 +421,13 @@ public final class Log {
 	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).print(p9).print(p10).print(p11).suffix();
     }
 
+    // dynamic 12 parameters
+    public void log(Object self, String p1, Object p2, String p3, long p4, String p5, long p6, String p7, int p8, String p9, int p10, String p11, int p12) {
+	if (!logging)
+	    return;
+	prefix(self).print(p1).print(p2).print(p3).print(p4).print(p5).print(p6).print(p7).print(p8).print(p9).print(p10).print(p11).print(p12).suffix();
+    }
+
 
     /**
      * Assuming the use: <tt>log("caller", log.CALLER)</tt> prints the

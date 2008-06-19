@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,13 +40,12 @@
 package frysk.testbed;
 
 import frysk.junit.TestCase;
+import inua.eio.ByteBuffer;
 
 /**
  * Check that LocalMemory addresses are pointing where expected.
  */
-public class TestLocalMemory
-    extends TestCase
-{
+public class TestLocalMemory extends TestCase {
     /**
      * Check that the stack address changes as new stack frames are
      * created.
@@ -96,4 +95,12 @@ public class TestLocalMemory
 	byte[] bytes = LocalMemory.getDataBytes();
 	assertEquals("data byte[0]", 43, bytes[0]);
     }
+
+
+    public void testMemoryByteBuffer() {
+	ByteBuffer memory = LocalMemory.getByteBuffer();
+	assertEquals("data", LocalMemory.getDataBytes()[0],
+		     memory.get(LocalMemory.getDataAddr()));
+    }
+
 }

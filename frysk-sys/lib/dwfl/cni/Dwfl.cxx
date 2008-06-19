@@ -162,19 +162,19 @@ lib::dwfl::Dwfl::dwflEnd(jlong pointer){
 }
 
 void
-lib::dwfl::Dwfl::reportBegin(jlong pointer) {
+lib::dwfl::Dwfl::dwfl_report_begin(jlong pointer) {
   ::dwfl_report_begin(DWFL_POINTER);
 }
 
 void
-lib::dwfl::Dwfl::reportEnd(jlong pointer) {
+lib::dwfl::Dwfl::dwfl_report_end(jlong pointer) {
   ::dwfl_report_end(DWFL_POINTER, NULL, NULL);
 }
 
 
 jlong
-lib::dwfl::Dwfl::reportModule(jlong pointer, jstring moduleName,
-			      jlong low, jlong high) {
+lib::dwfl::Dwfl::dwfl_report_module(jlong pointer, jstring moduleName,
+				    jlong low, jlong high) {
   jsize len = JvGetStringUTFLength(moduleName);
   char modName[len+1]; 
 	

@@ -39,6 +39,9 @@
 
 package frysk.testbed;
 
+import inua.eio.ByteBuffer;
+import frysk.sys.ptrace.AddressSpace;
+
 /**
  * Provide access to known local areas of memory.
  *
@@ -102,4 +105,20 @@ public class LocalMemory {
      * will be so large that it is negative.
      */
     public static native void constructStack(StackBuilder builder);
+
+    /**
+     * Return a byte-buffer capable of reading any address of this
+     * thread's memory.
+     */
+    public static ByteBuffer getByteBuffer() {
+	return new ByteBuffer(0, AddressSpace.DATA.length()) {
+	    protected int peek(long offset) {
+		return LocalMemory.peek(offset);
+	    }
+	    protected void poke(long offset, int b) {
+		// do nothing
+	    }
+	};
+    }
+    private static native int peek(long addr);
 }

@@ -127,3 +127,8 @@ String
 LocalMemory::getModuleName(::jnixx::env env) {
   return String::NewStringUTF(env, "libfrysk-sys-jni.so");
 }
+
+jint
+LocalMemory::peek(::jnixx::env env, jlong addr) {
+  return *(unsigned char*)addr;
+}
