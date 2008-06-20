@@ -40,6 +40,7 @@
 package frysk.ftrace;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import inua.util.PrintWriter;
 
@@ -53,7 +54,10 @@ class Reporter
     private PrintWriter writer;
     private Object lastItem = null;
     private Task lastTask = null;
-    private HashMap levelMap = new HashMap();
+
+    // HashMap<Task, ArrayList<Object>> -- array of entry tokens for each taks
+    private final HashMap tokenMap = new HashMap();
+
     private final PrintDebugInfoStackOptions stackPrintOptions;
     private final boolean showPC;
 
@@ -65,18 +69,14 @@ class Reporter
 	this.showPC = show;
     }
 
-    private int getLevel(Task task)
+    private ArrayList getTokens(Task task)
     {
-	int level = 0;
-	Integer l = (Integer)levelMap.get(task);
-	if (l != null)
-	    level = l.intValue();
-	return level;
-    }
-
-    private void setLevel(Task task, int level)
-    {
-	levelMap.put(task, new Integer(level));
+	ArrayList l = (ArrayList)tokenMap.get(task);
+	if (l == null) {
+	    l = new ArrayList();
+	    tokenMap.put(task, l);
+	}
+	return l;
     }
 
     private boolean lineOpened()
@@ -138,9 +138,9 @@ class Reporter
     public void eventEntry(Task task, Object item, String eventType,
 			    String eventName, Object[] args)
     {
-	int level = this.getLevel(task);
-	String spaces = ArchFormatter.repeat(' ', level);
-	this.setLevel(task, ++level);
+	ArrayList tokens = getTokens(task);
+	String spaces = ArchFormatter.repeat(' ', tokens.size());
+	tokens.add(item);
 
 	if (lineOpened())
 	    writer.println('\\');
@@ -158,13 +158,15 @@ class Reporter
     public void eventLeave(Task task, Object item, String eventType,
 			    String eventName, Object retVal)
     {
-	int level = this.getLevel(task);
-	this.setLevel(task, --level);
+	ArrayList tokens = getTokens(task);
+	int i = tokens.size();
+	while (tokens.remove(--i) != item) {
+	}
 
 	if (!myLineOpened(task, item)) {
 	    if (lineOpened())
 		writer.println();
-	    String spaces = ArchFormatter.repeat(' ', level);
+	    String spaces = ArchFormatter.repeat(' ', tokens.size());
 	    writer.print(pidInfo(task)
 			 + " " + formatTaskPC(task)
 			 + spaces + eventType
@@ -184,12 +186,12 @@ class Reporter
 
     public void eventSingle(Task task, String eventName, Object[] args)
     {
-	int level = this.getLevel(task);
+	ArrayList tokens = getTokens(task);
 	if (lineOpened())
 	    writer.println("\\");
 	writer.print(pidInfo(task)
 		     + " " + formatTaskPC(task)
-		     + ArchFormatter.repeat(' ', level)
+		     + ArchFormatter.repeat(' ', tokens.size())
 		     + eventName);
 
 	if (args != null)

@@ -1,3 +1,8 @@
+2008-06-20  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java: Keep a list of event entry tokens, and align
+	eventLeave with matching eventEntry.
+
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Use PrintDebugInfoStackOptions.
