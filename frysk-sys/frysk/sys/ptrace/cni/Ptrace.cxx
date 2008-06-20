@@ -37,6 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define DEBUG 0
+
+#include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <sys/ptrace.h>
 #include "linux.ptrace.h"
@@ -47,8 +51,8 @@
 #include "frysk/sys/ptrace/Ptrace.h"
 #include "frysk/sys/ptrace/cni/Ptrace.hxx"
 
-static const char*
-op_as_string(int op) {
+const char*
+ptraceOpToString(int op) {
   switch(op) {
 #define OP(NAME) case NAME: return #NAME
     OP(PTRACE_ATTACH);
@@ -82,10 +86,14 @@ op_as_string(int op) {
 long
 ptraceOp(int op, int pid, void* addr, long data) {
   errno = 0;
-  long result = ::ptrace ((enum __ptrace_request) op, pid, addr, data);
-  if (errno != 0)
+  long result = ::ptrace((enum __ptrace_request) op, pid, addr, data);
+  if (errno != 0) {
+    int err = errno;
+    if (DEBUG)
+      fprintf(stderr, "throwing %s\n", strerror(err));
     throwErrno(errno, "ptrace", "op 0x%x (%s), pid %d, addr 0x%lx, data 0x%lx",
-	       op, op_as_string(op), pid, (long)addr, data);
+	       op, ptraceOpToString(op), pid, (long)addr, data);
+  }
   return result;
 }
 

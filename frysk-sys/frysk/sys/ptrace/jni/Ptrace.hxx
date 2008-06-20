@@ -38,3 +38,4 @@
 // exception.
 
 extern long ptraceOp(::jnixx::env, int, int, void*, long);
+extern const char *ptraceOpToString(int op);

@@ -1,3 +1,12 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/AddressSpace.cxx: Simplify debug code.
+	* cni/AddressSpace.cxx: Ditto.
+	* jni/Ptrace.hxx (ptraceOpToString(int)): Declare.
+	* cni/Ptrace.hxx (ptraceOpToString(int)): Ditto.
+	* jni/Ptrace.cxx (ptraceOpToString): Rename op_as_string.
+	* cni/Ptrace.cxx (ptraceOpToString): Ditto.
+	
 2008-05-25  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AddressSpace.cxx: Use jbyteArrayElements.

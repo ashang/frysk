@@ -37,6 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define DEBUG 0
+
+#include <stdio.h>
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
@@ -60,21 +63,17 @@ jint
 frysk::sys::ptrace::AddressSpace::peek(::jnixx::env env, jint pid, jlong addr) {
   union word w;
   long paddr = addr & -sizeof(long);
-#if DEBUG
-  fprintf(stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
-#endif
+  if (DEBUG)
+    fprintf(stderr, "peek 0x%lx paddr 0x%lx", (long)addr, paddr);
   w.l = ptraceOp(env, GetPtPeek(env), pid, (void*)paddr, 0);
-#if DEBUG
-  fprintf(stderr, " word 0x%lx", w.l);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " word 0x%lx", w.l);
   int index = addr & (sizeof(long) - 1);
-#if DEBUG
-  fprintf(stderr, " index %d", index);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " index %d", index);
   uint8_t byte = w.b[index];
-#if DEBUG
-  fprintf(stderr, " byte %d/0x%x\n", byte, byte);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " byte %d/0x%x\n", byte, byte);
   return byte;
 }
 
@@ -82,25 +81,20 @@ void
 frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, jint data) {
   // Implement read-modify-write
   union word w;
-#if DEBUG
-  fprintf(stderr, "poke 0x%x", (int)(data & 0xff));
-#endif
+  if (DEBUG)
+    fprintf(stderr, "poke 0x%x", (int)(data & 0xff));
   long paddr = addr & -sizeof(long);
-#if DEBUG
-  fprintf(stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " addr 0x%lx paddr 0x%lx", (long)addr, paddr);
   w.l = ptraceOp(env, GetPtPeek(env), pid, (void*)paddr, 0);
-#if DEBUG
-  fprintf(stderr, " word 0x%lx", w.l);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " word 0x%lx", w.l);
   int index = addr & (sizeof(long) - 1);
-#if DEBUG
-  fprintf (stderr, " index %d", index);
-#endif
+  if (DEBUG)
+    fprintf (stderr, " index %d", index);
   w.b[index] = data;
-#if DEBUG
-  fprintf(stderr, " word 0x%lx\n", w.l);
-#endif
+  if (DEBUG)
+    fprintf(stderr, " word 0x%lx\n", w.l);
   ptraceOp(env, GetPtPoke(env), pid, (void*)(addr & -sizeof(long)), w.l);
 }
 
@@ -114,13 +108,11 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
   verifyBounds(env, byteArray, offset, length);
   // Somewhat more clueful implementation
   for (jlong i = 0; i < length;) {
-#if DEBUG
-    fprintf(stderr,
-	     "transfer pid %d addr 0x%lx length %d offset %d op %d (%s)",
-	     (int)pid, (long)addr, (int)length, (int)offset,
-	     (int)op, op_as_string(op));
-#endif
-
+    if (DEBUG)
+      fprintf(stderr,
+	      "transfer pid %d addr 0x%lx length %d offset %d op %d (%s) ...",
+	      (int)pid, (long)addr, (int)length, (int)offset,
+	      (int)op, ptraceOpToString(op));
     union word w;
     unsigned long waddr = addr & -sizeof(long);
     unsigned long woff = (addr - waddr);
@@ -132,19 +124,17 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
       wend = woff + remaining;
     long wlen = wend - woff;
 
-#if DEBUG
-    fprintf(stderr,
-	     " i %ld waddr 0x%lx woff %lu wend %lu remaining %lu wlen %lu",
-	     (long)i, waddr, woff, wend, remaining, wlen);
-#endif
+    if (DEBUG)
+      fprintf(stderr,
+	      " i %ld waddr 0x%lx woff %lu wend %lu remaining %lu wlen %lu ...",
+	      (long)i, waddr, woff, wend, remaining, wlen);
 
     // Either a peek; or a partial write requiring read/modify/write.
     if (op == ptPeek || woff != 0 || wend != sizeof(long)) {
-	w.l = ptraceOp(env, ptPeek, pid, (void*)waddr, 0);
-#if DEBUG
-	fprintf(stderr, " peek 0x%lx", w.l);
-#endif
-      }
+      w.l = ptraceOp(env, ptPeek, pid, (void*)waddr, 0);
+      if (DEBUG)
+	fprintf(stderr, " peek 0x%lx ...", w.l);
+    }
 
     // extract or modify
     jbyteArrayElements bytes = jbyteArrayElements(env, byteArray);
@@ -152,9 +142,8 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
       memcpy(offset + i + bytes.elements(), &w.b[woff], wlen);
     else {
       memcpy(&w.b[woff], offset + i + bytes.elements(), wlen);
-#if DEBUG
-      fprintf(stderr, " poke 0x%lx", w.l);
-#endif
+      if (DEBUG)
+	fprintf(stderr, " poke 0x%lx ...", w.l);
       w.l = ptraceOp(env, ptPoke, pid, (void*)waddr, w.l);
     }
     bytes.release();
@@ -162,9 +151,8 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
     i += wlen;
     addr += wlen;
 
-#if DEBUG
-    fprintf(stderr, "\n");
-#endif
+    if (DEBUG)
+      fprintf(stderr, "\n");
   }
 }
 
