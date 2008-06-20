@@ -1,5 +1,8 @@
 2008-06-20  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (lib$(GEN_DIRNAME)-jni.so): Replace less explicit
+	%-jni.so target.
+	
 	* Makefile.rules (Runner): Delete LD_PRELOAD hack.
 
 2008-06-19  Andrew Cagney  <cagney@redhat.com>

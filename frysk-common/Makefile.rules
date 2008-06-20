@@ -473,7 +473,8 @@ JNI_LIBRARY_LIST =
 # A list of extra object files that should be added to the .so.
 JNI_OBJECT_LIST =
 
-%-jni.so: %-jni.a $(JNI_ARCHIVE_LIST) $(JNI_OBJECT_LIST)
+lib$(GEN_DIRNAME)-jni.so: $(JNI_ARCHIVE_LIST) $(JNI_OBJECT_LIST)
+lib$(GEN_DIRNAME)-jni.so: lib$(GEN_DIRNAME)-jni.a
 	soname=`basename $@` ; \
 	$(CC) -shared -o $@.tmp \
 		-Wl,--whole-archive \
