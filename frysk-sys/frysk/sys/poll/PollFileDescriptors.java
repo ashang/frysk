@@ -37,68 +37,37 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+package frysk.sys.poll;
+
+import frysk.sys.FileDescriptor;
+
+import java.util.ArrayList;
 
 /**
- * Poll like interface for waiting on kernel events.
- *
- * This object, loosely based on the poll and pselect interfaces,
- * provides a call blocks until a UNIX event (signal, FD ready), the
- * timeout expires, or an unexpected interrupt occures.  The client
- * (which extends this object) is notified via the abstract notify
- * methods.
+ * Manage the file descriptors watched by the poll call.
  */
+public class PollFileDescriptors {
+    long pollFds = malloc();
+    private static native long malloc();
+    final ArrayList fds = new ArrayList();
 
-public final class Poll
-{
-    /**
-     * Set of signals checked during poll.
-     */
-    static protected SignalSet signalSet = new SignalSet ();
-    private static native void addSignalHandler (Signal sig);
-    /**
-     * Add Sig to the set of signals checked during poll.
-     */
-    public static void add (Signal sig) {
-	signalSet.add(sig);
-	addSignalHandler(sig);
-    }
-    /**
-     * Empty the set of signals, and file descriptors, checked during
-     * poll.
-     */
-    public static void empty ()
-    {
-	// Note that this doesn't restore any signal handlers.
-	signalSet.empty ();
+    public PollFileDescriptors() {
     }
 
-    /**
-     * Manage the file descriptors watched by the poll call.
-     */
-    public static final class Fds {
-	long fds;
-	public Fds() {
-	    fds = malloc();
-	}
-	protected void finalize() {
-	    free(fds);
-	}
-	private static native long malloc();
-	private static native void free(long fds);
-	public void addPollIn(int fd) {
-	    fds = addPollIn(fds, fd);
-	}
-	private static native long addPollIn(long fds, int fd);
+    protected void finalize() {
+	free(pollFds);
     }
-    static protected Fds pollFds = new Fds ();
+    private static native void free(long pollFds);
 
-    /**
-     * Poll the system for either FD, or signal events.  Block for
-     * timeout milliseconds (if timeout is +ve or zero), or until the
-     * next event (if timeout is -ve).  Return when an event might
-     * have occured.
-     */
-    public static native void poll (PollBuilder observer,
-				    long timeout);
+    public void addPollIn(FileDescriptor fd) {
+	int i = fds.indexOf(fd);
+	if (i >= 0) {
+	    setPollIn(pollFds, i);
+	} else {
+	    fds.add(fd);
+	    pollFds = addPollIn(pollFds, fds.size(), fd.getFd());
+	}
+    }
+    private static native void setPollIn(long pollFds, int pos);
+    private static native long addPollIn(long pollFds, int pos, int fd);
 }

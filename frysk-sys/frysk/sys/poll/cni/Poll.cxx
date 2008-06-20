@@ -52,18 +52,19 @@
 _syscall2(int, tkill, pid_t, tid, int, sig);
 
 #include <gcj/cni.h>
-#include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/ProcessIdentifier.h"
+#include "frysk/sys/FileDescriptor.h"
 #include "frysk/sys/Tid.h"
-#include "frysk/sys/Poll.h"
 #include "frysk/sys/Signal.h"
 #include "frysk/sys/SignalSet.h"
 #include "frysk/sys/cni/SignalSet.hxx"
-#include "frysk/sys/Poll$Fds.h"
-#include "frysk/sys/PollBuilder.h"
+#include "frysk/sys/poll/Poll.h"
+#include "frysk/sys/poll/PollBuilder.h"
 
+using namespace java::lang;
+using namespace frysk::sys::poll;
 
 // If there's a signal abort the wait() function using a longjmp (and
 // return the signal).  Should the jmpbuf be per-thread?
@@ -96,8 +97,7 @@ handler (int signum, siginfo_t *siginfo, void *context)
 }
 
 void
-frysk::sys::Poll::addSignalHandler (frysk::sys::Signal* sig)
-{
+Poll::addSignalHandler (frysk::sys::Signal* sig) {
   int signum = sig->hashCode ();
   // Make certain that the signal is masked (this is ment to be
   // process wide).
@@ -121,52 +121,12 @@ frysk::sys::Poll::addSignalHandler (frysk::sys::Signal* sig)
 
 
 
-jlong
-frysk::sys::Poll$Fds::malloc() {
-  // Allocate a non-empty buffer, marked with a sentinel.
-  struct pollfd* fds = (struct pollfd*) JvMalloc(sizeof (struct pollfd));
-  fds->fd = -1; // sentinel
-  return (jlong)(long) fds;
-}
+#define POLLFDS ((struct pollfd*)pollFds)
 
 void
-frysk::sys::Poll$Fds::free(jlong fds) {
-  JvFree((struct pollfd*)(long)fds);
-}
-
-static jlong
-addPollFd(jlong pollFds, int fd, short event) {
-  struct pollfd* ufds = (struct pollfd*) pollFds;
-  // If the FD is alreay listed, just add the event; end up with a
-  // count of fds.
-  int numFds;
-  for (numFds = 0; ufds[numFds].fd >= 0; numFds++) {
-    if (ufds[numFds].fd == fd) {
-      ufds[numFds].events |= event;
-      return pollFds;
-    }
-  }
-  // Create space for the new fd (and retain space for the sentinel).
-  ufds = (struct pollfd*) JvRealloc(ufds, (numFds + 2) * sizeof (struct pollfd));
-  ufds[numFds + 0].fd = fd;
-  ufds[numFds + 0].events = event;
-  ufds[numFds + 1].fd = -1;
-  return (jlong) (long) ufds;
-}
-
-jlong
-frysk::sys::Poll$Fds::addPollIn(jlong fds, jint fd) {
-  return addPollFd(fds, fd, POLLIN);
-}
-
-
-
-void
-frysk::sys::Poll::poll(frysk::sys::PollBuilder* pollObserver, jlong timeout) {
-  // Compute the current number of poll fds.
-  struct pollfd* fds = (struct pollfd*)pollFds->fds;
-  int numFds;
-  for (numFds = 0; fds[numFds].fd >= 0; numFds++);
+Poll::poll(PollBuilder* pollObserver, jlong timeout, jlong pollFds,
+	   jobjectArray fds) {
+  int nfds = fds->length;
 
   // Set up a SIGSETJMP call that jumps back to here when any watched
   // signal is delivered.  The signals are accumulated in a sigset,
@@ -201,12 +161,12 @@ frysk::sys::Poll::poll(frysk::sys::PollBuilder* pollObserver, jlong timeout) {
   errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   if (errno != 0)
     throwErrno (errno, "pthread_sigmask.UNBLOCK");
-  int status = ::poll (fds, numFds, timeout);
+  int status = ::poll(POLLFDS, nfds, timeout);
   if (status < 0)
     status = -errno; // Save the errno across the next system call.
-  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  errno = ::pthread_sigmask(SIG_BLOCK, &mask, NULL);
   if (errno != 0)
-    throwErrno (errno, "pthread_sigmask.BLOCK");
+    throwErrno(errno, "pthread_sigmask.BLOCK");
 
   // Did something go wrong?
   if (status < 0) {
@@ -214,7 +174,7 @@ frysk::sys::Poll::poll(frysk::sys::PollBuilder* pollObserver, jlong timeout) {
     case EINTR:
       break;
     default:
-      throwErrno (-status, "poll");
+      throwErrno(-status, "poll");
     }
   }
 
@@ -226,20 +186,18 @@ frysk::sys::Poll::poll(frysk::sys::PollBuilder* pollObserver, jlong timeout) {
       // Find the signal object.
       frysk::sys::Signal* sig = frysk::sys::Signal::valueOf (i);
       // Notify the client of the signal.
-      pollObserver->signal (sig);
+      pollObserver->signal(sig);
     }
   }
 
   // Did a file descriptor fire, status when +ve, contains the number
   // of file descriptors that fired one or more events.
 
-  struct pollfd* pollfd = (struct pollfd*) pollFds;
-  while (status > 0) {
-    if (pollfd->revents != 0) {
-      if (pollfd->revents & POLLIN)
-	pollObserver->pollIn (pollfd->fd);
+  for (int i = 0; i < nfds && status > 0; i++) {
+    if (POLLFDS[i].revents != 0) {
+      if (POLLFDS[i].revents & POLLIN)
+	pollObserver->pollIn((frysk::sys::FileDescriptor*)(elements(fds)[i]));
       status--;
     }
-    pollfd++;
   }
 }

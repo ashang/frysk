@@ -1,0 +1,16 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java: Moved from frysk.sys.
+	* PollBuilder.java: Ditto.
+	* jni/Poll.cxx: Ditto.
+	* cni/Poll.cxx: Ditto.
+	* PollFileDescriptors.java: Extract from Poll.java.
+	* jni/PollFileDescriptors.java: Extract from jni/Poll.cxx.
+	* cni/PollFileDescriptors.java: Similar.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

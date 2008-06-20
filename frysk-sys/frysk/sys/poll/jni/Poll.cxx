@@ -58,7 +58,7 @@
 #include "frysk/sys/jni/SignalSet.hxx"
 
 using namespace java::lang;
-using namespace frysk::sys;
+using namespace frysk::sys::poll;
 
 // If there's a signal abort the wait() function using a longjmp (and
 // return the signal).  Should the jmpbuf be per-thread?
@@ -114,52 +114,12 @@ Poll::addSignalHandler(jnixx::env env, Signal sig) {
 
 
 
-jlong
-Poll$Fds::malloc(jnixx::env env) {
-  // Allocate a non-empty buffer, marked with a sentinel.
-  struct pollfd* fds = (struct pollfd*) ::malloc (sizeof (struct pollfd));
-  fds->fd = -1; // sentinel
-  return (jlong)(long) fds;
-}
+#define POLLFDS ((struct pollfd*)pollFds)
 
 void
-Poll$Fds::free(jnixx::env env, jlong fds) {
-  ::free((struct pollfd*)(long)fds);
-}
-
-static jlong
-addPollFd(jlong pollFds, int fd, short event) {
-  struct pollfd* ufds = (struct pollfd*) pollFds;
-  // If the FD is alreay listed, just add the event; end up with a
-  // count of fds.
-  int numFds;
-  for (numFds = 0; ufds[numFds].fd >= 0; numFds++) {
-    if (ufds[numFds].fd == fd) {
-      ufds[numFds].events |= event;
-      return pollFds;
-    }
-  }
-  // Create space for the new fd (and retain space for the sentinel).
-  ufds = (struct pollfd*) ::realloc(ufds, (numFds + 2) * sizeof (struct pollfd));
-  ufds[numFds + 0].fd = fd;
-  ufds[numFds + 0].events = event;
-  ufds[numFds + 1].fd = -1;
-  return (jlong) (long) ufds;
-}
-
-jlong
-Poll$Fds::addPollIn(jnixx::env env, jlong fds, jint fd) {
-  return addPollFd(fds, fd, POLLIN);
-}
-
-
-
-void
-Poll::poll(jnixx::env env, PollBuilder pollObserver, jlong timeout) {
-  // Compute the current number of poll fds.
-  struct pollfd* fds = (struct pollfd*)GetPollFds(env).GetFds(env);
-  int numFds;
-  for (numFds = 0; fds[numFds].fd >= 0; numFds++);
+Poll::poll(jnixx::env env, PollBuilder pollObserver, jlong timeout,
+	   jlong pollFds, ::jnixx::array<Object> fds) {
+  int nfds = fds.GetArrayLength(env);
 
   // Set up a SIGSETJMP call that jumps back to here when any watched
   // signal is delivered.  The signals are accumulated in a sigset,
@@ -191,13 +151,13 @@ Poll::poll(jnixx::env env, PollBuilder pollObserver, jlong timeout) {
   // wasn't reached) to be canceled.
 
   poll_jmpbuf.tid = ::syscall(SYS_gettid);
-  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
+  errno = ::pthread_sigmask(SIG_UNBLOCK, &mask, 0);
   if (errno != 0)
     errnoException(env, errno, "pthread_sigmask.UNBLOCK");
-  int status = ::poll (fds, numFds, timeout);
+  int status = ::poll(POLLFDS, nfds, timeout);
   if (status < 0)
     status = -errno; // Save the errno across the next system call.
-  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  errno = ::pthread_sigmask(SIG_BLOCK, &mask, NULL);
   if (errno != 0)
     errnoException(env, errno, "pthread_sigmask.BLOCK");
 
@@ -215,7 +175,7 @@ Poll::poll(jnixx::env env, PollBuilder pollObserver, jlong timeout) {
   // more efficient way of doing this?
 
   for (int i = 1; i < 32; i++) {
-    if (sigismember (&signals, i)) {
+    if (sigismember(&signals, i)) {
       // Find the signal object.
       Signal sig = Signal::valueOf(env, i);
       // Notify the client of the signal.
@@ -226,13 +186,13 @@ Poll::poll(jnixx::env env, PollBuilder pollObserver, jlong timeout) {
   // Did a file descriptor fire, status when +ve, contains the number
   // of file descriptors that fired one or more events.
 
-  for (int i = 0; i < numFds; i++) {
-    if (status <= 0)
-      // bail early
-      break;
-    if (fds[i].revents != 0) {
-      if (fds[i].revents & POLLIN)
-	pollObserver.pollIn(env, fds[i].fd);
+  for (int i = 0; i < nfds && status > 0; i++) {
+    if (POLLFDS[i].revents != 0) {
+      if (POLLFDS[i].revents & POLLIN) {
+	frysk::sys::FileDescriptor fd
+	  = frysk::sys::FileDescriptor(env, fds.GetObjectArrayElement(env, i)._object);
+	pollObserver.pollIn(env, fd);
+      }
       status--;
     }
   }

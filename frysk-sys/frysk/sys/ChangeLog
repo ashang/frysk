@@ -1,3 +1,10 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java: Move to frysk.sys.poll.
+	* PollBuilder.java: Ditto.
+	* jni/Poll.cxx: Ditto.
+	* cni/Poll.cxx: Ditto.
+
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.cxx (throwUserException): New.

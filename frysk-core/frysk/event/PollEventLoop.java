@@ -39,8 +39,9 @@
 
 package frysk.event;
 
-import frysk.sys.Poll;
-import frysk.sys.PollBuilder;
+import frysk.sys.FileDescriptor;
+import frysk.sys.poll.Poll;
+import frysk.sys.poll.PollBuilder;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
@@ -101,10 +102,8 @@ class PollEventLoop extends EventLoop {
 	add (new PollWaitOnSigChild (waitBuilder));
     }
 
-    private PollBuilder pollObserver = new PollBuilder ()
-	{
-	    public String toString ()
-	    {
+    private PollBuilder pollObserver = new PollBuilder() {
+	    public String toString() {
 		return ("{" + super.toString () + "}");
 	    }
 	    public void signal(Signal sig) {
@@ -112,7 +111,7 @@ class PollEventLoop extends EventLoop {
 		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.
-	    public void pollIn (int fd) {
+	    public void pollIn(FileDescriptor fd) {
 		throw new RuntimeException ("should not happen");
 	    }
 	};

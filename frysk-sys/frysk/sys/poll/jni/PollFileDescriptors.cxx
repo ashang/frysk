@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,12 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <poll.h>
+#include <malloc.h>
 
-/**
- * Notify client of Poll events.
- */
-public interface PollBuilder {
-    void signal(Signal sig);
-    void pollIn (int fd);
+#include "jni.hxx"
+
+using namespace java::lang;
+using namespace frysk::sys::poll;
+
+#define POLLFDS ((struct pollfd*)pollFds)
+
+jlong
+PollFileDescriptors::malloc(jnixx::env env) {
+  // Allocate a non-empty buffer, marked with a sentinel.
+  struct pollfd* fds = (struct pollfd*) ::malloc (sizeof (struct pollfd));
+  fds->fd = -1; // sentinel
+  return (jlong)(long) fds;
+}
+
+void
+PollFileDescriptors::free(jnixx::env env, jlong pollFds) {
+  ::free(POLLFDS);
+}
+
+void
+PollFileDescriptors::setPollIn(jnixx::env env, jlong pollFds, jint pos) {
+  POLLFDS[pos].events |= POLLIN;
+}
+
+jlong
+PollFileDescriptors::addPollIn(jnixx::env env, jlong pollFds,
+			       jint pos, int fd) {
+  // Create space for the new fd (and retain space for the sentinel).
+  struct pollfd* ufds
+    = (struct pollfd*) ::realloc(POLLFDS, (pos + 1)*sizeof (struct pollfd));
+  ufds[pos].fd = fd;
+  ufds[pos].events = POLLIN;
+  return (jlong) (long) ufds;
 }
