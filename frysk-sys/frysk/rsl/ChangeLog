@@ -1,3 +1,8 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Printer.java: Include the inner most stack frame when printing
+	exceptions.
+
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Log.java: Add more methods.

@@ -158,11 +158,23 @@ public final class Printer {
      */
     private void dump(Throwable t) {
 	out.print("<<exception ");
-	out.print(t.toString());
-	for (Throwable cause = t.getCause(); cause != null;
-	     cause = cause.getCause()) {
+	while (true) {
+	    out.print(t.toString());
+	    StackTraceElement[] stack = t.getStackTrace();
+	    for (int i = 0; i < stack.length; i++) {
+		if (i >= 1) {
+		    // XXX: the cap is some what arbitrary
+		    out.print(" ...");
+		    break;
+		} else {
+		    out.print(" <at> ");
+		    out.print(stack[i].toString());
+		}
+	    }
+	    t = t.getCause();
+	    if (t == null)
+		break;
 	    out.print(" <caused-by> ");
-	    out.print(cause.toString());
 	}
 	out.print(">>");
     }
