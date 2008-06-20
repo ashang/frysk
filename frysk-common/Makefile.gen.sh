@@ -895,8 +895,7 @@ noinst_LIBRARIES += lib${GEN_DIRNAME}-jni.a
 lib${GEN_MAKENAME}_jni_so_SOURCES =
 solib_PROGRAMS += lib${GEN_DIRNAME}-jni.so
 lib${GEN_DIRNAME}-jni.so: lib${GEN_DIRNAME}-jni.a
-.PHONY: jni
-jni: lib${GEN_DIRNAME}-jni.so ${GEN_DIRNAME}.jar
+jni: lib${GEN_DIRNAME}-jni.so
 lib${GEN_MAKENAME}_jni_a_SOURCES += jni.cxx
 jnixx_sources = \$(wildcard \$(root_srcdir)/frysk-sys/jnixx/*.java)
 CLEANFILES += jni.hxx jni.cxx jni.hxx.gch

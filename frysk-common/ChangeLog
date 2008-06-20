@@ -1,5 +1,10 @@
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (jni): Delete.
+	* Makefile.rules (%-jni.so): Depend on $(JNI_ARCHIVE_LIST) and
+	$(JNI_OBJECT_LIST).
+	(jni): New phony target.
+	
 	* Makefile.rules (JNI_OBJECT_LIST): Define.
 	(JNI_LIBRARY_LIST): Define.
 	(JNI_ARCHIVE_LIST): Define.

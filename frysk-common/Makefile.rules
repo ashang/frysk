@@ -190,6 +190,10 @@ AM_CCASFLAGS = \
 	$(ZZZ)
 
 
+# Just build the jar / jni dependencies files.
+.PHONY: jni
+jni: ${GEN_DIRNAME}.jar
+
 # Within the BUILT_SOURCES, need to force some dependencies.  For
 # instance: JAVAH isn't run until all script-generated files it may
 # need to import have been generated.
@@ -482,7 +486,7 @@ JNI_LIBRARY_LIST =
 # A list of extra object files that should be added to the .so.
 JNI_OBJECT_LIST =
 
-%-jni.so: %-jni.a
+%-jni.so: %-jni.a $(JNI_ARCHIVE_LIST) $(JNI_OBJECT_LIST)
 	soname=`basename $@` ; \
 	$(CC) -shared -o $@.tmp \
 		-Wl,--whole-archive \
