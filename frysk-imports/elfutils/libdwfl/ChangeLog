@@ -1,3 +1,8 @@
+2008-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* dwfl_module_addrsym.c (dwfl_module_addrsym): Correctly update
+	min_label.
+
 2008-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* dwfl_module_getdwarf.c (open_elf): Don't align the module's load

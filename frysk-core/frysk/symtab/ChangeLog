@@ -1,5 +1,10 @@
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSymbol.java (testNoSymbolAfterGlobal()): Enable.
+	(testNoSymbolAfterLocal()): Enable.
+	(testAfterGlobalContiningSize0()): Enable.
+	(testAfterLocalContiningSize0()): Enable.
+	
 	* TestSymbol.java: Re-number arg param so that matching
 	funit-symbols.S is easier.
 

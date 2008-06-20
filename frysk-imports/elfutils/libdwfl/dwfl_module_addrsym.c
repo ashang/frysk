@@ -49,10 +49,13 @@
 
 #include "libdwflP.h"
 
+#include <stdio.h>
+
 const char *
 dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 		     GElf_Sym *closest_sym, GElf_Word *shndxp)
 {
+  // fprintf(stderr, "looking up %lx\n", (long) addr);
   int syments = INTUSE(dwfl_module_getsymtab) (mod);
   if (syments < 0)
     return NULL;
@@ -116,15 +119,20 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
       GElf_Sym sym;
       GElf_Word shndx;
       const char *name = INTUSE(dwfl_module_getsym) (mod, i, &sym, &shndx);
+      // fprintf(stderr, "symbol %s at 0x%lx 0x%ld\n", name, (long) sym.st_value, (long) sym.st_size);
+      /* Even if we don't choose this symbol, its existence excludes
+	 any sizeless symbol (assembly label) that is below its upper
+	 bound.  */
+      if (name != NULL && sym.st_value <= addr
+	  && sym.st_value + sym.st_size > min_label) {
+	min_label = sym.st_value + sym.st_size;
+	// fprintf(stderr, "  min to %s size ends at %lx\n", name, (long) min_label);
+      }
       if (name != NULL
 	  && sym.st_value <= addr
 	  && (sym.st_size == 0 || addr - sym.st_value < sym.st_size))
 	{
-	  /* Even if we don't choose this symbol, its existence
-	     excludes any sizeless symbol (assembly label) that
-	     is inside its bounds.  */
-	  if (sym.st_value + sym.st_size > addr)
-	    min_label = sym.st_value + sym.st_size;
+	  // fprintf(stderr, "  candidate %s at 0x%lx 0x%ld\n", name, (long) sym.st_value, (long) sym.st_size);
 
 	  /* This symbol is a better candidate than the current one
 	     if it's a named symbol, not a section or file symbol,
@@ -140,6 +148,7 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
 		{
 		  if (sym.st_size != 0)
 		    {
+		      // fprintf(stderr, "  closest %s at %lx\n", name, (long)sym.st_value);
 		      *closest_sym = sym;
 		      closest_shndx = shndx;
 		      closest_name = name;
@@ -155,6 +164,7 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
                           || (sizeless_sym.st_value == sym.st_value
                               && strcmp(name, sizeless_name) < 0))
                         {
+			  // fprintf(stderr, "  sizeless %s at %lx\n", name, (long)sym.st_value);
                           sizeless_sym = sym;
                           sizeless_shndx = shndx;
                           sizeless_name = name;
@@ -171,6 +181,7 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
                            || (closest_sym->st_size == sym.st_size
                                && strcmp(name, closest_name) < 0)))
 		{
+		  // fprintf(stderr, "  alt closest %s at %lx\n", name, (long)sym.st_value);
 		  *closest_sym = sym;
 		  closest_shndx = shndx;
 		  closest_name = name;

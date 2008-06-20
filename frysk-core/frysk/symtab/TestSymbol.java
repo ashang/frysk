@@ -149,13 +149,9 @@ public class TestSymbol
     }
 
     public void testNoSymbolAfterGlobal() {
-        if (unresolved(5941))
-            return;
 	symbolTest(12, unknown, false, false);
     }
     public void testNoSymbolAfterLocal() {
-        if (unresolved(5941))
-            return;
 	symbolTest(13, unknown, false, false);
     }
 
@@ -195,13 +191,9 @@ public class TestSymbol
     }
 
     public void testAfterGlobalContiningSize0() {
-        if (unresolved(5941))
-            return;
 	symbolTest(24, unknown, false, false);
     }
     public void testAfterLocalContiningSize0() {
-        if (unresolved(5941))
-            return;
 	symbolTest(25, unknown, false, false);
     }
 }
