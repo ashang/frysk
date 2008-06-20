@@ -158,10 +158,16 @@ class Reporter
     public void eventLeave(Task task, Object item, String eventType,
 			    String eventName, Object retVal)
     {
+	String stray = "";
+
 	ArrayList tokens = getTokens(task);
-	int i = tokens.size();
-	while (tokens.remove(--i) != item) {
-	}
+	int i = tokens.size() - 1;
+	while (i >= 0 && tokens.get(i) != item)
+	    --i;
+	if (i < 0)
+	    stray = "stray ";
+	else
+	    tokens.subList(i, tokens.size()).clear();
 
 	if (!myLineOpened(task, item)) {
 	    if (lineOpened())
@@ -169,7 +175,7 @@ class Reporter
 	    String spaces = ArchFormatter.repeat(' ', tokens.size());
 	    writer.print(pidInfo(task)
 			 + " " + formatTaskPC(task)
-			 + spaces + eventType
+			 + spaces + stray + eventType
 			 + " " + eventName);
 	}
 
