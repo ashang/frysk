@@ -654,15 +654,6 @@ public class Ftrace {
 	    return ObjectFile.buildFromFile(mapping.path);
 	}
 
-	private Map getDriversForTask(Task task) {
-	    Map drivers = (Map)driversForTask.get(task);
-	    if (drivers == null) {
-		drivers = new HashMap();
-		driversForTask.put(task, drivers);
-	    }
-	    return drivers;
-	}
-
 	public Action updateMappedFile(Task task, MemoryMapping mapping) {
 
 	    if (traceMmapUnmap)
@@ -677,10 +668,12 @@ public class Ftrace {
 
 	    DwflModule module = getModuleForFile(task, mapping.path);
 
-	    Map drivers = getDriversForTask(task);
-	    Driver driver = new TaskTracer(Ftrace.this, task);
-	    drivers.put(mapping.path, driver);
-	    this.tracingController.fileMapped(task, objf, module, driver);
+	    Driver driver = (Driver)driversForTask.get(task);
+	    if (driver == null) {
+		driver = new TaskTracer(Ftrace.this, task);
+		driversForTask.put(task, driver);
+	    }
+	    tracingController.fileMapped(task, objf, module, driver);
 
 	    task.requestUnblock(this);
 	    return Action.BLOCK;
@@ -700,8 +693,7 @@ public class Ftrace {
 
 	    DwflModule module = getModuleForFile(task, mapping.path);
 
-	    Map drivers = getDriversForTask(task);
-	    Driver driver = (Driver)drivers.get(mapping.path);
+	    Driver driver = (Driver)driversForTask.get(task);
 	    if (driver == null)
 		throw new AssertionError("There should be a driver for `" + mapping.path + "'.");
 

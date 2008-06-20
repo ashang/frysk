@@ -1,6 +1,14 @@
 2008-06-20  Petr Machata  <pmachata@redhat.com>
 
-	* Ftrace.java: Keep a list of event entry tokens, and align
+	* Ftrace.java (getDriversForTask): Drop.
+	(driversForTask): Actually use it as a map(task->driver), instead
+	of map(task->map(mapping_path->driver)).
+	* TaskTracer.java (FunctionReturnObserver.add): Compare symbol
+	names via .equals, instead of comparing symbol pointers.
+
+2008-06-20  Petr Machata  <pmachata@redhat.com>
+
+	* Reporter.java: Keep a list of event entry tokens, and align
 	eventLeave with matching eventEntry.
 
 2008-06-10  Andrew Cagney  <cagney@redhat.com>

@@ -81,6 +81,7 @@ class TaskTracer
     private final Ftrace ftrace;
 
     public TaskTracer(Ftrace ftrace, Task task) {
+	fine.log("New TaskTracer for", task);
 	this.arch = ArchFactory.instance.getArch(task);
 	this.ftrace = ftrace;
     }
@@ -89,7 +90,20 @@ class TaskTracer
     {
 	private final DwflSymbol symbol;
 	private final boolean isPlt;
+
+	/**
+	 * TracePoint is chained when it shares return breakpoint with
+	 * other breakpoint.  When such a breakpoint is hit, it is
+	 * assumed that both tracepoints have "left".  This is used
+	 * when both PLT and regular entry point are traced for one
+	 * symbol.  If PLT entry point hits, and regular entry point
+	 * for the same symbol hits immediately after that, the two
+	 * are chained.
+	 */
 	private boolean chained = false;
+
+	// When the TracePoint is frozen, it can't be chained to
+	// another TracePoint anymore.
 	private boolean frozen = false;
 
 	public TracePoint(DwflSymbol symbol) {
@@ -119,6 +133,7 @@ class TaskTracer
 	}
 
 	public void setChained() {
+	    fine.log("chained tracePoint", this);
 	    this.chained = true;
 	}
 
@@ -169,7 +184,8 @@ class TaskTracer
 		TracePoint previous = (TracePoint)symbolList.getLast();
 		if (!previous.isFrozen()
 		    && previous.isPlt() && !tracePoint.isPlt()
-		    && previous.getSymbol() == tracePoint.getSymbol())
+		    && previous.getSymbol().getName().equals
+		       (tracePoint.getSymbol().getName()))
 		    tracePoint.setChained();
 
 		previous.freeze();
