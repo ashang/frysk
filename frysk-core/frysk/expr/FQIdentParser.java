@@ -70,17 +70,8 @@ public class FQIdentParser {
     private final boolean allowGlobs;
     private final boolean expectMoreTokens;
 
-    // This pattern deliberately doesn't check for initial letter.
-    // Relevant code checks this explicitly.  This way, if user makes
-    // a mistake and writes e.g. something#123+b, we recognize "123"
-    // as a typo, while leaving out the part after a "+", which is
-    // certainly irrelevant.
-    final static String symbolRe = "[a-zA-Z0-9_$]+";
-
-    private final static Pattern symbolPattern = Pattern.compile(symbolRe);
-    private final static Pattern globPattern
-	= Pattern.compile("(\\[(\\^?\\][^\\]]*|\\^[^\\]]+|[^^\\]][^\\]]*|\\^?\\[:[^:]+:\\])\\]|"
-			  + symbolRe + "|\\*)+");
+    private final Pattern symbolPattern;
+    private final Pattern globPattern;
 
     /**
      * @param allowDynamic Whether the [pid.tid#frame] portion of the
@@ -101,12 +92,28 @@ public class FQIdentParser {
     FQIdentParser(CharScanner scanner,
 		  boolean allowDynamic,
 		  boolean allowGlobs,
-		  boolean expectMoreTokens) {
+		  boolean expectMoreTokens,
+		  boolean allowPeriodInSymbol) {
 
 	this.scanner = scanner;
 	this.allowDynamic = allowDynamic;
 	this.allowGlobs = allowGlobs;
 	this.expectMoreTokens = expectMoreTokens;
+
+	// This pattern deliberately doesn't check for initial letter.
+	// Relevant code checks this explicitly.  This way, if user makes
+	// a mistake and writes e.g. something#123+b, we recognize "123"
+	// as a typo, while leaving out the part after a "+", which is
+	// certainly irrelevant.
+	String symbolRe = "[a-zA-Z0-9_$" + (allowPeriodInSymbol
+					    ? "." : "") + "]+";
+	this.symbolPattern = Pattern.compile(symbolRe);
+	this.globPattern
+	    = Pattern.compile("(\\[(\\^?\\][^\\]]*" +  // handles []abc] and [^]abc]
+			      "|\\^[^\\]]+" +          // handles [^abc]
+			      "|[^^\\]][^\\]]*" +      // handles [abc], and [ab^c] (cases where ^ isn't an operator)
+			      "|\\^?\\[:[^:]+:\\]"+    // handles [[:abc:]] and [^[:abc:]]
+			      ")\\]|" + symbolRe + "|\\*)+");
     }
 
     private char fqLA(int i) throws CharStreamException {
@@ -383,7 +390,8 @@ public class FQIdentParser {
     parseFQIdentifier(String str,
 		      boolean allowDynamic,
 		      boolean allowGlobs,
-		      boolean expectMoreTokens)
+		      boolean expectMoreTokens,
+		      boolean allowPeriodInSymbol)
         throws ExtraGarbageException, InvalidTokenException
     {
         try {
@@ -395,7 +403,8 @@ public class FQIdentParser {
 		};
 	    FQIdentParser parser
 		= new FQIdentParser(scanner, allowDynamic,
-				    allowGlobs, expectMoreTokens);
+				    allowGlobs, expectMoreTokens,
+				    allowPeriodInSymbol);
 	    FQIdentToken tok = parser.parse("");
 
 	    if (scanner.LA(1) != CharScanner.EOF_CHAR)
@@ -415,6 +424,6 @@ public class FQIdentParser {
     public static FQIdentifier parseFtraceIdentifier(String str)
         throws ExtraGarbageException, InvalidTokenException
     {
-	return parseFQIdentifier(str, false, true, false);
+	return parseFQIdentifier(str, false, true, false, true);
     }
 }

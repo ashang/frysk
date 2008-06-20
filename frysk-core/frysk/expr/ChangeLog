@@ -1,3 +1,13 @@
+2008-06-20  Petr Machata  <pmachata@redhat.com>
+
+	* FQIdentParser.java (ctor): Take extra argument
+	allowPeriodInSymbol.
+	(parseFtraceIdentifier): Pass true for the new argument.
+	(parseFQIdentifier): Likewise.
+	(symbolPattern, globPattern): Unstatic.
+	(symbolRe): Kill.
+	* CExpr.g (fqIdParser): Pass false for the new argument.
+
 2008-06-13  Petr Machata  <pmachata@redhat.com>
 
 	* FQIdentParser.java (containsGlobChar): Rename to
