@@ -1,3 +1,9 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/UnwindH.hxx (access_mem): Catch Throwable and then use
+	instanceof to identify a UserException.
+	* cni/UnwindH.hxx (access_mem): Ditto.
+
 2008-05-26  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/ElfImage.cxx: Delete.

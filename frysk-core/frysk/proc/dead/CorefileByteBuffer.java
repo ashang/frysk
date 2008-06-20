@@ -39,6 +39,7 @@
 
 package frysk.proc.dead;
 
+import frysk.UserException;
 import frysk.sys.StatelessFile;
 import java.io.File;
 import java.util.ArrayList;
@@ -92,10 +93,9 @@ public class CorefileByteBuffer extends ByteBuffer {
     closeCoreFileElf(elf);
   }
 
-  protected void poke(long arg0, int arg1) 
-  {
-    throw new RuntimeException("Cannot poke into a corefile!");
-  }
+    protected void poke(long arg0, int arg1) {
+	throw new UserException("Cannot poke into a corefile!");
+    }
   
   protected int peek(long address) 
   {
@@ -120,20 +120,22 @@ public class CorefileByteBuffer extends ByteBuffer {
 		    long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
 		    temp.pread(offset, buffer,0,1);
 		} else {
-		    throw new RuntimeException("CorefileByteBuffer: Cannot peek() at address 0x"+
-					       Long.toHexString(address)+". Offset exists in file: " +
-					       metaLine.name+" but that file cannot be accessed.");
+		    throw new UserException
+			("CorefileByteBuffer: Cannot peek() at address 0x"
+			 + Long.toHexString(address)+". Offset exists in file: "
+			 + metaLine.name+" but that file cannot be accessed.");
 		}
 	    }
 	}
 	
-    else
-      throw new RuntimeException("CorefileByteBuffer: Cannot peek() " +
-      				 "at address 0x" +
-				 Long.toHexString(address)+"." +
-				 " Address location is unknown " +
-				 " (not in corefile, executable or "+
-				 " mapped solibs).");
+    else {
+	throw new UserException("CorefileByteBuffer: Cannot peek() " +
+				"at address 0x" +
+				Long.toHexString(address)+"." +
+				" Address location is unknown " +
+				" (not in corefile, executable or "+
+				" mapped solibs).");
+    }
 
     return buffer[0];
   }
@@ -236,14 +238,14 @@ public class CorefileByteBuffer extends ByteBuffer {
     //XXX: the boolean gate indicates offset not found.
     
     if (!foundOffset)
-      throw new RuntimeException("Cannot find file offset for given address 0x"
-                                 + Long.toHexString(address));
+	throw new UserException("Cannot find file offset for given address 0x"
+				+ Long.toHexString(address));
 
     
     if (!presentInFile)
-      throw new RuntimeException("Cannot read file offset for given address 0x"
-                                 + Long.toHexString(address) + 
-				 ". It is elided from the core file");
+	throw new UserException("Cannot read file offset for given address 0x"
+				+ Long.toHexString(address) + 
+				". It is elided from the core file");
     return offset;
   }
 
@@ -295,9 +297,9 @@ public class CorefileByteBuffer extends ByteBuffer {
 						   "",0x1000));
               }
           }
-      }
-    else
-      throw new RuntimeException("Cannot IO access " + this.coreFile.getPath());
+      } else {
+	throw new UserException("Cannot IO access " + this.coreFile.getPath());
+    }
 
     return (MapAddressHeader[]) localList.toArray(new MapAddressHeader[localList.size()]);
   }

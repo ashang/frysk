@@ -147,11 +147,15 @@ access_mem(::unw_addr_space_t as, ::unw_word_t addr,
     tmp.release();
     jtmp.DeleteLocalRef(env);
     return ret;
-  } catch (RuntimeException *t) {
-    // We have to catch all RuntimeExceptions here since there
-    // is no indicator for just "invalid memory location".
-    // Core files might have "holes" in their memory.
-    return -UNW_EINVAL;
+  } catch (Throwable t) {
+    if (t.IsInstanceOf(env, frysk::UserException::_class_(env))) {
+      // We have to catch all RuntimeExceptions here since there is no
+      // indicator for just "invalid memory location".  Core files
+      // might have "holes" in their memory.
+      return -UNW_EINVAL;
+    } else {
+      throw t;
+    }
   }
 }
 

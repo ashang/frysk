@@ -1,3 +1,8 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* CorefileByteBuffer.java: Throw UserException, not
+	RuntimeException.
+
 2008-06-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Update to match stack trace output.

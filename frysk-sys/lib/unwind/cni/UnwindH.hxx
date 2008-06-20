@@ -62,6 +62,7 @@
 #include <java/lang/ArrayIndexOutOfBoundsException.h>
 
 #include "inua/eio/ByteBuffer.h"
+#include "frysk/UserException.h"
 #include "frysk/rsl/Log.h"
 #include "frysk/rsl/cni/Log.hxx"
 #include "lib/dwfl/Dwfl.h"
@@ -149,11 +150,15 @@ access_mem(::unw_addr_space_t as, ::unw_word_t addr,
 					   tmp, (jboolean) write);
     memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
     return ret;
-  } catch (RuntimeException *t) {
-    // We have to catch all RuntimeExceptions here since there
-    // is no indicator for just "invalid memory location".
-    // Core files might have "holes" in their memory.
-    return -UNW_EINVAL;
+  } catch (Throwable *t) {
+    if (frysk::UserException::class$.isInstance(t)) {
+      // We have to catch all RuntimeExceptions here since there
+      // is no indicator for just "invalid memory location".
+      // Core files might have "holes" in their memory.
+      return -UNW_EINVAL;
+    } else {
+      throw t;
+    }
   }
 }
 
