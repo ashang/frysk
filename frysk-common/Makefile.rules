@@ -400,20 +400,7 @@ Runner:
 	echo ""	     						>> $@.tmp
 	echo "# some pre-definitions"				>> $@.tmp
 	echo "elfutils=$(frysk_imports)/elfutils"		>> $@.tmp
-	echo "libunwind=$(frysk_imports)/libunwind"		>> $@.tmp
 	echo "java=\"$(JAVA) $(GEN_GCJ_NO_SIGCHLD_FLAGS)\""	>> $@.tmp
-	echo ""	     						>> $@.tmp
-	echo "# Hack to pull in JNI dependences"		>> $@.tmp
-	echo "export LD_PRELOAD=\\" 				>> $@.tmp
-	echo "\$${elfutils}/libelf/libelf.so\\ \\"		>> $@.tmp
-	echo "\$${elfutils}/libdw/libdw.so\\ \\"		>> $@.tmp
-	echo "\$${elfutils}/libasm/libasm.so\\ \\"		>> $@.tmp
-	echo "\$${libunwind}-i386/src/.libs/libunwind-x86.so\\ \\" >> $@.tmp
-	echo "\$${libunwind}-ppc32/src/.libs/libunwind-ppc32.so\\ \\" >> $@.tmp
-	echo "\$${libunwind}-ppc64/src/.libs/libunwind-ppc64.so\\ \\" >> $@.tmp
-	echo "\$${libunwind}-x86_64/src/.libs/libunwind-x86_64.so\\ \\" >> $@.tmp
-	echo "libstdc++.so.6\\ \\"				>> $@.tmp
-	echo "libaudit.so"					>> $@.tmp
 	echo ""	     						>> $@.tmp
 	echo "# hack to hopefully find the right libstdc++.so"  >> $@.tmp
 	echo "export LD_LIBRARY_PATH=$(frysk_sys)\\"		>> $@.tmp

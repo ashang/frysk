@@ -1,3 +1,7 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (Runner): Delete LD_PRELOAD hack.
+
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (jni): Delete.
