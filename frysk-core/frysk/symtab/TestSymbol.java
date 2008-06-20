@@ -46,13 +46,13 @@ import frysk.testbed.DaemonBlockedAtSignal;
 public class TestSymbol
     extends TestLib
 {
-    private void symbolTest (String command, int numberOfArgs,
-			     String name, boolean addressValid,
-			     boolean sizeValid) {
-	// Construct an argument list containing numberOfArgs dummy
-	// arguments.  The inferior program just looks at ARGC to
-	// determine what to do.
-	String[] fullCommand = new String[numberOfArgs + 1];
+    private void symbolTest(String command, int numberOfArgs,
+			    String name, boolean addressValid,
+			    boolean sizeValid) {
+	// Construct an argument list numberOfArgs long (including
+	// arg[0] the program).  The inferior program just looks at
+	// ARGC to determine what to do.
+	String[] fullCommand = new String[numberOfArgs];
 	fullCommand[0] =  getExecPath (command);
     	for (int i = 1; i < fullCommand.length; i++) {
 	    fullCommand[i] = Integer.toString(i);
@@ -80,128 +80,128 @@ public class TestSymbol
     private String unknown = SymbolFactory.UNKNOWN.getName ();
 
     public void testDebug () {
-	symbolTest("funit-symbols", 1, "global_st_size", true, true);
+	symbolTest("funit-symbols", 2, "global_st_size", true, true);
     }
   
     public void testNoDebug () {
-	symbolTest("funit-symbols-nodebug", 1, "global_st_size", true, true);
+	symbolTest("funit-symbols-nodebug", 2, "global_st_size", true, true);
     }
   
     public void testStripped () {
-	symbolTest("funit-symbols-stripped", 1, unknown, false, false);
-    }
-  
-    public void testStaticDebug () {
-	symbolTest("funit-symbols", 2, "local_st_size", true, true);
-    }
-  
-    public void testStaticNoDebug () {
-	symbolTest("funit-symbols-nodebug", 2, "local_st_size", true, true);
-    }
-  
-    public void testStaticStripped () {
 	symbolTest("funit-symbols-stripped", 2, unknown, false, false);
     }
   
+    public void testStaticDebug () {
+	symbolTest("funit-symbols", 3, "local_st_size", true, true);
+    }
+  
+    public void testStaticNoDebug () {
+	symbolTest("funit-symbols-nodebug", 3, "local_st_size", true, true);
+    }
+  
+    public void testStaticStripped () {
+	symbolTest("funit-symbols-stripped", 3, unknown, false, false);
+    }
+  
     public void testNoSize() {
-	symbolTest("funit-symbols", 3, "global_st_size_0", true, false);
+	symbolTest("funit-symbols", 4, "global_st_size_0", true, false);
     }
   
     public void testNoDebugNoSize() {
-	symbolTest("funit-symbols-nodebug", 3, "global_st_size_0",
+	symbolTest("funit-symbols-nodebug", 4, "global_st_size_0",
 		   true, false);   
     }
   
     public void testStrippedNoSize() {
-	symbolTest("funit-symbols-stripped", 3, unknown, false, false);    
+	symbolTest("funit-symbols-stripped", 4, unknown, false, false);    
     }
   
     public void testStaticNoSize() {
-	symbolTest("funit-symbols", 4, "local_st_size_0", true, false);    
+	symbolTest("funit-symbols", 5, "local_st_size_0", true, false);    
     }
     public void testStaticNoDebugNoSize() {
-	symbolTest("funit-symbols-nodebug", 4, "local_st_size_0", true, false);   
+	symbolTest("funit-symbols-nodebug", 5, "local_st_size_0", true, false);   
     }
     public void testStaticStrippedNoSize() {
-	symbolTest("funit-symbols-stripped", 4, unknown, false, false);    
+	symbolTest("funit-symbols-stripped", 5, unknown, false, false);    
     }
 
     public void testGlobalInGlobal() {
-	symbolTest(5, "global_in_global", true, true);
+	symbolTest(6, "global_in_global", true, true);
     }
     public void testLocalInGlobal() {
         if (unresolved(5941))
             return;
-	symbolTest(6, "local_in_global", true, true);
+	symbolTest(7, "local_in_global", true, true);
     }
     public void testGlobalInLocal() {
-	symbolTest(7, "global_in_local", true, true);
+	symbolTest(8, "global_in_local", true, true);
     }
     public void testLocalInLocal() {
-	symbolTest(8, "local_in_local", true, true);
+	symbolTest(9, "local_in_local", true, true);
     }
 
     public void testGlobalAfterNested() {
-	symbolTest(9, "global_outer", true, true);
+	symbolTest(10, "global_outer", true, true);
     }
     public void testLocalAfterNested() {
-	symbolTest(10, "local_outer", true, true);
+	symbolTest(11, "local_outer", true, true);
     }
 
     public void testNoSymbolAfterGlobal() {
         if (unresolved(5941))
             return;
-	symbolTest(11, unknown, false, false);
+	symbolTest(12, unknown, false, false);
     }
     public void testNoSymbolAfterLocal() {
         if (unresolved(5941))
             return;
-	symbolTest(12, unknown, false, false);
+	symbolTest(13, unknown, false, false);
     }
 
     public void testGlobalSize0InGlobal() {
-	symbolTest(13, "global_after_0", true, true);
-    }
-    public void testLocalSize0InGlobal() {
 	symbolTest(14, "global_after_0", true, true);
     }
+    public void testLocalSize0InGlobal() {
+	symbolTest(15, "global_after_0", true, true);
+    }
     public void testGlobalSize0InLocal() {
-	symbolTest(15, "local_after_0", true, true);
+	symbolTest(16, "local_after_0", true, true);
     }
     public void testLocalSize0InLocal() {
-	symbolTest(16, "local_after_0", true, true);
+	symbolTest(17, "local_after_0", true, true);
     }
 
     public void testGlobalAfterNestedSize0() {
-	symbolTest(17, "global_after_0", true, true);
+	symbolTest(18, "global_after_0", true, true);
     }
     public void testLocalAfterNestedSize0() {
-	symbolTest(18, "local_after_0", true, true);
+	symbolTest(19, "local_after_0", true, true);
     }
 
     public void testSmallGlobalAtLargeGlobal() {
-	symbolTest(19, "small_global_at_large_global", true, true);
+	symbolTest(20, "small_global_at_large_global", true, true);
     }
     public void testSmallLocalAtLargeGlobal() {
         if (unresolved(5941))
             return;
-	symbolTest(20, "small_local_at_large_global", true, true);
+	symbolTest(21, "small_local_at_large_global", true, true);
     }
     public void testSmallGlobalAtLargeLocal() {
-	symbolTest(21, "small_global_at_large_local", true, true);
+	symbolTest(22, "small_global_at_large_local", true, true);
     }
     public void testSmallLocalAtLargeLocal() {
-	symbolTest(22, "small_local_at_large_local", true, true);
+	symbolTest(23, "small_local_at_large_local", true, true);
     }
 
     public void testAfterGlobalContiningSize0() {
         if (unresolved(5941))
             return;
-	symbolTest(23, unknown, false, false);
+	symbolTest(24, unknown, false, false);
     }
     public void testAfterLocalContiningSize0() {
         if (unresolved(5941))
             return;
-	symbolTest(24, unknown, false, false);
+	symbolTest(25, unknown, false, false);
     }
 }
