@@ -97,9 +97,9 @@ frysk::sys::proc::ProcBuilder::construct(jint pid, frysk::rsl::Log* warning) {
 
     try {
       build(frysk::sys::ProcessIdentifierFactory::create(id));
-    } catch (java::lang::RuntimeException *e) {
+    } catch (java::lang::Throwable *t) {
       ::closedir(proc);
-      throw e;
+      throw t;
     }
   }
 

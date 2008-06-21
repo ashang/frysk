@@ -92,9 +92,9 @@ frysk::sys::proc::ProcBuilder::construct(::jnixx::env env, jint pid,
 
     try {
       build(env, frysk::sys::ProcessIdentifierFactory::create(env, id));
-    } catch (java::lang::RuntimeException *e) {
+    } catch (java::lang::Throwable t) {
       ::closedir(proc);
-      throw e;
+      throw t;
     }
   }
 

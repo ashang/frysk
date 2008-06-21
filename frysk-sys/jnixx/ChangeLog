@@ -1,3 +1,9 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* elements.hxx (slurp): Return the BUF.
+	(FileElements::slurp): Update.
+	* elements.cxx (slurp): Update; when file-not-found return NULL.
+	
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* exceptions.cxx (userException): Implement.

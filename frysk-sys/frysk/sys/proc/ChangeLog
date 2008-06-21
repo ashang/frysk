@@ -1,3 +1,8 @@
+2008-06-20  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/ProcBuilder.cxx (ProcBuilder::construct): Catch a Throwable.
+	* jni/ProcBuilder.cxx (ProcBuilder::construct): Ditto.
+
 2008-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Exe.java (getName): Rename get.

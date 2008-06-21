@@ -102,12 +102,13 @@ chars2strings(::jnixx::env env, char** argv) {
   return strings;
 }
 
-void
-slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
+jbyte*
+slurp(jnixx::env env, const char file[], jsize& len) {
   // Attempt to open the file.
   int fd = ::open(file, O_RDONLY);
   if (fd < 0) {
-    errnoException(env, errno, "open", "file %s", file);
+    len = 0;
+    return NULL;
   }
 
   // Initially allocate space for two BUFSIZE reads (and an extra NUL
@@ -117,7 +118,7 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
   // reads are needed to confirm EOF.  Allocating 2&BUFSIZE ensures
   // that there's always space for at least two reads.  Ref SW #3370
   jsize allocated = BUFSIZ * 2 + 1;
-  buf = (jbyte*) ::malloc(allocated);
+  jbyte* buf = (jbyte*) ::malloc(allocated);
   if (buf == NULL) {
     errnoException(env, errno, "malloc");
   }
@@ -131,9 +132,8 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
       ::close(fd);
       ::free(buf);
       // Abandon the read with elements == NULL.
-      buf = NULL;
       len = 0;
-      return;
+      return NULL;
     } else if (size == 0) {
       break;
     }
@@ -149,7 +149,6 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
 	int err = errno;
 	::close(fd);
 	::free(buf);
-	buf = NULL;
 	len = 0;
 	errnoException(env, err, "realloc");
       }
@@ -162,4 +161,5 @@ slurp(jnixx::env env, const char file[], jbyte*& buf, jsize& len) {
   // Guarentee that the buffer is NUL terminated; but don't count that
   // as part of the buffer.
   buf[len] = '\0';
+  return buf;
 }

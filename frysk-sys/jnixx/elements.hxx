@@ -49,7 +49,13 @@
 
 extern char** strings2chars(::jnixx::env, ::jnixx::array<java::lang::String>);
 extern ::jnixx::array<java::lang::String> chars2strings(::jnixx::env, char**);
-extern void slurp(::jnixx::env, const char[], jbyte* (&), jsize&);
+
+/**
+ * Attempt to read the entire contents of the specified file.  Return
+ * BUF and set LEN, or NULL should the open fail.  The BUF will be NUL
+ * terminated but the NUL will not be included in the character count.
+ */
+extern jbyte* slurp(::jnixx::env, const char file[], jsize& len);
 
 class StringArrayChars {
 private:
@@ -239,9 +245,8 @@ public:
   }
 protected:
   void slurp(jnixx::env& env, type* (&buf), jsize &len) {
-    jbyte* buffer;
     jsize length;
-    ::slurp(env, file, buffer, length);
+    jbyte* buffer = ::slurp(env, file, length);
     buf = (type*)buffer;
     len = length / sizeof(type);
   }
