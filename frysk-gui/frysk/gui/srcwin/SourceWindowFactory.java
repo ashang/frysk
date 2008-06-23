@@ -51,6 +51,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import frysk.proc.dead.LinuxCoreFactory;
+import frysk.proc.dead.LinuxExeFactory;
 import frysk.config.Prefix;
 import frysk.proc.TaskAttachedObserverXXX;
 import frysk.debuginfo.DebugInfoFrame;
@@ -140,16 +141,28 @@ public class SourceWindowFactory
     public static void attachToCore(File coreFile) {
 	Proc proc = LinuxCoreFactory.createProc(coreFile);
 
-    LinkedList tasks = proc.getTasks();
-    DebugInfoFrame[] framez = new DebugInfoFrame[tasks.size()];
-    Iterator iter = tasks.iterator();
-    for (int i = 0; iter.hasNext(); i++)
-      {
-        Task task = (Task) iter.next();
-        framez[i] = DebugInfoStackFactory.createDebugInfoStackTrace(task);
-      }
-    createSourceWindow(framez);
-  }
+	LinkedList tasks = proc.getTasks();
+	DebugInfoFrame[] framez = new DebugInfoFrame[tasks.size()];
+	Iterator iter = tasks.iterator();
+	for (int i = 0; iter.hasNext(); i++) {
+	    Task task = (Task) iter.next();
+	    framez[i] = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	}
+	createSourceWindow(framez);
+    }
+    
+    public static void loadExecutable(File exeFile, String[] args) {
+	Proc proc = LinuxExeFactory.createProc(exeFile, args);
+
+	LinkedList tasks = proc.getTasks();
+	DebugInfoFrame[] framez = new DebugInfoFrame[tasks.size()];
+	Iterator iter = tasks.iterator();
+	for (int i = 0; iter.hasNext(); i++) {
+	    Task task = (Task) iter.next();
+	    framez[i] = DebugInfoStackFactory.createDebugInfoStackTrace(task);
+	}
+	createSourceWindow(framez);
+    }
   
   public static AttachedObserver startNewProc(String file, String env_variables, String options,
                                                String stdin, String stdout, String stderr)

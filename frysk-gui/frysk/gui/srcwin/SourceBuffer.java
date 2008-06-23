@@ -50,6 +50,8 @@ import java.util.List;
 
 import lib.dwfl.Disassembler;
 import lib.dwfl.Instruction;
+import lib.dwfl.Elf;
+import lib.dwfl.ElfCommand;
 
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
@@ -80,6 +82,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
 import frysk.rt.LineXXX;
 import frysk.scopes.SourceLocation;
+import frysk.solib.DynamicSegment;
 import frysk.value.Value;
 
 /**
@@ -850,10 +853,17 @@ public class SourceBuffer extends TextBuffer {
                                              task.getMemory());
 
 	long address = frame.getAddress();
+	// If the address is 0, use the entry point as the address to disassemble
+	if (address == 0) {
+	    Elf elf = new Elf(task.getProc().getExeFile().getFile(), 
+		    ElfCommand.ELF_C_READ);
+	    address = DynamicSegment.getEntryPoint(elf);
+	}
 
 	this.deleteText(this.getStartIter(), this.getEndIter());
 
 	List instructionsList = diss.disassembleInstructions(address, 40);
+
 	Iterator iter = instructionsList.iterator();
 
 	while (iter.hasNext()) {

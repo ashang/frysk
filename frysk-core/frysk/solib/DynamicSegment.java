@@ -51,7 +51,7 @@ import frysk.proc.Auxv;
  * to extract the information are all closed.
  */
 
-class DynamicSegment {
+public class DynamicSegment {
     private static final Log fine = Log.fine(DynamicSegment.class);
 
     final long addr;
@@ -99,7 +99,7 @@ class DynamicSegment {
      * Helper function to locate and report the backing Executables
      * entry point
      */
-    private static long getEntryPoint(Elf exeElf) {
+    public static long getEntryPoint(Elf exeElf) {
 	fine.log("getEntryPoint", exeElf);
 	ElfEHeader eHeader = exeElf.getEHeader();
 	if (eHeader == null)

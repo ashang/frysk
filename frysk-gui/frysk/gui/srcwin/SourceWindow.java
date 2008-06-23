@@ -167,6 +167,8 @@ public class SourceWindow extends Window {
     private Action close;
 
     private Action open_core;
+    
+    private Action open_load;
 
     private Action open_executable;
 
@@ -580,7 +582,7 @@ public class SourceWindow extends Window {
     /**
          * Populates the stack browser window
          * 
-         * @param frames An array of DebugInfoFrames used to popuate information
+         * @param frames An array of DebugInfoFrames used to populate information
          * inside the stack frame window.
          */
     public void populateStackBrowser(DebugInfoFrame[][] frames) {
@@ -886,7 +888,8 @@ public class SourceWindow extends Window {
 	Proc[] newSwProc = new Proc[numProcs];
 
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	this.steppingEngine.detachProc(this.swProc[this.current], kill);
+	if (this.swProc[this.current].getPid() != 0)
+	    this.steppingEngine.detachProc(this.swProc[this.current], kill);
 
 	int j = 0;
 	for (int i = 0; i < oldSize; i++) {
@@ -916,7 +919,7 @@ public class SourceWindow extends Window {
     /***********************************************************************
          * Getters and Setters
          **********************************************************************/
-
+    
     public Proc getSwProc() {
 	if (this.swProc.length > 0)
 	    return this.swProc[this.current];
@@ -986,7 +989,7 @@ public class SourceWindow extends Window {
 	this.open_core = new Action("open", "Examine core file...",
 		"Examine core file", GtkStockItem.OPEN.getString());
 	this.open_core.setAccelGroup(ag);
-	this.open_core.setAccelPath("<sourceWin>/File/Examine core file...");
+	this.open_core.setAccelPath("<sourceWin>/Processes/Examine core file...");
 	this.open_core.addListener(new org.gnu.gtk.event.ActionListener() {
 	    public void actionEvent(ActionEvent action) {
 		// SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
@@ -1023,7 +1026,7 @@ public class SourceWindow extends Window {
                         // to
 		    // select a file name
 		    public void fileActivated(FileChooserEvent event) {
-			examineCoreFile(chooser.getFilename());
+			examineCoreFile();
 		    }
 		});
 		setDefaultIcon(IconManager.windowIcon);
@@ -1036,15 +1039,84 @@ public class SourceWindow extends Window {
 		// The OK button was clicked, go open a source window for this
                 // core file
 		else if (response == ResponseType.OK.getValue()) {
-		    examineCoreFile(chooser.getFilename());
+		    examineCoreFile();
 		    chooser.destroy();
 		}
 	    }
 	});
-	AccelMap.changeEntry("<sourceWin>/File/Examine core file...",
+	AccelMap.changeEntry("<sourceWin>/Processes/Examine core file...",
 		KeyValue.o, ModifierType.CONTROL_MASK, true);
 	this.open_core.connectAccelerator();
+	
+	// Load executable action
+	this.open_load = new Action("Load an executable",
+		"Load a process...", "Load a process from a file",
+		GtkStockItem.OPEN.getString());
+	this.open_load.setAccelGroup(ag);
+	this.open_load
+		.setAccelPath("<sourceWin>/Processes/Load a process...");
+	this.open_load.addListener(new ActionListener() {
+	    public void actionEvent(ActionEvent action) {
+		try {
+		    glade_fc = new LibGlade(Prefix.gladeFile(FILECHOOSER_GLADE).getAbsolutePath(), null);
+		    fc = (FileChooserDialog) glade_fc
+			    .getWidget("frysk_filechooserdialog");
+		    fc.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {
+			}
 
+			public boolean lifeCycleQuery(LifeCycleEvent event) {
+			    if (event.isOfType(LifeCycleEvent.Type.DELETE)
+				    || event
+					    .isOfType(LifeCycleEvent.Type.DESTROY))
+				fc.destroy();
+			    return false;
+			}
+		    });
+
+		    fc.addListener(new FileChooserListener() {
+			public void currentFolderChanged(FileChooserEvent event) {
+			}
+
+			public void selectionChanged(FileChooserEvent event) {
+			}
+
+			public void updatePreview(FileChooserEvent event) {
+			}
+
+			// This method is called when the "Enter" key is pressed
+                        // to
+			// select a file name in the chooser
+			public void fileActivated(FileChooserEvent event) {
+			    loadExecutableFile();
+			}
+		    });
+		    fc.setIcon(IconManager.windowIcon);
+		    fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED
+			    .getID());
+		    fc.setCurrentFolder(System.getProperty("user.home"));
+		    CheckButton term_activate = (CheckButton) glade_fc
+			.getWidget("term_activate");
+		    term_activate.setSensitive(false);
+		    gtk_widget_set_size_request(fc.getHandle(), 300, 600);
+		    int response = fc.open();
+		    // "OK" key has been clicked
+		    if (response == ResponseType.OK.getValue())
+			loadExecutableFile();
+		    // "Cancel" key has been clicked
+		    if (response == ResponseType.CANCEL.getValue())
+			fc.destroy();
+		} catch (Exception e) {
+		    throw new RuntimeException(e);
+		}
+	    }
+	});
+	
+	AccelMap.changeEntry("<sourceWin>/Processes/Load executable file...",
+		KeyValue.l, ModifierType.CONTROL_MASK, true);
+	this.open_load.connectAccelerator();
+
+	
 	// Close action
 	this.close = new Action("close", "Close", "Close Window",
 		GtkStockItem.CLOSE.getString());
@@ -1345,9 +1417,11 @@ public class SourceWindow extends Window {
 		    fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED
 			    .getID());
 		    fc.setCurrentFolder(System.getProperty("user.home"));
-		    gtk_widget_set_size_request(fc.getHandle(), 300, 300);
+		    CheckButton term_activate = (CheckButton) glade_fc
+			.getWidget("term_activate");
+		    term_activate.setSensitive(false);
+		    gtk_widget_set_size_request(fc.getHandle(), 300, 1000);
 		    int response = fc.open();
-		    gtk_widget_set_size_request(fc.getHandle(), 300, 300);
 		    // "OK" key has been clicked
 		    if (response == ResponseType.OK.getValue())
 			activateProc();
@@ -1570,17 +1644,41 @@ public class SourceWindow extends Window {
     }
 
     /**
-         * This method will activate a window to allow the user to exemaine a
+         * This method will activate a window to allow the user to examine a
          * core file
          * 
          * @param filename -
          *                String containing the path to the core file
          * 
          */
-    private void examineCoreFile(String filename) {
+    private void examineCoreFile() {
+	Entry task_options = (Entry) glade_fc.getWidget("task_options");
+	String task_opt = task_options.getText();
+	String filename = fc.getFilename();
+	fc.destroy();
+	String[] stds = { "/dev/null", "/dev/null", "/dev/null" };
+	addProc(filename, "", task_opt, stds[0], stds[1], stds[2]);
 	SourceWindowFactory.attachToCore(new File(filename));
-	this.destroy();
     }
+    
+    /**
+     * This method will activate a window to allow the user to load an
+     * executable file
+     * 
+     * @param filename -
+     *                String containing the path to the executable file
+     * 
+     */
+    private void loadExecutableFile() {
+	Entry task_options = (Entry) glade_fc.getWidget("task_options");
+	String task_opt = task_options.getText();
+	String filename = fc.getFilename();
+	fc.destroy();
+	String[] stds = { "/dev/null", "/dev/null", "/dev/null" };
+	addProc(filename, "", task_opt, stds[0], stds[1], stds[2]);
+	SourceWindowFactory.loadExecutable(new File(filename), null);
+	//this.destroy();
+}
 
     /**
          * Creates the toolbar menus with initialized Actions.
@@ -1589,11 +1687,14 @@ public class SourceWindow extends Window {
 	// File menu
 	MenuItem menu = new MenuItem("File", true);
 
-	// MenuItem mi = (MenuItem) this.open_core.createMenuItem();
+	/* MenuItem mi = (MenuItem) this.open_core.createMenuItem();
 	Menu tmp = new Menu();
-	// tmp.append(mi);
-	// mi = new MenuItem(); // Separator
-	// tmp.append(mi);
+	tmp.append(mi);
+	mi = (MenuItem) this.open_load.createMenuItem();
+	tmp.append(mi);
+	mi = new MenuItem(); // Separator
+	tmp.append(mi); */
+	Menu tmp = new Menu();
 	MenuItem mi = (MenuItem) this.close.createMenuItem();
 	tmp.append(mi);
 
@@ -1686,13 +1787,15 @@ public class SourceWindow extends Window {
 
 	menu = new MenuItem("Processes", false);
 	tmp = new Menu();
-	mi = (MenuItem) this.open_executable.createMenuItem();
+	mi = (MenuItem) this.attach_proc.createMenuItem();
 	tmp.append(mi);
 	mi = new MenuItem(); // Separator
 	tmp.append(mi);
-	mi = (MenuItem) this.attach_proc.createMenuItem();
+	mi = (MenuItem) this.open_executable.createMenuItem();
 	tmp.append(mi);
 	mi = (MenuItem) this.open_core.createMenuItem();
+	tmp.append(mi);
+	mi = (MenuItem) this.open_load.createMenuItem();
 	tmp.append(mi);
 
 	menu.setSubmenu(tmp);

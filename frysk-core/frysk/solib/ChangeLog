@@ -1,3 +1,8 @@
+2008-06-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* DynamicSegment.java: Made getEntryPoint public.
+
+
 2008-03-10  Andrew Cagney  <cagney@redhat.com>
 
 	* MemoryMapFactory.java: Update to match MemoryMap.

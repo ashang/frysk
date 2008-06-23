@@ -1,3 +1,9 @@
+2008-06-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceBuffer.java: Call getEntryPoint to get address.
+	* SourceWindow.java: Add "load" capability.
+	* SourceWindowFactory.java: Add loadExecutable method.
+
 2008-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* CurrentStackView.java (STACK_OPTIONS): New.  Pass to
