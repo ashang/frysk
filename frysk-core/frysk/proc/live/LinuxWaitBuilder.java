@@ -113,7 +113,7 @@ class LinuxWaitBuilder implements WaitBuilder {
     private void logMissing(String what, ProcessIdentifier pid) {
 	String warning = ("No task for " + what + " pid " + pid
 			  + " possibly caused by earlier [test] code"
-			  + " failing to clean up all childen");
+			  + " failing to clean up all children");
 	System.out.println("WARNING: " + warning);
 	fine.log(warning);
     }
