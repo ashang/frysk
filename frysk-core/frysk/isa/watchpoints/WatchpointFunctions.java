@@ -191,7 +191,7 @@ public abstract class WatchpointFunctions  {
      * @return int minimum length
      */
     public final int getWatchpointMinLength() {
-	return watchpointMaxLength;
+	return watchpointMinLength;
     }
 
 }
