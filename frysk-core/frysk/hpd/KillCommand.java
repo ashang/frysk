@@ -156,6 +156,9 @@ public class KillCommand extends ParameterizedCommand {
 		procPID = proc.getPid();
 		// Now, call the Proc object to kill off the executable(s)
 		proc.requestKill();
+		synchronized (cli) {
+		    cli.runningProcs.remove(proc);
+		}
 		if ((pid > 0))
 		    return true;
 	    }
@@ -202,15 +205,12 @@ public class KillCommand extends ParameterizedCommand {
 			+ " that was created from " + proc.getExeFile().getSysRootedPath(),
 			Message.TYPE_NORMAL);
 		    proc.requestKill();
+		    synchronized (cli) {
+			cli.runningProcs.remove(proc);
+		    }
 		    tempId = procId;
 		    returnProc = true;
 		}
-	    }
-	}
-	if (returnProc) {
-	    synchronized (cli) {
-		// Clear the running procs set
-		cli.runningProcs.clear();
 	    }
 	}
 	return returnProc;

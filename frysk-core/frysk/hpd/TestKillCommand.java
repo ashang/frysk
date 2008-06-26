@@ -196,6 +196,37 @@ java.lang.NullPointerException
     }
     
     /**
+     * Test killing of a single proc NOT using the PID
+     */
+    public void testKillAfterAttach() {
+	SlaveOffspring newProc = SlaveOffspring.createDaemon();
+	int pid = newProc.getPid().intValue();
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("attach " + pid, "Attached to process " + pid + ".*");
+	e.sendCommandExpectPrompt("kill", "Killing process " + pid + ".*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
+    
+    /**
+     * Test killing of a single proc and then running
+     */
+    public void testKillAfterAttachThenRun() {
+	SlaveOffspring newProc = SlaveOffspring.createDaemon();
+	int pid = newProc.getPid().intValue();
+	e = new HpdTestbed();
+	e.sendCommandExpectPrompt("attach " + pid, "Attached to process " + pid + ".*");
+	e.sendCommandExpectPrompt("kill", "Killing process " + pid + ".*");
+	try { Thread.sleep(500); } catch (Exception e) { }
+	e.sendCommandExpectPrompt("run", "running with this command.*");
+	e.send("quit\n");
+	e.expect("Quitting\\.\\.\\..*");
+	e.close();
+    }
+    
+    /**
      * Test entering a non-integer as a PID
      */
     public void testKillError() {

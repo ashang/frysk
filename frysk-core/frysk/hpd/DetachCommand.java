@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2005, 2006, 2007, 2008 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -72,12 +72,15 @@ class DetachCommand extends ParameterizedCommand {
 	    synchronized (cli) {
 		startedByRun = cli.runningProcs.contains(proc);
 	    }
-	    if (startedByRun)
+	    if (!startedByRun)
 		continue;
 	    // Delete all breakpoints.
 	    if (cli.steppingObserver != null)
 		cli.getSteppingEngine().removeObserver(cli.steppingObserver,
 			proc, true);
+	    synchronized (cli) {
+		cli.runningProcs.remove(proc);
+	    }
 	}
     }
 

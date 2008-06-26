@@ -1,3 +1,11 @@
+2008-06-26  Rick Moseley  <rmoseley@redhat.com>
+
+	* CLI.java: Fix bz 6696.
+	* DetachCommand.java: Ditto.
+	* KillCommand.java: Ditto.
+	* TestKillCommand.java: Add test for fix.
+
+
 2008-06-17  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestWatchCommand.java (testWritePrevValue): New test.

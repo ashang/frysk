@@ -185,6 +185,10 @@ public class CLI {
         // Assign this proc to the passed in procID 
         else
             idManager.manageProc(proc, this.taskID);
+        // Add this process to the runningProcs table
+        synchronized (this) {
+		this.runningProcs.add(proc);
+	    }
     }
 
     /**
