@@ -44,8 +44,8 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.isa.ISA;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.ptrace.RegisterSet;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.BlockSpace;
+import frysk.sys.ptrace.ByteSpace;
 import frysk.isa.banks.RegisterBanks;
 import frysk.isa.banks.X86BankRegisters;
 import frysk.isa.banks.PPCBankRegisters;
@@ -60,9 +60,9 @@ class PtraceRegisterBanksFactory {
 
     private static ByteBuffer[] x8664Banks(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
-	    new RegisterSetByteBuffer(pid, RegisterSet.REGS),
-	    new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
-	    new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+	    new BlockSpaceByteBuffer(pid, BlockSpace.REGS),
+	    new BlockSpaceByteBuffer(pid, BlockSpace.FPREGS),
+	    new ByteSpaceByteBuffer(pid, ByteSpace.USR)
 	};
 	for (int i = 0; i < bankBuffers.length; i++) {
 	    bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
@@ -72,10 +72,10 @@ class PtraceRegisterBanksFactory {
 
     private static ByteBuffer[] ia32Banks(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
-	    new RegisterSetByteBuffer(pid, RegisterSet.REGS),
-	    new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
-	    new RegisterSetByteBuffer(pid, RegisterSet.FPXREGS),
-	    new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+	    new BlockSpaceByteBuffer(pid, BlockSpace.REGS),
+	    new BlockSpaceByteBuffer(pid, BlockSpace.FPREGS),
+	    new BlockSpaceByteBuffer(pid, BlockSpace.FPXREGS),
+	    new ByteSpaceByteBuffer(pid, ByteSpace.USR)
 	};
 	for (int i = 0; i < bankBuffers.length; i++) {
 	    bankBuffers[i].order(ByteOrder.LITTLE_ENDIAN);
@@ -85,7 +85,7 @@ class PtraceRegisterBanksFactory {
 
     private static ByteBuffer[] ppcBanksBE(ProcessIdentifier pid) {
 	ByteBuffer[] bankBuffers = new ByteBuffer[] {
-            new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+            new ByteSpaceByteBuffer(pid, ByteSpace.USR)
         };
 
 	for (int i = 0; i < bankBuffers.length; i++) {

@@ -60,7 +60,7 @@ union word {
 };
 
 jint
-frysk::sys::ptrace::AddressSpace::peek(::jnixx::env env, jint pid, jlong addr) {
+frysk::sys::ptrace::ByteSpace::peek(::jnixx::env env, jint pid, jlong addr) {
   union word w;
   long paddr = addr & -sizeof(long);
   if (DEBUG)
@@ -78,7 +78,7 @@ frysk::sys::ptrace::AddressSpace::peek(::jnixx::env env, jint pid, jlong addr) {
 }
 
 void
-frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, jint data) {
+frysk::sys::ptrace::ByteSpace::poke(::jnixx::env env, jint pid, jlong addr, jint data) {
   // Implement read-modify-write
   union word w;
   if (DEBUG)
@@ -99,10 +99,10 @@ frysk::sys::ptrace::AddressSpace::poke(::jnixx::env env, jint pid, jlong addr, j
 }
 
 void
-frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
-					   jint op, jint pid, jlong addr,
-					   ::jnixx::jbyteArray byteArray,
-					   jint offset, jint length) {
+frysk::sys::ptrace::ByteSpace::transfer(::jnixx::env env,
+					jint op, jint pid, jlong addr,
+					::jnixx::jbyteArray byteArray,
+					jint offset, jint length) {
   const int ptPeek = GetPtPeek(env);
   const int ptPoke = GetPtPoke(env);
   verifyBounds(env, byteArray, offset, length);
@@ -156,26 +156,26 @@ frysk::sys::ptrace::AddressSpace::transfer(::jnixx::env env,
   }
 }
 
-frysk::sys::ptrace::AddressSpace
-frysk::sys::ptrace::AddressSpace::text(::jnixx::env env) {
-  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
-					       String::NewStringUTF(env, "TEXT"),
-					       PTRACE_PEEKTEXT,
-					       PTRACE_POKETEXT);
+frysk::sys::ptrace::ByteSpace
+frysk::sys::ptrace::ByteSpace::text(::jnixx::env env) {
+  return frysk::sys::ptrace::ByteSpace::New(env, -1UL,
+					    String::NewStringUTF(env, "TEXT"),
+					    PTRACE_PEEKTEXT,
+					    PTRACE_POKETEXT);
 }
 
-frysk::sys::ptrace::AddressSpace
-frysk::sys::ptrace::AddressSpace::data(::jnixx::env env) {
-  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
-					       String::NewStringUTF(env, "DATA"),
-					       PTRACE_PEEKDATA,
-					       PTRACE_POKEDATA);
+frysk::sys::ptrace::ByteSpace
+frysk::sys::ptrace::ByteSpace::data(::jnixx::env env) {
+  return frysk::sys::ptrace::ByteSpace::New(env, -1UL,
+					    String::NewStringUTF(env, "DATA"),
+					    PTRACE_PEEKDATA,
+					    PTRACE_POKEDATA);
 }
 
-frysk::sys::ptrace::AddressSpace
-frysk::sys::ptrace::AddressSpace::usr(::jnixx::env env) {
-  return frysk::sys::ptrace::AddressSpace::New(env, -1UL,
-					       String::NewStringUTF(env, "USR"),
-					       PTRACE_PEEKUSR,
-					       PTRACE_POKEUSR);
+frysk::sys::ptrace::ByteSpace
+frysk::sys::ptrace::ByteSpace::usr(::jnixx::env env) {
+  return frysk::sys::ptrace::ByteSpace::New(env, -1UL,
+					    String::NewStringUTF(env, "USR"),
+					    PTRACE_PEEKUSR,
+					    PTRACE_POKEUSR);
 }

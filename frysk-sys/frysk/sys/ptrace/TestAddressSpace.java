@@ -59,7 +59,7 @@ public class TestAddressSpace extends TestCase {
     }
 
     private void verifyBytes(String what, ProcessIdentifier pid,
-			     AddressSpace space,
+			     ByteSpace space,
 			     byte[] bytes, long addr) {
 	for (int i = 0; i < bytes.length; i++) {
 	    assertEquals(what + " " + i + " at " + addr + " in " + space,
@@ -68,34 +68,34 @@ public class TestAddressSpace extends TestCase {
 	}
     }
 
-    private void verifyPeek(String what, AddressSpace space,
+    private void verifyPeek(String what, ByteSpace space,
 			    byte[] bytes, long addr) {
 	verifyBytes(what, ForkFactory.attachedDaemon(), space, bytes, addr);
     }
     public void testTextValPeek() {
-	verifyPeek("TextVal", AddressSpace.TEXT,
+	verifyPeek("TextVal", ByteSpace.TEXT,
 		   LocalMemory.getDataBytes(),
 		   LocalMemory.getDataAddr());
     }
     public void testDataValPeek() {
-	verifyPeek("DataVal", AddressSpace.DATA,
+	verifyPeek("DataVal", ByteSpace.DATA,
 		   LocalMemory.getDataBytes(),
 		   LocalMemory.getDataAddr());
     }
     public void testTextFuncPeek() {
-	verifyPeek("TextFunc", AddressSpace.TEXT,
+	verifyPeek("TextFunc", ByteSpace.TEXT,
 		   LocalMemory.getCodeBytes(),
 		   LocalMemory.getCodeAddr());
     }
     public void testDataFuncPeek() {
-	verifyPeek("DataFunc", AddressSpace.DATA,
+	verifyPeek("DataFunc", ByteSpace.DATA,
 		   LocalMemory.getCodeBytes(),
 		   LocalMemory.getCodeAddr());
     }
     public void testDataStackPeek() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPeek("DataStack", AddressSpace.DATA,
+		    verifyPeek("DataStack", ByteSpace.DATA,
 			       bytes, addr);
 		}
 	    });
@@ -103,13 +103,13 @@ public class TestAddressSpace extends TestCase {
     public void testTextStackPeek() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPeek("DataStack", AddressSpace.TEXT,
+		    verifyPeek("DataStack", ByteSpace.TEXT,
 			       bytes, addr);
 		}
 	    });
     }
 
-    public void verifyPoke(String what, AddressSpace space,
+    public void verifyPoke(String what, ByteSpace space,
 			   byte[] bytes, long addr) {
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	for (byte i = 4; i < 12; i++) {
@@ -119,29 +119,29 @@ public class TestAddressSpace extends TestCase {
 	}
     }
     public void testTextValPoke() {
-	verifyPoke("TextVal", AddressSpace.TEXT,
+	verifyPoke("TextVal", ByteSpace.TEXT,
 		   LocalMemory.getDataBytes(),
 		   LocalMemory.getDataAddr());
     }
     public void testDataValPoke() {
-	verifyPoke("DataVal", AddressSpace.DATA,
+	verifyPoke("DataVal", ByteSpace.DATA,
 		   LocalMemory.getDataBytes(),
 		   LocalMemory.getDataAddr());
     }
     public void testTextFuncPoke() {
-	verifyPoke("TextFunc", AddressSpace.TEXT,
+	verifyPoke("TextFunc", ByteSpace.TEXT,
 		   LocalMemory.getCodeBytes(),
 		   LocalMemory.getCodeAddr());
     }
     public void testDataFuncPoke() {
-	verifyPoke("DataFunc", AddressSpace.DATA,
+	verifyPoke("DataFunc", ByteSpace.DATA,
 		   LocalMemory.getCodeBytes(),
 		   LocalMemory.getCodeAddr());
     }
     public void testDataStackPoke() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPoke("DataStack", AddressSpace.DATA,
+		    verifyPoke("DataStack", ByteSpace.DATA,
 			       bytes, addr);
 		}
 	    });
@@ -149,13 +149,13 @@ public class TestAddressSpace extends TestCase {
     public void testTextStackPoke() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPoke("DataStack", AddressSpace.TEXT,
+		    verifyPoke("DataStack", ByteSpace.TEXT,
 			       bytes, addr);
 		}
 	    });
     }
 
-    private void verifyPeekBytes(String why, AddressSpace space,
+    private void verifyPeekBytes(String why, ByteSpace space,
 				 byte[] startBytes, long startAddr) {
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	byte[] pidBytes = new byte[startBytes.length];
@@ -183,29 +183,29 @@ public class TestAddressSpace extends TestCase {
 	}
     }
     public void testTextValPeekBytes() {
-	verifyPeekBytes ("TextVal", AddressSpace.TEXT,
+	verifyPeekBytes ("TextVal", ByteSpace.TEXT,
 			 LocalMemory.getDataBytes(),
 			 LocalMemory.getDataAddr());
     }
     public void testDataValPeekBytes() {
-	verifyPeekBytes ("DataVal", AddressSpace.DATA,
+	verifyPeekBytes ("DataVal", ByteSpace.DATA,
 			 LocalMemory.getDataBytes(),
 			 LocalMemory.getDataAddr());
     }
     public void testTextFuncPeekBytes() {
-	verifyPeekBytes("TextFunc", AddressSpace.TEXT,
+	verifyPeekBytes("TextFunc", ByteSpace.TEXT,
 			LocalMemory.getCodeBytes(),
 			LocalMemory.getCodeAddr());
     }
     public void testDataFuncPeekBytes() {
-	verifyPeekBytes("DataFunc", AddressSpace.DATA,
+	verifyPeekBytes("DataFunc", ByteSpace.DATA,
 			LocalMemory.getCodeBytes(),
 			LocalMemory.getCodeAddr());
     }
     public void testDataStackPeekBytes() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPeekBytes("DataStack", AddressSpace.DATA,
+		    verifyPeekBytes("DataStack", ByteSpace.DATA,
 				    bytes, addr);
 		}
 	    });
@@ -213,13 +213,13 @@ public class TestAddressSpace extends TestCase {
     public void testTextStackPeekBytes() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPeekBytes("DataStack", AddressSpace.TEXT,
+		    verifyPeekBytes("DataStack", ByteSpace.TEXT,
 				    bytes, addr);
 		}
 	    });
     }
 
-    private void verifyPokeBytes(String why, AddressSpace space,
+    private void verifyPokeBytes(String why, ByteSpace space,
 				 byte[] startBytes, long startAddr) {
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	byte[] newBytes = new byte[startBytes.length];
@@ -256,29 +256,29 @@ public class TestAddressSpace extends TestCase {
 	}
     }
     public void testTextValPokeBytes() {
-	verifyPokeBytes("TextVal", AddressSpace.TEXT,
+	verifyPokeBytes("TextVal", ByteSpace.TEXT,
 			LocalMemory.getDataBytes(),
 			LocalMemory.getDataAddr());
     }
     public void testDataValPokeBytes() {
-	verifyPokeBytes("DataVal", AddressSpace.DATA,
+	verifyPokeBytes("DataVal", ByteSpace.DATA,
 			LocalMemory.getDataBytes(),
 			LocalMemory.getDataAddr());
     }
     public void testTextFuncPokeBytes() {
-	verifyPokeBytes("TextFunc", AddressSpace.TEXT,
+	verifyPokeBytes("TextFunc", ByteSpace.TEXT,
 			LocalMemory.getCodeBytes(),
 			LocalMemory.getCodeAddr());
     }
     public void testDataFuncPokeBytes() {
-	verifyPokeBytes("DataFunc", AddressSpace.DATA,
+	verifyPokeBytes("DataFunc", ByteSpace.DATA,
 			LocalMemory.getCodeBytes(),
 			LocalMemory.getCodeAddr());
     }
     public void testDataStackPokeBytes() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPokeBytes("DataStack", AddressSpace.DATA,
+		    verifyPokeBytes("DataStack", ByteSpace.DATA,
 				    bytes, addr);
 		}
 	    });
@@ -286,7 +286,7 @@ public class TestAddressSpace extends TestCase {
     public void testTextStackPokeBytes() {
 	LocalMemory.constructStack(new StackBuilder() {
 		public void stack(long addr, byte[] bytes) {
-		    verifyPokeBytes("DataStack", AddressSpace.TEXT,
+		    verifyPokeBytes("DataStack", ByteSpace.TEXT,
 				    bytes, addr);
 		}
 	    });
@@ -297,7 +297,7 @@ public class TestAddressSpace extends TestCase {
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
 	boolean caught = false;
 	try {
-	    AddressSpace.DATA.transfer(pid, LocalMemory.getCodeAddr(),
+	    ByteSpace.DATA.transfer(pid, LocalMemory.getCodeAddr(),
 				       bytes, offset, length,
 				       false); // read
 	} catch (ArrayIndexOutOfBoundsException e) {

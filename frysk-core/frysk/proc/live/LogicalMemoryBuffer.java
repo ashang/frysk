@@ -42,7 +42,7 @@ package frysk.proc.live;
 import frysk.sys.ProcessIdentifier;
 import java.util.Iterator;
 import inua.eio.ByteBuffer;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.ByteSpace;
 
 /**
  * MemorySpaceByteBuffer that filters out anything the frysk core
@@ -51,16 +51,15 @@ import frysk.sys.ptrace.AddressSpace;
  * replace the bytes with the logical bytes as the user would normally
  * see them from the process.
  */
-class LogicalMemoryBuffer extends AddressSpaceByteBuffer
-{
-  // The breakpoints associated with the process address space.
-  private final BreakpointAddresses breakpoints;
+class LogicalMemoryBuffer extends ByteSpaceByteBuffer {
+    // The breakpoints associated with the process address space.
+    private final BreakpointAddresses breakpoints;
 
     /**
      * Private constructor used by subBuffer()
      */
     private LogicalMemoryBuffer(ProcessIdentifier tid,
-				AddressSpace addressSpace,
+				ByteSpace addressSpace,
 				BreakpointAddresses breakpoints,
 				long lower, long upper) {
 	super(tid, addressSpace, lower, upper);
@@ -72,99 +71,90 @@ class LogicalMemoryBuffer extends AddressSpaceByteBuffer
      * memory space for a task when requested.
      */
     LogicalMemoryBuffer(ProcessIdentifier tid,
-			AddressSpace addressSpace,
+			ByteSpace addressSpace,
 			BreakpointAddresses breakpoints) {
 	super(tid, addressSpace);
 	this.breakpoints = breakpoints;
     }
   
-  protected int peek(long caret)
-  {
-    Breakpoint breakpoint = breakpoints.getBreakpoint(caret);
-    if (breakpoint != null)
-      {
-	// This really shouldn't happen, it means the breakpoint
-	// is already uninstalled.
-	Instruction instruction = breakpoint.getInstruction();
-	if (instruction != null)
-	  {
-	    byte[] ibs = instruction.getBytes();
-	    return ibs[0] & 0xff;
-	  }
-      }
-    return super.peek(caret);
-  }
-  
-  protected int peek(long index, byte[] bytes, int offset, int length)
-  {
-    synchronized (breakpoints)
-      {
-	Iterator it;
-	it = breakpoints.getBreakpoints(index, index + length);
-	int r = 0;
-	while (it.hasNext())
-	  {
-	    Breakpoint breakpoint = (Breakpoint) it.next();
-	    // address - index falls inside the byte[] so will be at most
-	    // a positive int apart.
-	    int l = (int) (breakpoint.getAddress() - index) - r;
-	    // Do we need to be worried about "short peeks"?
-	    r += super.peek(index + r, bytes, offset + r, l);
-
-	    byte b;
-	    Instruction instruction = breakpoint.getInstruction();
+    protected int peek(long caret)
+    {
+	Breakpoint breakpoint = breakpoints.getBreakpoint(caret);
+	if (breakpoint != null) {
 	    // This really shouldn't happen, it means the breakpoint
 	    // is already uninstalled.
-	    if (instruction != null)
-	      b = instruction.getBytes()[0];
-	    else
-	      b = (byte) super.peek(index + r);
-	    bytes[offset + r] = b;
-	    r++;
-	  }
-	return super.peek(index + r, bytes, offset + r, length - r) + r;
-      }
-  }
-
-  /**
-   * Pokes the value at the given index. Unless a breakpoint is set at
-   * that location (FIXME: this limitation should be lifted).
-   */
-  protected void poke (long index, int value)
-  {
-    Breakpoint breakpoint = breakpoints.getBreakpoint(index);
-    if (breakpoint != null)
-      throw new UnsupportedOperationException("breakpoint set at: " + index);
-
-    super.poke(index, value);
-  }
+	    Instruction instruction = breakpoint.getInstruction();
+	    if (instruction != null) {
+		byte[] ibs = instruction.getBytes();
+		return ibs[0] & 0xff;
+	    }
+	}
+	return super.peek(caret);
+    }
   
-  /**
-   * Pokes the given bytes from offset at the index plus the given
-   * lenght. Unless a breakpoint is set in that range (FIXME: this
-   * limitation should be lifted).
-   */
-  protected int poke(long index, byte[] bytes, int offset, int length)
-  {
-    synchronized (breakpoints)
-      {
-	Iterator it;
-	it = breakpoints.getBreakpoints(index, index + length);
-	if (it.hasNext())
-	  throw new UnsupportedOperationException("breakpoint set between "
-						  + index + " and "
-						  + index + length);
-      }
+    protected int peek(long index, byte[] bytes, int offset, int length) {
+	synchronized (breakpoints) {
+	    Iterator it;
+	    it = breakpoints.getBreakpoints(index, index + length);
+	    int r = 0;
+	    while (it.hasNext()) {
+		Breakpoint breakpoint = (Breakpoint) it.next();
+		// address - index falls inside the byte[] so will be at most
+		// a positive int apart.
+		int l = (int) (breakpoint.getAddress() - index) - r;
+		// Do we need to be worried about "short peeks"?
+		r += super.peek(index + r, bytes, offset + r, l);
+		
+		byte b;
+		Instruction instruction = breakpoint.getInstruction();
+		// This really shouldn't happen, it means the breakpoint
+		// is already uninstalled.
+		if (instruction != null)
+		    b = instruction.getBytes()[0];
+		else
+		    b = (byte) super.peek(index + r);
+		bytes[offset + r] = b;
+		r++;
+	    }
+	    return super.peek(index + r, bytes, offset + r, length - r) + r;
+	}
+    }
+    
+    /**
+     * Pokes the value at the given index. Unless a breakpoint is set
+     * at that location (FIXME: this limitation should be lifted).
+     */
+    protected void poke(long index, int value) {
+	Breakpoint breakpoint = breakpoints.getBreakpoint(index);
+	if (breakpoint != null)
+	    throw new UnsupportedOperationException("breakpoint set at: " + index);
 
-    return super.poke(index, bytes, offset, length);
-  }
+	super.poke(index, value);
+    }
+  
+    /**
+     * Pokes the given bytes from offset at the index plus the given
+     * lenght. Unless a breakpoint is set in that range (FIXME: this
+     * limitation should be lifted).
+     */
+    protected int poke(long index, byte[] bytes, int offset, int length) {
+	synchronized (breakpoints) {
+	    Iterator it;
+	    it = breakpoints.getBreakpoints(index, index + length);
+	    if (it.hasNext())
+		throw new UnsupportedOperationException("breakpoint set between "
+							+ index + " and "
+							+ index + length);
+	}
+	
+	return super.poke(index, bytes, offset, length);
+    }
 
-  protected ByteBuffer subBuffer(ByteBuffer parent,
-				 long lower, long upper)
-  {
-    LogicalMemoryBuffer sub = (LogicalMemoryBuffer) parent;
-    return new LogicalMemoryBuffer (sub.pid, sub.addressSpace,
-				    sub.breakpoints,
-				    lower, upper);
-  }
+    protected ByteBuffer subBuffer(ByteBuffer parent,
+				   long lower, long upper) {
+	LogicalMemoryBuffer sub = (LogicalMemoryBuffer) parent;
+	return new LogicalMemoryBuffer (sub.pid, sub.addressSpace,
+					sub.breakpoints,
+					lower, upper);
+    }
 }

@@ -42,34 +42,35 @@ package frysk.proc.live;
 import inua.eio.ByteBuffer;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.ByteSpace;
 import frysk.sys.proc.Mem;
 import frysk.event.Request;
 import frysk.proc.Manager;
 
-public class AddressSpaceByteBuffer extends ByteBuffer {
-    protected final AddressSpace addressSpace;
+public class ByteSpaceByteBuffer extends ByteBuffer {
+    protected final ByteSpace addressSpace;
     protected final ProcessIdentifier pid;
 
     // Direct files access if possible, or null otherwise.
     private Mem mem;
 
-    protected AddressSpaceByteBuffer (ProcessIdentifier pid,
-				      AddressSpace addressSpace,
-				      long lowerExtreem, long upperExtreem) {
+    protected ByteSpaceByteBuffer (ProcessIdentifier pid,
+				   ByteSpace addressSpace,
+				   long lowerExtreem, long upperExtreem) {
 	super (lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.addressSpace = addressSpace;
 	peekRequest = new PeekRequest();
 	pokeRequest = new PokeRequest();
-	if (addressSpace == AddressSpace.TEXT
-	    || addressSpace == AddressSpace.DATA)
+	if (addressSpace == ByteSpace.TEXT
+	    || addressSpace == ByteSpace.DATA) {
 	    // Try to use /proc; but if any error occures clear it and
 	    // revert back to ptrace.
 	    mem = new Mem(pid);
+	}
     }
-    public AddressSpaceByteBuffer(ProcessIdentifier pid,
-				  AddressSpace addressSpace) {
+    public ByteSpaceByteBuffer(ProcessIdentifier pid,
+			       ByteSpace addressSpace) {
 	this(pid, addressSpace, 0, addressSpace.length());
     }
 
@@ -79,22 +80,21 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
     {
 	private long index;
 	private int value;
-	PeekRequest()
-	{
+	PeekRequest() {
 	    super(Manager.eventLoop);
 	}
-	public void execute ()
-	{
+	public void execute() {
 	    value = addressSpace.peek(pid, index);
 	}
-	public int request (long index)
-	{
+	public int request(long index) {
 	    if (isEventLoopThread())
 		return addressSpace.peek(pid, index);
-	    else synchronized (this) {
-		this.index = index;
-		request();
-		return value;
+	    else {
+		synchronized (this) {
+		    this.index = index;
+		    request();
+		    return value;
+		}
 	    }
 	}
     }
@@ -108,22 +108,21 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
     {
 	private long index;
 	private int value;
-	PokeRequest()
-	{
+	PokeRequest() {
 	    super(Manager.eventLoop);
 	}
-	public void execute ()
-	{
+	public void execute() {
 	    addressSpace.poke(pid, index, value);
 	}
-	public void request (long index, int value)
-	{
+	public void request(long index, int value) {
 	    if (isEventLoopThread())
 		addressSpace.poke(pid, index, value);
-	    else synchronized (this) {
-		this.index = index;
-		this.value = value;
-		request();
+	    else {
+		synchronized (this) {
+		    this.index = index;
+		    this.value = value;
+		    request();
+		}
 	    }
 	}
     }
@@ -167,13 +166,15 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
 			    boolean write) {
 	    if (isEventLoopThread())
 		transfer(index, bytes, offset, length, write);
-	    else synchronized (this) {
-		this.index = index;
-		this.bytes = bytes;
-		this.offset = offset;
-		this.length = length;
-		this.write = write;
-		super.request();
+	    else {
+		synchronized (this) {
+		    this.index = index;
+		    this.bytes = bytes;
+		    this.offset = offset;
+		    this.length = length;
+		    this.write = write;
+		    super.request();
+		}
 	    }
 	}
     }
@@ -189,10 +190,9 @@ public class AddressSpaceByteBuffer extends ByteBuffer {
     }
 
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
-				    long upperExtreem)
-    {
-	AddressSpaceByteBuffer up = (AddressSpaceByteBuffer)parent;
-	return new AddressSpaceByteBuffer (up.pid, up.addressSpace,
-					   lowerExtreem, upperExtreem);
+				    long upperExtreem) {
+	ByteSpaceByteBuffer up = (ByteSpaceByteBuffer)parent;
+	return new ByteSpaceByteBuffer(up.pid, up.addressSpace,
+				       lowerExtreem, upperExtreem);
     }
 }

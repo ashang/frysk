@@ -56,7 +56,7 @@ public class TestRegisterSet extends TestCase {
 	TearDownProcess.tearDown ();
     }
 
-    private void verifyTransfer(String what, RegisterSet regs) {
+    private void verifyTransfer(String what, BlockSpace regs) {
 	if (unsupported(what, regs == null))
 	    return;
 	ProcessIdentifier pid = ForkFactory.attachedDaemon();
@@ -71,12 +71,12 @@ public class TestRegisterSet extends TestCase {
     }
 
     public void testREGS() {
-	verifyTransfer("REGS", RegisterSet.REGS);
+	verifyTransfer("REGS", BlockSpace.REGS);
     }
     public void testFPREGS() {
-	verifyTransfer("FPREGS", RegisterSet.FPREGS);
+	verifyTransfer("FPREGS", BlockSpace.FPREGS);
     }
     public void testFPXREGS() {
-	verifyTransfer("FPXREGS", RegisterSet.FPXREGS);
+	verifyTransfer("FPXREGS", BlockSpace.FPXREGS);
     }
 }

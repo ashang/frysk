@@ -40,7 +40,7 @@
 package frysk.testbed;
 
 import inua.eio.ByteBuffer;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.ByteSpace;
 
 /**
  * Provide access to known local areas of memory.
@@ -111,7 +111,7 @@ public class LocalMemory {
      * thread's memory.
      */
     public static ByteBuffer getByteBuffer() {
-	return new ByteBuffer(0, AddressSpace.DATA.length()) {
+	return new ByteBuffer(0, ByteSpace.DATA.length()) {
 	    protected int peek(long offset) {
 		return LocalMemory.peek(offset);
 	    }

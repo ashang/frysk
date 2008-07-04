@@ -1,3 +1,14 @@
+2008-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* jni/ByteSpace.cxx: Rename jni/AddressSpace.java.
+	* cni/ByteSpace.cxx: Rename cni/AddressSpace.java.
+	* jni/BlockSpace.cxx: Rename jni/RegisterSet.java.
+	* cni/BlockSpace.cxx: Rename cni/RegisterSet.java.
+	* ByteSpace.java: Rename AddressSpace.java.
+	* BlockSpace.java: Rename RegisterSet.java.
+	* TestRegisterSet.java: Update.
+	* TestAddressSpace.java: Update.
+
 2008-06-20  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/AddressSpace.cxx: Simplify debug code.

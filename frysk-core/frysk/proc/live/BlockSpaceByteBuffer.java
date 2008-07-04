@@ -39,7 +39,7 @@
 
 package frysk.proc.live;
 
-import frysk.sys.ptrace.RegisterSet;
+import frysk.sys.ptrace.BlockSpace;
 import frysk.event.Request;
 import frysk.proc.Manager;
 import inua.eio.ByteBuffer;
@@ -50,23 +50,23 @@ import frysk.sys.ProcessIdentifier;
  * be read or written all at once e.g., the registers or floating
  * point registers.
  */
-public class RegisterSetByteBuffer
+public class BlockSpaceByteBuffer
     extends ByteBuffer
 {
     private final ProcessIdentifier pid;
-    private final RegisterSet registerSet;
+    private final BlockSpace registerSet;
     private final byte[] bytes;
   
-    private RegisterSetByteBuffer(ProcessIdentifier pid,
-				  RegisterSet registerSet,
-				  long lowerExtreem, long upperExtreem) {
+    private BlockSpaceByteBuffer(ProcessIdentifier pid,
+				 BlockSpace registerSet,
+				 long lowerExtreem, long upperExtreem) {
 	super(lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.registerSet = registerSet;
 	bytes = new byte[registerSet.length()];
     }
-    public RegisterSetByteBuffer(ProcessIdentifier pid,
-				 RegisterSet registerSet) {
+    public BlockSpaceByteBuffer(ProcessIdentifier pid,
+				BlockSpace registerSet) {
 	this(pid, registerSet, 0, registerSet.length());
     }
   
@@ -121,11 +121,10 @@ public class RegisterSetByteBuffer
 	return len;
     }
   
-    protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
-				    long upperExtreem)
-    {
-	RegisterSetByteBuffer up = (RegisterSetByteBuffer)parent;
-	return new RegisterSetByteBuffer (up.pid, up.registerSet,
-					  lowerExtreem, upperExtreem);
+    protected ByteBuffer subBuffer(ByteBuffer parent, long lowerExtreem,
+				   long upperExtreem) {
+	BlockSpaceByteBuffer up = (BlockSpaceByteBuffer)parent;
+	return new BlockSpaceByteBuffer(up.pid, up.registerSet,
+					lowerExtreem, upperExtreem);
     }
 }

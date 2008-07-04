@@ -43,16 +43,19 @@ import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 
 /**
- * A ptrace register set that is transfered to/from PID in bulk.
+ * A ptrace space that is transfered to/from PID in bulk.
+ *
+ * One day, someone will implement caching of this, minimizing the
+ * need for redundant transfers.
  */
-public class RegisterSet {
-    private static final Log fine = Log.fine(RegisterSet.class);
+public class BlockSpace {
+    private static final Log fine = Log.fine(BlockSpace.class);
 
     private final int ptLength;
     private final int ptGet;
     private final int ptSet;
 
-    RegisterSet(int ptLength, int ptGet, int ptSet) {
+    BlockSpace(int ptLength, int ptGet, int ptSet) {
 	this.ptLength = ptLength;
 	this.ptGet = ptGet;
 	this.ptSet = ptSet;
@@ -77,11 +80,11 @@ public class RegisterSet {
     private static native void transfer(int op, int pid, byte[] data,
 					int length);
 
-    private static native RegisterSet regs();
-    private static native RegisterSet fpregs();
-    private static native RegisterSet fpxregs();
+    private static native BlockSpace regs();
+    private static native BlockSpace fpregs();
+    private static native BlockSpace fpxregs();
 
-    public static final RegisterSet REGS = regs();
-    public static final RegisterSet FPREGS = fpregs();
-    public static final RegisterSet FPXREGS = fpxregs();
+    public static final BlockSpace REGS = regs();
+    public static final BlockSpace FPREGS = fpregs();
+    public static final BlockSpace FPXREGS = fpxregs();
 }

@@ -53,7 +53,7 @@
 
 #include "frysk/sys/ptrace/cni/Ptrace.hxx"
 #include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/ptrace/AddressSpace.h"
+#include "frysk/sys/ptrace/ByteSpace.h"
 
 union word {
   long l;
@@ -61,7 +61,7 @@ union word {
 };
 
 jint
-frysk::sys::ptrace::AddressSpace::peek(jint pid, jlong addr) {
+frysk::sys::ptrace::ByteSpace::peek(jint pid, jlong addr) {
   union word w;
   long paddr = addr & -sizeof(long);
   if (DEBUG)
@@ -79,7 +79,7 @@ frysk::sys::ptrace::AddressSpace::peek(jint pid, jlong addr) {
 }
 
 void
-frysk::sys::ptrace::AddressSpace::poke(jint pid, jlong addr, jint data) {
+frysk::sys::ptrace::ByteSpace::poke(jint pid, jlong addr, jint data) {
   // Implement read-modify-write
   union word w;
   if (DEBUG)
@@ -100,9 +100,9 @@ frysk::sys::ptrace::AddressSpace::poke(jint pid, jlong addr, jint data) {
 }
 
 void
-frysk::sys::ptrace::AddressSpace::transfer(jint op, jint pid, jlong addr,
-					   jbyteArray bytes, jint offset,
-					   jint length) {
+frysk::sys::ptrace::ByteSpace::transfer(jint op, jint pid, jlong addr,
+					jbyteArray bytes, jint offset,
+					jint length) {
   verifyBounds(bytes, offset, length);
   // Somewhat more clueful implementation
   for (jlong i = 0; i < length;) {
@@ -152,26 +152,26 @@ frysk::sys::ptrace::AddressSpace::transfer(jint op, jint pid, jlong addr,
   }
 }
 
-frysk::sys::ptrace::AddressSpace*
-frysk::sys::ptrace::AddressSpace::text() {
-  return new frysk::sys::ptrace::AddressSpace(-1UL,
-					      JvNewStringUTF("TEXT"),
-					      PTRACE_PEEKTEXT,
-					      PTRACE_POKETEXT);
+frysk::sys::ptrace::ByteSpace*
+frysk::sys::ptrace::ByteSpace::text() {
+  return new frysk::sys::ptrace::ByteSpace(-1UL,
+					   JvNewStringUTF("TEXT"),
+					   PTRACE_PEEKTEXT,
+					   PTRACE_POKETEXT);
 }
 
-frysk::sys::ptrace::AddressSpace*
-frysk::sys::ptrace::AddressSpace::data() {
-  return new frysk::sys::ptrace::AddressSpace(-1UL,
-					      JvNewStringUTF("DATA"),
-					      PTRACE_PEEKDATA,
-					      PTRACE_POKEDATA);
+frysk::sys::ptrace::ByteSpace*
+frysk::sys::ptrace::ByteSpace::data() {
+  return new frysk::sys::ptrace::ByteSpace(-1UL,
+					   JvNewStringUTF("DATA"),
+					   PTRACE_PEEKDATA,
+					   PTRACE_POKEDATA);
 }
 
-frysk::sys::ptrace::AddressSpace*
-frysk::sys::ptrace::AddressSpace::usr() {
-  return new frysk::sys::ptrace::AddressSpace(-1UL,
-					      JvNewStringUTF("USR"),
-					      PTRACE_PEEKUSR,
-					      PTRACE_POKEUSR);
+frysk::sys::ptrace::ByteSpace*
+frysk::sys::ptrace::ByteSpace::usr() {
+  return new frysk::sys::ptrace::ByteSpace(-1UL,
+					   JvNewStringUTF("USR"),
+					   PTRACE_PEEKUSR,
+					   PTRACE_POKEUSR);
 }

@@ -43,46 +43,47 @@
 #include "linux.ptrace.h"
 #include <sys/user.h>
 
-#include "jni.hxx"
+#include <gcj/cni.h>
 
-#include "frysk/sys/ptrace/jni/Ptrace.hxx"
-#include "jnixx/elements.hxx"
-#include "jnixx/bounds.hxx"
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/ptrace/cni/Ptrace.hxx"
+#include "frysk/sys/ptrace/BlockSpace.h"
 
 void
-frysk::sys::ptrace::RegisterSet::transfer(::jnixx::env env,
-					  jint op, jint pid,
-					  ::jnixx::jbyteArray data,
-					  jint length) {
-  verifyBounds(env, data, length);
-  jbyteArrayElements bytes = jbyteArrayElements(env, data);
-  ptraceOp(env, op, pid, NULL, (long) bytes.elements());
-  bytes.release();
+frysk::sys::ptrace::BlockSpace::transfer(jint op, jint pid, jbyteArray data,
+					 jint length) {
+  verifyBounds(data, 0, length);
+  ptraceOp(op, pid, NULL, (long) elements(data));
 }
 
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::regs(::jnixx::env env) {
+frysk::sys::ptrace::BlockSpace*
+frysk::sys::ptrace::BlockSpace::regs() {
 #if defined(__i386__)|| defined(__x86_64__)
-  return New(env, sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS);
+  return new frysk::sys::ptrace::BlockSpace(sizeof(user_regs_struct),
+					    PTRACE_GETREGS, PTRACE_SETREGS);
 #else
-  return RegisterSet(env, NULL);
+  return NULL;
 #endif
 }
 
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::fpregs(::jnixx::env env) {
+frysk::sys::ptrace::BlockSpace*
+frysk::sys::ptrace::BlockSpace::fpregs() {
 #if defined(__i386__)|| defined(__x86_64__)
-  return New(env, sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS);
+  return new frysk::sys::ptrace::BlockSpace(sizeof(user_fpregs_struct),
+					    PTRACE_GETFPREGS,
+					    PTRACE_SETFPREGS);
 #else
-  return RegisterSet(env, NULL);
+  return NULL;
 #endif
 }
 
-frysk::sys::ptrace::RegisterSet
-frysk::sys::ptrace::RegisterSet::fpxregs(::jnixx::env env) {
+frysk::sys::ptrace::BlockSpace*
+frysk::sys::ptrace::BlockSpace::fpxregs() {
 #if defined(__i386__)
-  return New(env, sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS);
+  return new frysk::sys::ptrace::BlockSpace(sizeof(user_fpxregs_struct),
+					    PTRACE_GETFPXREGS,
+					    PTRACE_SETFPXREGS);
 #else
-  return RegisterSet(env, NULL);
+  return NULL;
 #endif
 }

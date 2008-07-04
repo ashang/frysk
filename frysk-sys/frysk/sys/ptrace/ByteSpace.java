@@ -43,18 +43,18 @@ import frysk.rsl.Log;
 import frysk.sys.ProcessIdentifier;
 
 /**
- * A ptrace address space, that can be peeked or poked a "word" at
- * a time.
+ * A ptrace space, that can be efficiently peeked and poked a "word"
+ * or even "byte" at a time.
  */
-public class AddressSpace {
-    private static final Log fine = Log.fine(AddressSpace.class);
+public class ByteSpace {
+    private static final Log fine = Log.fine(ByteSpace.class);
 
     private final long length;
     private final String name;
     private final int ptPeek;
     private final int ptPoke;
 
-    AddressSpace(long length, String name, int ptPeek, int ptPoke) {
+    ByteSpace(long length, String name, int ptPeek, int ptPoke) {
 	this.name = super.toString() + ":" + name;
 	this.length = length;
 	this.ptPeek = ptPeek;
@@ -135,11 +135,11 @@ public class AddressSpace {
     private native final void transfer(int op, int pid, long addr,
 				       byte[] bytes, int offset, int length);
 
-    private static native AddressSpace text();
-    private static native AddressSpace data();
-    private static native AddressSpace usr();
+    private static native ByteSpace text();
+    private static native ByteSpace data();
+    private static native ByteSpace usr();
 
-    public static final AddressSpace TEXT = text();
-    public static final AddressSpace DATA = data();
-    public static final AddressSpace USR = usr();
+    public static final ByteSpace TEXT = text();
+    public static final ByteSpace DATA = data();
+    public static final ByteSpace USR = usr();
 }

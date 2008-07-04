@@ -60,7 +60,7 @@ import inua.eio.ByteOrder;
 import frysk.sys.Errno;
 import frysk.sys.ProcessIdentifier;
 import frysk.sys.ptrace.Ptrace;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.ByteSpace;
 import frysk.sys.Signal;
 import frysk.isa.syscalls.Syscall;
 import frysk.isa.ISA;
@@ -140,8 +140,7 @@ public class LinuxPtraceTask extends LiveTask {
     ByteBuffer getRawMemory() {
 	fine.log(this, "Begin fillMemory");
 	ByteOrder byteOrder = getISA().order();
-	ByteBuffer memory = new AddressSpaceByteBuffer(tid,
-						       AddressSpace.DATA);
+	ByteBuffer memory = new ByteSpaceByteBuffer(tid, ByteSpace.DATA);
 	memory.order(byteOrder);
 	fine.log(this, "End fillMemory"); 
 	return memory;
@@ -155,7 +154,7 @@ public class LinuxPtraceTask extends LiveTask {
 	    fine.log(this, "exiting get memory");
 	    ByteOrder byteOrder = getISA().order();
 	    BreakpointAddresses breakpoints = ((LinuxPtraceProc)getProc()).breakpoints;
-	    memory = new LogicalMemoryBuffer(tid, AddressSpace.DATA,
+	    memory = new LogicalMemoryBuffer(tid, ByteSpace.DATA,
 					     breakpoints);
 	    memory.order(byteOrder);
 	}

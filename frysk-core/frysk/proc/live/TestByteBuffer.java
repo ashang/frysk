@@ -47,15 +47,13 @@ import frysk.proc.dummy.DummyProc;
 import frysk.testbed.ForkFactory;
 import frysk.testbed.DaemonBlockedAtEntry;
 import frysk.testbed.LocalMemory;
-import frysk.sys.ptrace.RegisterSet;
-import frysk.sys.ptrace.AddressSpace;
+import frysk.sys.ptrace.BlockSpace;
+import frysk.sys.ptrace.ByteSpace;
 import frysk.proc.Manager;
 import frysk.sys.ProcessIdentifier;
 import java.util.Arrays;
 
-public class TestByteBuffer
-    extends TestCase
-{
+public class TestByteBuffer extends TestCase {
     // There are 2 sets of byte buffers to check, those that hold memory
     // and those that hold various register values.
     private ByteBuffer[] addressBuffers;
@@ -69,9 +67,9 @@ public class TestByteBuffer
 	
 	// Text and Data are the same, but can be accessed independently.
 	ByteBuffer addressSpaceByteBufferText
-	    = new AddressSpaceByteBuffer(pid, AddressSpace.TEXT);
+	    = new ByteSpaceByteBuffer(pid, ByteSpace.TEXT);
 	ByteBuffer addressSpaceByteBufferData
-	    = new AddressSpaceByteBuffer(pid, AddressSpace.DATA);
+	    = new ByteSpaceByteBuffer(pid, ByteSpace.DATA);
 	
 	// Cheat with the proc, it is not actually used if no
 	// breakpoints are set (testing with breakpoints set is done
@@ -80,7 +78,7 @@ public class TestByteBuffer
 	Proc proc = new DummyProc();
 	BreakpointAddresses breakpoints = new BreakpointAddresses(proc);
 	ByteBuffer memorySpaceByteBuffer
-	    = new LogicalMemoryBuffer(pid, AddressSpace.TEXT, breakpoints);
+	    = new LogicalMemoryBuffer(pid, ByteSpace.TEXT, breakpoints);
 	
 	addressBuffers = new ByteBuffer[] { addressSpaceByteBufferText,
 					    addressSpaceByteBufferData,
@@ -88,18 +86,18 @@ public class TestByteBuffer
 	
 	// The USER area is seen as a register buffer.
 	ByteBuffer usrByteBuffer
-	    = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
+	    = new ByteSpaceByteBuffer(pid, ByteSpace.USR);
 	
 	// See how many other register sets there are.
-	if (RegisterSet.REGS != null) {
+	if (BlockSpace.REGS != null) {
 	    ByteBuffer registerByteBuffer
-		= new RegisterSetByteBuffer(pid, RegisterSet.REGS);
-	    if (RegisterSet.FPREGS != null) {
+		= new BlockSpaceByteBuffer(pid, BlockSpace.REGS);
+	    if (BlockSpace.FPREGS != null) {
 		ByteBuffer fpregisterByteBuffer
-		    = new RegisterSetByteBuffer(pid, RegisterSet.FPREGS);
-		if (RegisterSet.FPXREGS != null) {
+		    = new BlockSpaceByteBuffer(pid, BlockSpace.FPREGS);
+		if (BlockSpace.FPXREGS != null) {
 		    ByteBuffer fpxregisterByteBuffer
-			= new RegisterSetByteBuffer(pid, RegisterSet.FPXREGS);
+			= new BlockSpaceByteBuffer(pid, BlockSpace.FPXREGS);
 		    registerBuffers = new ByteBuffer[] { usrByteBuffer,
 							 registerByteBuffer,
 							 fpregisterByteBuffer,
@@ -118,17 +116,15 @@ public class TestByteBuffer
 	}
     }
 
-    public void tearDown() throws Exception
-    {
-      addressBuffers = null;
-      registerBuffers = null;
+    public void tearDown() throws Exception {
+	addressBuffers = null;
+	registerBuffers = null;
 
-      // Clean up any left stuff processes/open files/etc.
-      super.tearDown();
+	// Clean up any left stuff processes/open files/etc.
+	super.tearDown();
     }
 
-    public void verifySlice(ByteBuffer buffer, long addr, int length)
-    {
+    public void verifySlice(ByteBuffer buffer, long addr, int length) {
 	ByteBuffer slice = buffer.slice (addr, length);
 	byte bytes[] = new byte[length];
 	buffer.get (addr, bytes, 0, length);
@@ -138,37 +134,32 @@ public class TestByteBuffer
 	}
     }
 
-    public void testSliceAddressBuffers()
-    {
-      for (int i = 0; i < addressBuffers.length; i++)
-	verifySlice(addressBuffers[i], LocalMemory.getCodeAddr(),
-		    LocalMemory.getCodeBytes().length);
+    public void testSliceAddressBuffers() {
+	for (int i = 0; i < addressBuffers.length; i++)
+	    verifySlice(addressBuffers[i], LocalMemory.getCodeAddr(),
+			LocalMemory.getCodeBytes().length);
     }
 
-    public void testSliceRegisterBuffers()
-    {
-      for (int i = 0; i < registerBuffers.length; i++)
-	verifySlice(registerBuffers[i], 4, 4);
+    public void testSliceRegisterBuffers() {
+	for (int i = 0; i < registerBuffers.length; i++)
+	    verifySlice(registerBuffers[i], 4, 4);
     }
 
-    private void verifyModify(ByteBuffer buffer, long addr)
-    {
+    private void verifyModify(ByteBuffer buffer, long addr) {
 	// Read, modify, read.
 	byte oldByte = buffer.get(addr);
 	buffer.putByte(addr, (byte)~oldByte);
 	assertEquals ("modified", (byte)~oldByte, buffer.get(addr));
     }
 
-    public void testModifyRegisterBuffers()
-    {
-      for (int i = 0; i < registerBuffers.length; i++)
-	verifyModify(registerBuffers[i], 0);
+    public void testModifyRegisterBuffers() {
+	for (int i = 0; i < registerBuffers.length; i++)
+	    verifyModify(registerBuffers[i], 0);
     }
 
-    public void testModifyAddressBuffers()
-    {
-      for (int i = 0; i < addressBuffers.length; i++)
-	verifyModify(addressBuffers[i], LocalMemory.getCodeAddr());
+    public void testModifyAddressBuffers() {
+	for (int i = 0; i < addressBuffers.length; i++)
+	    verifyModify(addressBuffers[i], LocalMemory.getCodeAddr());
     }
 
     private void verifyAsyncModify(ByteBuffer buffer, long addr) {
@@ -218,71 +209,61 @@ public class TestByteBuffer
 	}
     }
     public void testAsyncRegisterBuffers() {
-      for (int i = 0; i < registerBuffers.length; i++)
-	verifyAsyncModify(registerBuffers[0], 0);
+	for (int i = 0; i < registerBuffers.length; i++)
+	    verifyAsyncModify(registerBuffers[0], 0);
     }
 
     public void testAsyncAddressBuffers() {
-      for (int i = 0; i < addressBuffers.length; i++)
-	verifyAsyncModify(addressBuffers[i],
-			  LocalMemory.getCodeAddr());
+	for (int i = 0; i < addressBuffers.length; i++)
+	    verifyAsyncModify(addressBuffers[i],
+			      LocalMemory.getCodeAddr());
     }
 
-    public void verifyPeeks(ByteBuffer buffer, long addr, byte[] origBytes)
-    {
-      byte bytes[] = new byte[origBytes.length];
-      buffer.get(addr, bytes, 0, bytes.length);
-      for (int i = 0; i < bytes.length; i++)
-        assertEquals ("byte at " + i, bytes[i], origBytes[i]);
+    public void verifyPeeks(ByteBuffer buffer, long addr, byte[] origBytes) {
+	byte bytes[] = new byte[origBytes.length];
+	buffer.get(addr, bytes, 0, bytes.length);
+	for (int i = 0; i < bytes.length; i++)
+	    assertEquals ("byte at " + i, bytes[i], origBytes[i]);
     }
   
-    public void testAddressBufferPeeks()
-    {
-      long addr = LocalMemory.getCodeAddr();
-      byte[] origBytes = LocalMemory.getCodeBytes();
-      for (int i = 0; i < addressBuffers.length; i++)
-	verifyPeeks(addressBuffers[i], addr, origBytes);
+    public void testAddressBufferPeeks() {
+	long addr = LocalMemory.getCodeAddr();
+	byte[] origBytes = LocalMemory.getCodeBytes();
+	for (int i = 0; i < addressBuffers.length; i++)
+	    verifyPeeks(addressBuffers[i], addr, origBytes);
     }
 
-    public void testRegisterBufferPeeks()
-    {
-      // Check that simple get loop is similar to bulk get.
-      long addr = 4;
-      byte[] origBytes = new byte[16];
-      for (int i = 0; i < registerBuffers.length; i++)
-	{
-	  for (int j = 0; j < origBytes.length; j++)
-	    origBytes[j] = registerBuffers[i].get(addr + j);
-	  verifyPeeks(registerBuffers[i], addr, origBytes);
+    public void testRegisterBufferPeeks() {
+	// Check that simple get loop is similar to bulk get.
+	long addr = 4;
+	byte[] origBytes = new byte[16];
+	for (int i = 0; i < registerBuffers.length; i++) {
+	    for (int j = 0; j < origBytes.length; j++)
+		origBytes[j] = registerBuffers[i].get(addr + j);
+	    verifyPeeks(registerBuffers[i], addr, origBytes);
 	}
     }
-    private class AsyncPeeks
-	implements Runnable
-    {
+    private class AsyncPeeks implements Runnable {
 	private ByteBuffer buffer;
 	private long addr;
 	private int length;
 	private byte[] bytes;
 	private Exception e;
-	AsyncPeeks (ByteBuffer buffer, long addr, int length)
-	{
+	AsyncPeeks (ByteBuffer buffer, long addr, int length) {
 	    this.buffer = buffer;
 	    this.addr = addr;
 	    this.length = length;
 	    this.bytes = new byte[length];
 	}
-	public void run ()
-	{
+	public void run() {
 	    try {
 		buffer.get (addr, bytes, 0, length);
-	    }
-	    catch (Exception e) {
+	    } catch (Exception e) {
 		this.e = e;
 	    }
 	    Manager.eventLoop.requestStop();
 	}
-	void call (byte[] origBytes)
-	{
+	void call (byte[] origBytes) {
 	    // Force the event loop to running on this thread.  Ugly, and is to
 	    // to be removed when bug #4688 is resolved.
 	    Manager.eventLoop.runPolling(1);
@@ -297,71 +278,64 @@ public class TestByteBuffer
 	}
     }
 
-    public void testAsyncPeeks ()
-    {
-      byte[] origBytes = LocalMemory.getCodeBytes();
-      for (int i = 0; i < addressBuffers.length; i++)
-	new AsyncPeeks(addressBuffers[i], LocalMemory.getCodeAddr(),
-		       LocalMemory.getCodeBytes().length).call(origBytes);
+    public void testAsyncPeeks() {
+	byte[] origBytes = LocalMemory.getCodeBytes();
+	for (int i = 0; i < addressBuffers.length; i++)
+	    new AsyncPeeks(addressBuffers[i], LocalMemory.getCodeAddr(),
+			   LocalMemory.getCodeBytes().length).call(origBytes);
     }
 
-    public void testAsycnPeeksRegisters()
-    {
-      // Check position() and (async) get()
-      int length = 8;
-      byte[] origBytes = new byte[length];
-      long address = 4;
-      for (int i = 0; i < registerBuffers.length; i++)
-	{
-	  registerBuffers[i].position(address);
-	  registerBuffers[i].get(origBytes);
-	  new AsyncPeeks(registerBuffers[i], address,
-			 length).call(origBytes);
+    public void testAsycnPeeksRegisters() {
+	// Check position() and (async) get()
+	int length = 8;
+	byte[] origBytes = new byte[length];
+	long address = 4;
+	for (int i = 0; i < registerBuffers.length; i++) {
+	    registerBuffers[i].position(address);
+	    registerBuffers[i].get(origBytes);
+	    new AsyncPeeks(registerBuffers[i], address,
+			   length).call(origBytes);
 	}
     }
 
-  private void verifyBulkPut(ByteBuffer buffer, long addr, int len)
-  {
-    // Pasting the same bytes back over the old buffer in bulk
-    // and read it back in.
-    byte[] oldBytes = new byte[len];
-    buffer.position(addr);
-    buffer.get(oldBytes);
-    buffer.position(addr);
-    buffer.put(oldBytes);
-    byte[] newBytes = new byte[len];
-    buffer.position(addr);
-    buffer.get(newBytes);
-    assertTrue(Arrays.equals(oldBytes, newBytes));
-  }
+    private void verifyBulkPut(ByteBuffer buffer, long addr, int len) {
+	// Pasting the same bytes back over the old buffer in bulk
+	// and read it back in.
+	byte[] oldBytes = new byte[len];
+	buffer.position(addr);
+	buffer.get(oldBytes);
+	buffer.position(addr);
+	buffer.put(oldBytes);
+	byte[] newBytes = new byte[len];
+	buffer.position(addr);
+	buffer.get(newBytes);
+	assertTrue(Arrays.equals(oldBytes, newBytes));
+    }
 
-  public void testBulkPutRegisterBuffers()
-  {
-    for (int i = 0; i < registerBuffers.length; i++)
-      verifyBulkPut(registerBuffers[i], 4, 4);
-  }
+    public void testBulkPutRegisterBuffers() {
+	for (int i = 0; i < registerBuffers.length; i++)
+	    verifyBulkPut(registerBuffers[i], 4, 4);
+    }
 
-  public void testBulkPutAddressBuffers()
-  {
-    for (int i = 0; i < addressBuffers.length; i++)
-      verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
-		    LocalMemory.getCodeBytes().length);
-  }
+    public void testBulkPutAddressBuffers() {
+	for (int i = 0; i < addressBuffers.length; i++)
+	    verifyBulkPut(addressBuffers[i], LocalMemory.getCodeAddr(),
+			  LocalMemory.getCodeBytes().length);
+    }
 
-  public void testMemoryBufferCapacity() 
-  {
-    Task task = new DaemonBlockedAtEntry("funit-slave").getMainTask();
-    switch(task.getISA().wordSize()){
+    public void testMemoryBufferCapacity() {
+	Task task = new DaemonBlockedAtEntry("funit-slave").getMainTask();
+	switch(task.getISA().wordSize()){
 	case 4:
-		assertEquals("Memory Buffer Capacity: ", 0xffffffffL,
-		     task.getMemory().capacity());
-		break;
+	    assertEquals("Memory Buffer Capacity: ", 0xffffffffL,
+			 task.getMemory().capacity());
+	    break;
 	case 8:
-		assertEquals("Memory Buffer Capacity: ", 0xffffffffffffffffL,
-                     task.getMemory().capacity());
-		break;
+	    assertEquals("Memory Buffer Capacity: ", 0xffffffffffffffffL,
+			 task.getMemory().capacity());
+	    break;
 	default:
-		fail("unknown word size");
+	    fail("unknown word size");
 	}
     }
 

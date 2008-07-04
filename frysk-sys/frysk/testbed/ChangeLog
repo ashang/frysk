@@ -1,3 +1,7 @@
+2008-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* LocalMemory.java: Update; AddressSpace renamed to ByteSpace.
+
 2008-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLocalMemory.java (testMemoryByteBuffer()): New.
