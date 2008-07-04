@@ -40,8 +40,9 @@
  * A ByteBuffer.  Just like {@link java.nio.ByteBuffer} only 64-bit.
  */
 
-
 package inua.eio;
+
+import frysk.InternalException;
 
 public abstract class ByteBuffer
     extends Buffer
@@ -293,9 +294,8 @@ public abstract class ByteBuffer
    * Given BUFFER, return a new subBuffer. Used by {@link #slice}.
    */
   protected ByteBuffer subBuffer (ByteBuffer buffer, long lowerExtreem,
-                                  long upperExtreem)
-  {
-    throw new RuntimeException("not implemented");
+                                  long upperExtreem) {
+      throw new InternalException("not implemented");
   }
 
   public ByteBuffer slice (long off, long len)
@@ -321,14 +321,12 @@ public abstract class ByteBuffer
     return (byte) peek(lowWater + index);
   }
 
-  public ByteBuffer get (long index, byte[] dst, int off, int len)
-      throws BufferUnderflowException
-  {
-    if (ULong.GT(index + len, limit()))
-      throw new BufferUnderflowException();
-    peekFully(lowWater + index,dst,off,len);
-    return this;
-  }
+    public ByteBuffer get(long index, byte[] dst, int off, int len) {
+	if (ULong.GT(index + len, limit()))
+	    throw new BufferUnderflowException(index + len);
+	peekFully(lowWater + index,dst,off,len);
+	return this;
+    }
   
   public int safeGet (long index, byte[] dst, int off, int len)
   {
@@ -339,35 +337,29 @@ public abstract class ByteBuffer
     return maxLen;
   }
 
-  public ByteBuffer get (byte[] dst, int off, int len)
-      throws BufferUnderflowException
-  {
-    if (ULong.GT(len, remaining()))
-      throw new BufferUnderflowException();
-    peek(cursor, dst, off, len);
-    cursor += len;
-    return this;
-  }
+    public ByteBuffer get(byte[] dst, int off, int len) {
+	if (ULong.GT(len, remaining()))
+	    throw new BufferUnderflowException(len);
+	peek(cursor, dst, off, len);
+	cursor += len;
+	return this;
+    }
 
-  public final ByteBuffer get (byte[] dst) throws BufferUnderflowException
-  {
-    return get(dst, 0, dst.length);
-  }
+    public final ByteBuffer get (byte[] dst) {
+	return get(dst, 0, dst.length);
+    }
 
-  public ByteBuffer put (byte[] src, int off, int len)
-    throws BufferUnderflowException
-  {
-    if (ULong.GT(len, remaining()))
-      throw new BufferUnderflowException();
-    poke(cursor, src, off, len);
-    cursor += len;
-    return this;
-  }
+    public ByteBuffer put (byte[] src, int off, int len) {
+	if (ULong.GT(len, remaining()))
+	    throw new BufferUnderflowException(len);
+	poke(cursor, src, off, len);
+	cursor += len;
+	return this;
+    }
 
-  public final ByteBuffer put (byte[] src) throws BufferUnderflowException
-  {
-    return put(src, 0, src.length);
-  }
+    public final ByteBuffer put (byte[] src) {
+	return put(src, 0, src.length);
+    }
 
   protected ByteOrdered byteOrdered;
 

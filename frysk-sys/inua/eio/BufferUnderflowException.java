@@ -34,10 +34,14 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.eio;
 
-public class BufferUnderflowException
-    extends java.nio.BufferUnderflowException
-{
+import frysk.UserException;
+
+public class BufferUnderflowException extends UserException {
     private static final long serialVersionUID = 1L;
+    BufferUnderflowException(long address) {
+	super("Address 0x" + Long.toHexString(address) + " out of bounds");
+    }
 }

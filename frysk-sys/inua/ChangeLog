@@ -1,3 +1,8 @@
+2008-07-04  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/ByteBuffer.java: Throw InternalException.
+	* eio/BufferUnderflowException.java: Extend UserException.
+
 2008-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* eio/ByteBuffer.java: Add missing indexed word get/put methods.
