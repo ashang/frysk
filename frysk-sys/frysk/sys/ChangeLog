@@ -1,3 +1,11 @@
+2008-07-07  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Fork.hxx: Remove utrace stubs.
+	* Fork.java: Ditto.
+	* jni/Fork.hxx: Ditto.
+	* jni/Fork.cxx: Ditto.
+	* cni/Fork.cxx: Ditto.
+
 2008-06-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Poll.java: Move to frysk.sys.poll.

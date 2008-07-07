@@ -115,9 +115,6 @@ spawn(tracing trace, redirect& redirection, exec& execute) {
 	::_exit(errno);
       }
       break;
-    case UTRACE:
-      fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
-      break;
     case CHILD:
       break;
     case DAEMON:
@@ -185,13 +182,6 @@ frysk::sys::Fork::ptrace(jstring exe,
 			jstring in, jstring out, jstring err,
 			jstringArray args, jstringArray environ) {
   return ::spawn(exe, in, out, err, args, environ, PTRACE);
-}
-
-jint
-frysk::sys::Fork::utrace(jstring exe,
-			jstring in, jstring out, jstring err,
-			jstringArray args, jstringArray environ) {
-  return ::spawn(exe, in, out, err, args, environ, UTRACE);
 }
 
 jint

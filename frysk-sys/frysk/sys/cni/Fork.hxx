@@ -41,7 +41,6 @@ enum tracing {
   CHILD,
   DAEMON,
   PTRACE,
-  UTRACE,
 };
 
 /**

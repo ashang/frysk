@@ -1,3 +1,10 @@
+2008-07-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Utrace.java: Delete stub.
+	* jni/Utrace.java: Delete stub.
+	* cni/Utrace.java: Delete stub.
+	* TestUtrace.java: Delete stub.
+
 2008-07-04  Andrew Cagney  <cagney@redhat.com>
 
 	* jni/ByteSpace.cxx: Rename jni/AddressSpace.java.

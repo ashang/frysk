@@ -115,9 +115,6 @@ spawn(jnixx::env env, tracing trace, redirect& redirection, exec& execute) {
 	::_exit(errno);
       }
       break;
-    case UTRACE:
-      fprintf(stderr, "\n\n>>>>> in spawn(...utrace)\n\n");
-      break;
     case CHILD:
       break;
     case DAEMON:
@@ -196,14 +193,6 @@ frysk::sys::Fork::ptrace(jnixx::env env, String exe,
 			 jnixx::array<String> args,
 			 jnixx::array<String> environ) {
   return ::spawn(env, exe, in, out, err, args, environ, PTRACE);
-}
-
-jint
-frysk::sys::Fork::utrace(jnixx::env env, String exe,
-			 String in, String out, String err,
-			 jnixx::array<String> args,
-			 jnixx::array<String> environ) {
-  return ::spawn(env, exe, in, out, err, args, environ, UTRACE);
 }
 
 jint

@@ -53,9 +53,6 @@ public final class Fork {
     private static native int ptrace(String exe,
 				     String in, String out, String err,
 				     String[] args, String[] environ);
-    private static native int utrace(String exe,
-				     String in, String out, String err,
-				     String[] args, String[] environ);
     private static native int daemon(String exe,
 				     String in, String out, String err,
 				     String[] args, String[] environ);
@@ -113,29 +110,6 @@ public final class Fork {
      */
     public static ProcessIdentifier ptrace(String[] args) {
 	return ProcessIdentifierFactory.create(ptrace(args[0],
-						      null, null, null,
-						      args, null));
-    }
-
-    /**
-     * Create a child process running EXE with arguments ARGS[0...];
-     * mark the process for utracing.
-     *
-     * Also wire up IN, OUT, and ERR.
-     */
-    public static ProcessIdentifier utrace(File exe,
-					   String in, String out,
-					   String err, String[] args) {
-	return ProcessIdentifierFactory.create(utrace(exe.getPath(),
-						      in, out, err,
-						      args, null));
-    }
-    /**
-     * Create a child process running ARGS[0] with arguments
-     * ARGV[0...]; mark the process for utracing.
-     */
-    public static ProcessIdentifier utrace(String[] args) {
-	return ProcessIdentifierFactory.create(utrace(args[0],
 						      null, null, null,
 						      args, null));
     }
