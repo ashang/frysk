@@ -500,7 +500,7 @@ public class TestDebugInfoStackTrace
   public void pushPopAssertions ()
   {
     DebugInfoFrame sFrame = DebugInfoStackFactory.createDebugInfoStackTrace(myTask);
-    SourceLocation line = null; 
+    SourceLocation line = sFrame.getLine(); 
     
     if (this.testState == PUSH || this.testState == POP)
       {

@@ -1,3 +1,8 @@
+2008-03-20  Mark Wielaard  <mark@klomp.org>
+
+	* TestDebugInfoStackTrace.java (pushPopAssertions): Make sure
+	line is initialized.
+
 2008-06-15  Andrew Cagney  <cagney@redhat.com>
 
 	* gen-type-expect-tests.py (open_file): Use assert, not if/println
