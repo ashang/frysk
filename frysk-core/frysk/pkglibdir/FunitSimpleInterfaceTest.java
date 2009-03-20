@@ -43,6 +43,8 @@ public class FunitSimpleInterfaceTest implements FunitSimpleInterface{
 	FunitSimpleInterface inter = new FunitSimpleInterfaceTest();
 	// Crash
 	Object o = null;
+        if (o == inter) // Work around compiler being too smart...
+          o = inter;
 	o.toString();
 	inter.simpleMethod();
     }
